@@ -1,91 +1,134 @@
-# Web Scraping with Playwright
+# MXI Samsung ETL Pipeline - Quick Reference
 
-## Key Architecture
+## Project Overview
 
-ProjectSight uses **modal-based UI** with client-side routing—detail views don't have unique URLs, they open modals on the list page. Playwright handles this better than Selenium.
+ETL pipeline for integrating construction project data from multiple sources into PostgreSQL for analysis. Orchestrated with Apache Airflow 2.7.0.
 
-## Core Files
+**Data Sources:**
+- **ProjectSight (Trimble)** - Web scraping via Playwright
+- **Fieldwire** - REST API integration
 
-| File | Purpose |
-|------|---------|
-| [src/connectors/web_scraper.py](src/connectors/web_scraper.py) | Playwright wrapper with modal support |
-| [src/extractors/system_specific/projectsight_extractor.py](src/extractors/system_specific/projectsight_extractor.py) | Modal-aware extraction logic |
-| [docs/PLAYWRIGHT_DEBUGGING.md](docs/PLAYWRIGHT_DEBUGGING.md) | Selector discovery guide |
+## Architecture
 
-## Extraction Workflow
-
-```python
-# 1. Authenticate & navigate
-connector.authenticate()
-connector.navigate_to('/projects')
-
-# 2. Find all project rows
-project_rows = connector.find_elements('table tbody tr')
-
-# 3. For each project: click → extract → close modal
-for row in project_rows:
-    connector.click_element(element=row)
-    data = connector.extract_text(selector='.modal-body .description')
-    connector.close_modal()
+```
+External Systems → Extract → Transform → Load → PostgreSQL
+                      ↓          ↓         ↓
+                   Connectors  Utilities Database
 ```
 
-## Important Methods
+Each layer is independently testable, validated, and logged.
 
-**Modal handling:**
-- `wait_for_modal()` - Wait for modal to appear
-- `close_modal()` - Close modal and wait for disappearance
+## Project Structure
 
-**Element interaction:**
-- `find_element(selector)` / `find_elements(selector)` - Query page
-- `extract_text(selector)` - Get element text
-- `click_element(selector)` - Click element
+- `src/connectors/` - System connectors (API, web scraper)
+- `src/extractors/` - Data extraction logic (ProjectSight, Fieldwire)
+- `src/transformers/` - Data normalization and standardization
+- `src/loaders/` - Load to PostgreSQL or files
+- `src/utils/` - Logging, validation, helpers
+- `src/config/` - Environment-based settings
+- `dags/` - Airflow DAG definitions
+- `plugins/` - Custom Airflow operators/hooks/sensors
+- `tests/` - Unit and integration tests
+- `docs/` - Comprehensive guides
 
-**Debugging:**
-- `take_screenshot(filename)` - Capture page state
-- `get_page_content()` - Get HTML for inspection
-- `evaluate_javascript(script)` - Run JS on page
+See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed structure.
 
-## Setup
+## Web Scraping (ProjectSight)
 
-Chromium is automatically installed during container build:
+ProjectSight uses modal-based UI with client-side routing. Playwright is required.
+
+**Key Points:**
+- Modal-aware extraction: click → extract → close pattern
+- Chromium auto-installed during container build
+- Use `debug=True` to capture actual HTML structure
+- See [CLAUDE.md#web-scraping](CLAUDE.md) and [docs/PLAYWRIGHT_DEBUGGING.md](docs/PLAYWRIGHT_DEBUGGING.md) for selectors
+
+**Core Files:**
+- [src/connectors/web_scraper.py](src/connectors/web_scraper.py) - Playwright wrapper
+- [src/extractors/system_specific/projectsight_extractor.py](src/extractors/system_specific/projectsight_extractor.py) - Modal extraction
+
+## Quick Start
+
 ```bash
-playwright install chromium        # Binary
-playwright install-deps chromium   # System dependencies
+# Install & configure
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with credentials
+
+# Run with Docker
+docker-compose up -d
+
+# Access Airflow
+# http://localhost:8080 (airflow/airflow)
 ```
 
-## Debugging Selectors
+## Key Technology Stack
 
-When extraction fails, use debug mode to capture the actual HTML structure:
+| Component | Technology |
+|-----------|-----------|
+| Orchestration | Apache Airflow 2.7.0 |
+| Web Scraping | Playwright 1.40.0 |
+| API Client | Requests 2.31.0 |
+| Data Processing | Pandas 2.1.1 |
+| Database | PostgreSQL 15 |
+| Testing | Pytest 7.4.3 |
 
-```python
-from src.extractors.system_specific.projectsight_extractor import ProjectSightExtractor
+## Configuration
 
-extractor = ProjectSightExtractor()
-projects = extractor.extract(debug=True)
-# Screenshots saved to /tmp/projectsight_projects_page.png, /tmp/projectsight_modal_*.png
+All settings via environment variables in `.env`:
+
+```env
+# ProjectSight credentials
+PROJECTSIGHT_BASE_URL=https://...
+PROJECTSIGHT_USERNAME=...
+PROJECTSIGHT_PASSWORD=...
+
+# Fieldwire API
+FIELDWIRE_API_KEY=...
+
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=etl_db
+DB_USER=airflow
+DB_PASSWORD=airflow
 ```
 
-Then inspect the screenshots and check [docs/PLAYWRIGHT_DEBUGGING.md](docs/PLAYWRIGHT_DEBUGGING.md) for selector discovery techniques.
+See [.env.example](.env.example) for full list.
 
-## Common Selectors
+## Documentation
 
-```python
-# Table rows
-'table tbody tr'
-'[role="row"][data-project-id]'
+| Document | Purpose |
+|----------|---------|
+| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Complete project structure and status |
+| [PLAYWRIGHT_MIGRATION.md](PLAYWRIGHT_MIGRATION.md) | Selenium → Playwright migration |
+| [docs/PLAYWRIGHT_DEBUGGING.md](docs/PLAYWRIGHT_DEBUGGING.md) | Selector discovery & debugging |
+| [docs/ETL_DESIGN.md](docs/ETL_DESIGN.md) | Architecture & design patterns |
+| [docs/SOURCES.md](docs/SOURCES.md) | Data source APIs & field mapping |
+| [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) | Step-by-step implementation |
 
-# Modal dialog
-'.modal'
-'[role="dialog"]'
+## Development
 
-# Close button
-'.close'
-'[aria-label="Close"]'
+```bash
+# Run tests
+pytest                    # All tests
+pytest --cov=src tests/   # With coverage
+pytest tests/unit/        # Unit only
+
+# Code quality
+black src/ tests/         # Format
+flake8 src/ tests/        # Lint
+pylint src/ tests/        # Analysis
 ```
 
-## Next Steps
+## Implementation Status
 
-1. Run extraction with `debug=True` to find actual selectors
-2. Update selector constants in extractor
-3. Test extraction with real ProjectSight data
-4. Create DAGs for Airflow orchestration
+- ✅ Project structure and base classes
+- ✅ Connectors (API & web scraping)
+- ✅ Extractors and transformers
+- ✅ Loaders (database & files)
+- ✅ Testing infrastructure
+- ✅ Comprehensive documentation
+- ⏳ **TODO:** Create ETL DAGs
+- ⏳ **TODO:** Configure database schema
+- ⏳ **TODO:** Test with actual data
