@@ -1,0 +1,16 @@
+# Python dependencies for mxi-samsung project
+# Add your project-specific packages below
+
+# Common utilities
+requests==2.31.0
+python-dotenv==1.0.0
+
+# Data processing
+pandas==2.1.1
+numpy==1.24.3
+
+# Development tools
+pytest==7.4.3
+black==23.11.0
+flake8==6.1.0
+pylint==3.0.2
