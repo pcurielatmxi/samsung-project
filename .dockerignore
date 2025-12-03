@@ -1,0 +1,15 @@
+.git
+.github
+.devcontainer
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+ENV/
+.vscode
+.idea
+*.log
+.DS_Store
+node_modules

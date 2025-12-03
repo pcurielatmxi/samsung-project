@@ -1,6 +1,9 @@
 # Python dependencies for mxi-samsung project
 # Add your project-specific packages below
 
+# Airflow core (optional - included in Docker image)
+# apache-airflow==2.7.0
+
 # Common utilities
 requests==2.31.0
 python-dotenv==1.0.0
