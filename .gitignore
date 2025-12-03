@@ -74,6 +74,14 @@ Thumbs.db
 *.seed
 .cache/
 
+# Data files (raw and processed data)
+data/raw/*
+data/processed/*
+data/output/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/output/.gitkeep
+
 # Git
 .git/
 .gitmodules
