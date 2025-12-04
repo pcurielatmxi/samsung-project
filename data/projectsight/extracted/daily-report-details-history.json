@@ -2,12 +2,40 @@
   "extractedAt": "2025-12-04T18:04:32.129Z",
   "source": "ProjectSight Daily Report Details - History Tab",
   "description": "Audit trail data including createdBy, createdAt, and field changes for each Daily Report",
-  "totalRecords": 414,
+  "totalRecords": 415,
   "dateRange": {
-    "first": "9/15/2022",
+    "first": "9/12/2022",
     "last": "11/11/2025"
   },
   "records": [
+    {
+      "recordNumber": 1,
+      "totalRecords": 415,
+      "reportDate": "9/12/2022",
+      "history": {
+        "createdByFull": "Zach MacDonald (zmacdonald@wgyates.com)",
+        "createdByCompany": "W.G. Yates & Sons Construction Company",
+        "createdByEmail": "zmacdonald@wgyates.com",
+        "createdByName": "Zach MacDonald",
+        "createdAt": "10/17/2024 3:16 PM",
+        "changes": [
+          {
+            "field": "Date",
+            "value": "9/12/2022"
+          },
+          {
+            "field": "Lost productivity UOM",
+            "oldValue": "None",
+            "newValue": "Hours"
+          },
+          {
+            "field": "Status",
+            "value": "Pending"
+          }
+        ]
+      },
+      "extractedAt": "2025-12-04T21:33:04.967405"
+    },
     {
       "recordNumber": 2,
       "totalRecords": 415,
