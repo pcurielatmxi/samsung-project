@@ -100,12 +100,17 @@ $('#ugDataView').igGrid('option', 'dataSource')  // Returns all records
 - See [docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) for grid extraction
 
 **Extracted Data:**
-- Daily Reports: `data/extracted/daily_reports_415.json` (415 records)
+- Daily Reports Summary: `data/extracted/daily_reports_415.json` (415 records) - grid data
+- Daily Reports History: `data/extracted/daily-report-details-history.json` (414 records) - audit trail
 
 **Core Files:**
 - [src/connectors/web_scraper.py](src/connectors/web_scraper.py) - Playwright wrapper
 - [src/extractors/system_specific/projectsight_extractor.py](src/extractors/system_specific/projectsight_extractor.py) - Modal extraction
-- [docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) - Grid extraction guide
+- [scripts/extract_daily_report_details.py](scripts/extract_daily_report_details.py) - Detail/history extraction script
+
+**Extraction Guides:**
+- [docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) - Grid/summary extraction
+- [docs/DAILY_REPORTS_DETAIL_EXTRACTION.md](docs/DAILY_REPORTS_DETAIL_EXTRACTION.md) - Detail/history extraction (repeatable process)
 
 ## XER File Processing (Primavera P6)
 
