@@ -31,6 +31,214 @@ class ProjectSightExtractor(BaseExtractor):
             timeout=settings.PROJECTSIGHT_TIMEOUT,
             headless=settings.PROJECTSIGHT_HEADLESS,
         )
+        # Attach login method to connector instance
+        self.connector._perform_login = self._perform_login
+
+    def _perform_login(self) -> bool:
+        """
+        Perform ProjectSight login flow.
+
+        This method is called by WebScraperConnector.authenticate() when
+        no valid session exists.
+
+        Flow:
+        1. Fill login form (username + password)
+        2. Submit form
+        3. Detect and handle MFA if required
+        4. Verify home screen reached
+
+        Returns:
+            True if login successful, False otherwise
+        """
+        try:
+            self.logger.info('Starting ProjectSight login flow')
+
+            # Step 1: Fill and submit login form
+            if not self._fill_login_form():
+                self.logger.error('Failed to fill login form')
+                return False
+
+            # Step 2: Detect and handle MFA
+            if not self._detect_and_handle_mfa():
+                self.logger.error('MFA handling failed')
+                return False
+
+            # Step 3: Verify home screen
+            if not self._verify_home_screen():
+                self.logger.error('Failed to verify home screen')
+                return False
+
+            self.logger.info('ProjectSight login successful')
+            return True
+
+        except Exception as e:
+            self.logger.error(f'Login failed with error: {str(e)}')
+            return False
+
+    def _fill_login_form(self) -> bool:
+        """
+        Navigate to login page and fill credentials.
+
+        Returns:
+            True if form filled and submitted successfully, False otherwise
+        """
+        try:
+            # Navigate to login URL
+            login_url = settings.PROJECTSIGHT_LOGIN_URL
+            if not login_url:
+                # If no login URL configured, try base URL
+                login_url = settings.PROJECTSIGHT_BASE_URL
+
+            self.logger.info(f'Navigating to login page: {login_url}')
+            self.connector.navigate_to(login_url)
+            time.sleep(2)  # Wait for page load
+
+            # Find and fill username field
+            username_selector = settings.PROJECTSIGHT_SELECTOR_USERNAME
+            self.logger.debug(f'Filling username field: {username_selector}')
+
+            if not self.connector.send_keys(selector=username_selector, text=settings.PROJECTSIGHT_USERNAME):
+                self.logger.error(f'Failed to fill username field with selector: {username_selector}')
+                return False
+
+            # Find and fill password field
+            password_selector = settings.PROJECTSIGHT_SELECTOR_PASSWORD
+            self.logger.debug(f'Filling password field: {password_selector}')
+
+            if not self.connector.send_keys(selector=password_selector, text=settings.PROJECTSIGHT_PASSWORD):
+                self.logger.error(f'Failed to fill password field with selector: {password_selector}')
+                return False
+
+            # Find and click submit button
+            submit_selector = settings.PROJECTSIGHT_SELECTOR_SUBMIT
+            self.logger.debug(f'Clicking submit button: {submit_selector}')
+
+            if not self.connector.click_element(submit_selector):
+                self.logger.error(f'Failed to click submit button with selector: {submit_selector}')
+                return False
+
+            # Wait for form submission and page transition
+            time.sleep(3)
+
+            self.logger.info('Login form submitted successfully')
+            return True
+
+        except Exception as e:
+            self.logger.error(f'Failed to fill login form: {str(e)}')
+            return False
+
+    def _detect_and_handle_mfa(self) -> bool:
+        """
+        Detect MFA prompt and handle it.
+
+        Checks if MFA input field appears after login.
+        If detected, waits for manual user entry.
+
+        Returns:
+            True if MFA handled or not required, False if MFA failed
+        """
+        try:
+            mfa_selector = settings.PROJECTSIGHT_SELECTOR_MFA_INPUT
+
+            # Check if MFA prompt appears (5-second timeout)
+            self.logger.debug('Checking for MFA prompt...')
+            mfa_detected = self.connector.wait_for_selector(
+                mfa_selector,
+                state='visible',
+                timeout=5  # Short timeout - if no MFA in 5 seconds, assume not required
+            )
+
+            if mfa_detected:
+                self.logger.info('MFA prompt detected')
+                return self._handle_manual_mfa()
+            else:
+                self.logger.info('No MFA prompt detected, proceeding')
+                return True
+
+        except Exception as e:
+            # Timeout or error checking for MFA - assume not required
+            self.logger.debug(f'No MFA detected (expected): {str(e)}')
+            return True
+
+    def _handle_manual_mfa(self) -> bool:
+        """
+        Wait for user to manually enter MFA code.
+
+        Displays instructions and waits for home screen indicator to appear.
+        User manually enters code in the visible browser window.
+
+        Returns:
+            True if home screen appears (MFA successful), False otherwise
+        """
+        try:
+            # Log instructions for user
+            self.logger.info('=' * 60)
+            self.logger.info('MFA CODE REQUIRED')
+            self.logger.info('Please enter your MFA code in the browser window')
+            self.logger.info('Waiting for MFA submission (timeout: 5 minutes)...')
+            self.logger.info('=' * 60)
+
+            # Take screenshot to help user identify MFA prompt
+            screenshot_path = '/tmp/projectsight_mfa_prompt.png'
+            self.connector.take_screenshot(screenshot_path)
+            self.logger.info(f'Screenshot saved to: {screenshot_path}')
+
+            # Wait for home screen indicator to appear (indicates MFA success)
+            home_selector = settings.PROJECTSIGHT_SELECTOR_HOME_INDICATOR
+            mfa_timeout = 300  # 5 minutes in seconds
+
+            home_screen_visible = self.connector.wait_for_selector(
+                home_selector,
+                state='visible',
+                timeout=mfa_timeout
+            )
+
+            if home_screen_visible:
+                self.logger.info('MFA code accepted, home screen reached')
+                return True
+            else:
+                self.logger.error('MFA timeout - home screen did not appear')
+                return False
+
+        except Exception as e:
+            self.logger.error(f'MFA handling failed: {str(e)}')
+            return False
+
+    def _verify_home_screen(self) -> bool:
+        """
+        Verify that login was successful by checking for home screen indicator.
+
+        Returns:
+            True if home screen verified, False otherwise
+        """
+        try:
+            home_selector = settings.PROJECTSIGHT_SELECTOR_HOME_INDICATOR
+
+            self.logger.debug(f'Verifying home screen with selector: {home_selector}')
+
+            # Wait for home screen indicator
+            home_verified = self.connector.wait_for_selector(
+                home_selector,
+                state='visible',
+                timeout=10
+            )
+
+            if home_verified:
+                self.logger.info('Home screen verified successfully')
+
+                # Take screenshot for confirmation
+                screenshot_path = '/tmp/projectsight_home_screen.png'
+                self.connector.take_screenshot(screenshot_path)
+                self.logger.info(f'Home screen screenshot saved to: {screenshot_path}')
+
+                return True
+            else:
+                self.logger.error('Home screen indicator not found')
+                return False
+
+        except Exception as e:
+            self.logger.error(f'Failed to verify home screen: {str(e)}')
+            return False
 
     def extract(self, **kwargs) -> List[Dict[str, Any]]:
         """

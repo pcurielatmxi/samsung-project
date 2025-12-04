@@ -82,6 +82,9 @@ data/output/*
 !data/processed/.gitkeep
 !data/output/.gitkeep
 
+# Session files (contains authentication cookies)
+data/.sessions/
+
 # Git
 .git/
 .gitmodules

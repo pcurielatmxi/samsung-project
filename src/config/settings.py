@@ -38,6 +38,18 @@ class Settings:
         'project_id,project_name,status,start_date,end_date'
     ).split(',')
 
+    # ProjectSight Login & Session Configuration
+    PROJECTSIGHT_LOGIN_URL = os.getenv('PROJECTSIGHT_LOGIN_URL', '')
+    PROJECTSIGHT_SESSION_DIR = PROJECT_ROOT / 'data' / '.sessions'
+    PROJECTSIGHT_SESSION_VALIDITY_DAYS = int(os.getenv('PROJECTSIGHT_SESSION_VALIDITY_DAYS', '30'))
+
+    # ProjectSight Selectors (CSS/XPath)
+    PROJECTSIGHT_SELECTOR_USERNAME = os.getenv('PROJECTSIGHT_SELECTOR_USERNAME', 'input[name="username"]')
+    PROJECTSIGHT_SELECTOR_PASSWORD = os.getenv('PROJECTSIGHT_SELECTOR_PASSWORD', 'input[name="password"]')
+    PROJECTSIGHT_SELECTOR_SUBMIT = os.getenv('PROJECTSIGHT_SELECTOR_SUBMIT', 'button[type="submit"]')
+    PROJECTSIGHT_SELECTOR_MFA_INPUT = os.getenv('PROJECTSIGHT_SELECTOR_MFA_INPUT', 'input[name="mfa_code"]')
+    PROJECTSIGHT_SELECTOR_HOME_INDICATOR = os.getenv('PROJECTSIGHT_SELECTOR_HOME_INDICATOR', '.dashboard')
+
     # ============================================================================
     # Fieldwire Configuration (API)
     # ============================================================================
