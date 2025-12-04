@@ -87,15 +87,25 @@ See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed structure.
 
 ProjectSight uses modal-based UI with client-side routing. Playwright is required.
 
+**Key Discovery:** ProjectSight uses **Infragistics igGrid** for data grids. Data is accessible via jQuery API, bypassing virtualized scrolling:
+```javascript
+$('#ugDataView').igGrid('option', 'dataSource')  // Returns all records
+```
+
 **Key Points:**
 - Modal-aware extraction: click → extract → close pattern
 - Chromium auto-installed during container build
 - Use `debug=True` to capture actual HTML structure
-- See [CLAUDE.md#web-scraping](CLAUDE.md) and [docs/PLAYWRIGHT_DEBUGGING.md](docs/PLAYWRIGHT_DEBUGGING.md) for selectors
+- For grids: Access data source directly via igGrid API (don't scrape DOM)
+- See [docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) for grid extraction
+
+**Extracted Data:**
+- Daily Reports: `data/extracted/daily_reports_415.json` (415 records)
 
 **Core Files:**
 - [src/connectors/web_scraper.py](src/connectors/web_scraper.py) - Playwright wrapper
 - [src/extractors/system_specific/projectsight_extractor.py](src/extractors/system_specific/projectsight_extractor.py) - Modal extraction
+- [docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) - Grid extraction guide
 
 ## XER File Processing (Primavera P6)
 
