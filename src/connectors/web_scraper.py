@@ -73,7 +73,20 @@ class WebScraperConnector(BaseConnector):
         try:
             # Initialize Playwright
             self.playwright = sync_playwright().start()
-            self.browser = self.playwright.chromium.launch(headless=self.headless)
+
+            # Browser args for container stability
+            browser_args = [
+                '--disable-dev-shm-usage',  # Overcome limited resource problems
+                '--disable-blink-features=AutomationControlled',  # Avoid detection
+                '--no-sandbox',  # Required for container environments
+                '--disable-setuid-sandbox',
+                '--disable-gpu',  # Disable GPU hardware acceleration
+            ]
+
+            self.browser = self.playwright.chromium.launch(
+                headless=self.headless,
+                args=browser_args
+            )
 
             # Try to load saved session first
             saved_cookies = self._load_session()
@@ -332,14 +345,15 @@ class WebScraperConnector(BaseConnector):
             self.logger.error(f'Failed to click element: {str(e)}')
             return False
 
-    def send_keys(self, element: Any = None, selector: str = None, text: str = '') -> bool:
+    def send_keys(self, element: Any = None, selector: str = None, text: str = '', use_role: bool = False) -> bool:
         """
         Send text to an input element.
 
         Args:
             element: Element handle
-            selector: CSS selector (if element not provided)
+            selector: CSS selector or role label (if element not provided)
             text: Text to type
+            use_role: If True, use getByRole('textbox', name=selector) instead of CSS selector
 
         Returns:
             True if successful, False otherwise
@@ -349,8 +363,12 @@ class WebScraperConnector(BaseConnector):
                 return False
 
             if selector:
-                # Fill handles clearing and typing
-                self.page.fill(selector, text)
+                if use_role:
+                    # Use Playwright's getByRole for better compatibility with modern forms
+                    self.page.get_by_role('textbox', name=selector).fill(text)
+                else:
+                    # Traditional CSS selector
+                    self.page.fill(selector, text)
             elif element:
                 element.fill(text)
             else:

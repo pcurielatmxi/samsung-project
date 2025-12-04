@@ -40,15 +40,17 @@ class Settings:
 
     # ProjectSight Login & Session Configuration
     PROJECTSIGHT_LOGIN_URL = os.getenv('PROJECTSIGHT_LOGIN_URL', '')
-    PROJECTSIGHT_SESSION_DIR = PROJECT_ROOT / 'data' / '.sessions'
-    PROJECTSIGHT_SESSION_VALIDITY_DAYS = int(os.getenv('PROJECTSIGHT_SESSION_VALIDITY_DAYS', '30'))
+    PROJECTSIGHT_SESSION_DIR = PROJECT_ROOT / os.getenv('PROJECTSIGHT_SESSION_DIR', 'data/.sessions')
+    PROJECTSIGHT_SESSION_VALIDITY_DAYS = int(os.getenv('PROJECTSIGHT_SESSION_VALIDITY_DAYS', '7'))
+    PROJECTSIGHT_PAGE_LOAD_WAIT = int(os.getenv('PROJECTSIGHT_PAGE_LOAD_WAIT', '5'))
+    PROJECTSIGHT_IFRAME_WAIT = int(os.getenv('PROJECTSIGHT_IFRAME_WAIT', '3'))
 
-    # ProjectSight Selectors (CSS/XPath)
-    PROJECTSIGHT_SELECTOR_USERNAME = os.getenv('PROJECTSIGHT_SELECTOR_USERNAME', 'input[name="username"]')
-    PROJECTSIGHT_SELECTOR_PASSWORD = os.getenv('PROJECTSIGHT_SELECTOR_PASSWORD', 'input[name="password"]')
-    PROJECTSIGHT_SELECTOR_SUBMIT = os.getenv('PROJECTSIGHT_SELECTOR_SUBMIT', 'button[type="submit"]')
-    PROJECTSIGHT_SELECTOR_MFA_INPUT = os.getenv('PROJECTSIGHT_SELECTOR_MFA_INPUT', 'input[name="mfa_code"]')
-    PROJECTSIGHT_SELECTOR_HOME_INDICATOR = os.getenv('PROJECTSIGHT_SELECTOR_HOME_INDICATOR', '.dashboard')
+    # ProjectSight Selectors (Trimble Identity SSO - use getByRole with these text labels)
+    PROJECTSIGHT_SELECTOR_USERNAME = os.getenv('PROJECTSIGHT_SELECTOR_USERNAME', 'Email or username')
+    PROJECTSIGHT_SELECTOR_PASSWORD = os.getenv('PROJECTSIGHT_SELECTOR_PASSWORD', 'Password')
+    PROJECTSIGHT_SELECTOR_SUBMIT = os.getenv('PROJECTSIGHT_SELECTOR_SUBMIT', 'Sign in')
+    PROJECTSIGHT_SELECTOR_MFA_INPUT = os.getenv('PROJECTSIGHT_SELECTOR_MFA_INPUT', '')
+    PROJECTSIGHT_SELECTOR_HOME_INDICATOR = os.getenv('PROJECTSIGHT_SELECTOR_HOME_INDICATOR', 'Projects (')
 
     # ============================================================================
     # Fieldwire Configuration (API)

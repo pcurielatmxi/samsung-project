@@ -79,46 +79,58 @@ class ProjectSightExtractor(BaseExtractor):
         """
         Navigate to login page and fill credentials.
 
+        Trimble Identity uses a two-step login:
+        1. Enter username and press Enter (navigates to password page)
+        2. Enter password and press Enter (submits login)
+
+        IMPORTANT: Must navigate to ProjectSight base URL (not Trimble Identity directly)
+        to get proper redirect context.
+
         Returns:
             True if form filled and submitted successfully, False otherwise
         """
         try:
-            # Navigate to login URL
-            login_url = settings.PROJECTSIGHT_LOGIN_URL
-            if not login_url:
-                # If no login URL configured, try base URL
-                login_url = settings.PROJECTSIGHT_BASE_URL
+            # IMPORTANT: Navigate to ProjectSight base URL, which will redirect to
+            # Trimble Identity with proper return URL parameters
+            self.logger.info(f'Navigating to ProjectSight: {settings.PROJECTSIGHT_BASE_URL}')
+            self.connector.navigate_to(settings.PROJECTSIGHT_BASE_URL)
+            time.sleep(3)  # Wait for redirect to Trimble Identity
 
-            self.logger.info(f'Navigating to login page: {login_url}')
-            self.connector.navigate_to(login_url)
-            time.sleep(2)  # Wait for page load
-
-            # Find and fill username field
+            # Step 1: Fill username field (uses getByRole for Trimble Identity compatibility)
             username_selector = settings.PROJECTSIGHT_SELECTOR_USERNAME
-            self.logger.debug(f'Filling username field: {username_selector}')
+            self.logger.debug(f'Filling username field with role label: {username_selector}')
 
-            if not self.connector.send_keys(selector=username_selector, text=settings.PROJECTSIGHT_USERNAME):
+            if not self.connector.send_keys(selector=username_selector, text=settings.PROJECTSIGHT_USERNAME, use_role=True):
                 self.logger.error(f'Failed to fill username field with selector: {username_selector}')
                 return False
 
-            # Find and fill password field
-            password_selector = settings.PROJECTSIGHT_SELECTOR_PASSWORD
-            self.logger.debug(f'Filling password field: {password_selector}')
+            # Submit username by pressing Enter (Trimble Identity requires this)
+            self.logger.debug('Submitting username with Enter key')
+            self.connector.page.keyboard.press('Enter')
+            time.sleep(3)  # Wait for password page to load
 
-            if not self.connector.send_keys(selector=password_selector, text=settings.PROJECTSIGHT_PASSWORD):
+            # Step 2: Fill password field (now on password page)
+            password_selector = settings.PROJECTSIGHT_SELECTOR_PASSWORD
+            self.logger.debug(f'Filling password field with role label: {password_selector}')
+
+            if not self.connector.send_keys(selector=password_selector, text=settings.PROJECTSIGHT_PASSWORD, use_role=True):
                 self.logger.error(f'Failed to fill password field with selector: {password_selector}')
                 return False
 
-            # Find and click submit button
-            submit_selector = settings.PROJECTSIGHT_SELECTOR_SUBMIT
-            self.logger.debug(f'Clicking submit button: {submit_selector}')
+            # Submit password by pressing Enter
+            self.logger.debug('Submitting password with Enter key')
+            self.connector.page.keyboard.press('Enter')
 
-            if not self.connector.click_element(submit_selector):
-                self.logger.error(f'Failed to click submit button with selector: {submit_selector}')
-                return False
+            # Wait for navigation to complete (simple timeout approach to avoid crashes)
+            self.logger.debug('Waiting for login to complete and redirect...')
+            time.sleep(5)  # Give time for redirect to occur
 
-            # Wait for form submission and page transition
-            time.sleep(3)
+            # Log current URL for debugging
+            try:
+                current_url = self.connector.page.url
+                self.logger.info(f'After password submission, current URL: {current_url}')
+            except Exception as e:
+                self.logger.warning(f'Could not get current URL: {str(e)}')
 
             self.logger.info('Login form submitted successfully')
             return True
@@ -129,115 +141,212 @@ class ProjectSightExtractor(BaseExtractor):
 
     def _detect_and_handle_mfa(self) -> bool:
         """
-        Detect MFA prompt and handle it.
+        Detect MFA/Verification code prompt and handle it.
 
-        Checks if MFA input field appears after login.
+        Checks for various verification prompts:
+        - MFA code input
+        - Verification code input
+        - Security code input
+
         If detected, waits for manual user entry.
 
         Returns:
             True if MFA handled or not required, False if MFA failed
         """
         try:
-            mfa_selector = settings.PROJECTSIGHT_SELECTOR_MFA_INPUT
+            # Wait a moment for any verification prompts to appear
+            time.sleep(2)
 
-            # Check if MFA prompt appears (5-second timeout)
-            self.logger.debug('Checking for MFA prompt...')
-            mfa_detected = self.connector.wait_for_selector(
-                mfa_selector,
-                state='visible',
-                timeout=5  # Short timeout - if no MFA in 5 seconds, assume not required
+            # Check current URL for verification indicators or success
+            current_url = self.connector.page.url
+            self.logger.debug(f'Checking for verification prompt at URL: {current_url}')
+
+            # Check if already on Projects page (login succeeded without MFA)
+            if '/web/app/Projects' in current_url:
+                self.logger.info('Already on Projects page - login succeeded without MFA')
+                return True
+
+            # Check if still on sign-in page (might need MFA or login failed)
+            if 'sign_in.html' not in current_url.lower():
+                # Not on login page anymore, assume success
+                self.logger.info(f'Navigated away from login page to: {current_url}')
+                return True
+
+            # Still on login page - check for verification indicators in URL only
+            verification_indicators = [
+                'verification',
+                'verify',
+                'code',
+                'mfa',
+                'two-factor',
+                '2fa',
+                'otp',
+            ]
+
+            url_needs_verification = any(
+                indicator in current_url.lower()
+                for indicator in verification_indicators
             )
 
-            if mfa_detected:
-                self.logger.info('MFA prompt detected')
-                return self._handle_manual_mfa()
+            # Try to check for verification input fields (without reading page content)
+            field_needs_verification = False
+            try:
+                # Try to find verification code input field
+                verification_input = self.connector.page.query_selector(
+                    'input[type="text"][placeholder*="code"], '
+                    'input[type="text"][placeholder*="verification"], '
+                    'input[name*="code"], '
+                    'input[name*="otp"]'
+                )
+                if verification_input and verification_input.is_visible():
+                    field_needs_verification = True
+            except Exception as e:
+                self.logger.debug(f'Could not check for verification input: {str(e)}')
+
+            if url_needs_verification or field_needs_verification:
+                self.logger.info('Verification code prompt detected')
+                return self._handle_manual_verification()
             else:
-                self.logger.info('No MFA prompt detected, proceeding')
+                self.logger.info('No verification prompt detected, proceeding')
                 return True
 
         except Exception as e:
-            # Timeout or error checking for MFA - assume not required
-            self.logger.debug(f'No MFA detected (expected): {str(e)}')
+            # If we can't check, assume no verification needed
+            self.logger.debug(f'Could not check for verification: {str(e)}')
             return True
 
-    def _handle_manual_mfa(self) -> bool:
+    def _handle_manual_verification(self) -> bool:
         """
-        Wait for user to manually enter MFA code.
+        Wait for user to manually enter verification code.
 
-        Displays instructions and waits for home screen indicator to appear.
-        User manually enters code in the visible browser window.
+        Displays instructions and waits for Projects page to appear.
+        User manually enters code in the browser or via terminal input.
 
         Returns:
-            True if home screen appears (MFA successful), False otherwise
+            True if verification successful and logged in, False otherwise
         """
         try:
             # Log instructions for user
-            self.logger.info('=' * 60)
-            self.logger.info('MFA CODE REQUIRED')
-            self.logger.info('Please enter your MFA code in the browser window')
-            self.logger.info('Waiting for MFA submission (timeout: 5 minutes)...')
-            self.logger.info('=' * 60)
+            self.logger.info('=' * 70)
+            self.logger.info('VERIFICATION CODE REQUIRED')
+            self.logger.info('A verification code has been sent to your email/phone.')
+            self.logger.info('')
+            self.logger.info('OPTIONS:')
+            self.logger.info('  1. Enter the code in the browser window (if visible)')
+            self.logger.info('  2. Check your email/phone for the code and enter it')
+            self.logger.info('')
+            self.logger.info('Waiting for verification to complete (timeout: 5 minutes)...')
+            self.logger.info('=' * 70)
 
-            # Take screenshot to help user identify MFA prompt
-            screenshot_path = '/tmp/projectsight_mfa_prompt.png'
-            self.connector.take_screenshot(screenshot_path)
-            self.logger.info(f'Screenshot saved to: {screenshot_path}')
+            # Take screenshot to help user
+            try:
+                screenshot_path = '/tmp/projectsight_verification_prompt.png'
+                self.connector.take_screenshot(screenshot_path)
+                self.logger.info(f'Screenshot saved to: {screenshot_path}')
+            except Exception as e:
+                self.logger.warning(f'Could not save screenshot: {str(e)}')
 
-            # Wait for home screen indicator to appear (indicates MFA success)
-            home_selector = settings.PROJECTSIGHT_SELECTOR_HOME_INDICATOR
-            mfa_timeout = 300  # 5 minutes in seconds
+            # Wait for navigation to Projects page (indicates verification success)
+            verification_timeout = 300000  # 5 minutes in milliseconds
+            start_time = time.time()
 
-            home_screen_visible = self.connector.wait_for_selector(
-                home_selector,
-                state='visible',
-                timeout=mfa_timeout
-            )
+            self.logger.info('Waiting for you to enter the verification code...')
 
-            if home_screen_visible:
-                self.logger.info('MFA code accepted, home screen reached')
-                return True
-            else:
-                self.logger.error('MFA timeout - home screen did not appear')
-                return False
+            while time.time() - start_time < 300:  # 5 minutes
+                try:
+                    current_url = self.connector.page.url
+
+                    # Check if we've reached the Projects page
+                    if '/web/app/Projects' in current_url:
+                        self.logger.info('✅ Verification successful! Logged into ProjectSight')
+                        time.sleep(2)  # Wait for page to stabilize
+                        return True
+
+                    # Check if still on login page
+                    if 'sign_in.html' in current_url:
+                        # Still waiting for verification
+                        time.sleep(2)
+                        continue
+
+                    # Some other page - might be success
+                    if 'projectsight' in current_url.lower():
+                        self.logger.info(f'Navigated to ProjectSight page: {current_url}')
+                        return True
+
+                except Exception as e:
+                    self.logger.debug(f'Error checking URL: {str(e)}')
+                    time.sleep(2)
+                    continue
+
+            self.logger.error('Verification timeout - Projects page did not appear')
+            return False
 
         except Exception as e:
-            self.logger.error(f'MFA handling failed: {str(e)}')
+            self.logger.error(f'Verification handling failed: {str(e)}')
             return False
 
     def _verify_home_screen(self) -> bool:
         """
-        Verify that login was successful by checking for home screen indicator.
+        Verify that login was successful by checking for home screen.
+
+        After successful login, ProjectSight redirects to:
+        https://prod.projectsightapp.trimble.com/web/app/Projects
 
         Returns:
             True if home screen verified, False otherwise
         """
         try:
-            home_selector = settings.PROJECTSIGHT_SELECTOR_HOME_INDICATOR
+            # Wait for URL to change to Projects page
+            self.logger.debug('Waiting for navigation to Projects page')
 
-            self.logger.debug(f'Verifying home screen with selector: {home_selector}')
+            # Check if we're on the projects page by URL
+            current_url = self.connector.page.url
+            if '/web/app/Projects' in current_url:
+                self.logger.info(f'✅ Login successful! Navigated to Projects page: {current_url}')
 
-            # Wait for home screen indicator
-            home_verified = self.connector.wait_for_selector(
-                home_selector,
-                state='visible',
-                timeout=10
-            )
+                # Wait for projects page to load (JS rendering takes time)
+                time.sleep(settings.PROJECTSIGHT_PAGE_LOAD_WAIT)
 
-            if home_verified:
-                self.logger.info('Home screen verified successfully')
+                # Optionally verify home indicator (but don't fail if it crashes)
+                try:
+                    home_selector = settings.PROJECTSIGHT_SELECTOR_HOME_INDICATOR
+                    self.logger.debug(f'Attempting to verify home indicator: {home_selector}')
 
-                # Take screenshot for confirmation
-                screenshot_path = '/tmp/projectsight_home_screen.png'
-                self.connector.take_screenshot(screenshot_path)
-                self.logger.info(f'Home screen screenshot saved to: {screenshot_path}')
+                    home_verified = self.connector.page.get_by_text(home_selector).is_visible(timeout=5000)
+
+                    if home_verified:
+                        self.logger.info('Home screen indicator verified')
+                except Exception as e:
+                    # Don't fail if we can't verify the indicator - URL check is sufficient
+                    self.logger.debug(f'Could not verify home indicator (not critical): {str(e)}')
+
+                # Try to take screenshot for confirmation (optional)
+                try:
+                    screenshot_path = '/tmp/projectsight_home_screen.png'
+                    self.connector.take_screenshot(screenshot_path)
+                    self.logger.info(f'Home screen screenshot saved to: {screenshot_path}')
+                except Exception as e:
+                    self.logger.debug(f'Could not save screenshot: {str(e)}')
 
                 return True
             else:
-                self.logger.error('Home screen indicator not found')
+                self.logger.warning(f'Unexpected URL after login: {current_url}')
+                # Still return True if we're on projectsight domain (not login page)
+                if 'projectsightapp.trimble.com' in current_url and 'sign_in' not in current_url:
+                    self.logger.info('On ProjectSight domain - considering login successful')
+                    return True
                 return False
 
         except Exception as e:
             self.logger.error(f'Failed to verify home screen: {str(e)}')
+            # Check URL one more time before failing
+            try:
+                current_url = self.connector.page.url
+                if '/web/app/Projects' in current_url or 'projectsightapp.trimble.com' in current_url:
+                    self.logger.info('URL check passed despite error - considering login successful')
+                    return True
+            except:
+                pass
             return False
 
     def extract(self, **kwargs) -> List[Dict[str, Any]]:

@@ -34,6 +34,55 @@ Each layer is independently testable, validated, and logged.
 
 See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed structure.
 
+## Subfolder Documentation (CLAUDE.md Files)
+
+**Living Documents:** Each major subsystem has its own `CLAUDE.md` file providing focused, high-level context.
+
+### Purpose
+- Provide quick reference for specific subsystems
+- Document current implementation status
+- Track key decisions and architecture
+- Must be updated as work progresses
+
+### Guidelines
+- **Concise:** High-level overview, not detailed API docs
+- **Current:** Update after significant changes
+- **Actionable:** Include "Next Steps" and "TODO" sections
+- **Dated:** Mark last update date at top
+
+### Existing Subfolder Docs
+- [src/extractors/system_specific/CLAUDE.md](src/extractors/system_specific/CLAUDE.md) - ProjectSight extractor status
+
+### When to Update
+- After implementing new features
+- After fixing critical bugs
+- After major architectural changes
+- When status changes (✅ Complete, ⏳ In Progress, ❌ Blocked)
+
+### Template Structure
+```markdown
+# [Subsystem Name] - Quick Reference
+
+**Last Updated:** [Date]
+**Status:** [Current implementation status]
+
+## Purpose
+[What this subsystem does]
+
+## Current Implementation Status
+- ✅ Completed items
+- ⏳ TODO items
+
+## Key Files
+[Main files with line references]
+
+## Quick Start
+[How to use this subsystem]
+
+## Next Steps
+[What needs to be done next]
+```
+
 ## Web Scraping (ProjectSight)
 
 ProjectSight uses modal-based UI with client-side routing. Playwright is required.
@@ -115,6 +164,8 @@ See [.env.example](.env.example) for full list.
 
 ## Documentation
 
+### Project-Level Docs
+
 | Document | Purpose |
 |----------|---------|
 | [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Complete project structure and status |
@@ -123,6 +174,14 @@ See [.env.example](.env.example) for full list.
 | [docs/ETL_DESIGN.md](docs/ETL_DESIGN.md) | Architecture & design patterns |
 | [docs/SOURCES.md](docs/SOURCES.md) | Data source APIs & field mapping |
 | [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) | Step-by-step implementation |
+
+### Subsystem Docs (Living Documents)
+
+| Location | Subsystem | Status |
+|----------|-----------|--------|
+| [src/extractors/system_specific/CLAUDE.md](src/extractors/system_specific/CLAUDE.md) | ProjectSight Extractor | ✅ Login / ⏳ Extraction |
+
+**Note:** Subfolder CLAUDE.md files must be kept current. See [Subfolder Documentation](#subfolder-documentation-claudemd-files) section.
 
 ## Development
 

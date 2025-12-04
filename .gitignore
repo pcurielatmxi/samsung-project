@@ -84,6 +84,19 @@ data/output/*
 
 # Session files (contains authentication cookies)
 data/.sessions/
+.sessions/
+
+# Playwright and browser automation
+.playwright-mcp/
+playwright-screenshots/
+*.png
+*.jpg
+*.jpeg
+*.gif
+# Exception: Keep images in docs/assets if they exist
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg
 
 # Git
 .git/
