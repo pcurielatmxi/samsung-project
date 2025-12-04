@@ -1,0 +1,7 @@
+proc_id,task_id,proj_id,seq_num,proc_name,complete_flag,proc_wt,complete_pct,proc_descr
+418414,100226099,122698,0,(New step),N,1,0,
+418415,100226110,122698,100,(New step),N,1,0,"<!DOCTYPE HTML PUBLIC """"-//W3C//DTD HTML 4.0 Transitional//EN""""><HTML><HEAD><META content=""""text/html; charset=unicode"""" http-equiv=Content-Type><META name=GENERATOR content=""""MSHTML 11.00.10570.1001""""></HEAD><BODY><P>Activity 1 </P><P>Acticvity 2</P></BODY></HTML>"
+418416,100230947,122698,100,Step 1,N,1,0,
+418417,100230947,122698,101,Step 2,N,1,0,
+418418,100230947,122698,200,Step 3,N,1,0,
+422025,102846764,122698,100,(New step),N,1,0,"<!DOCTYPE HTML PUBLIC """"-//W3C//DTD HTML 4.0 Transitional//EN""""><HTML><HEAD><META content=""""text/html; charset=unicode"""" http-equiv=Content-Type><META name=GENERATOR content=""""MSHTML 11.00.10570.1001""""></HEAD><BODY><P>Activity 1 </P><P>Acticvity 2</P></BODY></HTML>"

@@ -32,6 +32,19 @@ Each layer is independently testable, validated, and logged.
 - `tests/` - Unit and integration tests
 - `docs/` - Comprehensive guides
 
+### Data Directory Structure
+
+```
+data/
+├── raw/xer/                    # Primavera XER source files
+├── projectsight/
+│   ├── extracted/              # Raw JSON from browser extraction
+│   └── tables/                 # Normalized CSV tables
+└── primavera/
+    ├── raw_tables/             # Direct XER table exports
+    └── processed/              # Filtered/enhanced task CSVs
+```
+
 See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed structure.
 
 ## Subfolder Documentation (CLAUDE.md Files)
@@ -100,8 +113,9 @@ $('#ugDataView').igGrid('option', 'dataSource')  // Returns all records
 - See [docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](docs/PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) for grid extraction
 
 **Extracted Data:**
-- Daily Reports Summary: `data/extracted/daily_reports_415.json` (415 records) - grid data
-- Daily Reports History: `data/extracted/daily-report-details-history.json` (414 records) - audit trail
+- Raw JSON: `data/projectsight/extracted/daily_reports_415.json` (415 records)
+- Raw JSON: `data/projectsight/extracted/daily-report-details-history.json` (414 records)
+- CSV Tables: `data/projectsight/tables/` (daily_reports, companies, contacts, history, changes)
 
 **Core Files:**
 - [src/connectors/web_scraper.py](src/connectors/web_scraper.py) - Playwright wrapper
@@ -117,10 +131,11 @@ $('#ugDataView').igGrid('option', 'dataSource')  // Returns all records
 Process Primavera P6 schedule exports to CSV with full context (area, level, building, contractor, dates).
 
 **Key Points:**
-- Process XER files to CSV: `python scripts/process_xer_to_csv.py data/raw/schedule.xer`
+- Process XER files to CSV: `python scripts/process_xer_to_csv.py data/raw/xer/schedule.xer`
 - Exports all 12,000+ tasks with 24 columns including WBS, activity codes, and all date fields
 - Filter by keyword, status, subcontractor, level: `python scripts/filter_tasks.py input.csv --keyword "drywall" -o output.csv`
 - Batch process multiple files: `./scripts/batch_process_xer.sh`
+- Output location: `data/primavera/processed/`
 - See [QUICKSTART_XER_PROCESSING.md](QUICKSTART_XER_PROCESSING.md) for detailed usage
 
 **Core Files:**

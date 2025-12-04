@@ -1,0 +1,254 @@
+id,email,name,company_id
+1,j.choung@samsung.com,Jinkyo Choung,1
+2,ch0202.park@samsung.com,Changhee Park,2
+3,kunh.kim@samsung.com,KUNHYUNG KIM,2
+4,j3955.choi@samsung.com,JOON CHOI,1
+5,talolabi@wgyates.com,Tarek Alolabi,3
+6,lewyk@samsung.com,Youngkee Lew,1
+7,ohsun.lee@samsung.com,Ohsun Lee,1
+8,jiyoung.sohn@samsung.com,jiyoung sohn,1
+9,roberto.yanez@rkci.com,Roberto Yanez,4
+10,seulki.seo@samsung.com,Seulki Seo,1
+11,yhcho.cho@samoo.com,YONG HYUN CHO,5
+12,m.underwood@samsung.com,Michael Underwood,1
+13,ropena@austin-ind.com,Roque Pena,6
+14,kns06@samoo.co.kr,Kong Ingyu,5
+15,jh4.jeon@samsung.com,JONGHO JEON,1
+16,o.novitchkov@samsung.com,Oleg Novitchkov,1
+17,iabdelhadi@austin-ind.com,iyad abdelhadi,6
+18,s1.castaneda@samsung.com,Simon Castaneda,1
+19,jruizsotelo@wgyates.com,Juan Ruiz,3
+20,jihoonpark@samsung.com,Jihoon Park,1
+21,slusk@wgyates.com,Shawn Lusk,3
+22,mjae.ahn@samsung.com,Michael Ahn,1
+23,mmajeed@wgyates.com,Mohammed Majeed,3
+24,bteer@henselphelps.com,Brent Teer,7
+25,j.forgette@partner.samsung.com,Jason Forgette,1
+26,d.camaran@samsung.com,David Camaran,2
+27,cntjh.kim@samsung.com,Jongheon Kim,1
+28,steven.jeong@samsung.com,Sangyong Jeong,2
+29,aidan.yoon@samsung.com,Aidan Yoon,8
+30,lhembade@age-se.com,Lavannya Hembade,9
+31,m.daddario@samsung.com,Mike Daddario,2
+32,rmeyer@wgyates.com,Robert Meyer,3
+33,joelgarcia@msr-fsr.com,joel garcia,10
+34,hvillalobos@wgyates.com,Herman Villalobos,3
+35,marevalo@wgyates.com,Moises Arevalo,3
+36,cblair@theporterco.com,Chylan Blair,11
+37,swebster@bkimechanical.com,Shilo Webster,12
+38,dfeldman@firetrol.net,Dan Feldman,13
+39,wseong.kang@samsung.com,woon seong kang,1
+40,jayse.hurd@polkmechanical.com,Jayse Hurd,14
+41,JBallin@theporterco.com,Joseph Ballin,11
+42,jonathan_melancon@thenewtrongroup.com,Jonathan Melancon,15
+43,mjgarcia@prismelectric.com,Marijose Garcia,16
+44,w.wessel@samsung.com,William Wessel,1
+45,d.adamson@samsung.com,David Adamson,1
+46,b.j.jeong@samsung.com,Byeongjun Jeong,8
+47,cj.trevino@samsung.com,Christopher Trevino,8
+48,jesse.mauter@samsung.com,Jesse Mauter,1
+49,madams@wgyates.com,Michael Adams,3
+50,chaeyun.lee@samsung.com,CHAEYUN LEE,1
+51,s1.mcmullin@samsung.com,Seth McMullin,1
+52,ssundarraj@age-se.com,Suganya Sundarraj,9
+53,jmmartinez@pcl.com,Joe Martinez,17
+54,eric.nelson@polkmechanical.com,Eric Nelson,14
+55,mlogston@amts.com,Mark Logston,18
+56,aelee.song@samsung.com,Aelee Song,1
+57,mike.hyun.im@samsung.com,Michael Im,1
+58,a.naqshbandi@samsung.com,Jawid Parsa,1
+59,gelu.oancea@mcdean.com,Gelu Oancea,19
+60,joel.latham@samsung.com,Joel Latham,1
+61,ACortez@henselphelps.com,Andres Cortez,7
+62,ilgyu.bae@samsung.com,ilgyu bae,1
+63,rowdy.vaughn@jacobs.com,Rowdy Rowdy,9
+64,cmuse@msr-fsr.com,Chad Muse,10
+65,mstewart@prismelectric.com,Matthew Stewart,16
+66,zmacdonald@wgyates.com,Zach MacDonald,3
+67,troy@centexindustrial.com,Troy Cervenka,20
+68,tflinn@austin-ind.com,Trevor Flinn,21
+69,sy.moon@samsung.com,SANG MOON,1
+70,sungjin0.yim@samsung.com,Sungjin Yim,2
+71,dennis.shriver@greenberry.com,Dennis Shriver,22
+72,h.shruthika@samsung.com,Shruthi Kasala Hemakumar,1
+73,jgonzales@wgyates.com,Justin Gonzales,3
+74,leoc@performance-contractors.com,Leo Chapa,23
+75,sdeloney@wgyates.com,Shamecca Deloney,3
+76,j.wilks@partner.samsung.com,Jennifer Wilks,10
+77,junior.martinez@jacobs.com,Bonifacio Martinez Jr,9
+78,dtoomes@pcl.com,Douglas Toomes,17
+79,jeverett@pssllc.us.com,Jason Everett,24
+80,arendon@wgyates.com,Alexander Rendon,3
+81,rberg@harris-hart.com,Rustle Berg,25
+82,gilbertashmore@wgyates.com,Gilbert Ashmore,3
+83,mustafa.al@partner.samsung.com,Mustafa Al-Obaidi,26
+84,katheryn.cooney@greenberry.com,Katheryn Cooney,22
+85,jacob.p@coramhvac.com,Jacob Park,27
+86,kgarcia@wgyates.com,Keoni Garcia,3
+87,lr.jackson@partner.samsung.com,Lindsey Jackson,2
+88,d.monteith@samsung.com,Don Monteith,1
+89,aordonez@pssllc.us.com,Adalberto Ordonez,24
+90,andrewd@performance-contractors.com,Andrew Dunn,23
+91,ddouthett@wgyates.com,Danielle Douthett,3
+92,tbettegaX@amts.com,Travis Bettega,18
+93,mbreard@pssllc.us.com,Michael Breard,24
+94,p.kuwamura@samsung.com,Paul Kuwamura,1
+95,carlos_gray@fsttechnical.com,Carlos Gray,28
+96,Kevin.cervantes@jmeg.us,Kevin Cervantes,29
+97,Tracy.Monson@greenberry.com,Tracy Monson,22
+98,q.cody@partner.samsung.com,cody quebedeaux,30
+99,malsheikh@wgyates.com,Mohammed Alsheikh,3
+100,g.jimenez@samsung.com,Gianni Jimenez,1
+101,dvidrine@pssllc.us.com,DUSTIN VIDRINE,24
+102,fsantana@pcl.com,Frances Santana,17
+103,tracy.monson@greenberry.com,Tracy Monson,22
+104,everett@jmorinc.com,Everett Ansley,31
+105,jrhodes@cecfg.com,Jon Rhodes,19
+106,DTorres2@henselphelps.com,Derrick Torres,7
+107,woobin.lee@samsung.com,WOOBIN LEE,1
+108,ujuarez@henselphelps.com,Uriel Juarez,7
+109,bongju.jeon@samsung.com,Bongju Jeon,1
+110,kimberly.suh@samsung.com,Kimberly Suh,1
+111,jcaro@pssllc.us.com,Joshua Caro,24
+112,vcoco@teitech.com,Vincent Coco,32
+113,paix.jeong@samsung.com,EUNSUN JEONG,1
+114,william_atchison@trimble.com,William Atchison,2
+115,seunghynn.ha@samsung.com,Seunghyun Ha,2
+116,j1ace.park@samsung.com,Jusung(Ace) Park,1
+117,jerickson@wgyates.com,Joshua Erickson,3
+118,smartinez@wwafcosteel.com,Stanley Martinez,33
+119,asimon@setxind.com,Alexzander Simon,34
+120,fmaldonado@msr-fsr.com,Fabian Maldonado,10
+121,brooke@jmorinc.com,Brooke Powers,31
+122,mizzu.cho@samsung.com,Mizzu Cho,1
+123,wr.sawers@samsung.com,William Sawers,1
+124,frojas@chaparralis.com,Fidencio Rojas,35
+125,louis@jimwhitten.com,Louis Baker,36
+126,hm.seo@samsung.com,Hyoungmin Seo,1
+127,zweaver@harris-hart.com,Zack Weaver,25
+128,tzeydenze@cecfg.com,Torrance Zeydenze,19
+129,armandos@performance-contractors.com,Armando Sanchez,23
+130,drodgers@harris-hart.com,Daniel Rodgers,25
+131,lee0694@samsung.com,JAEHYUK LEE,1
+132,Clay.s.jones@jacobs.com,Clay Jones,9
+133,j.cox@tcsmech.com,Joel Cox,37
+134,rroberts@amts.com,Royce Roberts,38
+135,r.wenzel@samsung.com,RUSSELL WENZEL,1
+136,jade85.kim@samsung.com,Jaehyun Kim,2
+137,roi.frid@intertek.com,Roi Frid,36
+138,jbeddoes@harris-hart.com,Jared Beddoes,25
+139,Keith_coulter@fsttechnical.com,Keith Coulter,28
+140,jgarcia@msr-fsr.com,jgarcia Garcia,10
+141,alpha.sn105@gmail.com,mu won Yoon,27
+142,dave.kang@samsung.com,SUNG-JO KANG,1
+143,tommy.yu@lscsusa.com,Tommy Yu,39
+144,js7111.kim@samsung.com,jinsoo kim,1
+145,asahu@wgyates.com,Ankita Sahu,3
+146,sung731.park@samsung.com,Sung Wan Park,1
+147,marcoscalderon@cherrycoatings.com,Marcos Calderon,40
+148,clboykin@mccarthy.com,Cody Boykin,41
+149,mjlee@ynh.kr,Myoungjin Lee,42
+150,winston5004@krbglobal.co.kr,In Gyu Jeon,43
+151,tiger.im@samsung.com,Tiger Im,1
+152,sawyer.scott@samsung.com,Sawyer Scott,1
+153,d0541.kim@samsung.com,dahye kim,1
+154,snicholson@bkimechanical.com,Sherri Nicholson,12
+155,lrodriguez@starcon.org,Lesley Rodriguez,44
+156,tina_allen@fsttechnical.com,Tina Allen,28
+157,olin.petke@samsung.com,Olin Petke,1
+158,jaime_llorente@fsttechnical.com,Jaime Llorente,28
+159,hc1108.choi@samsung.com,HOCHUL CHOI,1
+160,melinda_castillo@thenewtrongroup.com,Melinda Castillo,15
+161,g.roque@samsung.com,Gerardo Roque,1
+162,s.mckenzie@samsung.com,Soojin Mckenzie,1
+163,pky1319@hanyangengusa.com,Gillyong Park,45
+164,Zackery_Chance@fsttechnical.com,Zack Chance,28
+165,r.roberts@partner.samsung.com,Royce Roberts,38
+166,aflores@bkimechanical.com,Andrew Flores,12
+167,navyun@hanyangengusa.com,Jongho Yoon,45
+168,degiron@mccarthy.com,Digna Giron,41
+169,dkim@wgyates.com,Dongsoo Kim,3
+170,edgar.luna1@samsung.com,Edgar Luna,8
+171,eunho.herron@samsung.com,Eunho Herron,1
+172,jerryg@performance-contractors.com,Jerry Garcia,23
+173,aalkutel@wgyates.com,Ahmed Alkutel,3
+174,Dbrown@wgyates.com,Daniel Brown,3
+175,yshan12345@hseng21.com,youngsoo han,42
+176,ggregg@jordanfosterconstruction.com,Garrett Gregg,46
+177,renhua.piao@samsung.com,Renhua Piao,8
+178,dcepeck@berggroup.us,David Cepeck,47
+179,chris.gray@greenberry.com,Chris Gray,22
+180,wjimenez@setxind.com,Whitney Jimenez,34
+181,mtanvir@wgyates.com,Tanvir Mohammed,3
+182,cplassmann@wgyates.com,Chris Plassmann,3
+183,stephen.lyssy@northstarfire.com,Stephen Lyssy,48
+184,gjacosta@mccarthy.com,Gabriela Acosta,41
+185,JCGonzalez@starcon.org,Julio Gonzalez,44
+186,rvelazquez@inspectionassoc.com,Rodolfo Velazquez,49
+187,shyuni.kim@samsung.com,Seung Hyun Kim,8
+188,mward@wgyates.com,Mitchell Ward,3
+189,finetechus@fine-tech.kr,Finetech -US,50
+190,r.canty@prime-controls.com,Richard Canty,51
+191,jwelch@performance-contractors.com,Jason Welch,23
+192,edwardsanchez@dsi.us,Edward Sanchez,52
+193,j7.williams@samsung.com,John Williams,2
+194,r.diego@partner.samsung.com,diego razo,30
+195,tristan.stierhoff@mcdean.com,Tristan Stierhoff,19
+196,adeary@cecfg.com,Anthony Deary,19
+197,colby.mcclaren@jmeg.us,Colby McClaren,29
+198,jleon@wgyates.com,Javier Leon,3
+199,pmartinez@wgyates.com,Pamela Martinez,3
+200,jmccloskey@bkimechanical.com,Jason McCloskey,12
+201,bwickline@bkimechanical.com,Brandon Wickline,12
+202,b.gibbins@samsung.com,Brandon Gibbins,8
+203,rramirez@axiosindustrial.com,Ricardo Ramirez,53
+204,duston.milstead@greenberry.com,duston milstead,22
+205,tgardner@dsi.us,Tucker Gardner,52
+206,jmendoza@wgyates.com,Jesus Mendoza,3
+207,d6.shin@samsung.com,Dongweon Shin,1
+208,dprechtl@cecfg.com,Daniel Prechtl,19
+209,bcortese@wgyates.com,Bobbie Cortese,3
+210,jason.byun@jacobs.com,Jason Byun,9
+211,jhkim@doota.us,Jun Ho Kim,54
+212,lorozco@prismelectric.com,luis orozco,16
+213,dm.kang@k-ensol.com,dongmoon kang,55
+214,dsolis@wgyates.com,David Solis,3
+215,Ignacio.Yanez@jacobs.com,ignacio yanez,9
+216,cmartinez@doota.us,clayton martinez,54
+217,ryandhanda@cherrycoatings.com,Ryan Dhanda,40
+218,jzabor@schmidt-electric.com,Joseph Zabor,56
+219,andrea.woods@samsung.com,Andrea Stout,1
+220,rachel_barbour@thenewtrongroup.com,Rachel Barbour,15
+221,Ruby.Pardo@greenberry.com,ruby pardo,22
+222,aamador@wgyates.com,ANDRES AMADOR,3
+223,mark.brown@wgyates.com,Mark Brown,3
+224,alanpalacios@brycon.com,Alan Palacios,57
+225,tmckay@wgyates.com,Tyler McKay,3
+226,lcastaneda@wgyates.com,Luisa Castaneda,3
+227,rsantiago@pssllc.us.com,,
+228,,Changhee Park,
+229,,JOON CHOI,
+230,,KUNHYUNG KIM,
+231,,Jinkyo Choung,
+232,,Seongjun Lee,
+233,so8383.kwon@samoo.com,,
+234,neil.dana@partner.samsung.com,,
+235,jvillalobos@rkci.com,,
+236,dcorbitt@cecfg.com,,
+237,aadams@cecfg.com,,
+238,,Ricardo Monsivais,
+239,,Robert Meyer,
+240,hanmin.oh@samsung.com,,
+241,limu.feng@jacobs.com,,
+242,,William Wessel,
+243,auribe@wgyates.com,,
+244,wesley.beaver@jmeg.us,,
+245,g.martinez5@samsung.com,,
+246,e.dearmitt@samsung.com,,
+247,iflores@wgyates.com,,
+248,,Israel Flores,
+249,,Douglas Toomes,
+250,tehlert@summit.us,,
+251,,Isaac Irlbeck,
+252,,Jesus Mendoza,
+253,,Zach MacDonald,

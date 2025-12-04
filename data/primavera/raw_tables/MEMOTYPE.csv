@@ -1,0 +1,7 @@
+memo_type_id,seq_num,eps_flag,proj_flag,wbs_flag,task_flag,memo_type
+247,20,N,Y,Y,Y,Notebook
+1158,20,Y,Y,Y,Y,General Notes
+7509,20,Y,Y,Y,Y,Explanation
+7712,21,Y,Y,Y,Y,Constraints
+19015,32,Y,Y,Y,Y,Issues / Comments
+19280,51,N,Y,Y,Y,Issues & Comments

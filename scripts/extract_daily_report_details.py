@@ -194,7 +194,7 @@ CLICK_HISTORY_TAB_JS = """
 
 async def extract_daily_report_details():
     """Connect to browser and extract all daily report details."""
-    output_dir = Path('/workspaces/mxi-samsung/data/extracted')
+    output_dir = Path('/workspaces/mxi-samsung/data/projectsight/extracted')
     output_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

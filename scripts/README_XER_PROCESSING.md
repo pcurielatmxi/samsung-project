@@ -8,20 +8,20 @@ This directory contains scripts for processing Primavera P6 XER files and conver
 
 ```bash
 # Basic usage - auto-generates output filename with timestamp
-python scripts/process_xer_to_csv.py data/raw/your-file.xer
+python scripts/process_xer_to_csv.py data/raw/xer/your-file.xer
 
 # Specify output filename
-python scripts/process_xer_to_csv.py data/raw/your-file.xer data/output/tasks.csv
+python scripts/process_xer_to_csv.py data/raw/xer/your-file.xer data/primavera/processed/tasks.csv
 
 # Quiet mode - only output the filename
-python scripts/process_xer_to_csv.py data/raw/your-file.xer --quiet
+python scripts/process_xer_to_csv.py data/raw/xer/your-file.xer --quiet
 ```
 
 ### Process Multiple Files
 
 ```bash
 # Process all XER files in a directory
-for file in data/raw/*.xer; do
+for file in data/raw/xer/*.xer; do
     python scripts/process_xer_to_csv.py "$file"
 done
 ```
@@ -104,24 +104,24 @@ echo "Created: $OUTPUT"
 
 ### 1. Add New XER Files
 
-Place new XER files in the `data/raw/` directory:
+Place new XER files in the `data/raw/xer/` directory:
 
 ```bash
-cp /path/to/new-schedule.xer data/raw/
+cp /path/to/new-schedule.xer data/raw/xer/
 ```
 
 ### 2. Process the File
 
 ```bash
-python scripts/process_xer_to_csv.py data/raw/new-schedule.xer
+python scripts/process_xer_to_csv.py data/raw/xer/new-schedule.xer
 ```
 
 ### 3. Find Your Output
 
-Output files are automatically saved to `data/output/xer_exports/` with timestamps:
+Output files are automatically saved to `data/primavera/processed/` with timestamps:
 
 ```
-data/output/xer_exports/
+data/primavera/processed/
 ├── new-schedule_tasks_20251204_120000.csv
 └── previous-schedule_tasks_20251203_150000.csv
 ```
@@ -137,8 +137,8 @@ Create a simple automation script:
 # weekly_schedule_process.sh
 
 # Set paths
-XER_DIR="data/raw"
-OUTPUT_DIR="data/output/xer_exports"
+XER_DIR="data/raw/xer"
+OUTPUT_DIR="data/primavera/processed"
 
 # Find the most recent XER file
 LATEST_XER=$(ls -t "$XER_DIR"/*.xer | head -1)
@@ -157,7 +157,7 @@ echo "Done! Check $OUTPUT_DIR for results."
 #!/bin/bash
 # process_all_xer.sh
 
-for xer_file in data/raw/*.xer; do
+for xer_file in data/raw/xer/*.xer; do
     echo "Processing: $xer_file"
     python scripts/process_xer_to_csv.py "$xer_file"
 done
@@ -175,7 +175,7 @@ After generating the full task CSV, you can filter for specific work types in Ex
 import pandas as pd
 
 # Read the full export
-df = pd.read_csv('data/output/xer_exports/project_tasks_20251204_120000.csv')
+df = pd.read_csv('data/primavera/processed/project_tasks_20251204_120000.csv')
 
 # Filter for drywall tasks
 drywall = df[df['Task Description'].str.contains('drywall', case=False, na=False)]
@@ -212,7 +212,7 @@ level_2.to_csv('level_2_tasks.csv', index=False)
 Make sure the XER file path is correct:
 
 ```bash
-ls data/raw/*.xer  # Check what files exist
+ls data/raw/xer/*.xer  # Check what files exist
 ```
 
 ### Missing activity codes

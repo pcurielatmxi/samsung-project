@@ -192,7 +192,7 @@ Each Daily Report record contains:
 
 ## Output
 
-- **File:** `data/extracted/daily_reports_415.json`
+- **File:** `data/projectsight/extracted/daily_reports_415.json`
 - **Size:** ~368 KB
 - **Records:** 415 Daily Reports
 - **Date Range:** 2022-09-12 to present

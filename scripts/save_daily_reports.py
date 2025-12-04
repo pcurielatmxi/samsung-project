@@ -13,7 +13,7 @@ from playwright.async_api import async_playwright
 
 async def save_daily_reports():
     """Connect to browser and save the daily reports data."""
-    output_dir = Path('/workspaces/mxi-samsung/data/extracted')
+    output_dir = Path('/workspaces/mxi-samsung/data/projectsight/extracted')
     output_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

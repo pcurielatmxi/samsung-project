@@ -1,10 +1,10 @@
 #!/bin/bash
-# Batch process all XER files in the data/raw directory
+# Batch process all XER files in the data/raw/xer directory
 
 set -e  # Exit on error
 
 # Configuration
-XER_DIR="${1:-data/raw}"
+XER_DIR="${1:-data/raw/xer}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -55,4 +55,4 @@ echo "Total files: $FILE_COUNT"
 echo "Processed successfully: $PROCESSED"
 echo "Failed: $FAILED"
 echo ""
-echo "Output files are in: data/output/xer_exports/"
+echo "Output files are in: data/primavera/processed/"

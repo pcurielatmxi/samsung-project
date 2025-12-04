@@ -1,0 +1,1688 @@
+id,history_id,field_name,old_value,new_value
+1,1,Date,,9/15/2022
+2,1,Lost productivity UOM,None,Hours
+3,1,Status,,Pending
+4,1,Date,,Selected month is September 2022
+5,2,Date,,9/15/2022
+6,2,Lost productivity UOM,None,Hours
+7,2,Status,,Pending
+8,2,Date,,Selected month is September 2022
+9,3,Date,,9/23/2022
+10,3,Lost productivity UOM,None,Hours
+11,3,Status,,Pending
+12,3,Date,,Selected month is September 2022
+13,4,Date,,9/26/2022
+14,4,Lost productivity UOM,None,Hours
+15,4,Status,,Pending
+16,4,Date,,Selected month is September 2022
+17,5,Date,,9/26/2022
+18,5,Lost productivity UOM,None,Hours
+19,5,Status,,Pending
+20,5,Date,,Selected month is September 2022
+21,6,Date,,9/27/2022
+22,6,Lost productivity UOM,None,Hours
+23,6,Status,,Pending
+24,6,Date,,Selected month is September 2022
+25,7,Date,,10/3/2022
+26,7,Lost productivity UOM,None,Hours
+27,7,Status,,Pending
+28,7,Date,,Selected month is October 2022
+29,8,Date,,10/4/2022
+30,8,Lost productivity UOM,None,Hours
+31,8,Status,,Pending
+32,8,Date,,Selected month is October 2022
+33,9,Date,,10/5/2022
+34,9,Lost productivity UOM,None,Hours
+35,9,Status,,Pending
+36,9,Date,,Selected month is October 2022
+37,10,Date,,10/7/2022
+38,10,Lost productivity UOM,None,Hours
+39,10,Status,,Pending
+40,10,Date,,Selected month is October 2022
+41,11,Date,,10/10/2022
+42,11,Lost productivity UOM,None,Hours
+43,11,Status,,Pending
+44,11,Date,,Selected month is October 2022
+45,12,Date,,10/13/2022
+46,12,Lost productivity UOM,None,Hours
+47,12,Status,,Pending
+48,12,Date,,Selected month is October 2022
+49,13,Date,,10/13/2022
+50,13,Lost productivity UOM,None,Hours
+51,13,Status,,Pending
+52,13,Date,,Selected month is October 2022
+53,14,Date,,10/13/2022
+54,14,Lost productivity UOM,None,Hours
+55,14,Status,,Pending
+56,14,Date,,Selected month is October 2022
+57,15,Date,,10/20/2022
+58,15,Lost productivity UOM,None,Hours
+59,15,Status,,Pending
+60,15,Date,,Selected month is October 2022
+61,16,Date,,10/21/2022
+62,16,Lost productivity UOM,None,Hours
+63,16,Status,,Pending
+64,16,Date,,Selected month is October 2022
+65,17,Date,,11/1/2022
+66,17,Lost productivity UOM,None,Hours
+67,17,Status,,Pending
+68,17,Date,,Selected month is November 2022
+69,18,Date,,11/1/2022
+70,18,Lost productivity UOM,None,Hours
+71,18,Status,,Pending
+72,18,Date,,Selected month is November 2022
+73,19,Date,,11/2/2022
+74,19,Lost productivity UOM,None,Hours
+75,19,Status,,Pending
+76,19,Date,,Selected month is November 2022
+77,20,Status,Pending,Ready For Review
+78,20,Date,,11/10/2022
+79,20,Lost productivity UOM,None,Hours
+80,20,Status,,Pending
+81,20,Date,,Selected month is November 2022
+82,21,Date,,11/11/2022
+83,21,Lost productivity UOM,None,Hours
+84,21,Status,,Pending
+85,21,Date,,Selected month is November 2022
+86,22,Date,,11/12/2022
+87,22,Lost productivity UOM,None,Hours
+88,22,Status,,Pending
+89,22,Date,,Selected month is November 2022
+90,23,Date,,11/13/2022
+91,23,Lost productivity UOM,None,Hours
+92,23,Status,,Pending
+93,23,Date,,Selected month is November 2022
+94,24,Date,,11/14/2022
+95,24,Lost productivity UOM,None,Hours
+96,24,Status,,Pending
+97,24,Date,,Selected month is November 2022
+98,25,Date,,11/15/2022
+99,25,Lost productivity UOM,None,Hours
+100,25,Status,,Pending
+101,25,Date,,Selected month is November 2022
+102,26,Date,,11/16/2022
+103,26,Lost productivity UOM,None,Hours
+104,26,Status,,Pending
+105,26,Date,,Selected month is November 2022
+106,27,Date,,11/17/2022
+107,27,Lost productivity UOM,None,Hours
+108,27,Status,,Pending
+109,27,Date,,Selected month is November 2022
+110,28,Date,,11/18/2022
+111,28,Lost productivity UOM,None,Hours
+112,28,Status,,Pending
+113,28,Date,,Selected month is November 2022
+114,29,Date,,11/21/2022
+115,29,Lost productivity UOM,None,Hours
+116,29,Status,,Pending
+117,29,Date,,Selected month is November 2022
+118,30,Date,,11/22/2022
+119,30,Lost productivity UOM,None,Hours
+120,30,Status,,Pending
+121,30,Date,,Selected month is November 2022
+122,31,Date,,11/22/2022
+123,31,Lost productivity UOM,None,Hours
+124,31,Status,,Pending
+125,31,Date,,Selected month is November 2022
+126,32,Date,,11/23/2022
+127,32,Lost productivity UOM,None,Hours
+128,32,Status,,Pending
+129,32,Date,,Selected month is November 2022
+130,34,Date,,11/29/2022
+131,34,Lost productivity UOM,None,Hours
+132,34,Status,,Pending
+133,34,Date,,Selected month is November 2022
+134,35,Date,,11/30/2022
+135,35,Lost productivity UOM,None,Hours
+136,35,Status,,Pending
+137,35,Date,,Selected month is November 2022
+138,36,Date,,12/1/2022
+139,36,Lost productivity UOM,None,Hours
+140,36,Status,,Pending
+141,36,Date,,Selected month is December 2022
+142,37,Date,,12/2/2022
+143,37,Lost productivity UOM,None,Hours
+144,37,Status,,Pending
+145,37,Date,,Selected month is December 2022
+146,38,Date,,12/5/2022
+147,38,Lost productivity UOM,None,Hours
+148,38,Status,,Pending
+149,38,Date,,Selected month is December 2022
+150,39,Date,,12/6/2022
+151,39,Lost productivity UOM,None,Hours
+152,39,Status,,Pending
+153,39,Date,,Selected month is December 2022
+154,40,Date,,12/7/2022
+155,40,Lost productivity UOM,None,Hours
+156,40,Status,,Pending
+157,40,Date,,Selected month is December 2022
+158,41,Date,,12/7/2022
+159,41,Lost productivity UOM,None,Hours
+160,41,Status,,Pending
+161,41,Date,,Selected month is December 2022
+162,42,Date,,12/12/2022
+163,42,Lost productivity UOM,None,Hours
+164,42,Status,,Pending
+165,42,Date,,Selected month is December 2022
+166,43,Date,,12/13/2022
+167,43,Lost productivity UOM,None,Hours
+168,43,Status,,Pending
+169,43,Date,,Selected month is December 2022
+170,44,Date,,12/14/2022
+171,44,Lost productivity UOM,None,Hours
+172,44,Status,,Pending
+173,44,Date,,Selected month is December 2022
+174,45,Date,,12/19/2022
+175,45,Lost productivity UOM,None,Hours
+176,45,Status,,Pending
+177,45,Date,,Selected month is December 2022
+178,46,Date,,12/21/2022
+179,46,Lost productivity UOM,None,Hours
+180,46,Status,,Pending
+181,46,Date,,Selected month is December 2022
+182,47,Date,,12/21/2022
+183,47,Lost productivity UOM,None,Hours
+184,47,Status,,Pending
+185,47,Date,,Selected month is December 2022
+186,48,Date,,12/21/2022
+187,48,Lost productivity UOM,None,Hours
+188,48,Status,,Pending
+189,48,Date,,Selected month is December 2022
+190,49,Date,,12/21/2022
+191,49,Lost productivity UOM,None,Hours
+192,49,Status,,Pending
+193,49,Date,,Selected month is December 2022
+194,50,Date,,12/21/2022
+195,50,Lost productivity UOM,None,Hours
+196,50,Status,,Pending
+197,50,Date,,Selected month is December 2022
+198,51,Date,,12/22/2022
+199,51,Lost productivity UOM,None,Hours
+200,51,Status,,Pending
+201,51,Date,,Selected month is January 2023
+202,52,Date,,1/19/2023
+203,52,Lost productivity UOM,None,Hours
+204,52,Status,,Pending
+205,52,Date,,Selected month is January 2023
+206,53,Date,,1/19/2023
+207,53,Lost productivity UOM,None,Hours
+208,53,Status,,Pending
+209,53,Date,,Selected month is January 2023
+210,54,Date,,1/23/2023
+211,54,Lost productivity UOM,None,Hours
+212,54,Status,,Pending
+213,54,Date,,Selected month is January 2023
+214,55,Date,,1/24/2023
+215,55,Lost productivity UOM,None,Hours
+216,55,Status,,Pending
+217,55,Date,,Selected month is January 2023
+218,56,Date,,1/24/2023
+219,56,Lost productivity UOM,None,Hours
+220,56,Status,,Pending
+221,56,Date,,Selected month is January 2023
+222,57,Date,,1/25/2023
+223,57,Lost productivity UOM,None,Hours
+224,57,Status,,Pending
+225,57,Date,,Selected month is January 2023
+226,58,Date,,1/26/2023
+227,58,Lost productivity UOM,None,Hours
+228,58,Status,,Pending
+229,58,Date,,Selected month is January 2023
+230,59,Date,,1/30/2023
+231,59,Lost productivity UOM,None,Hours
+232,59,Status,,Pending
+233,59,Date,,Selected month is February 2023
+234,60,Date,,2/3/2023
+235,60,Lost productivity UOM,None,Hours
+236,60,Status,,Pending
+237,60,Date,,Selected month is February 2023
+238,61,Date,,2/13/2023
+239,61,Lost productivity UOM,None,Hours
+240,61,Status,,Pending
+241,61,Date,,Selected month is February 2023
+242,62,Date,,2/13/2023
+243,62,Lost productivity UOM,None,Hours
+244,62,Status,,Pending
+245,62,Date,,Selected month is February 2023
+246,63,Date,,2/24/2023
+247,63,Lost productivity UOM,None,Hours
+248,63,Status,,Pending
+249,63,Date,,Selected month is February 2023
+250,64,Date,,2/27/2023
+251,64,Lost productivity UOM,None,Hours
+252,64,Status,,Pending
+253,64,Date,,Selected month is February 2023
+254,65,Date,,3/1/2023
+255,65,Lost productivity UOM,None,Hours
+256,65,Status,,Pending
+257,65,Date,,Selected month is March 2023
+258,66,Date,,3/1/2023
+259,66,Lost productivity UOM,None,Hours
+260,66,Status,,Pending
+261,66,Date,,Selected month is March 2023
+262,67,Date,,3/2/2023
+263,67,Lost productivity UOM,None,Hours
+264,67,Status,,Pending
+265,67,Date,,Selected month is March 2023
+266,68,Date,,3/6/2023
+267,68,Lost productivity UOM,None,Hours
+268,68,Status,,Pending
+269,68,Date,,Selected month is March 2023
+270,69,Date,,3/6/2023
+271,69,Lost productivity UOM,None,Hours
+272,69,Status,,Pending
+273,69,Date,,Selected month is March 2023
+274,70,Date,,3/7/2023
+275,70,Lost productivity UOM,None,Hours
+276,70,Status,,Pending
+277,70,Date,,Selected month is March 2023
+278,71,Date,,3/10/2023
+279,71,Lost productivity UOM,None,Hours
+280,71,Status,,Pending
+281,71,Date,,Selected month is March 2023
+282,72,Date,,3/10/2023
+283,72,Lost productivity UOM,None,Hours
+284,72,Status,,Pending
+285,72,Date,,Selected month is March 2023
+286,73,Date,,3/13/2023
+287,73,Lost productivity UOM,None,Hours
+288,73,Status,,Pending
+289,73,Date,,Selected month is March 2023
+290,74,Date,,3/14/2023
+291,74,Lost productivity UOM,None,Hours
+292,74,Status,,Pending
+293,74,Date,,Selected month is March 2023
+294,75,Date,,3/14/2023
+295,75,Lost productivity UOM,None,Hours
+296,75,Status,,Pending
+297,75,Date,,Selected month is March 2023
+298,76,Date,,3/15/2023
+299,76,Lost productivity UOM,None,Hours
+300,76,Status,,Pending
+301,76,Date,,Selected month is March 2023
+302,77,Date,,3/16/2023
+303,77,Lost productivity UOM,None,Hours
+304,77,Status,,Pending
+305,77,Date,,Selected month is March 2023
+306,78,Date,,3/17/2023
+307,78,Lost productivity UOM,None,Hours
+308,78,Status,,Pending
+309,78,Date,,Selected month is March 2023
+310,79,Date,,3/18/2023
+311,79,Lost productivity UOM,None,Hours
+312,79,Status,,Pending
+313,79,Date,,Selected month is March 2023
+314,80,Date,,3/20/2023
+315,80,Lost productivity UOM,None,Hours
+316,80,Status,,Pending
+317,80,Date,,Selected month is March 2023
+318,81,Date,,3/20/2023
+319,81,Lost productivity UOM,None,Hours
+320,81,Status,,Pending
+321,81,Date,,Selected month is March 2023
+322,82,Date,,3/21/2023
+323,82,Lost productivity UOM,None,Hours
+324,82,Status,,Pending
+325,82,Date,,Selected month is March 2023
+326,83,Date,,3/22/2023
+327,83,Lost productivity UOM,None,Hours
+328,83,Status,,Pending
+329,83,Date,,Selected month is March 2023
+330,84,Date,,3/23/2023
+331,84,Lost productivity UOM,None,Hours
+332,84,Status,,Pending
+333,84,Date,,Selected month is March 2023
+334,85,Date,,3/27/2023
+335,85,Lost productivity UOM,None,Hours
+336,85,Status,,Pending
+337,85,Date,,Selected month is March 2023
+338,86,Date,,3/31/2023
+339,86,Lost productivity UOM,None,Hours
+340,86,Status,,Pending
+341,86,Date,,Selected month is March 2023
+342,87,Date,,3/31/2023
+343,87,Lost productivity UOM,None,Hours
+344,87,Status,,Pending
+345,87,Date,,Selected month is April 2023
+346,88,Date,,4/3/2023
+347,88,Lost productivity UOM,None,Hours
+348,88,Status,,Pending
+349,88,Date,,Selected month is April 2023
+350,89,Date,,4/6/2023
+351,89,Lost productivity UOM,None,Hours
+352,89,Status,,Pending
+353,89,Date,,Selected month is April 2023
+354,90,Date,,4/8/2023
+355,90,Lost productivity UOM,None,Hours
+356,90,Status,,Pending
+357,90,Date,,Selected month is April 2023
+358,91,Date,,4/8/2023
+359,91,Lost productivity UOM,None,Hours
+360,91,Status,,Pending
+361,91,Date,,Selected month is April 2023
+362,92,Date,,4/10/2023
+363,92,Lost productivity UOM,None,Hours
+364,92,Status,,Pending
+365,92,Date,,Selected month is April 2023
+366,93,Date,,4/11/2023
+367,93,Lost productivity UOM,None,Hours
+368,93,Status,,Pending
+369,93,Date,,Selected month is April 2023
+370,94,Date,,4/14/2023
+371,94,Lost productivity UOM,None,Hours
+372,94,Status,,Pending
+373,94,Date,,Selected month is April 2023
+374,95,Date,,4/14/2023
+375,95,Lost productivity UOM,None,Hours
+376,95,Status,,Pending
+377,95,Date,,Selected month is April 2023
+378,96,Date,,4/15/2023
+379,96,Lost productivity UOM,None,Hours
+380,96,Status,,Pending
+381,96,Date,,Selected month is April 2023
+382,97,Date,,4/17/2023
+383,97,Lost productivity UOM,None,Hours
+384,97,Status,,Pending
+385,97,Date,,Selected month is April 2023
+386,98,Date,,4/18/2023
+387,98,Lost productivity UOM,None,Hours
+388,98,Status,,Pending
+389,98,Date,,Selected month is April 2023
+390,99,Date,,4/19/2023
+391,99,Lost productivity UOM,None,Hours
+392,99,Status,,Pending
+393,99,Date,,Selected month is April 2023
+394,100,Date,,4/20/2023
+395,100,Lost productivity UOM,None,Hours
+396,100,Status,,Pending
+397,100,Date,,Selected month is April 2023
+398,101,Date,,4/20/2023
+399,101,Lost productivity UOM,None,Hours
+400,101,Status,,Pending
+401,101,Date,,Selected month is April 2023
+402,102,Date,,4/21/2023
+403,102,Lost productivity UOM,None,Hours
+404,102,Status,,Pending
+405,102,Date,,Selected month is April 2023
+406,103,Date,,4/23/2023
+407,103,Lost productivity UOM,None,Hours
+408,103,Status,,Pending
+409,103,Date,,Selected month is April 2023
+410,104,Date,,4/23/2023
+411,104,Lost productivity UOM,None,Hours
+412,104,Status,,Pending
+413,104,Date,,Selected month is April 2023
+414,105,Date,,4/24/2023
+415,105,Lost productivity UOM,None,Hours
+416,105,Status,,Pending
+417,105,Date,,Selected month is April 2023
+418,106,Date,,4/25/2023
+419,106,Lost productivity UOM,None,Hours
+420,106,Status,,Pending
+421,106,Date,,Selected month is April 2023
+422,107,Date,,4/27/2023
+423,107,Lost productivity UOM,None,Hours
+424,107,Status,,Pending
+425,107,Date,,Selected month is April 2023
+426,108,Date,,4/28/2023
+427,108,Lost productivity UOM,None,Hours
+428,108,Status,,Pending
+429,108,Date,,Selected month is April 2023
+430,109,Date,,4/28/2023
+431,109,Lost productivity UOM,None,Hours
+432,109,Status,,Pending
+433,109,Date,,Selected month is May 2023
+434,110,Date,,5/2/2023
+435,110,Lost productivity UOM,None,Hours
+436,110,Status,,Pending
+437,110,Date,,Selected month is May 2023
+438,111,Date,,5/3/2023
+439,111,Lost productivity UOM,None,Hours
+440,111,Status,,Pending
+441,111,Date,,Selected month is May 2023
+442,112,Date,,5/3/2023
+443,112,Lost productivity UOM,None,Hours
+444,112,Status,,Pending
+445,112,Date,,Selected month is May 2023
+446,113,Status,,Pending
+447,113,Status,,Pending
+448,113,Date,,5/4/2023
+449,113,Lost productivity UOM,None,Hours
+450,113,Status,,Pending
+451,113,Date,,Selected month is May 2023
+452,114,Date,,5/6/2023
+453,114,Lost productivity UOM,None,Hours
+454,114,Status,,Pending
+455,114,Date,,Selected month is May 2023
+456,115,Date,,5/6/2023
+457,115,Lost productivity UOM,None,Hours
+458,115,Status,,Pending
+459,115,Date,,Selected month is May 2023
+460,116,Date,,5/9/2023
+461,116,Lost productivity UOM,None,Hours
+462,116,Status,,Pending
+463,116,Date,,Selected month is May 2023
+464,117,Date,,5/9/2023
+465,117,Lost productivity UOM,None,Hours
+466,117,Status,,Pending
+467,117,Date,,Selected month is May 2023
+468,118,Date,,5/10/2023
+469,118,Lost productivity UOM,None,Hours
+470,118,Status,,Pending
+471,118,Date,,Selected month is May 2023
+472,119,Date,,5/12/2023
+473,119,Lost productivity UOM,None,Hours
+474,119,Status,,Pending
+475,119,Date,,Selected month is May 2023
+476,120,Date,,5/15/2023
+477,120,Lost productivity UOM,None,Hours
+478,120,Status,,Pending
+479,120,Date,,Selected month is May 2023
+480,121,Date,,5/16/2023
+481,121,Lost productivity UOM,None,Hours
+482,121,Status,,Pending
+483,121,Date,,Selected month is May 2023
+484,122,Date,,5/18/2023
+485,122,Lost productivity UOM,None,Hours
+486,122,Status,,Pending
+487,122,Date,,Selected month is May 2023
+488,123,Date,,5/20/2023
+489,123,Lost productivity UOM,None,Hours
+490,123,Status,,Pending
+491,123,Date,,Selected month is May 2023
+492,124,Date,,5/22/2023
+493,124,Lost productivity UOM,None,Hours
+494,124,Status,,Pending
+495,124,Date,,Selected month is May 2023
+496,125,Date,,5/23/2023
+497,125,Lost productivity UOM,None,Hours
+498,125,Status,,Pending
+499,125,Date,,Selected month is May 2023
+500,126,Date,,5/23/2023
+501,126,Lost productivity UOM,None,Hours
+502,126,Status,,Pending
+503,126,Date,,Selected month is May 2023
+504,127,Date,,5/24/2023
+505,127,Lost productivity UOM,None,Hours
+506,127,Status,,Pending
+507,127,Date,,Selected month is May 2023
+508,128,Date,,5/25/2023
+509,128,Lost productivity UOM,None,Hours
+510,128,Status,,Pending
+511,128,Date,,Selected month is June 2023
+512,129,Date,,6/1/2023
+513,129,Lost productivity UOM,None,Hours
+514,129,Status,,Pending
+515,129,Date,,Selected month is June 2023
+516,130,Date,,6/2/2023
+517,130,Lost productivity UOM,None,Hours
+518,130,Status,,Pending
+519,130,Date,,Selected month is June 2023
+520,131,Date,,6/5/2023
+521,131,Lost productivity UOM,None,Hours
+522,131,Status,,Pending
+523,131,Date,,Selected month is June 2023
+524,132,Date,,6/6/2023
+525,132,Lost productivity UOM,None,Hours
+526,132,Status,,Pending
+527,132,Date,,Selected month is June 2023
+528,133,Date,,6/7/2023
+529,133,Lost productivity UOM,None,Hours
+530,133,Status,,Pending
+531,133,Date,,Selected month is June 2023
+532,134,Date,,6/7/2023
+533,134,Lost productivity UOM,None,Hours
+534,134,Status,,Pending
+535,134,Date,,Selected month is June 2023
+536,135,Date,,6/10/2023
+537,135,Lost productivity UOM,None,Hours
+538,135,Status,,Pending
+539,135,Date,,Selected month is June 2023
+540,136,Date,,6/13/2023
+541,136,Lost productivity UOM,None,Hours
+542,136,Status,,Pending
+543,136,Date,,Selected month is June 2023
+544,137,Date,,6/14/2023
+545,137,Lost productivity UOM,None,Hours
+546,137,Status,,Pending
+547,137,Date,,Selected month is June 2023
+548,138,Date,,6/15/2023
+549,138,Lost productivity UOM,None,Hours
+550,138,Status,,Pending
+551,138,Date,,Selected month is June 2023
+552,139,Date,,6/16/2023
+553,139,Lost productivity UOM,None,Hours
+554,139,Status,,Pending
+555,139,Date,,Selected month is June 2023
+556,140,Date,,6/17/2023
+557,140,Lost productivity UOM,None,Hours
+558,140,Status,,Pending
+559,140,Date,,Selected month is June 2023
+560,141,Date,,6/19/2023
+561,141,Lost productivity UOM,None,Hours
+562,141,Status,,Pending
+563,141,Date,,Selected month is June 2023
+564,142,Date,,6/19/2023
+565,142,Lost productivity UOM,None,Hours
+566,142,Status,,Pending
+567,142,Date,,Selected month is June 2023
+568,143,Date,,6/21/2023
+569,143,Lost productivity UOM,None,Hours
+570,143,Status,,Pending
+571,143,Date,,Selected month is June 2023
+572,144,Date,,6/21/2023
+573,144,Lost productivity UOM,None,Hours
+574,144,Status,,Pending
+575,144,Date,,Selected month is June 2023
+576,144,Status,,Total rainfall
+577,145,Status,Pending,Approved
+578,145,Date,,6/22/2023
+579,145,Lost productivity UOM,None,Hours
+580,145,Status,,Pending
+581,145,Date,,Selected month is June 2023
+582,146,Date,,6/24/2023
+583,146,Lost productivity UOM,None,Hours
+584,146,Status,,Pending
+585,146,Date,,Selected month is June 2023
+586,147,Date,,6/26/2023
+587,147,Lost productivity UOM,None,Hours
+588,147,Status,,Pending
+589,147,Date,,Selected month is June 2023
+590,148,Date,,6/27/2023
+591,148,Lost productivity UOM,None,Hours
+592,148,Status,,Pending
+593,148,Date,,Selected month is June 2023
+594,149,Date,,6/28/2023
+595,149,Lost productivity UOM,None,Hours
+596,149,Status,,Pending
+597,149,Date,,Selected month is June 2023
+598,150,Date,,6/28/2023
+599,150,Lost productivity UOM,None,Hours
+600,150,Status,,Pending
+601,150,Date,,Selected month is June 2023
+602,151,Date,,6/29/2023
+603,151,Lost productivity UOM,None,Hours
+604,151,Status,,Pending
+605,151,Date,,Selected month is July 2023
+606,152,Date,,7/1/2023
+607,152,Lost productivity UOM,None,Hours
+608,152,Status,,Pending
+609,152,Date,,Selected month is July 2023
+610,153,Date,,7/3/2023
+611,153,Lost productivity UOM,None,Hours
+612,153,Status,,Pending
+613,153,Date,,Selected month is July 2023
+614,154,Date,,7/5/2023
+615,154,Lost productivity UOM,None,Hours
+616,154,Status,,Pending
+617,154,Date,,Selected month is July 2023
+618,155,Date,,7/6/2023
+619,155,Lost productivity UOM,None,Hours
+620,155,Status,,Pending
+621,155,Date,,Selected month is July 2023
+622,156,Date,,7/7/2023
+623,156,Lost productivity UOM,None,Hours
+624,156,Status,,Pending
+625,156,Date,,Selected month is July 2023
+626,157,Date,,7/8/2023
+627,157,Lost productivity UOM,None,Hours
+628,157,Status,,Pending
+629,157,Date,,Selected month is July 2023
+630,158,Date,,7/10/2023
+631,158,Lost productivity UOM,None,Hours
+632,158,Status,,Pending
+633,158,Date,,7/10/2023
+634,158,Lost productivity UOM,None,Hours
+635,158,Status,,Pending
+636,158,Date,,Selected month is July 2023
+637,159,Date,,7/11/2023
+638,159,Lost productivity UOM,None,Hours
+639,159,Status,,Pending
+640,159,Date,,7/11/2023
+641,159,Lost productivity UOM,None,Hours
+642,159,Status,,Pending
+643,159,Date,,7/11/2023
+644,159,Lost productivity UOM,None,Hours
+645,159,Status,,Pending
+646,159,Date,,Selected month is July 2023
+647,160,Date,,7/12/2023
+648,160,Lost productivity UOM,None,Hours
+649,160,Status,,Pending
+650,160,Date,,7/12/2023
+651,160,Lost productivity UOM,None,Hours
+652,160,Status,,Pending
+653,160,Date,,7/12/2023
+654,160,Lost productivity UOM,None,Hours
+655,160,Status,,Pending
+656,160,Date,,Selected month is July 2023
+657,161,Date,,7/17/2023
+658,161,Lost productivity UOM,None,Hours
+659,161,Status,,Pending
+660,161,Date,,Selected month is July 2023
+661,162,Date,,7/18/2023
+662,162,Lost productivity UOM,None,Hours
+663,162,Status,,Pending
+664,162,Date,,Selected month is July 2023
+665,163,Date,,7/19/2023
+666,163,Lost productivity UOM,None,Hours
+667,163,Status,,Pending
+668,163,Date,,Selected month is July 2023
+669,164,Date,,7/20/2023
+670,164,Lost productivity UOM,None,Hours
+671,164,Status,,Pending
+672,164,Date,,Selected month is July 2023
+673,165,Date,,7/21/2023
+674,165,Lost productivity UOM,None,Hours
+675,165,Status,,Pending
+676,165,Date,,Selected month is July 2023
+677,166,Date,,7/24/2023
+678,166,Lost productivity UOM,None,Hours
+679,166,Status,,Pending
+680,166,Date,,Selected month is July 2023
+681,167,Date,,7/25/2023
+682,167,Lost productivity UOM,None,Hours
+683,167,Status,,Pending
+684,167,Date,,Selected month is July 2023
+685,168,Date,,7/26/2023
+686,168,Lost productivity UOM,None,Hours
+687,168,Status,,Pending
+688,168,Date,,Selected month is July 2023
+689,169,Date,,7/27/2023
+690,169,Lost productivity UOM,None,Hours
+691,169,Status,,Pending
+692,169,Date,,Selected month is July 2023
+693,170,Date,,7/28/2023
+694,170,Lost productivity UOM,None,Hours
+695,170,Status,,Pending
+696,170,Date,,Selected month is July 2023
+697,171,Date,,7/29/2023
+698,171,Lost productivity UOM,None,Hours
+699,171,Status,,Pending
+700,171,Date,,Selected month is July 2023
+701,172,Date,,7/31/2023
+702,172,Lost productivity UOM,None,Hours
+703,172,Status,,Pending
+704,172,Date,,Selected month is August 2023
+705,173,Date,,8/1/2023
+706,173,Lost productivity UOM,None,Hours
+707,173,Status,,Pending
+708,173,Date,,Selected month is August 2023
+709,174,Date,,8/2/2023
+710,174,Lost productivity UOM,None,Hours
+711,174,Status,,Pending
+712,174,Date,,Selected month is August 2023
+713,175,Date,,8/3/2023
+714,175,Lost productivity UOM,None,Hours
+715,175,Status,,Pending
+716,175,Date,,Selected month is August 2023
+717,176,Date,,8/5/2023
+718,176,Lost productivity UOM,None,Hours
+719,176,Status,,Pending
+720,176,Date,,Selected month is August 2023
+721,177,Date,,8/5/2023
+722,177,Lost productivity UOM,None,Hours
+723,177,Status,,Pending
+724,177,Date,,Selected month is August 2023
+725,178,Date,,8/8/2023
+726,178,Lost productivity UOM,None,Hours
+727,178,Status,,Pending
+728,178,Date,,Selected month is August 2023
+729,179,Date,,8/9/2023
+730,179,Lost productivity UOM,None,Hours
+731,179,Status,,Pending
+732,179,Date,,Selected month is August 2023
+733,180,Date,,8/10/2023
+734,180,Lost productivity UOM,None,Hours
+735,180,Status,,Pending
+736,180,Date,,Selected month is August 2023
+737,181,Date,,8/11/2023
+738,181,Lost productivity UOM,None,Hours
+739,181,Status,,Pending
+740,181,Date,,Selected month is August 2023
+741,182,Date,,8/14/2023
+742,182,Lost productivity UOM,None,Hours
+743,182,Status,,Pending
+744,182,Date,,Selected month is August 2023
+745,183,Date,,8/15/2023
+746,183,Lost productivity UOM,None,Hours
+747,183,Status,,Pending
+748,183,Date,,Selected month is August 2023
+749,184,Date,,8/16/2023
+750,184,Lost productivity UOM,None,Hours
+751,184,Status,,Pending
+752,184,Date,,Selected month is August 2023
+753,185,Date,,8/17/2023
+754,185,Lost productivity UOM,None,Hours
+755,185,Status,,Pending
+756,185,Date,,Selected month is August 2023
+757,186,Date,,8/18/2023
+758,186,Lost productivity UOM,None,Hours
+759,186,Status,,Pending
+760,186,Date,,Selected month is August 2023
+761,187,Date,,8/19/2023
+762,187,Lost productivity UOM,None,Hours
+763,187,Status,,Pending
+764,187,Date,,Selected month is August 2023
+765,188,Date,,8/21/2023
+766,188,Lost productivity UOM,None,Hours
+767,188,Status,,Pending
+768,188,Date,,Selected month is August 2023
+769,189,Date,,8/22/2023
+770,189,Lost productivity UOM,None,Hours
+771,189,Status,,Pending
+772,189,Date,,Selected month is August 2023
+773,190,Date,,8/23/2023
+774,190,Lost productivity UOM,None,Hours
+775,190,Status,,Pending
+776,190,Date,,Selected month is August 2023
+777,191,Date,,8/24/2023
+778,191,Lost productivity UOM,None,Hours
+779,191,Status,,Pending
+780,191,Date,,Selected month is August 2023
+781,192,Date,,8/24/2023
+782,192,Lost productivity UOM,None,Hours
+783,192,Status,,Pending
+784,192,Date,,Selected month is August 2023
+785,192,Status,,Total rainfall
+786,193,Status,Pending,Approved
+787,193,Date,,8/26/2023
+788,193,Lost productivity UOM,None,Hours
+789,193,Status,,Pending
+790,193,Date,,Selected month is August 2023
+791,194,Date,,8/28/2023
+792,194,Lost productivity UOM,None,Hours
+793,194,Status,,Pending
+794,194,Date,,Selected month is August 2023
+795,195,Date,,8/29/2023
+796,195,Lost productivity UOM,None,Hours
+797,195,Status,,Pending
+798,195,Date,,Selected month is August 2023
+799,196,Date,,8/30/2023
+800,196,Lost productivity UOM,None,Hours
+801,196,Status,,Pending
+802,196,Date,,Selected month is August 2023
+803,197,Date,,8/31/2023
+804,197,Lost productivity UOM,None,Hours
+805,197,Status,,Pending
+806,197,Date,,Selected month is September 2023
+807,198,Date,,9/1/2023
+808,198,Lost productivity UOM,None,Hours
+809,198,Status,,Pending
+810,198,Date,,Selected month is September 2023
+811,199,Date,,9/5/2023
+812,199,Lost productivity UOM,None,Hours
+813,199,Status,,Pending
+814,199,Date,,Selected month is September 2023
+815,200,Date,,9/6/2023
+816,200,Lost productivity UOM,None,Hours
+817,200,Status,,Pending
+818,200,Date,,Selected month is September 2023
+819,201,Date,,9/7/2023
+820,201,Lost productivity UOM,None,Hours
+821,201,Status,,Pending
+822,201,Date,,Selected month is September 2023
+823,202,Date,,9/7/2023
+824,202,Lost productivity UOM,None,Hours
+825,202,Status,,Pending
+826,202,Date,,Selected month is September 2023
+827,203,Date,,9/12/2023
+828,203,Lost productivity UOM,None,Hours
+829,203,Status,,Pending
+830,203,Date,,Selected month is September 2023
+831,204,Date,,9/13/2023
+832,204,Lost productivity UOM,None,Hours
+833,204,Status,,Pending
+834,204,Date,,Selected month is September 2023
+835,205,Date,,9/15/2023
+836,205,Lost productivity UOM,None,Hours
+837,205,Status,,Pending
+838,205,Date,,Selected month is September 2023
+839,206,Date,,9/20/2023
+840,206,Lost productivity UOM,None,Hours
+841,206,Status,,Pending
+842,206,Date,,Selected month is September 2023
+843,207,Date,,9/21/2023
+844,207,Lost productivity UOM,None,Hours
+845,207,Status,,Pending
+846,207,Date,,Selected month is September 2023
+847,208,Date,,9/25/2023
+848,208,Lost productivity UOM,None,Hours
+849,208,Status,,Pending
+850,208,Date,,Selected month is September 2023
+851,209,Date,,9/27/2023
+852,209,Lost productivity UOM,None,Hours
+853,209,Status,,Pending
+854,209,Date,,Selected month is September 2023
+855,210,Date,,9/29/2023
+856,210,Lost productivity UOM,None,Hours
+857,210,Status,,Pending
+858,210,Date,,Selected month is October 2023
+859,211,Date,,10/2/2023
+860,211,Lost productivity UOM,None,Hours
+861,211,Status,,Pending
+862,211,Date,,Selected month is October 2023
+863,212,Date,,10/3/2023
+864,212,Lost productivity UOM,None,Hours
+865,212,Status,,Pending
+866,212,Date,,Selected month is October 2023
+867,213,Date,,10/4/2023
+868,213,Lost productivity UOM,None,Hours
+869,213,Status,,Pending
+870,213,Date,,Selected month is October 2023
+871,214,Date,,10/6/2023
+872,214,Lost productivity UOM,None,Hours
+873,214,Status,,Pending
+874,214,Date,,Selected month is October 2023
+875,215,Date,,10/7/2023
+876,215,Lost productivity UOM,None,Hours
+877,215,Status,,Pending
+878,215,Date,,Selected month is October 2023
+879,216,Date,,10/9/2023
+880,216,Lost productivity UOM,None,Hours
+881,216,Status,,Pending
+882,216,Date,,Selected month is October 2023
+883,217,Date,,10/10/2023
+884,217,Lost productivity UOM,None,Hours
+885,217,Status,,Pending
+886,217,Date,,Selected month is October 2023
+887,218,Status,Ready For Review,Pending
+888,218,Status,Pending,Ready For Review
+889,218,Date,,10/11/2023
+890,218,Lost productivity UOM,None,Hours
+891,218,Status,,Pending
+892,218,Date,,Selected month is October 2023
+893,219,Date,,10/14/2023
+894,219,Lost productivity UOM,None,Hours
+895,219,Status,,Pending
+896,219,Date,,Selected month is October 2023
+897,220,Date,,10/17/2023
+898,220,Lost productivity UOM,None,Hours
+899,220,Status,,Pending
+900,220,Date,,Selected month is October 2023
+901,221,Date,,10/18/2023
+902,221,Lost productivity UOM,None,Hours
+903,221,Status,,Pending
+904,221,Date,,Selected month is October 2023
+905,222,Date,,10/19/2023
+906,222,Lost productivity UOM,None,Hours
+907,222,Status,,Pending
+908,222,Date,,Selected month is October 2023
+909,223,Date,,10/20/2023
+910,223,Lost productivity UOM,None,Hours
+911,223,Status,,Pending
+912,223,Date,,Selected month is October 2023
+913,224,Date,,10/23/2023
+914,224,Lost productivity UOM,None,Hours
+915,224,Status,,Pending
+916,224,Date,,Selected month is October 2023
+917,225,Date,,10/24/2023
+918,225,Lost productivity UOM,None,Hours
+919,225,Status,,Pending
+920,225,Date,,Selected month is October 2023
+921,226,Date,,10/25/2023
+922,226,Lost productivity UOM,None,Hours
+923,226,Status,,Pending
+924,226,Date,,Selected month is October 2023
+925,227,Date,,10/31/2023
+926,227,Lost productivity UOM,None,Hours
+927,227,Status,,Pending
+928,227,Date,,Selected month is November 2023
+929,228,Date,,11/1/2023
+930,228,Lost productivity UOM,None,Hours
+931,228,Status,,Pending
+932,228,Date,,Selected month is November 2023
+933,229,Date,,11/2/2023
+934,229,Lost productivity UOM,None,Hours
+935,229,Status,,Pending
+936,229,Date,,Selected month is November 2023
+937,230,Date,,11/6/2023
+938,230,Lost productivity UOM,None,Hours
+939,230,Status,,Pending
+940,230,Date,,Selected month is November 2023
+941,231,Date,,11/7/2023
+942,231,Lost productivity UOM,None,Hours
+943,231,Status,,Pending
+944,231,Date,,Selected month is November 2023
+945,232,Date,,11/8/2023
+946,232,Lost productivity UOM,None,Hours
+947,232,Status,,Pending
+948,232,Date,,Selected month is November 2023
+949,233,Date,,11/9/2023
+950,233,Lost productivity UOM,None,Hours
+951,233,Status,,Pending
+952,233,Date,,Selected month is November 2023
+953,234,Date,,11/10/2023
+954,234,Lost productivity UOM,None,Hours
+955,234,Status,,Pending
+956,234,Date,,Selected month is November 2023
+957,235,Date,,11/12/2023
+958,235,Lost productivity UOM,None,Hours
+959,235,Status,,Pending
+960,235,Date,,Selected month is November 2023
+961,236,Date,,11/13/2023
+962,236,Lost productivity UOM,None,Hours
+963,236,Status,,Pending
+964,236,Date,,Selected month is November 2023
+965,237,Date,,11/14/2023
+966,237,Lost productivity UOM,None,Hours
+967,237,Status,,Pending
+968,237,Date,,Selected month is November 2023
+969,238,Date,,11/15/2023
+970,238,Lost productivity UOM,None,Hours
+971,238,Status,,Pending
+972,238,Date,,Selected month is November 2023
+973,239,Date,,11/16/2023
+974,239,Lost productivity UOM,None,Hours
+975,239,Status,,Pending
+976,239,Date,,Selected month is November 2023
+977,240,Date,,11/17/2023
+978,240,Lost productivity UOM,None,Hours
+979,240,Status,,Pending
+980,240,Date,,Selected month is November 2023
+981,241,Date,,11/19/2023
+982,241,Lost productivity UOM,None,Hours
+983,241,Status,,Pending
+984,241,Date,,Selected month is November 2023
+985,242,Date,,11/20/2023
+986,242,Lost productivity UOM,None,Hours
+987,242,Status,,Pending
+988,242,Date,,Selected month is November 2023
+989,243,Date,,11/21/2023
+990,243,Lost productivity UOM,None,Hours
+991,243,Status,,Pending
+992,243,Date,,Selected month is November 2023
+993,244,Date,,11/22/2023
+994,244,Lost productivity UOM,None,Hours
+995,244,Status,,Pending
+996,244,Date,,Selected month is November 2023
+997,245,Date,,11/23/2023
+998,245,Lost productivity UOM,None,Hours
+999,245,Status,,Pending
+1000,245,Date,,Selected month is November 2023
+1001,246,Date,,11/27/2023
+1002,246,Lost productivity UOM,None,Hours
+1003,246,Status,,Pending
+1004,246,Date,,Selected month is November 2023
+1005,247,Date,,11/28/2023
+1006,247,Lost productivity UOM,None,Hours
+1007,247,Status,,Pending
+1008,247,Date,,Selected month is November 2023
+1009,248,Date,,11/29/2023
+1010,248,Lost productivity UOM,None,Hours
+1011,248,Status,,Pending
+1012,248,Date,,Selected month is November 2023
+1013,249,Date,,11/30/2023
+1014,249,Lost productivity UOM,None,Hours
+1015,249,Status,,Pending
+1016,249,Date,,Selected month is December 2023
+1017,250,Date,,12/1/2023
+1018,250,Lost productivity UOM,None,Hours
+1019,250,Status,,Pending
+1020,250,Date,,Selected month is December 2023
+1021,251,Status,Pending,Rejected
+1022,251,Date,,12/4/2023
+1023,251,Lost productivity UOM,None,Hours
+1024,251,Status,,Pending
+1025,251,Date,,Selected month is December 2023
+1026,252,Date,,12/5/2023
+1027,252,Lost productivity UOM,None,Hours
+1028,252,Status,,Pending
+1029,252,Date,,Selected month is December 2023
+1030,253,Date,,12/6/2023
+1031,253,Lost productivity UOM,None,Hours
+1032,253,Status,,Pending
+1033,253,Date,,Selected month is December 2023
+1034,254,Date,,12/8/2023
+1035,254,Lost productivity UOM,None,Hours
+1036,254,Status,,Pending
+1037,254,Date,,Selected month is December 2023
+1038,255,Date,,12/13/2023
+1039,255,Lost productivity UOM,None,Hours
+1040,255,Status,,Pending
+1041,255,Date,,Selected month is December 2023
+1042,256,Date,,12/14/2023
+1043,256,Lost productivity UOM,None,Hours
+1044,256,Status,,Pending
+1045,256,Date,,Selected month is December 2023
+1046,257,Date,,12/15/2023
+1047,257,Lost productivity UOM,None,Hours
+1048,257,Status,,Pending
+1049,257,Date,,Selected month is December 2023
+1050,258,Date,,12/16/2023
+1051,258,Lost productivity UOM,None,Hours
+1052,258,Status,,Pending
+1053,258,Date,,Selected month is December 2023
+1054,259,Date,,12/18/2023
+1055,259,Lost productivity UOM,None,Hours
+1056,259,Status,,Pending
+1057,259,Date,,Selected month is December 2023
+1058,260,Date,,12/19/2023
+1059,260,Lost productivity UOM,None,Hours
+1060,260,Status,,Pending
+1061,260,Date,,Selected month is December 2023
+1062,261,Date,,12/20/2023
+1063,261,Lost productivity UOM,None,Hours
+1064,261,Status,,Pending
+1065,261,Date,,Selected month is December 2023
+1066,262,Date,,12/21/2023
+1067,262,Lost productivity UOM,None,Hours
+1068,262,Status,,Pending
+1069,262,Date,,Selected month is December 2023
+1070,263,Date,,12/23/2023
+1071,263,Lost productivity UOM,None,Hours
+1072,263,Status,,Pending
+1073,263,Date,,Selected month is December 2023
+1074,264,Date,,12/26/2023
+1075,264,Lost productivity UOM,None,Hours
+1076,264,Status,,Pending
+1077,264,Date,,Selected month is December 2023
+1078,265,Date,,12/27/2023
+1079,265,Lost productivity UOM,None,Hours
+1080,265,Status,,Pending
+1081,265,Date,,Selected month is December 2023
+1082,266,Date,,12/28/2023
+1083,266,Lost productivity UOM,None,Hours
+1084,266,Status,,Pending
+1085,266,Date,,Selected month is January 2024
+1086,267,Date,,1/1/2024
+1087,267,Lost productivity UOM,None,Hours
+1088,267,Status,,Pending
+1089,267,Date,,Selected month is January 2024
+1090,268,Date,,1/2/2024
+1091,268,Lost productivity UOM,None,Hours
+1092,268,Status,,Pending
+1093,268,Date,,Selected month is January 2024
+1094,269,Date,,1/3/2024
+1095,269,Lost productivity UOM,None,Hours
+1096,269,Status,,Pending
+1097,269,Date,,Selected month is January 2024
+1098,270,Date,,1/4/2024
+1099,270,Lost productivity UOM,None,Hours
+1100,270,Status,,Pending
+1101,270,Date,,Selected month is January 2024
+1102,271,Date,,1/5/2024
+1103,271,Lost productivity UOM,None,Hours
+1104,271,Status,,Pending
+1105,271,Date,,Selected month is January 2024
+1106,272,Date,,1/7/2024
+1107,272,Lost productivity UOM,None,Hours
+1108,272,Status,,Pending
+1109,272,Date,,Selected month is January 2024
+1110,272,Status,,Total rainfall
+1111,273,Status,Pending,Approved
+1112,273,Date,,1/8/2024
+1113,273,Lost productivity UOM,None,Hours
+1114,273,Status,,Pending
+1115,273,Date,,Selected month is January 2024
+1116,274,Date,,1/9/2024
+1117,274,Lost productivity UOM,None,Hours
+1118,274,Status,,Pending
+1119,274,Date,,Selected month is January 2024
+1120,275,Date,,1/10/2024
+1121,275,Lost productivity UOM,None,Hours
+1122,275,Status,,Pending
+1123,275,Date,,Selected month is January 2024
+1124,276,Date,,1/11/2024
+1125,276,Lost productivity UOM,None,Hours
+1126,276,Status,,Pending
+1127,276,Date,,Selected month is January 2024
+1128,277,Date,,1/12/2024
+1129,277,Lost productivity UOM,None,Hours
+1130,277,Status,,Pending
+1131,277,Date,,Selected month is January 2024
+1132,278,Date,,1/15/2024
+1133,278,Lost productivity UOM,None,Hours
+1134,278,Status,,Pending
+1135,278,Date,,Selected month is January 2024
+1136,279,Date,,1/16/2024
+1137,279,Lost productivity UOM,None,Hours
+1138,279,Status,,Pending
+1139,279,Date,,Selected month is January 2024
+1140,280,Date,,1/17/2024
+1141,280,Lost productivity UOM,None,Hours
+1142,280,Status,,Pending
+1143,280,Date,,Selected month is January 2024
+1144,281,Date,,1/19/2024
+1145,281,Lost productivity UOM,None,Hours
+1146,281,Status,,Pending
+1147,281,Date,,Selected month is January 2024
+1148,282,Date,,1/20/2024
+1149,282,Lost productivity UOM,None,Hours
+1150,282,Status,,Pending
+1151,282,Date,,Selected month is January 2024
+1152,283,Date,,1/23/2024
+1153,283,Lost productivity UOM,None,Hours
+1154,283,Status,,Pending
+1155,283,Date,,Selected month is January 2024
+1156,284,Date,,1/24/2024
+1157,284,Lost productivity UOM,None,Hours
+1158,284,Status,,Pending
+1159,284,Date,,Selected month is January 2024
+1160,285,Date,,1/25/2024
+1161,285,Lost productivity UOM,None,Hours
+1162,285,Status,,Pending
+1163,285,Date,,Selected month is January 2024
+1164,286,Date,,1/26/2024
+1165,286,Lost productivity UOM,None,Hours
+1166,286,Status,,Pending
+1167,286,Date,,Selected month is January 2024
+1168,287,Date,,1/29/2024
+1169,287,Lost productivity UOM,None,Hours
+1170,287,Status,,Pending
+1171,287,Date,,Selected month is February 2024
+1172,288,Date,,2/1/2024
+1173,288,Lost productivity UOM,None,Hours
+1174,288,Status,,Pending
+1175,288,Date,,Selected month is February 2024
+1176,289,Date,,2/2/2024
+1177,289,Lost productivity UOM,None,Hours
+1178,289,Status,,Pending
+1179,289,Date,,Selected month is February 2024
+1180,290,Date,,2/6/2024
+1181,290,Lost productivity UOM,None,Hours
+1182,290,Status,,Pending
+1183,290,Date,,Selected month is February 2024
+1184,291,Date,,2/8/2024
+1185,291,Lost productivity UOM,None,Hours
+1186,291,Status,,Pending
+1187,291,Date,,Selected month is February 2024
+1188,292,Date,,2/9/2024
+1189,292,Lost productivity UOM,None,Hours
+1190,292,Status,,Pending
+1191,292,Date,,Selected month is February 2024
+1192,293,Date,,2/12/2024
+1193,293,Lost productivity UOM,None,Hours
+1194,293,Status,,Pending
+1195,293,Date,,Selected month is February 2024
+1196,294,Date,,2/13/2024
+1197,294,Lost productivity UOM,None,Hours
+1198,294,Status,,Pending
+1199,294,Date,,Selected month is February 2024
+1200,295,Date,,2/14/2024
+1201,295,Lost productivity UOM,None,Hours
+1202,295,Status,,Pending
+1203,295,Date,,Selected month is February 2024
+1204,296,Date,,2/15/2024
+1205,296,Lost productivity UOM,None,Hours
+1206,296,Status,,Pending
+1207,296,Date,,Selected month is February 2024
+1208,297,Date,,2/19/2024
+1209,297,Lost productivity UOM,None,Hours
+1210,297,Status,,Pending
+1211,297,Date,,Selected month is February 2024
+1212,298,Date,,2/20/2024
+1213,298,Lost productivity UOM,None,Hours
+1214,298,Status,,Pending
+1215,298,Date,,Selected month is February 2024
+1216,299,Date,,2/21/2024
+1217,299,Lost productivity UOM,None,Hours
+1218,299,Status,,Pending
+1219,299,Date,,Selected month is February 2024
+1220,300,Date,,2/22/2024
+1221,300,Lost productivity UOM,None,Hours
+1222,300,Status,,Pending
+1223,300,Date,,Selected month is February 2024
+1224,301,Date,,2/23/2024
+1225,301,Lost productivity UOM,None,Hours
+1226,301,Status,,Pending
+1227,301,Date,,Selected month is February 2024
+1228,302,Date,,2/24/2024
+1229,302,Lost productivity UOM,None,Hours
+1230,302,Status,,Pending
+1231,302,Date,,Selected month is February 2024
+1232,303,Date,,2/27/2024
+1233,303,Lost productivity UOM,None,Hours
+1234,303,Status,,Pending
+1235,303,Date,,Selected month is February 2024
+1236,304,Date,,2/28/2024
+1237,304,Lost productivity UOM,None,Hours
+1238,304,Status,,Pending
+1239,304,Date,,Selected month is February 2024
+1240,305,Date,,2/29/2024
+1241,305,Lost productivity UOM,None,Hours
+1242,305,Status,,Pending
+1243,305,Date,,Selected month is March 2024
+1244,306,Date,,3/1/2024
+1245,306,Lost productivity UOM,None,Hours
+1246,306,Status,,Pending
+1247,306,Date,,Selected month is March 2024
+1248,307,Date,,3/2/2024
+1249,307,Lost productivity UOM,None,Hours
+1250,307,Status,,Pending
+1251,307,Date,,Selected month is March 2024
+1252,308,Date,,3/6/2024
+1253,308,Lost productivity UOM,None,Hours
+1254,308,Status,,Pending
+1255,308,Date,,Selected month is March 2024
+1256,309,Date,,3/7/2024
+1257,309,Lost productivity UOM,None,Hours
+1258,309,Status,,Pending
+1259,309,Date,,Selected month is March 2024
+1260,310,Date,,3/8/2024
+1261,310,Lost productivity UOM,None,Hours
+1262,310,Status,,Pending
+1263,310,Date,,Selected month is March 2024
+1264,311,Date,,3/12/2024
+1265,311,Lost productivity UOM,None,Hours
+1266,311,Status,,Pending
+1267,311,Date,,Selected month is March 2024
+1268,312,Date,,3/13/2024
+1269,312,Lost productivity UOM,None,Hours
+1270,312,Status,,Pending
+1271,312,Date,,Selected month is March 2024
+1272,313,Date,,3/14/2024
+1273,313,Lost productivity UOM,None,Hours
+1274,313,Status,,Pending
+1275,313,Date,,Selected month is March 2024
+1276,314,Date,,3/15/2024
+1277,314,Lost productivity UOM,None,Hours
+1278,314,Status,,Pending
+1279,314,Date,,Selected month is March 2024
+1280,315,Date,,3/18/2024
+1281,315,Lost productivity UOM,None,Hours
+1282,315,Status,,Pending
+1283,315,Date,,Selected month is March 2024
+1284,316,Date,,3/20/2024
+1285,316,Lost productivity UOM,None,Hours
+1286,316,Status,,Pending
+1287,316,Date,,Selected month is March 2024
+1288,317,Date,,3/22/2024
+1289,317,Lost productivity UOM,None,Hours
+1290,317,Status,,Pending
+1291,317,Date,,Selected month is March 2024
+1292,318,Date,,3/23/2024
+1293,318,Lost productivity UOM,None,Hours
+1294,318,Status,,Pending
+1295,318,Date,,Selected month is March 2024
+1296,319,Date,,3/25/2024
+1297,319,Lost productivity UOM,None,Hours
+1298,319,Status,,Pending
+1299,319,Date,,Selected month is March 2024
+1300,320,Date,,3/28/2024
+1301,320,Lost productivity UOM,None,Hours
+1302,320,Status,,Pending
+1303,320,Date,,Selected month is April 2024
+1304,320,Status,,Total rainfall
+1305,321,Status,Pending,Approved
+1306,321,Date,,4/1/2024
+1307,321,Lost productivity UOM,None,Hours
+1308,321,Status,,Pending
+1309,321,Date,,Selected month is April 2024
+1310,322,Date,,4/2/2024
+1311,322,Lost productivity UOM,None,Hours
+1312,322,Status,,Pending
+1313,322,Date,,Selected month is April 2024
+1314,323,Date,,4/3/2024
+1315,323,Lost productivity UOM,None,Hours
+1316,323,Status,,Pending
+1317,323,Date,,Selected month is April 2024
+1318,324,Date,,4/4/2024
+1319,324,Lost productivity UOM,None,Hours
+1320,324,Status,,Pending
+1321,324,Date,,Selected month is April 2024
+1322,325,Date,,4/5/2024
+1323,325,Lost productivity UOM,None,Hours
+1324,325,Status,,Pending
+1325,325,Date,,Selected month is April 2024
+1326,326,Date,,4/5/2024
+1327,326,Lost productivity UOM,None,Hours
+1328,326,Status,,Pending
+1329,326,Date,,Selected month is April 2024
+1330,327,Date,,4/8/2024
+1331,327,Lost productivity UOM,None,Hours
+1332,327,Status,,Pending
+1333,327,Date,,Selected month is April 2024
+1334,328,Date,,4/9/2024
+1335,328,Lost productivity UOM,None,Hours
+1336,328,Status,,Pending
+1337,328,Date,,Selected month is April 2024
+1338,329,Date,,4/10/2024
+1339,329,Lost productivity UOM,None,Hours
+1340,329,Status,,Pending
+1341,329,Date,,Selected month is April 2024
+1342,330,Date,,4/11/2024
+1343,330,Lost productivity UOM,None,Hours
+1344,330,Status,,Pending
+1345,330,Date,,Selected month is April 2024
+1346,331,Date,,4/13/2024
+1347,331,Lost productivity UOM,None,Hours
+1348,331,Status,,Pending
+1349,331,Date,,Selected month is April 2024
+1350,332,Date,,4/15/2024
+1351,332,Lost productivity UOM,None,Hours
+1352,332,Status,,Pending
+1353,332,Date,,Selected month is April 2024
+1354,333,Date,,4/16/2024
+1355,333,Lost productivity UOM,None,Hours
+1356,333,Status,,Pending
+1357,333,Date,,Selected month is April 2024
+1358,334,Date,,4/22/2024
+1359,334,Lost productivity UOM,None,Hours
+1360,334,Status,,Pending
+1361,334,Date,,Selected month is April 2024
+1362,335,Date,,4/23/2024
+1363,335,Lost productivity UOM,None,Hours
+1364,335,Status,,Pending
+1365,335,Date,,Selected month is April 2024
+1366,336,Date,,4/24/2024
+1367,336,Lost productivity UOM,None,Hours
+1368,336,Status,,Pending
+1369,336,Date,,Selected month is April 2024
+1370,337,Date,,4/26/2024
+1371,337,Lost productivity UOM,None,Hours
+1372,337,Status,,Pending
+1373,337,Date,,Selected month is May 2024
+1374,338,Date,,5/1/2024
+1375,338,Lost productivity UOM,None,Hours
+1376,338,Status,,Pending
+1377,338,Date,,Selected month is May 2024
+1378,339,Date,,5/6/2024
+1379,339,Lost productivity UOM,None,Hours
+1380,339,Status,,Pending
+1381,339,Date,,Selected month is May 2024
+1382,340,Date,,5/7/2024
+1383,340,Lost productivity UOM,None,Hours
+1384,340,Status,,Pending
+1385,340,Date,,Selected month is May 2024
+1386,341,Date,,5/8/2024
+1387,341,Lost productivity UOM,None,Hours
+1388,341,Status,,Pending
+1389,341,Date,,Selected month is May 2024
+1390,342,Date,,5/9/2024
+1391,342,Lost productivity UOM,None,Hours
+1392,342,Status,,Pending
+1393,342,Date,,Selected month is May 2024
+1394,343,Date,,5/11/2024
+1395,343,Lost productivity UOM,None,Hours
+1396,343,Status,,Pending
+1397,343,Date,,Selected month is May 2024
+1398,344,Date,,5/15/2024
+1399,344,Lost productivity UOM,None,Hours
+1400,344,Status,,Pending
+1401,344,Date,,Selected month is May 2024
+1402,345,Date,,5/17/2024
+1403,345,Lost productivity UOM,None,Hours
+1404,345,Status,,Pending
+1405,345,Date,,Selected month is May 2024
+1406,346,Date,,5/20/2024
+1407,346,Lost productivity UOM,None,Hours
+1408,346,Status,,Pending
+1409,346,Date,,Selected month is May 2024
+1410,347,Date,,5/24/2024
+1411,347,Lost productivity UOM,None,Hours
+1412,347,Status,,Pending
+1413,347,Date,,Selected month is May 2024
+1414,348,Date,,5/28/2024
+1415,348,Lost productivity UOM,None,Hours
+1416,348,Status,,Pending
+1417,348,Date,,Selected month is May 2024
+1418,349,Date,,5/29/2024
+1419,349,Lost productivity UOM,None,Hours
+1420,349,Status,,Pending
+1421,349,Date,,Selected month is May 2024
+1422,350,Date,,5/30/2024
+1423,350,Lost productivity UOM,None,Hours
+1424,350,Status,,Pending
+1425,350,Date,,Selected month is May 2024
+1426,351,Date,,5/31/2024
+1427,351,Lost productivity UOM,None,Hours
+1428,351,Status,,Pending
+1429,351,Date,,Selected month is June 2024
+1430,352,Date,,6/1/2024
+1431,352,Lost productivity UOM,None,Hours
+1432,352,Status,,Pending
+1433,352,Date,,Selected month is June 2024
+1434,353,Date,,6/3/2024
+1435,353,Lost productivity UOM,None,Hours
+1436,353,Status,,Pending
+1437,353,Date,,Selected month is June 2024
+1438,354,Date,,6/4/2024
+1439,354,Lost productivity UOM,None,Hours
+1440,354,Status,,Pending
+1441,354,Date,,Selected month is June 2024
+1442,355,Date,,6/5/2024
+1443,355,Lost productivity UOM,None,Hours
+1444,355,Status,,Pending
+1445,355,Date,,Selected month is June 2024
+1446,356,Date,,6/6/2024
+1447,356,Lost productivity UOM,None,Hours
+1448,356,Status,,Pending
+1449,356,Date,,Selected month is June 2024
+1450,357,Date,,6/11/2024
+1451,357,Lost productivity UOM,None,Hours
+1452,357,Status,,Pending
+1453,357,Date,,Selected month is June 2024
+1454,358,Date,,6/12/2024
+1455,358,Lost productivity UOM,None,Hours
+1456,358,Status,,Pending
+1457,358,Date,,Selected month is June 2024
+1458,359,Date,,6/14/2024
+1459,359,Lost productivity UOM,None,Hours
+1460,359,Status,,Pending
+1461,359,Date,,Selected month is June 2024
+1462,360,Date,,6/15/2024
+1463,360,Lost productivity UOM,None,Hours
+1464,360,Status,,Pending
+1465,360,Date,,Selected month is June 2024
+1466,361,Date,,6/16/2024
+1467,361,Lost productivity UOM,None,Hours
+1468,361,Status,,Pending
+1469,361,Date,,Selected month is June 2024
+1470,362,Date,,6/16/2024
+1471,362,Lost productivity UOM,None,Hours
+1472,362,Status,,Pending
+1473,362,Date,,Selected month is June 2024
+1474,363,Date,,6/19/2024
+1475,363,Lost productivity UOM,None,Hours
+1476,363,Status,,Pending
+1477,363,Date,,Selected month is June 2024
+1478,364,Status,Pending,Ready For Review
+1479,364,Date,,6/20/2024
+1480,364,Lost productivity UOM,None,Hours
+1481,364,Status,,Pending
+1482,364,Date,,Selected month is June 2024
+1483,365,Date,,6/21/2024
+1484,365,Lost productivity UOM,None,Hours
+1485,365,Status,,Pending
+1486,365,Date,,Selected month is June 2024
+1487,366,Date,,6/24/2024
+1488,366,Lost productivity UOM,None,Hours
+1489,366,Status,,Pending
+1490,366,Date,,Selected month is June 2024
+1491,367,Date,,6/25/2024
+1492,367,Lost productivity UOM,None,Hours
+1493,367,Status,,Pending
+1494,367,Date,,Selected month is June 2024
+1495,368,Date,,6/26/2024
+1496,368,Lost productivity UOM,None,Hours
+1497,368,Status,,Pending
+1498,368,Date,,Selected month is June 2024
+1499,369,Date,,6/27/2024
+1500,369,Lost productivity UOM,None,Hours
+1501,369,Status,,Pending
+1502,369,Date,,Selected month is July 2024
+1503,370,Date,,7/1/2024
+1504,370,Lost productivity UOM,None,Hours
+1505,370,Status,,Pending
+1506,370,Date,,Selected month is July 2024
+1507,371,Date,,7/3/2024
+1508,371,Lost productivity UOM,None,Hours
+1509,371,Status,,Pending
+1510,371,Date,,Selected month is July 2024
+1511,372,Date,,7/9/2024
+1512,372,Lost productivity UOM,None,Hours
+1513,372,Status,,Pending
+1514,372,Date,,Selected month is July 2024
+1515,373,Date,,7/11/2024
+1516,373,Lost productivity UOM,None,Hours
+1517,373,Status,,Pending
+1518,373,Date,,Selected month is July 2024
+1519,374,Date,,7/12/2024
+1520,374,Lost productivity UOM,None,Hours
+1521,374,Status,,Pending
+1522,374,Date,,Selected month is July 2024
+1523,375,Date,,7/17/2024
+1524,375,Lost productivity UOM,None,Hours
+1525,375,Status,,Pending
+1526,375,Date,,Selected month is July 2024
+1527,376,Date,,7/23/2024
+1528,376,Lost productivity UOM,None,Hours
+1529,376,Status,,Pending
+1530,376,Date,,7/23/2024
+1531,376,Lost productivity UOM,None,Hours
+1532,376,Status,,Pending
+1533,376,Date,,Selected month is July 2024
+1534,377,Date,,7/24/2024
+1535,377,Lost productivity UOM,None,Hours
+1536,377,Status,,Pending
+1537,377,Date,,Selected month is July 2024
+1538,378,Date,,7/25/2024
+1539,378,Lost productivity UOM,None,Hours
+1540,378,Status,,Pending
+1541,378,Date,,Selected month is August 2024
+1542,379,Date,,8/1/2024
+1543,379,Lost productivity UOM,None,Hours
+1544,379,Status,,Pending
+1545,379,Date,,Selected month is August 2024
+1546,380,Date,,8/2/2024
+1547,380,Lost productivity UOM,None,Hours
+1548,380,Status,,Pending
+1549,380,Date,,Selected month is August 2024
+1550,381,Date,,8/5/2024
+1551,381,Lost productivity UOM,None,Hours
+1552,381,Status,,Pending
+1553,381,Date,,Selected month is August 2024
+1554,382,Date,,8/6/2024
+1555,382,Lost productivity UOM,None,Hours
+1556,382,Status,,Pending
+1557,382,Date,,Selected month is August 2024
+1558,383,Date,,8/8/2024
+1559,383,Lost productivity UOM,None,Hours
+1560,383,Status,,Pending
+1561,383,Date,,Selected month is August 2024
+1562,384,Date,,8/9/2024
+1563,384,Lost productivity UOM,None,Hours
+1564,384,Status,,Pending
+1565,384,Date,,Selected month is August 2024
+1566,385,Date,,8/9/2024
+1567,385,Lost productivity UOM,None,Hours
+1568,385,Status,,Pending
+1569,385,Date,,Selected month is August 2024
+1570,386,Date,,8/12/2024
+1571,386,Lost productivity UOM,None,Hours
+1572,386,Status,,Pending
+1573,386,Date,,Selected month is August 2024
+1574,387,Date,,8/13/2024
+1575,387,Lost productivity UOM,None,Hours
+1576,387,Status,,Pending
+1577,387,Date,,Selected month is August 2024
+1578,388,Date,,8/23/2024
+1579,388,Lost productivity UOM,None,Hours
+1580,388,Status,,Pending
+1581,388,Date,,Selected month is August 2024
+1582,389,Date,,8/26/2024
+1583,389,Lost productivity UOM,None,Hours
+1584,389,Status,,Pending
+1585,389,Date,,Selected month is August 2024
+1586,390,Date,,8/27/2024
+1587,390,Lost productivity UOM,None,Hours
+1588,390,Status,,Pending
+1589,390,Date,,Selected month is August 2024
+1590,391,Date,,8/28/2024
+1591,391,Lost productivity UOM,None,Hours
+1592,391,Status,,Pending
+1593,391,Date,,Selected month is August 2024
+1594,392,Date,,8/29/2024
+1595,392,Lost productivity UOM,None,Hours
+1596,392,Status,,Pending
+1597,392,Date,,Selected month is September 2024
+1598,393,Date,,9/1/2024
+1599,393,Lost productivity UOM,None,Hours
+1600,393,Status,,Pending
+1601,393,Date,,Selected month is September 2024
+1602,394,Date,,9/3/2024
+1603,394,Lost productivity UOM,None,Hours
+1604,394,Status,,Pending
+1605,394,Date,,Selected month is September 2024
+1606,395,Date,,9/4/2024
+1607,395,Lost productivity UOM,None,Hours
+1608,395,Status,,Pending
+1609,395,Date,,Selected month is September 2024
+1610,395,Status,,Total rainfall
+1611,396,Status,Pending,Approved
+1612,396,Date,,9/5/2024
+1613,396,Lost productivity UOM,None,Hours
+1614,396,Status,,Pending
+1615,396,Date,,Selected month is September 2024
+1616,397,Date,,9/9/2024
+1617,397,Lost productivity UOM,None,Hours
+1618,397,Status,,Pending
+1619,397,Date,,Selected month is September 2024
+1620,398,Date,,9/12/2024
+1621,398,Lost productivity UOM,None,Hours
+1622,398,Status,,Pending
+1623,398,Date,,Selected month is September 2024
+1624,399,Date,,9/14/2024
+1625,399,Lost productivity UOM,None,Hours
+1626,399,Status,,Pending
+1627,399,Date,,Selected month is September 2024
+1628,400,Date,,9/16/2024
+1629,400,Lost productivity UOM,None,Hours
+1630,400,Status,,Pending
+1631,400,Date,,Selected month is September 2024
+1632,401,Date,,9/17/2024
+1633,401,Lost productivity UOM,None,Hours
+1634,401,Status,,Pending
+1635,401,Date,,Selected month is September 2024
+1636,402,Date,,9/18/2024
+1637,402,Lost productivity UOM,None,Hours
+1638,402,Status,,Pending
+1639,402,Date,,Selected month is September 2024
+1640,403,Date,,9/20/2024
+1641,403,Lost productivity UOM,None,Hours
+1642,403,Status,,Pending
+1643,403,Date,,Selected month is September 2024
+1644,404,Date,,9/21/2024
+1645,404,Lost productivity UOM,None,Hours
+1646,404,Status,,Pending
+1647,404,Date,,Selected month is September 2024
+1648,405,Date,,9/23/2024
+1649,405,Lost productivity UOM,None,Hours
+1650,405,Status,,Pending
+1651,405,Date,,Selected month is September 2024
+1652,406,Date,,9/28/2024
+1653,406,Lost productivity UOM,None,Hours
+1654,406,Status,,Pending
+1655,406,Date,,Selected month is October 2024
+1656,407,Date,,10/2/2024
+1657,407,Lost productivity UOM,None,Hours
+1658,407,Status,,Pending
+1659,407,Date,,Selected month is October 2024
+1660,408,Date,,10/14/2024
+1661,408,Lost productivity UOM,None,Hours
+1662,408,Status,,Pending
+1663,408,Date,,Selected month is October 2024
+1664,409,Date,,10/15/2024
+1665,409,Lost productivity UOM,None,Hours
+1666,409,Status,,Pending
+1667,409,Date,,Selected month is November 2024
+1668,410,Date,,11/18/2024
+1669,410,Lost productivity UOM,None,Hours
+1670,410,Status,,Pending
+1671,410,Date,,Selected month is August 2025
+1672,411,Date,,8/13/2025
+1673,411,Lost productivity UOM,None,Hours
+1674,411,Status,,Pending
+1675,411,Date,,Selected month is August 2025
+1676,412,Date,,8/14/2025
+1677,412,Lost productivity UOM,None,Hours
+1678,412,Status,,Pending
+1679,412,Date,,Selected month is October 2025
+1680,413,Date,,10/2/2025
+1681,413,Lost productivity UOM,None,Hours
+1682,413,Status,,Pending
+1683,413,Date,,Selected month is October 2025
+1684,414,Date,,10/30/2025
+1685,414,Lost productivity UOM,None,Hours
+1686,414,Status,,Pending
+1687,414,Date,,Selected month is November 2025

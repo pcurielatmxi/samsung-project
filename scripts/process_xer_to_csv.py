@@ -11,13 +11,13 @@ Usage:
 
 Examples:
     # Process with auto-generated output filename
-    python scripts/process_xer_to_csv.py data/raw/project.xer
+    python scripts/process_xer_to_csv.py data/raw/xer/project.xer
 
     # Process with specific output filename
-    python scripts/process_xer_to_csv.py data/raw/project.xer data/output/tasks.csv
+    python scripts/process_xer_to_csv.py data/raw/xer/project.xer data/primavera/processed/tasks.csv
 
     # Process all XER files in a directory
-    python scripts/process_xer_to_csv.py data/raw/*.xer
+    python scripts/process_xer_to_csv.py data/raw/xer/*.xer
 """
 
 import sys
@@ -220,9 +220,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s data/raw/project.xer
-  %(prog)s data/raw/project.xer data/output/tasks.csv
-  %(prog)s data/raw/project.xer --quiet
+  %(prog)s data/raw/xer/project.xer
+  %(prog)s data/raw/xer/project.xer data/primavera/processed/tasks.csv
+  %(prog)s data/raw/xer/project.xer --quiet
         """
     )
 

@@ -12,8 +12,9 @@ This process complements the grid extraction documented in [PROJECTSIGHT_DAILY_R
 
 | File | Records | Description |
 |------|---------|-------------|
-| `data/extracted/daily_reports_415.json` | 415 | Summary grid data (date, status, weather, counts) |
-| `data/extracted/daily-report-details-history.json` | 414 | History/audit trail from detail view |
+| `data/projectsight/extracted/daily_reports_415.json` | 415 | Summary grid data (date, status, weather, counts) |
+| `data/projectsight/extracted/daily-report-details-history.json` | 414 | History/audit trail from detail view |
+| `data/projectsight/tables/*.csv` | - | Normalized CSV tables (run `scripts/daily_reports_to_csv.py`) |
 
 ## What the History Tab Contains
 
@@ -233,7 +234,7 @@ Once extraction is complete, trigger a download:
 
 ```bash
 cp /workspaces/mxi-samsung/.playwright-mcp/daily-report-details-history.json \
-   /workspaces/mxi-samsung/data/extracted/
+   /workspaces/mxi-samsung/data/projectsight/extracted/
 ```
 
 ## Technical Details

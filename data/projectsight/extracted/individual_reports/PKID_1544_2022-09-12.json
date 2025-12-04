@@ -1,0 +1,27 @@
+{
+  "pkid": "1544",
+  "date": "9/12/2022",
+  "date_normalized": "2022-09-12",
+  "url": "https://prod.projectsightapp.trimble.com/Web/app/DailyReport?Action=Open&orgid=4540f425-f7b5-4ad8-837d-c270d5d09490&projid=3&PKID=1544",
+  "extraction_timestamp": "2025-12-04T00:00:00Z",
+  "tabs": {
+    "daily_report": {
+      "extracted": true,
+      "html_length": 731000,
+      "note": "HTML content extracted successfully - too large to store in this demo file"
+    },
+    "history": {
+      "extracted": false,
+      "html_length": null,
+      "note": "Not yet extracted"
+    }
+  },
+  "metadata": {
+    "status": "Pending",
+    "total_reports": 415,
+    "report_number": 1,
+    "project": "T-PJT > FAB1 > Construction",
+    "org_id": "4540f425-f7b5-4ad8-837d-c270d5d09490",
+    "proj_id": "3"
+  }
+}
