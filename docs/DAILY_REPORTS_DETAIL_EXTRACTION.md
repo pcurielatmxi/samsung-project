@@ -304,4 +304,3 @@ google-chrome --remote-debugging-port=9222
 ## Related Documentation
 
 - [PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md](PROJECTSIGHT_DAILY_REPORTS_EXTRACTION.md) - Grid/summary extraction
-- [BROWSER_EXTRACTION_GUIDE.md](BROWSER_EXTRACTION_GUIDE.md) - General browser extraction patterns
