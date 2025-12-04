@@ -7,6 +7,7 @@ ETL pipeline for integrating construction project data from multiple sources int
 **Data Sources:**
 - **ProjectSight (Trimble)** - Web scraping via Playwright
 - **Fieldwire** - REST API integration
+- **Primavera P6 (XER files)** - Schedule data extraction
 
 ## Architecture
 
@@ -46,6 +47,22 @@ ProjectSight uses modal-based UI with client-side routing. Playwright is require
 **Core Files:**
 - [src/connectors/web_scraper.py](src/connectors/web_scraper.py) - Playwright wrapper
 - [src/extractors/system_specific/projectsight_extractor.py](src/extractors/system_specific/projectsight_extractor.py) - Modal extraction
+
+## XER File Processing (Primavera P6)
+
+Process Primavera P6 schedule exports to CSV with full context (area, level, building, contractor, dates).
+
+**Key Points:**
+- Process XER files to CSV: `python scripts/process_xer_to_csv.py data/raw/schedule.xer`
+- Exports all 12,000+ tasks with 24 columns including WBS, activity codes, and all date fields
+- Filter by keyword, status, subcontractor, level: `python scripts/filter_tasks.py input.csv --keyword "drywall" -o output.csv`
+- Batch process multiple files: `./scripts/batch_process_xer.sh`
+- See [QUICKSTART_XER_PROCESSING.md](QUICKSTART_XER_PROCESSING.md) for detailed usage
+
+**Core Files:**
+- [src/utils/xer_parser.py](src/utils/xer_parser.py) - XER file parser
+- [scripts/process_xer_to_csv.py](scripts/process_xer_to_csv.py) - Main processing script
+- [notebooks/xer_to_csv_converter.ipynb](notebooks/xer_to_csv_converter.ipynb) - Interactive exploration
 
 ## Quick Start
 
