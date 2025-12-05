@@ -78,6 +78,8 @@ Thumbs.db
 data/raw/**/*
 data/processed/*
 data/output/*
+data/primavera/processed/*.csv
+data/primavera/raw_tables/*.csv
 !data/raw/.gitkeep
 !data/raw/xer/
 !data/raw/xer/.gitkeep
@@ -85,6 +87,8 @@ data/output/*
 data/raw/xer/*.xer
 !data/processed/.gitkeep
 !data/output/.gitkeep
+!data/primavera/processed/.gitkeep
+!data/primavera/raw_tables/.gitkeep
 
 # Session files (contains authentication cookies)
 data/.sessions/

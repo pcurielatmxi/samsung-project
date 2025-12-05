@@ -172,18 +172,69 @@ python scripts/validate_xer_manifest.py --fix
    - If this is the new current version: update `current` field and set old file's status to `archived`
 3. Run `python scripts/validate_xer_manifest.py` to verify
 
-### Processing Commands
+### Batch Processing (Recommended)
 
-- Process XER files to CSV: `python scripts/process_xer_to_csv.py data/raw/xer/schedule.xer`
-- Exports all 12,000+ tasks with 24 columns including WBS, activity codes, and all date fields
-- Filter by keyword, status, subcontractor, level: `python scripts/filter_tasks.py input.csv --keyword "drywall" -o output.csv`
-- Batch process multiple files: `./scripts/batch_process_xer.sh`
-- Output location: `data/primavera/processed/`
-- See [QUICKSTART_XER_PROCESSING.md](QUICKSTART_XER_PROCESSING.md) for detailed usage
+Process all XER files from manifest with file tracking:
+
+```bash
+# Process ALL files from manifest (creates tasks.csv with ~1M records)
+python scripts/batch_process_xer.py
+
+# Process only the current file
+python scripts/batch_process_xer.py --current-only
+
+# Custom output directory
+python scripts/batch_process_xer.py --output-dir ./output
+```
+
+**Output Tables:**
+| File | Description |
+|------|-------------|
+| `xer_files.csv` | Metadata for all XER files (file_id, filename, date, status, is_current) |
+| `tasks.csv` | All tasks from all files with `file_id` foreign key |
+
+**Schema:**
+- Every record in `tasks.csv` has a `file_id` column linking to `xer_files.csv`
+- Use `file_id` to filter tasks by schedule version or join with file metadata
+- `xer_files.is_current` indicates the current/active schedule
+
+**Example Query (pandas):**
+```python
+import pandas as pd
+files = pd.read_csv('data/primavera/processed/xer_files.csv')
+tasks = pd.read_csv('data/primavera/processed/tasks.csv')
+
+# Get current file's tasks only
+current_file_id = files[files['is_current']]['file_id'].values[0]
+current_tasks = tasks[tasks['file_id'] == current_file_id]
+
+# Compare task counts across schedule versions
+tasks.groupby('file_id').size().reset_index(name='task_count').merge(files)
+```
+
+### Single File Processing
+
+Process individual XER files (legacy, no file tracking):
+
+```bash
+python scripts/process_xer_to_csv.py data/raw/xer/schedule.xer
+```
+
+### Filtering
+
+Filter exported tasks by keyword, status, subcontractor, level:
+```bash
+python scripts/filter_tasks.py input.csv --keyword "drywall" -o output.csv
+```
+
+**Output Location:** `data/primavera/processed/`
+
+See [QUICKSTART_XER_PROCESSING.md](QUICKSTART_XER_PROCESSING.md) for detailed usage.
 
 **Core Files:**
 - [src/utils/xer_parser.py](src/utils/xer_parser.py) - XER file parser
-- [scripts/process_xer_to_csv.py](scripts/process_xer_to_csv.py) - Main processing script
+- [scripts/batch_process_xer.py](scripts/batch_process_xer.py) - Batch processor with file tracking
+- [scripts/process_xer_to_csv.py](scripts/process_xer_to_csv.py) - Single file processor
 - [scripts/validate_xer_manifest.py](scripts/validate_xer_manifest.py) - Manifest validation
 - [notebooks/xer_to_csv_converter.ipynb](notebooks/xer_to_csv_converter.ipynb) - Interactive exploration
 
