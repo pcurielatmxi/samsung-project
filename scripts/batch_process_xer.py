@@ -2,12 +2,37 @@
 """
 Batch XER Processor - Process all XER files from manifest with file tracking
 
-This script processes all XER files listed in the manifest and exports:
-1. xer_files.csv - Metadata about each XER file (from manifest)
-2. tasks.csv - All tasks from all files with file_id reference
-3. Additional tables as needed (WBS, activity codes, etc.)
+This script processes all XER files listed in the manifest and exports ALL tables
+from each XER file to CSV format. Each record includes a file_id to track which
+XER file it came from.
 
-Each record includes a file_id to track which XER file it came from.
+IMPORTANT: All ID columns are prefixed with file_id to maintain referential integrity
+across multiple XER files. Format: "{file_id}_{original_id}"
+
+For example, if file_id=48 and task_id=715090, the output will be task_id="48_715090"
+
+This ensures:
+- Primary keys are unique across all files
+- Foreign key relationships are preserved within each file
+- PowerBI and other tools can build proper data models
+
+Output Tables (all with file_id and prefixed IDs):
+- xer_files.csv        - Metadata about each XER file (from manifest)
+- task.csv             - Tasks (activities)
+- taskpred.csv         - Task predecessors/dependencies
+- taskrsrc.csv         - Task resource assignments
+- taskactv.csv         - Task activity code assignments
+- taskmemo.csv         - Task notes/memos
+- projwbs.csv          - WBS (Work Breakdown Structure)
+- actvcode.csv         - Activity code values
+- actvtype.csv         - Activity code types
+- calendar.csv         - Calendars
+- rsrc.csv             - Resources
+- rsrcrate.csv         - Resource rates
+- udftype.csv          - User-defined field types
+- udfvalue.csv         - User-defined field values
+- project.csv          - Project metadata
+- ... and all other tables in the XER files
 
 Usage:
     python scripts/batch_process_xer.py
@@ -31,6 +56,52 @@ from src.utils.xer_parser import XERParser
 MANIFEST_PATH = project_root / "data" / "raw" / "xer" / "manifest.json"
 XER_DIR = project_root / "data" / "raw" / "xer"
 DEFAULT_OUTPUT_DIR = project_root / "data" / "primavera" / "processed"
+
+
+def prefix_id_columns(df: pd.DataFrame, file_id: int) -> pd.DataFrame:
+    """
+    Prefix all ID columns with file_id to ensure uniqueness across files.
+
+    Transforms columns ending with '_id' (except 'file_id') from:
+        715090 -> "48_715090"
+
+    This ensures primary keys are unique and foreign key relationships
+    are preserved within each file.
+
+    For non-numeric values (data issues in some XER files), the value is
+    preserved as-is with the file_id prefix.
+
+    Args:
+        df: DataFrame to transform
+        file_id: The file_id to use as prefix
+
+    Returns:
+        DataFrame with transformed ID columns
+    """
+    df = df.copy()
+
+    def transform_id(x, file_id):
+        """Transform a single ID value with file_id prefix"""
+        if pd.isna(x) or str(x).strip() == '':
+            return ''
+
+        # Try to convert to int for clean numeric IDs
+        try:
+            return f"{file_id}_{int(float(x))}"
+        except (ValueError, TypeError):
+            # For non-numeric values, still prefix but keep original value
+            return f"{file_id}_{x}"
+
+    for col in df.columns:
+        # Skip file_id itself - it stays as the numeric file identifier
+        if col == 'file_id':
+            continue
+
+        # Transform columns ending with _id
+        if col.endswith('_id'):
+            df[col] = df[col].apply(lambda x: transform_id(x, file_id))
+
+    return df
 
 
 def load_manifest() -> dict:
@@ -75,9 +146,10 @@ def create_files_table(manifest: dict) -> pd.DataFrame:
 
 def process_single_xer(xer_path: Path, file_id: int, verbose: bool = True) -> dict[str, pd.DataFrame]:
     """
-    Process a single XER file and return DataFrames with file_id added
+    Process a single XER file and return all tables with file_id added
+    and all ID columns prefixed with file_id for uniqueness.
 
-    Returns dict with keys: tasks, wbs, activity_codes
+    Returns dict mapping table name (lowercase) to DataFrame
     """
     if verbose:
         print(f"  Parsing {xer_path.name}...")
@@ -90,118 +162,35 @@ def process_single_xer(xer_path: Path, file_id: int, verbose: bool = True) -> di
             print(f"    ⚠️  Error parsing: {e}")
         return None
 
-    # Get base tables
-    tasks = parser.get_tasks()
-    if tasks is None or len(tasks) == 0:
+    if not tables:
         if verbose:
-            print(f"    ⚠️  No tasks found")
+            print(f"    ⚠️  No tables found")
         return None
 
-    taskactv = parser.get_table('TASKACTV')
-    actvcode = parser.get_table('ACTVCODE')
-    actvtype = parser.get_table('ACTVTYPE')
-    wbs = parser.get_table('PROJWBS')
+    result = {}
+    table_counts = []
 
-    # Add WBS information to tasks
-    if wbs is not None and len(wbs) > 0:
-        tasks = tasks.merge(
-            wbs[['wbs_id', 'wbs_short_name', 'wbs_name']],
-            on='wbs_id',
-            how='left'
-        )
+    for table_name, df in tables.items():
+        if df is None or len(df) == 0:
+            continue
 
-    # Add activity codes
-    activity_code_types = {
-        'Z-AREA': 'area',
-        'Z-LEVEL': 'level',
-        'Z-BLDG': 'building',
-        'Z-SUB CONTRACTOR': 'subcontractor',
-        'Z-TRADE': 'trade',
-        'Z-RESPONSIBLE': 'responsible',
-        'Z-ROOM': 'room',
-        'Z-PHASE (High Level)': 'phase',
-        'Z-BID PACKAGE': 'bid_package'
-    }
+        # Add file_id as first column
+        df_with_id = df.copy()
+        df_with_id.insert(0, 'file_id', file_id)
 
-    if actvtype is not None and actvcode is not None and taskactv is not None:
-        for code_type, column_name in activity_code_types.items():
-            type_row = actvtype[actvtype['actv_code_type'] == code_type]
-            if len(type_row) > 0:
-                type_id = type_row['actv_code_type_id'].values[0]
-                codes_of_type = actvcode[actvcode['actv_code_type_id'] == type_id]
+        # Prefix all ID columns with file_id for uniqueness across files
+        df_with_id = prefix_id_columns(df_with_id, file_id)
 
-                task_codes = taskactv.merge(
-                    codes_of_type[['actv_code_id', 'actv_code_name']],
-                    on='actv_code_id',
-                    how='inner'
-                )
-
-                task_codes = task_codes[['task_id', 'actv_code_name']].rename(
-                    columns={'actv_code_name': column_name}
-                )
-
-                tasks = tasks.merge(task_codes, on='task_id', how='left')
-
-    # Select and rename columns for export
-    export_columns = {
-        'task_id': 'task_id',
-        'task_code': 'task_code',
-        'task_name': 'task_name',
-        'status_code': 'status',
-        'wbs_id': 'wbs_id',
-        'wbs_name': 'wbs_name',
-        'wbs_short_name': 'wbs_short_name',
-        'building': 'building',
-        'area': 'area',
-        'level': 'level',
-        'room': 'room',
-        'phase': 'phase',
-        'subcontractor': 'subcontractor',
-        'trade': 'trade',
-        'responsible': 'responsible',
-        'bid_package': 'bid_package',
-        'target_start_date': 'planned_start',
-        'target_end_date': 'planned_finish',
-        'act_start_date': 'actual_start',
-        'act_end_date': 'actual_finish',
-        'early_start_date': 'early_start',
-        'early_end_date': 'early_finish',
-        'late_start_date': 'late_start',
-        'late_end_date': 'late_finish',
-        'remain_drtn_hr_cnt': 'remaining_duration_hrs',
-        'target_drtn_hr_cnt': 'planned_duration_hrs',
-        'phys_complete_pct': 'physical_pct_complete'
-    }
-
-    # Build export dataframe with available columns
-    export_cols = []
-    rename_map = {}
-    for old_col, new_col in export_columns.items():
-        if old_col in tasks.columns:
-            export_cols.append(old_col)
-            rename_map[old_col] = new_col
-
-    tasks_export = tasks[export_cols].copy()
-    tasks_export = tasks_export.rename(columns=rename_map)
-
-    # Map status codes
-    status_map = {
-        'TK_Complete': 'Complete',
-        'TK_Active': 'Active',
-        'TK_NotStart': 'Not Started'
-    }
-    if 'status' in tasks_export.columns:
-        tasks_export['status'] = tasks_export['status'].map(status_map).fillna(tasks_export['status'])
-
-    # Add file_id as first column
-    tasks_export.insert(0, 'file_id', file_id)
+        # Use lowercase table names for output files
+        result[table_name.lower()] = df_with_id
+        table_counts.append(f"{table_name}:{len(df)}")
 
     if verbose:
-        print(f"    ✓ {len(tasks_export):,} tasks")
+        # Show summary
+        task_count = len(tables.get('TASK', pd.DataFrame()))
+        print(f"    ✓ {len(result)} tables, {task_count:,} tasks")
 
-    return {
-        'tasks': tasks_export
-    }
+    return result
 
 
 def batch_process(
@@ -210,7 +199,7 @@ def batch_process(
     verbose: bool = True
 ) -> dict[str, Path]:
     """
-    Process all XER files from manifest
+    Process all XER files from manifest and export all tables
 
     Args:
         output_dir: Directory for output CSV files
@@ -228,7 +217,7 @@ def batch_process(
 
     if verbose:
         print(f"XER Batch Processor")
-        print(f"=" * 50)
+        print(f"=" * 60)
         print(f"Manifest: {MANIFEST_PATH}")
         print(f"Output: {output_dir}")
         print(f"Current file: {manifest['current']}")
@@ -249,14 +238,14 @@ def batch_process(
 
     print()
 
-    # Process each file
-    all_tasks = []
+    # Process each file and collect all tables
+    all_tables: dict[str, list[pd.DataFrame]] = {}
     processed_count = 0
     error_count = 0
 
     if verbose:
         print(f"Processing {len(files_to_process)} XER file(s)...")
-        print("-" * 50)
+        print("-" * 60)
 
     for _, row in files_to_process.iterrows():
         filename = row['filename']
@@ -272,45 +261,49 @@ def batch_process(
         result = process_single_xer(xer_path, file_id, verbose)
 
         if result is not None:
-            all_tasks.append(result['tasks'])
+            for table_name, df in result.items():
+                if table_name not in all_tables:
+                    all_tables[table_name] = []
+                all_tables[table_name].append(df)
             processed_count += 1
         else:
             error_count += 1
 
     if verbose:
-        print("-" * 50)
+        print("-" * 60)
         print(f"Processed: {processed_count}, Errors: {error_count}")
         print()
 
-    # Combine all tasks
-    if all_tasks:
-        tasks_combined = pd.concat(all_tasks, ignore_index=True)
-    else:
-        tasks_combined = pd.DataFrame()
-
-    # Save output files
+    # Combine and save all tables
     output_files = {}
 
-    # 1. Save xer_files.csv
+    # 1. Save xer_files.csv first
     files_output = output_dir / "xer_files.csv"
     files_df.to_csv(files_output, index=False)
     output_files['xer_files'] = files_output
-    if verbose:
-        print(f"✓ Saved {files_output.name} ({len(files_df)} files)")
-
-    # 2. Save tasks.csv
-    tasks_output = output_dir / "tasks.csv"
-    tasks_combined.to_csv(tasks_output, index=False)
-    output_files['tasks'] = tasks_output
-    if verbose:
-        print(f"✓ Saved {tasks_output.name} ({len(tasks_combined):,} tasks)")
 
     if verbose:
-        print()
-        print(f"✅ Batch processing complete!")
-        print(f"\nOutput files:")
-        for name, path in output_files.items():
-            print(f"  - {path}")
+        print(f"Saving {len(all_tables) + 1} tables...")
+        print("-" * 60)
+        print(f"✓ xer_files.csv ({len(files_df)} rows)")
+
+    # 2. Save all other tables
+    for table_name in sorted(all_tables.keys()):
+        dfs = all_tables[table_name]
+        if dfs:
+            combined = pd.concat(dfs, ignore_index=True)
+            output_path = output_dir / f"{table_name}.csv"
+            combined.to_csv(output_path, index=False)
+            output_files[table_name] = output_path
+
+            if verbose:
+                print(f"✓ {table_name}.csv ({len(combined):,} rows)")
+
+    if verbose:
+        print("-" * 60)
+        print(f"\n✅ Batch processing complete!")
+        print(f"\nOutput directory: {output_dir}")
+        print(f"Total tables: {len(output_files)}")
 
     return output_files
 
@@ -320,7 +313,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Batch process all XER files from manifest',
+        description='Batch process all XER files from manifest - exports ALL tables',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

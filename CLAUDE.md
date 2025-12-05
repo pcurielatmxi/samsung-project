@@ -65,6 +65,7 @@ See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed structure.
 
 ### Existing Subfolder Docs
 - [src/extractors/system_specific/CLAUDE.md](src/extractors/system_specific/CLAUDE.md) - ProjectSight extractor status
+- [data/CLAUDE.md](data/CLAUDE.md) - Data directory context and documentation
 
 ### When to Update
 - After implementing new features
@@ -174,10 +175,10 @@ python scripts/validate_xer_manifest.py --fix
 
 ### Batch Processing (Recommended)
 
-Process all XER files from manifest with file tracking:
+Process all XER files from manifest with file tracking. **Exports ALL tables from XER files**, not just tasks.
 
 ```bash
-# Process ALL files from manifest (creates tasks.csv with ~1M records)
+# Process ALL files from manifest (exports ~48 tables with file_id tracking)
 python scripts/batch_process_xer.py
 
 # Process only the current file
@@ -187,22 +188,32 @@ python scripts/batch_process_xer.py --current-only
 python scripts/batch_process_xer.py --output-dir ./output
 ```
 
-**Output Tables:**
-| File | Description |
-|------|-------------|
-| `xer_files.csv` | Metadata for all XER files (file_id, filename, date, status, is_current) |
-| `tasks.csv` | All tasks from all files with `file_id` foreign key |
+**Output Tables (ALL with file_id):**
+| File | Records | Description |
+|------|---------|-------------|
+| `xer_files.csv` | 48 | Metadata for all XER files (file_id, filename, date, status, is_current) |
+| `task.csv` | 964,002 | All tasks from all files |
+| `taskpred.csv` | 2,002,060 | Task predecessors/dependencies |
+| `taskactv.csv` | 4,138,671 | Task activity code assignments |
+| `taskrsrc.csv` | 266,298 | Task resource assignments |
+| `projwbs.csv` | 270,890 | WBS structure |
+| `actvcode.csv` | - | Activity code values |
+| `calendar.csv` | - | Calendar definitions |
+| `rsrc.csv` | - | Resources |
+| `udfvalue.csv` | - | User-defined field values |
+| ... | ... | ~48 tables total |
 
 **Schema:**
-- Every record in `tasks.csv` has a `file_id` column linking to `xer_files.csv`
-- Use `file_id` to filter tasks by schedule version or join with file metadata
+- **Every table has `file_id` as first column** linking to `xer_files.csv`
+- Use `file_id` to filter by schedule version or join with file metadata
 - `xer_files.is_current` indicates the current/active schedule
+- Table names are lowercase versions of XER table names (TASK → task.csv)
 
 **Example Query (pandas):**
 ```python
 import pandas as pd
 files = pd.read_csv('data/primavera/processed/xer_files.csv')
-tasks = pd.read_csv('data/primavera/processed/tasks.csv')
+tasks = pd.read_csv('data/primavera/processed/task.csv')
 
 # Get current file's tasks only
 current_file_id = files[files['is_current']]['file_id'].values[0]

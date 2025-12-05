@@ -30,10 +30,14 @@ data/
 │       ├── manifest.json       # Tracked file registry (48 files)
 │       └── *.xer               # XER files (gitignored)
 ├── primavera/                  # Processed Primavera data
-│   ├── processed/              # Batch-processed CSVs
+│   ├── processed/              # Batch-processed CSVs (ALL tables)
 │   │   ├── xer_files.csv       # File metadata table
-│   │   └── tasks.csv           # All tasks with file_id
-│   ├── raw_tables/             # Direct XER table exports
+│   │   ├── task.csv            # All tasks with file_id
+│   │   ├── taskpred.csv        # Task predecessors/dependencies
+│   │   ├── taskrsrc.csv        # Task resource assignments
+│   │   ├── projwbs.csv         # WBS structure
+│   │   └── *.csv               # All other XER tables (~48 tables total)
+│   ├── raw_tables/             # Direct XER table exports (legacy)
 │   └── analysis/               # Analysis reports
 ├── projectsight/               # ProjectSight extractions
 │   ├── extracted/              # Raw JSON from browser
@@ -63,15 +67,36 @@ data/
 
 See [primavera/analysis/xer_file_overlap_analysis.md](primavera/analysis/xer_file_overlap_analysis.md) for detailed analysis.
 
-**Processed Output:**
+**Processed Output (ALL Tables):**
+
+The batch processor exports ALL tables from XER files, not just tasks. Key tables include:
+
 | File | Records | Description |
 |------|---------|-------------|
 | `xer_files.csv` | 48 | File metadata with file_id |
-| `tasks.csv` | 964,002 | All tasks from all files |
+| `task.csv` | 964,002 | All tasks from all files |
+| `taskpred.csv` | 2,002,060 | Task predecessors/dependencies |
+| `taskactv.csv` | 4,138,671 | Task activity code assignments |
+| `taskrsrc.csv` | 266,298 | Task resource assignments |
+| `projwbs.csv` | 270,890 | WBS (Work Breakdown Structure) |
+| `actvcode.csv` | - | Activity code values |
+| `actvtype.csv` | - | Activity code types |
+| `calendar.csv` | - | Calendars |
+| `rsrc.csv` | - | Resources |
+| `udftype.csv` | - | User-defined field types |
+| `udfvalue.csv` | - | User-defined field values |
+| `project.csv` | - | Project metadata |
+| ... | ... | ~48 tables total |
 
 **Schema:**
-- Every task record has `file_id` linking to `xer_files.csv`
-- Use `is_current` flag to identify the active schedule
+- **Every table has `file_id` as first column** linking to `xer_files.csv`
+- **All ID columns are prefixed with file_id** for uniqueness: `{file_id}_{original_id}`
+  - Example: `task_id=715090` in file 48 becomes `task_id="48_715090"`
+  - This applies to ALL `*_id` columns (primary keys and foreign keys)
+  - Ensures referential integrity when combining multiple XER files
+  - Enables proper data modeling in PowerBI and other tools
+- Use `is_current` flag in `xer_files.csv` to identify the active schedule
+- Tables are lowercase versions of XER table names (e.g., TASK → task.csv)
 
 ### 2. ProjectSight (Daily Reports)
 
