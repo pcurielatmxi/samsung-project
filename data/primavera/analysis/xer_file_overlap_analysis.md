@@ -4,9 +4,21 @@
 **Files Analyzed:** 48 XER files
 **Total Task Records:** 964,002
 
+## Project Context
+
+**Project:** Samsung Austin Semiconductor Chip Manufacturing Facility (Taylor, TX - FAB1)
+- **Owner:** Samsung
+- **Owner's Engineering Arm:** SECAI (Samsung Engineering Construction America Inc.)
+- **General Contractor:** Yates Construction
+
 ## Executive Summary
 
-The 48 XER files represent **evolving versions of the same project plan** spanning October 2022 to November 2025, with one critical exception: the current file (`SAMSUNG-TFAB1-11-20-25- Live-3.xer`) appears to be a **completely different schedule** with only 0.1% task code overlap.
+The 48 XER files represent **two parallel schedule perspectives** of the same project:
+
+1. **SECAI Schedule (Owner)** - 47 files: Samsung/SECAI's detailed schedule with evolving versions from Oct 2022 - Jun 2025
+2. **SAMSUNG-TFAB1 Schedule (GC)** - 1 file: Yates Construction's schedule perspective (current)
+
+The low task code overlap (0.1%) between these perspectives is due to **different task coding conventions**, not different project scope.
 
 ## Key Findings
 
@@ -22,36 +34,41 @@ The 48 XER files represent **evolving versions of the same project plan** spanni
 
 | Group | Date Range | Files | Task Range | Description |
 |-------|------------|-------|------------|-------------|
-| 1 | Oct 2022 - Dec 2023 | 23 | 7K-11K | Early project, consistent evolution |
-| 2 | Jul-Sep 2023 | 3 | 20K-66K | Large interim export (anomaly) |
-| 3 | Nov 2023 - Jun 2024 | 7 | 24K-31K | Growth phase |
-| 4 | May 2024 - Jun 2025 | 14 | 29K-32K | Mature phase, stable |
-| 5 | Nov 2025 | 1 | 12K | **DIFFERENT SCHEDULE** |
+| 1 | Oct 2022 - Dec 2023 | 23 | 7K-11K | SECAI - Early project, consistent evolution |
+| 2 | Jul-Sep 2023 | 3 | 20K-66K | SECAI - Large interim export (anomaly) |
+| 3 | Nov 2023 - Jun 2024 | 7 | 24K-31K | SECAI - Growth phase |
+| 4 | May 2024 - Jun 2025 | 14 | 29K-32K | SECAI - Mature phase, stable |
+| 5 | Nov 2025 | 1 | 12K | **GC (Yates) Schedule** |
 
-### 3. Critical Finding: Current File is Different
+### 3. Two Schedule Perspectives Explained
 
-The `SAMSUNG-TFAB1-11-20-25- Live-3.xer` file:
-- Only **44 task codes** shared with previous June 2025 file
-- **0.1% Jaccard similarity** (essentially no overlap)
-- Completely different task code prefixes
+The `SAMSUNG-TFAB1-11-20-25- Live-3.xer` file represents the **GC (Yates) schedule**, which is a parallel perspective to the SECAI owner schedule:
+
+| Aspect | SECAI (Owner) | SAMSUNG-TFAB1 (GC) |
+|--------|---------------|---------------------|
+| Maintained by | Samsung/SECAI | Yates Construction |
+| Role | Owner's engineering schedule | General Contractor's schedule |
+| Task count | ~32K (detailed) | ~12K (summarized) |
+| Historical files | 47 versions | 1 file |
 
 **Task Code Prefix Comparison:**
 
-| Current (SAMSUNG) | Count | Previous (SECAI) | Count |
-|-------------------|-------|------------------|-------|
+| GC Schedule (Yates) | Count | Owner Schedule (SECAI) | Count |
+|---------------------|-------|------------------------|-------|
 | CN | 6,321 | TE0 | 6,269 |
 | FAB | 3,145 | TM-009 | 4,272 |
 | ZX- | 1,390 | TM0 | 4,222 |
 | INT | 336 | TA0 | 3,438 |
 | EJ- | 177 | SAM | 2,221 |
 
-### 4. Anomalies
+The low overlap (0.1%, 44 codes) is expected - these are different organizations' views of the same project with different task coding conventions.
+
+### 4. Anomalies in SECAI Schedule Series
 
 | File | Date | Tasks | Issue |
 |------|------|-------|-------|
-| Taylor FAB1-SECAI Schedule update_data date 7-30-23.xer | 2023-07-30 | 66,706 | Likely master program export |
-| Aug.11.2023 T-PJT Level.3 Schedule R0.0 (1).xer | 2023-08-11 | 6,178 | Level 3 detail (less granular) |
-| SAMSUNG-TFAB1-11-20-25- Live-3.xer | 2025-11-20 | 12,433 | Different schedule entirely |
+| Taylor FAB1-SECAI Schedule update_data date 7-30-23.xer | 2023-07-30 | 66,706 | Likely master program export (includes other projects?) |
+| Aug.11.2023 T-PJT Level.3 Schedule R0.0 (1).xer | 2023-08-11 | 6,178 | Level 3 detail (less granular summary) |
 
 ## Task Count by File (Chronological)
 
@@ -185,13 +202,19 @@ Only 44 task codes are shared between the current file (Nov 2025) and the previo
 
 ## Recommendations
 
-1. **Verify Current File Intent**: Confirm if `SAMSUNG-TFAB1` is intended to replace or supplement the SECAI schedules
+1. **Track Both Perspectives**: Maintain both SECAI (owner) and GC (Yates) schedules as complementary views of the same project
 
-2. **Consider Separate Tracking**: The historical SECAI files (Groups 1-4) form a coherent version history and could be tracked separately from SAMSUNG-TFAB1
+2. **Add Schedule Type to Manifest**: Consider adding a `schedule_type` field to distinguish:
+   - `owner` for SECAI files
+   - `gc` for SAMSUNG-TFAB1/Yates files
 
-3. **Investigate Task Code Renumbering**: If this is the same project, determine when/why task codes were completely restructured
+3. **Obtain Historical GC Schedules**: If available, historical Yates schedule exports would enable similar version tracking for the GC perspective
 
-4. **Update Manifest Metadata**: Add a `schedule_type` or `project` field to distinguish between SECAI and SAMSUNG schedules
+4. **Cross-Reference Analysis**: Future analysis could attempt to map tasks between owner and GC schedules based on:
+   - Task names/descriptions
+   - WBS structure
+   - Date ranges
+   - Location/area codes
 
 ## Methodology
 

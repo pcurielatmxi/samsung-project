@@ -9,6 +9,14 @@
 > - New analysis findings emerge
 > - Processing pipelines are modified
 
+## Project Context
+
+**Project:** Samsung Austin Semiconductor Chip Manufacturing Facility (Taylor, TX)
+- **FAB1** - Fabrication building (primary focus)
+- **Owner:** Samsung
+- **Owner's Engineering Arm:** SECAI (Samsung Engineering Construction America Inc.)
+- **General Contractor:** Yates Construction
+
 ## Overview
 
 This directory contains all project data from multiple source systems for the Samsung Taylor FAB1 construction project. Data is organized by source system and processing stage.
@@ -41,9 +49,17 @@ data/
 
 **Current Status:** 48 XER files spanning Oct 2022 - Nov 2025
 
-**Key Finding:** The files represent **two distinct schedules**:
-- **SECAI Schedule** (47 files): Evolving versions with 95-100% task code overlap between consecutive updates. Task count grew from ~7K to ~32K over time.
-- **SAMSUNG-TFAB1 Schedule** (1 file, current): Only 0.1% overlap with SECAI files - this is a **different schedule** with different task coding.
+**Key Finding:** The files represent **two distinct schedule perspectives**:
+- **SECAI Schedule** (47 files): Owner's schedule maintained by Samsung's engineering arm. Evolving versions with 95-100% task code overlap between consecutive updates. Task count grew from ~7K to ~32K over time.
+- **SAMSUNG-TFAB1 Schedule** (1 file, current): GC (Yates) version of the schedule. Only 0.1% task code overlap with SECAI files due to different task coding conventions.
+
+**Understanding the Difference:**
+| Aspect | SECAI (Owner) | SAMSUNG-TFAB1 (GC) |
+|--------|---------------|---------------------|
+| Maintained by | Samsung/SECAI | Yates Construction |
+| Task prefix style | TE0, TM, TA0 | CN, FAB, ZX |
+| Task count | ~32K (detailed) | ~12K (summarized?) |
+| Files | 47 historical versions | 1 current file |
 
 See [primavera/analysis/xer_file_overlap_analysis.md](primavera/analysis/xer_file_overlap_analysis.md) for detailed analysis.
 
@@ -110,14 +126,23 @@ The SECAI schedules show clear version evolution:
 - **Nov 2023 - Jun 2024:** Growth phase (24K-31K tasks)
 - **May 2024 - Jun 2025:** Mature phase (29K-32K tasks)
 
-### Current Schedule Anomaly
+### Two Schedule Perspectives
 
-The current `SAMSUNG-TFAB1-11-20-25- Live-3.xer` file:
-- Only 12,433 tasks (vs 32K in previous SECAI file)
-- Only 44 shared task codes (0.1% overlap)
-- Different task code prefixes (CN, FAB, ZX vs TE0, TM, TA0)
+The data contains two parallel schedule perspectives:
 
-**Action Required:** Clarify if SAMSUNG-TFAB1 replaces SECAI or is a parallel schedule.
+1. **SECAI (Owner) Schedule** - 47 files
+   - Maintained by Samsung's engineering arm
+   - More detailed (~32K tasks)
+   - Historical versions from Oct 2022 - Jun 2025
+   - Task codes: TE0, TM, TA0 prefixes
+
+2. **SAMSUNG-TFAB1 (GC) Schedule** - 1 file (current)
+   - Maintained by Yates (General Contractor)
+   - More summarized (~12K tasks)
+   - Current as of Nov 2025
+   - Task codes: CN, FAB, ZX prefixes
+
+**Note:** These are the same project viewed from different organizational perspectives, not different projects. The low overlap (0.1%) is due to different task coding conventions, not different scope.
 
 ## Maintenance Checklist
 
