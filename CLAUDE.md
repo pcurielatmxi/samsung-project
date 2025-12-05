@@ -130,7 +130,50 @@ $('#ugDataView').igGrid('option', 'dataSource')  // Returns all records
 
 Process Primavera P6 schedule exports to CSV with full context (area, level, building, contractor, dates).
 
-**Key Points:**
+### XER File Management
+
+XER files are stored in `data/raw/xer/` but gitignored. A tracked `manifest.json` documents all files and identifies the current version.
+
+**Manifest Location:** [data/raw/xer/manifest.json](data/raw/xer/manifest.json)
+
+**Manifest Schema:**
+```json
+{
+  "current": "filename.xer",
+  "files": {
+    "filename.xer": {
+      "date": "YYYY-MM-DD",
+      "description": "Human-readable description",
+      "status": "current|archived|superseded"
+    }
+  }
+}
+```
+
+**Rules:**
+- `current` must reference a key in `files`
+- Exactly one file must have `status: "current"`
+- The file referenced by `current` must have `status: "current"`
+- Valid statuses: `current`, `archived`, `superseded`
+
+**Validation:**
+```bash
+# Validate manifest structure
+python scripts/validate_xer_manifest.py
+
+# Auto-add missing XER files to manifest (sets status=archived, requires manual metadata update)
+python scripts/validate_xer_manifest.py --fix
+```
+
+**When Adding New XER Files:**
+1. Copy `.xer` file(s) to `data/raw/xer/`
+2. Update `manifest.json`:
+   - Add entry for new file with date, description, status
+   - If this is the new current version: update `current` field and set old file's status to `archived`
+3. Run `python scripts/validate_xer_manifest.py` to verify
+
+### Processing Commands
+
 - Process XER files to CSV: `python scripts/process_xer_to_csv.py data/raw/xer/schedule.xer`
 - Exports all 12,000+ tasks with 24 columns including WBS, activity codes, and all date fields
 - Filter by keyword, status, subcontractor, level: `python scripts/filter_tasks.py input.csv --keyword "drywall" -o output.csv`
@@ -141,6 +184,7 @@ Process Primavera P6 schedule exports to CSV with full context (area, level, bui
 **Core Files:**
 - [src/utils/xer_parser.py](src/utils/xer_parser.py) - XER file parser
 - [scripts/process_xer_to_csv.py](scripts/process_xer_to_csv.py) - Main processing script
+- [scripts/validate_xer_manifest.py](scripts/validate_xer_manifest.py) - Manifest validation
 - [notebooks/xer_to_csv_converter.ipynb](notebooks/xer_to_csv_converter.ipynb) - Interactive exploration
 
 ## Quick Start

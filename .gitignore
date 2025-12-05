@@ -75,10 +75,14 @@ Thumbs.db
 .cache/
 
 # Data files (raw and processed data)
-data/raw/*
+data/raw/**/*
 data/processed/*
 data/output/*
 !data/raw/.gitkeep
+!data/raw/xer/
+!data/raw/xer/.gitkeep
+!data/raw/xer/manifest.json
+data/raw/xer/*.xer
 !data/processed/.gitkeep
 !data/output/.gitkeep
 
