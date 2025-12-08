@@ -28,7 +28,7 @@ data/
 ├── pending_organization/       # Files awaiting classification (see below)
 ├── raw/                        # Raw source files (gitignored except manifest)
 │   └── xer/                    # Primavera P6 XER exports
-│       ├── manifest.json       # Tracked file registry (48 files)
+│       ├── manifest.json       # Tracked file registry (113 files)
 │       └── *.xer               # XER files (gitignored)
 ├── primavera/                  # Processed Primavera data
 │   ├── processed/              # Batch-processed CSVs (ALL tables)
@@ -59,21 +59,30 @@ See [pending_organization/CLAUDE.md](pending_organization/CLAUDE.md) for detaile
 
 **Location:** `raw/xer/` and `primavera/`
 
-**Current Status:** 48 XER files spanning Oct 2022 - Nov 2025
+**Current Status:** 113 XER files spanning Oct 2022 - Nov 2025
 
-**Key Finding:** The files represent **two distinct schedule perspectives**:
-- **SECAI Schedule** (47 files): Owner's schedule maintained by Samsung's engineering arm. Evolving versions with 95-100% task code overlap between consecutive updates. Task count grew from ~7K to ~32K over time.
-- **SAMSUNG-TFAB1 Schedule** (1 file, current): GC (Yates) version of the schedule. Only 0.1% task code overlap with SECAI files due to different task coding conventions.
+#### Schedule Grouping
 
-**Understanding the Difference:**
-| Aspect | SECAI (Owner) | SAMSUNG-TFAB1 (GC) |
-|--------|---------------|---------------------|
-| Maintained by | Samsung/SECAI | Yates Construction |
-| Task prefix style | TE0, TM, TA0 | CN, FAB, ZX |
-| Task count | ~32K (detailed) | ~12K (summarized?) |
-| Files | 47 historical versions | 1 current file |
+Files represent **two distinct schedule perspectives**, identified by `schedule_type` in `xer_files.csv`:
 
-See [primavera/analysis/xer_file_overlap_analysis.md](primavera/analysis/xer_file_overlap_analysis.md) for detailed analysis.
+| Schedule | Files | Date Range | Task Range | Maintained By |
+|----------|-------|------------|------------|---------------|
+| **SECAI** | 47 | 2022-10-17 → 2025-06-27 | 6K-32K | Samsung/SECAI (Owner) |
+| **YATES** | 66 | 2022-10-10 → 2025-11-20 | 840-13K | Yates Construction (GC) |
+
+**Cross-schedule overlap is only ~4%** - these are genuinely different schedule perspectives with different task coding conventions, not duplicates.
+
+#### Classification Method
+
+Classification uses `proj_short_name` from the PROJECT table with filename fallback:
+- **SECAI**: proj_short_name contains "SECAI" or "T1P1"
+- **YATES**: proj_short_name contains "SAMSUNG-FAB", "SAMSUNG-TFAB", or "YATES"
+
+Run `python scripts/classify_schedules.py` to reclassify and update `xer_files.csv`.
+
+#### Sequencing
+
+Files are sequenced by date (parsed from filename). The `date` field in `xer_files.csv` enables chronological ordering within each schedule type for version comparison analysis.
 
 **Processed Output (ALL Tables):**
 
@@ -81,7 +90,7 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 
 | File | Records | Description |
 |------|---------|-------------|
-| `xer_files.csv` | 48 | File metadata with file_id |
+| `xer_files.csv` | 113 | File metadata (file_id, date, schedule_type) |
 | `task.csv` | 964,002 | All tasks from all files |
 | `taskpred.csv` | 2,002,060 | Task predecessors/dependencies |
 | `taskactv.csv` | 4,138,671 | Task activity code assignments |
@@ -149,37 +158,38 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 # Regenerate Primavera processed data
 python scripts/batch_process_xer.py
 
+# Classify schedules and fix dates (updates xer_files.csv)
+python scripts/classify_schedules.py
+
 # Regenerate ProjectSight tables
 python scripts/daily_reports_to_csv.py
 ```
 
 ## Key Insights
 
-### Schedule Version Tracking
+### xer_files.csv Schema
 
-The SECAI schedules show clear version evolution:
-- **Oct 2022 - Dec 2023:** Early project (7K-11K tasks)
-- **Jul-Sep 2023:** Large interim export anomaly (66K tasks)
-- **Nov 2023 - Jun 2024:** Growth phase (24K-31K tasks)
-- **May 2024 - Jun 2025:** Mature phase (29K-32K tasks)
+Key columns for analysis:
+- `file_id`: Unique identifier, used as prefix for all IDs in other tables
+- `date`: Schedule date (YYYY-MM-DD), parsed from filename
+- `schedule_type`: SECAI or YATES
+- `is_current`: Boolean flag for active schedule
 
-### Two Schedule Perspectives
+### Querying by Schedule Type
 
-The data contains two parallel schedule perspectives:
+```python
+import pandas as pd
 
-1. **SECAI (Owner) Schedule** - 47 files
-   - Maintained by Samsung's engineering arm
-   - More detailed (~32K tasks)
-   - Historical versions from Oct 2022 - Jun 2025
-   - Task codes: TE0, TM, TA0 prefixes
+xer_files = pd.read_csv('data/primavera/processed/xer_files.csv')
+tasks = pd.read_csv('data/primavera/processed/task.csv')
 
-2. **SAMSUNG-TFAB1 (GC) Schedule** - 1 file (current)
-   - Maintained by Yates (General Contractor)
-   - More summarized (~12K tasks)
-   - Current as of Nov 2025
-   - Task codes: CN, FAB, ZX prefixes
+# Get SECAI files in chronological order
+secai_files = xer_files[xer_files['schedule_type'] == 'SECAI'].sort_values('date')
 
-**Note:** These are the same project viewed from different organizational perspectives, not different projects. The low overlap (0.1%) is due to different task coding conventions, not different scope.
+# Get tasks for a specific schedule version
+file_id = secai_files.iloc[-1]['file_id']  # Latest SECAI
+latest_tasks = tasks[tasks['file_id'] == file_id]
+```
 
 ## Maintenance Checklist
 
