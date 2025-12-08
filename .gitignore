@@ -85,6 +85,16 @@ data/primavera/raw_tables/*.csv
 !data/raw/xer/.gitkeep
 !data/raw/xer/manifest.json
 data/raw/xer/*.xer
+!data/raw/tbm/
+!data/raw/tbm/.gitkeep
+!data/raw/weekly_reports/
+!data/raw/weekly_reports/.gitkeep
+
+# ProjectSight data (large Excel/JSON files)
+data/projectsight/extracted/*
+!data/projectsight/extracted/.gitkeep
+data/projectsight/tables/*
+!data/projectsight/tables/.gitkeep
 !data/processed/.gitkeep
 !data/output/.gitkeep
 !data/primavera/processed/.gitkeep

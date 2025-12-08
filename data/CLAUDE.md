@@ -27,21 +27,15 @@ This directory contains all project data from multiple source systems for the Sa
 data/
 ├── pending_organization/       # Files awaiting classification (see below)
 ├── raw/                        # Raw source files (gitignored except manifest)
-│   └── xer/                    # Primavera P6 XER exports
-│       ├── manifest.json       # Tracked file registry (113 files)
-│       └── *.xer               # XER files (gitignored)
+│   ├── xer/                    # Primavera P6 XER exports (113 files)
+│   ├── tbm/                    # Daily work plans from subcontractors (433 files)
+│   └── weekly_reports/         # Weekly progress report PDFs (37 files)
 ├── primavera/                  # Processed Primavera data
-│   ├── processed/              # Batch-processed CSVs (ALL tables)
-│   │   ├── xer_files.csv       # File metadata table
-│   │   ├── task.csv            # All tasks with file_id
-│   │   ├── taskpred.csv        # Task predecessors/dependencies
-│   │   ├── taskrsrc.csv        # Task resource assignments
-│   │   ├── projwbs.csv         # WBS structure
-│   │   └── *.csv               # All other XER tables (~48 tables total)
+│   ├── processed/              # Batch-processed CSVs (~48 tables)
 │   └── analysis/               # Analysis reports
-├── projectsight/               # ProjectSight extractions
-│   ├── extracted/              # Raw JSON from browser
-│   └── tables/                 # Normalized CSV tables
+├── projectsight/               # Daily reports from Yates
+│   ├── extracted/              # Raw Excel export
+│   └── tables/                 # Normalized CSV tables (pending)
 └── CLAUDE.md                   # This file
 ```
 
@@ -115,30 +109,37 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 - Use `is_current` flag in `xer_files.csv` to identify the active schedule
 - Tables are lowercase versions of XER table names (e.g., TASK → task.csv)
 
-### 2. ProjectSight (Daily Reports) - Manual Export
+### 2. ProjectSight / Yates Daily Reports
 
 **Location:** `projectsight/`
 
-**Current Status:** 415 daily reports (manually exported, static dataset)
+**Current Status:** Excel export from Yates (GC daily reports)
 
-**Extraction Method:** Data was manually exported from ProjectSight as JSON, then transformed to CSV via `scripts/daily_reports_to_csv.py`. No automated browser scraping - ProjectSight's JavaScript-heavy SPA made automation impractical.
+**Raw Data:** `extracted/Yates Daily Reports.xlsx`
 
-**Available Tables:**
-| File | Records | Description |
-|------|---------|-------------|
-| `daily_reports.csv` | 415 | Report summaries (date, status, weather, workforce) |
-| `companies.csv` | - | Companies referenced in reports |
-| `contacts.csv` | - | Contact information |
-| `daily_report_history.csv` | - | Report revision history |
-| `daily_report_changes.csv` | - | Field-level changes |
+**Processing:** Pending - needs script to extract to CSV tables.
 
-**Raw Data:** `extracted/daily_reports_415.json` and `extracted/daily-report-details-history.json`
+### 3. TBM (Daily Work Plans)
 
-### 3. Fieldwire (Future)
+**Location:** `raw/tbm/`
 
-**Location:** TBD
+**Current Status:** 433 Excel files (Mar-Dec 2025)
 
-**Status:** Not yet implemented
+Daily work plans submitted by subcontractors to SECAI. Contains crew deployment, planned activities, and attendance.
+
+**Subcontractors:** ALK, Alpha Painting, Apache, Baker, Berg, Brazos, Cherry, GDA, Infinity, Kovach, Latcon-VeltriSteel, MK Marlow, Patriot Erectors, Yates
+
+**Processing:** Pending - needs extraction script.
+
+### 4. Weekly Reports
+
+**Location:** `raw/weekly_reports/`
+
+**Current Status:** 37 PDF files (Aug 2022 - Mar 2023)
+
+Weekly progress reports for Taylor Fab1. Contains narrative summaries, progress photos, and status updates.
+
+**Processing:** Pending - needs PDF extraction (pdfplumber/camelot).
 
 ## Data Governance
 
@@ -148,8 +149,11 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 |------|---------|--------|
 | `raw/xer/manifest.json` | ✅ Yes | File registry |
 | `raw/xer/*.xer` | ❌ No | Large binary files |
+| `raw/tbm/*` | ❌ No | Large Excel files |
+| `raw/weekly_reports/*` | ❌ No | Large PDF files |
 | `primavera/processed/*.csv` | ❌ No | Large generated output |
 | `primavera/analysis/*.md` | ✅ Yes | Analysis documentation |
+| `projectsight/extracted/*` | ❌ No | Large source files |
 | `projectsight/tables/*.csv` | ❌ No | Generated output |
 
 ### Regenerating Data
@@ -161,8 +165,9 @@ python scripts/batch_process_xer.py
 # Classify schedules and fix dates (updates xer_files.csv)
 python scripts/classify_schedules.py
 
-# Regenerate ProjectSight tables
-python scripts/daily_reports_to_csv.py
+# ProjectSight tables - TODO: create processing script
+# TBM tables - TODO: create processing script
+# Weekly reports - TODO: create PDF extraction script
 ```
 
 ## Key Insights
