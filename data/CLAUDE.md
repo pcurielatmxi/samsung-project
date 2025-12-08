@@ -113,11 +113,29 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 
 **Location:** `projectsight/`
 
-**Current Status:** Excel export from Yates (GC daily reports)
+**Source:** Audit log export from ProjectSight (reports 52-386 of 1314, Jun 2022 - Mar 2023)
 
 **Raw Data:** `extracted/Yates Daily Reports.xlsx`
 
-**Processing:** Pending - needs script to extract to CSV tables.
+**Processed Tables:**
+
+| File | Records | Description |
+|------|---------|-------------|
+| `labor_entries.csv` | 1,589 | Individual labor hour entries by person |
+| `personnel_summary.csv` | 160 | Hours and reports worked per person |
+| `workflow_status.csv` | 1,086 | Report status changes (Pending→Reviewed) |
+| `weather.csv` | 8,963 | Hourly weather readings |
+| `summary_hours_by_trade.csv` | 3 | Total hours by trade code |
+| `summary_hours_by_role.csv` | 15 | Total hours by classification/role |
+
+**Key Fields in labor_entries.csv:**
+- `report_num`: Report number (52-386)
+- `timestamp`: When entry was made
+- `company`: Contractor (Yates, A H Beck, etc.)
+- `name`, `trade`, `classification`: Personnel info
+- `old_hours`, `new_hours`, `hours_delta`: Hour tracking
+
+**Note:** This is audit/change log data, not full daily report content. Actual report narratives and details may need separate export.
 
 ### 3. TBM (Daily Work Plans)
 
@@ -165,7 +183,9 @@ python scripts/batch_process_xer.py
 # Classify schedules and fix dates (updates xer_files.csv)
 python scripts/classify_schedules.py
 
-# ProjectSight tables - TODO: create processing script
+# Parse Yates Daily Reports (labor, workflow, weather)
+python scripts/parse_yates_daily_reports.py
+
 # TBM tables - TODO: create processing script
 # Weekly reports - TODO: create PDF extraction script
 ```
