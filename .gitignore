@@ -90,6 +90,11 @@ data/raw/xer/*.xer
 !data/primavera/processed/.gitkeep
 !data/primavera/raw_tables/.gitkeep
 
+# Pending organization (staging area for unclassified files)
+data/pending_organization/*
+!data/pending_organization/.gitkeep
+!data/pending_organization/CLAUDE.md
+
 # Session files (contains authentication cookies)
 data/.sessions/
 .sessions/

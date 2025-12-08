@@ -25,6 +25,7 @@ This directory contains all project data from multiple source systems for the Sa
 
 ```
 data/
+├── pending_organization/       # Files awaiting classification (see below)
 ├── raw/                        # Raw source files (gitignored except manifest)
 │   └── xer/                    # Primavera P6 XER exports
 │       ├── manifest.json       # Tracked file registry (48 files)
@@ -43,6 +44,14 @@ data/
 │   └── tables/                 # Normalized CSV tables
 └── CLAUDE.md                   # This file
 ```
+
+## Pending Organization
+
+**Location:** `pending_organization/`
+
+Staging area for unclassified files. Drop files here, then ask "organize pending files" to classify and move them to the correct location.
+
+See [pending_organization/CLAUDE.md](pending_organization/CLAUDE.md) for detailed workflow.
 
 ## Data Sources
 
