@@ -2,8 +2,8 @@
 
 ## Overview
 
-This ETL pipeline follows a modular, scalable architecture designed to:
-- Support multiple data sources (ProjectSight, Fieldwire, and future sources)
+This project includes an ETL pipeline designed to:
+- Support multiple data sources (Primavera, ProjectSight exports, Fieldwire API)
 - Maintain clear separation between extraction, transformation, and loading
 - Enable easy testing and validation at each stage
 - Provide comprehensive logging and error handling
@@ -27,13 +27,6 @@ For REST API integrations:
 - Provides get/post methods
 - Implements exponential backoff for failed requests
 
-#### WebScraperConnector (web_scraper.py)
-For web-based applications without APIs:
-- Uses Selenium WebDriver for browser automation
-- Handles login/authentication
-- Provides element finding and interaction methods
-- Supports headless mode for server environments
-
 ### 2. Extractors (src/extractors/)
 
 **Responsibility:** Extract data from source systems using connectors
@@ -45,12 +38,6 @@ Abstract base class:
 - `log_extraction()` - Track extraction metadata
 
 #### System-Specific Extractors
-Example: ProjectSightExtractor
-- Uses WebScraperConnector to navigate and scrape data
-- Implements pagination handling
-- Validates all required fields present
-- Returns list of dictionaries with standardized structure
-
 Example: FieldwireExtractor
 - Uses APIConnector to fetch data
 - Implements support for multiple resource types (projects, tasks, etc.)
@@ -73,11 +60,6 @@ Example transformations:
 - Handle null/missing values
 - Add metadata (extraction_date, source, etc.)
 - Flatten nested structures if needed
-
-**Why separate transformers?**
-- Different sources have different field semantics
-- Source-specific validation rules
-- Enables incremental enhancement without affecting extractors
 
 ### 4. Loaders (src/loaders/)
 
@@ -106,24 +88,24 @@ For file-based outputs:
 ## Data Flow Example
 
 ```
-ProjectSight Website
-        ↓
-[WebScraperConnector]
-        ↓
-[ProjectSightExtractor]
-        ↓
-Raw Data: [{"project_id": "1", "project_name": "Test", ...}]
-        ↓
-[ProjectSightTransformer]
-        ↓
-Standardized Data: [{"source": "projectsight", "source_id": "1", "name": "Test", ...}]
-        ↓
+Fieldwire API
+      ↓
+[APIConnector]
+      ↓
+[FieldwireExtractor]
+      ↓
+Raw Data: [{"id": "123", "name": "Test", ...}]
+      ↓
+[FieldwireTransformer]
+      ↓
+Standardized Data: [{"source": "fieldwire", "source_id": "123", "name": "Test", ...}]
+      ↓
 [DatabaseLoader] or [FileLoader]
-        ↓
+      ↓
 PostgreSQL Table / CSV File
 ```
 
-## Airflow DAG Structure
+## Airflow DAG Structure (Optional)
 
 ### ETL Pipeline DAG
 
@@ -132,10 +114,8 @@ Typical DAG structure:
 ```python
 start
   ↓
-[extract_projectsight] → [transform_projectsight] → [load_projectsight]
-  ↓                                                    ↓
-  [extract_fieldwire] → [transform_fieldwire] → [load_fieldwire]
-        ↓                      ↓
+[extract_fieldwire] → [transform_fieldwire] → [load_fieldwire]
+        ↓
        end_success
 ```
 
@@ -144,7 +124,7 @@ start
 **Extract Tasks:** PythonOperator
 ```python
 def extract_task():
-    extractor = ProjectSightExtractor()
+    extractor = FieldwireExtractor()
     data = extractor.extract()
     if not extractor.validate_extraction(data):
         raise ValueError("Extraction validation failed")
@@ -155,20 +135,9 @@ def extract_task():
 ```python
 def transform_task(**context):
     raw_data = context['task_instance'].xcom_pull(task_ids='extract')
-    transformer = ProjectSightTransformer()
+    transformer = FieldwireTransformer()
     data = transformer.transform(raw_data)
-    if not transformer.validate_transformation(data):
-        raise ValueError("Transformation validation failed")
     return data
-```
-
-**Load Tasks:** PythonOperator
-```python
-def load_task(**context):
-    data = context['task_instance'].xcom_pull(task_ids='transform')
-    loader = DatabaseLoader()
-    if not loader.load(data, table_name='projects'):
-        raise ValueError("Load failed")
 ```
 
 ## Error Handling
@@ -196,48 +165,28 @@ def load_task(**context):
 - **Airflow retries:** Configured at DAG level for task failures
 - **Custom retries:** Helper function `retry_on_exception()` in utils
 
-### Logging
-
-```python
-from src.utils.logger import configure_logging
-
-logger = configure_logging(__name__)
-logger.info(f"Extracted {count} records")
-logger.warning("Field 'status' was null")
-logger.error("Failed to connect to API")
-```
-
 ## Adding New Data Sources
 
 ### Step 1: Understand the Source
-- API or web-based?
+- API or file-based?
 - Authentication method?
 - Rate limits?
 - Data schema?
 
-### Step 2: Create Connector
-```python
-# src/connectors/my_system_connector.py
-class MySystemConnector(APIConnector):  # or WebScraperConnector
-    def authenticate(self):
-        # Implementation
-        pass
-```
-
-### Step 3: Create Extractor
+### Step 2: Create Extractor
 ```python
 # src/extractors/system_specific/my_system_extractor.py
 class MySystemExtractor(BaseExtractor):
     def __init__(self):
         super().__init__('my_system')
-        self.connector = MySystemConnector(...)
+        self.connector = APIConnector(...)
 
     def extract(self, **kwargs):
         # Implementation
         pass
 ```
 
-### Step 4: Create Transformer
+### Step 3: Create Transformer
 ```python
 # src/transformers/system_specific/my_system_transformer.py
 class MySystemTransformer(BaseTransformer):
@@ -246,14 +195,7 @@ class MySystemTransformer(BaseTransformer):
         pass
 ```
 
-### Step 5: Create DAG
-```python
-# dags/etl_my_system_dag.py
-dag = DAG('etl_my_system', ...)
-# Define tasks using extractors, transformers, loaders
-```
-
-### Step 6: Add Tests
+### Step 4: Add Tests
 ```python
 # tests/unit/test_my_system.py
 class TestMySystemExtractor:
@@ -270,7 +212,6 @@ class TestMySystemExtractor:
 5. **Configuration:** Use environment variables, never hardcode credentials
 6. **Testing:** Test each component independently and integration together
 7. **Documentation:** Document expected data schema and transformations
-8. **Monitoring:** Track extraction counts, transformation quality, load success rates
 
 ## Performance Considerations
 
@@ -285,5 +226,4 @@ class TestMySystemExtractor:
 - **Credentials:** Store in environment variables or Airflow Connections
 - **HTTPS:** Use SSL/TLS for API connections
 - **SQL Injection:** Use parameterized queries (psycopg2 execute_values)
-- **Secrets Management:** Use Airflow secrets backend for sensitive data
 - **Logging:** Don't log sensitive data (passwords, tokens, PII)

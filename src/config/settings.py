@@ -1,5 +1,5 @@
 """
-Configuration settings for the ETL pipeline.
+Configuration settings for the data analysis pipeline.
 Load configuration from environment variables or config files.
 """
 import os
@@ -24,33 +24,6 @@ class Settings:
 
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-
-    # ============================================================================
-    # ProjectSight Configuration (Trimble - Web Scraping)
-    # ============================================================================
-    PROJECTSIGHT_BASE_URL = os.getenv('PROJECTSIGHT_BASE_URL', '')
-    PROJECTSIGHT_USERNAME = os.getenv('PROJECTSIGHT_USERNAME', '')
-    PROJECTSIGHT_PASSWORD = os.getenv('PROJECTSIGHT_PASSWORD', '')
-    PROJECTSIGHT_TIMEOUT = int(os.getenv('PROJECTSIGHT_TIMEOUT', '30'))
-    PROJECTSIGHT_HEADLESS = os.getenv('PROJECTSIGHT_HEADLESS', 'true').lower() == 'true'
-    PROJECTSIGHT_DATA_FIELDS = os.getenv(
-        'PROJECTSIGHT_DATA_FIELDS',
-        'project_id,project_name,status,start_date,end_date'
-    ).split(',')
-
-    # ProjectSight Login & Session Configuration
-    PROJECTSIGHT_LOGIN_URL = os.getenv('PROJECTSIGHT_LOGIN_URL', '')
-    PROJECTSIGHT_SESSION_DIR = PROJECT_ROOT / os.getenv('PROJECTSIGHT_SESSION_DIR', 'data/.sessions')
-    PROJECTSIGHT_SESSION_VALIDITY_DAYS = int(os.getenv('PROJECTSIGHT_SESSION_VALIDITY_DAYS', '7'))
-    PROJECTSIGHT_PAGE_LOAD_WAIT = int(os.getenv('PROJECTSIGHT_PAGE_LOAD_WAIT', '5'))
-    PROJECTSIGHT_IFRAME_WAIT = int(os.getenv('PROJECTSIGHT_IFRAME_WAIT', '3'))
-
-    # ProjectSight Selectors (Trimble Identity SSO - use getByRole with these text labels)
-    PROJECTSIGHT_SELECTOR_USERNAME = os.getenv('PROJECTSIGHT_SELECTOR_USERNAME', 'Email or username')
-    PROJECTSIGHT_SELECTOR_PASSWORD = os.getenv('PROJECTSIGHT_SELECTOR_PASSWORD', 'Password')
-    PROJECTSIGHT_SELECTOR_SUBMIT = os.getenv('PROJECTSIGHT_SELECTOR_SUBMIT', 'Sign in')
-    PROJECTSIGHT_SELECTOR_MFA_INPUT = os.getenv('PROJECTSIGHT_SELECTOR_MFA_INPUT', '')
-    PROJECTSIGHT_SELECTOR_HOME_INDICATOR = os.getenv('PROJECTSIGHT_SELECTOR_HOME_INDICATOR', 'Projects (')
 
     # ============================================================================
     # Fieldwire Configuration (API)
@@ -92,17 +65,9 @@ class Settings:
         """
         missing = []
 
-        # Check ProjectSight settings
-        if not cls.PROJECTSIGHT_BASE_URL:
-            missing.append('PROJECTSIGHT_BASE_URL')
-        if not cls.PROJECTSIGHT_USERNAME:
-            missing.append('PROJECTSIGHT_USERNAME')
-        if not cls.PROJECTSIGHT_PASSWORD:
-            missing.append('PROJECTSIGHT_PASSWORD')
-
-        # Check Fieldwire settings
-        if not cls.FIELDWIRE_API_KEY:
-            missing.append('FIELDWIRE_API_KEY')
+        # Check Fieldwire settings (if using Fieldwire)
+        # if not cls.FIELDWIRE_API_KEY:
+        #     missing.append('FIELDWIRE_API_KEY')
 
         return missing
 

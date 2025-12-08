@@ -37,7 +37,7 @@ Data Sources → Python Exploration → Insights → Power BI Presentation
 |--------|------|--------|----------|----------------|
 | Primavera P6 (SECAI) | XER files | 47 versions | `data/raw/xer/` | Schedule evolution, baseline comparisons, delay trends |
 | Primavera P6 (Yates) | XER files | 1 version | `data/raw/xer/` | GC perspective, compare with owner schedule |
-| ProjectSight Daily Reports | JSON/CSV | 415 reports | `data/projectsight/` | Daily activities, man hours, location tracking |
+| ProjectSight Daily Reports | JSON/CSV | 415 reports (manual export) | `data/projectsight/` | Daily activities, man hours, location tracking |
 
 ### Planned/In Progress
 
@@ -183,7 +183,6 @@ Each data subsystem has its own documentation:
 | Location | Purpose |
 |----------|---------|
 | [data/CLAUDE.md](data/CLAUDE.md) | Data directory context, schedule perspectives |
-| [src/extractors/system_specific/CLAUDE.md](src/extractors/system_specific/CLAUDE.md) | ProjectSight extraction details |
 
 **Keep these updated** as analysis progresses and new data sources are added.
 
@@ -203,19 +202,16 @@ Each data subsystem has its own documentation:
 | PDF Extraction | TBD (pdfplumber, camelot) | Weekly reports, NCRs |
 | Visualization | Matplotlib, Seaborn | Python exploration |
 | Presentation | Power BI | Client deliverables |
-| Web Scraping | Playwright | ProjectSight extraction |
 | Orchestration | Apache Airflow | Optional ETL automation |
 | Database | PostgreSQL | Optional structured storage |
 
 ## Configuration
 
-Environment variables in `.env`:
+Environment variables in `.env` (optional, for API integrations and database):
 
 ```env
-# ProjectSight credentials
-PROJECTSIGHT_BASE_URL=https://...
-PROJECTSIGHT_USERNAME=...
-PROJECTSIGHT_PASSWORD=...
+# Fieldwire API (if using)
+FIELDWIRE_API_KEY=your_api_key
 
 # Database (optional)
 DB_HOST=localhost
@@ -228,7 +224,7 @@ DB_NAME=etl_db
 ### Completed
 - XER file parsing and batch processing
 - Schedule version tracking with file_id
-- ProjectSight daily report extraction
+- ProjectSight daily report transformation (from manual export)
 - Basic schedule metrics
 
 ### In Progress

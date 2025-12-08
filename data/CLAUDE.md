@@ -1,6 +1,6 @@
 # Data Directory - Context & Documentation
 
-**Last Updated:** 2025-12-05
+**Last Updated:** 2025-12-08
 **Status:** Living Document - Must be kept updated as data changes
 
 > **IMPORTANT:** This is a living document. Update this file whenever:
@@ -98,20 +98,24 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 - Use `is_current` flag in `xer_files.csv` to identify the active schedule
 - Tables are lowercase versions of XER table names (e.g., TASK → task.csv)
 
-### 2. ProjectSight (Daily Reports)
+### 2. ProjectSight (Daily Reports) - Manual Export
 
 **Location:** `projectsight/`
 
-**Current Status:** 415 daily reports extracted
+**Current Status:** 415 daily reports (manually exported, static dataset)
 
-**Extracted Tables:**
+**Extraction Method:** Data was manually exported from ProjectSight as JSON, then transformed to CSV via `scripts/daily_reports_to_csv.py`. No automated browser scraping - ProjectSight's JavaScript-heavy SPA made automation impractical.
+
+**Available Tables:**
 | File | Records | Description |
 |------|---------|-------------|
-| `daily_reports.csv` | 415 | Report summaries |
-| `companies.csv` | - | Companies referenced |
+| `daily_reports.csv` | 415 | Report summaries (date, status, weather, workforce) |
+| `companies.csv` | - | Companies referenced in reports |
 | `contacts.csv` | - | Contact information |
-| `history.csv` | - | Report revision history |
-| `changes.csv` | - | Field-level changes |
+| `daily_report_history.csv` | - | Report revision history |
+| `daily_report_changes.csv` | - | Field-level changes |
+
+**Raw Data:** `extracted/daily_reports_415.json` and `extracted/daily-report-details-history.json`
 
 ### 3. Fieldwire (Future)
 

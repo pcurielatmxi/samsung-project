@@ -1,1 +1,1 @@
-"""System-specific extractors for ProjectSight and Fieldwire."""
+"""System-specific extractors for Fieldwire and other data sources."""
