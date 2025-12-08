@@ -37,7 +37,6 @@ data/
 │   │   ├── taskrsrc.csv        # Task resource assignments
 │   │   ├── projwbs.csv         # WBS structure
 │   │   └── *.csv               # All other XER tables (~48 tables total)
-│   ├── raw_tables/             # Direct XER table exports (legacy)
 │   └── analysis/               # Analysis reports
 ├── projectsight/               # ProjectSight extractions
 │   ├── extracted/              # Raw JSON from browser
