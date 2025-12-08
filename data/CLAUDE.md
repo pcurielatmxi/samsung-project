@@ -167,13 +167,28 @@ Daily work plans submitted by subcontractors to SECAI. Contains crew deployment,
 
 ### 4. Weekly Reports
 
-**Location:** `raw/weekly_reports/`
+**Location:** `raw/weekly_reports/` (source) and `weekly_reports/tables/` (processed)
 
-**Current Status:** 37 PDF files (Aug 2022 - Mar 2023)
+**Source:** 37 PDF files (Aug 2022 - Jun 2023)
 
-Weekly progress reports for Taylor Fab1. Contains narrative summaries, progress photos, and status updates.
+Weekly progress reports from Yates containing executive summaries, issues, and procurement status.
 
-**Processing:** Pending - needs PDF extraction (pdfplumber/camelot).
+**Processed Tables:**
+
+| File | Records | Description |
+|------|---------|-------------|
+| `weekly_reports.csv` | 37 | Report metadata (date, author, page count) |
+| `key_issues.csv` | 1,108 | Open issues and blockers |
+| `work_progressing.csv` | 1,039 | Work progress items by discipline |
+| `procurement.csv` | 374 | Procurement/buyout status items |
+
+**Key Fields:**
+- `file_id`: Links to weekly_reports.csv
+- `report_date`: Week of report
+- `author_name`, `author_role`: Report author (e.g., GLEN YOUNG, PROJECT EXECUTIVE)
+- `content`: Issue/item description
+
+**Note:** Parser extracts first ~25 pages (narrative section). Later pages are data dumps from Primavera/ProjectSight.
 
 ## Data Governance
 
@@ -190,6 +205,7 @@ Weekly progress reports for Taylor Fab1. Contains narrative summaries, progress 
 | `projectsight/extracted/*` | ❌ No | Large source files |
 | `projectsight/tables/*.csv` | ❌ No | Generated output |
 | `tbm/tables/*.csv` | ❌ No | Generated output |
+| `weekly_reports/tables/*.csv` | ❌ No | Generated output |
 
 ### Regenerating Data
 
@@ -206,7 +222,8 @@ python scripts/parse_yates_daily_reports.py
 # Parse TBM daily work plans
 python scripts/parse_tbm_daily_plans.py
 
-# Weekly reports - TODO: create PDF extraction script
+# Parse Weekly Reports (PDF extraction)
+python scripts/parse_weekly_reports.py
 ```
 
 ## Key Insights

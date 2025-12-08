@@ -79,6 +79,43 @@ Uses `proj_short_name` from PROJECT table:
 
 ---
 
+## Weekly Reports (PDF)
+
+**Script:** `scripts/parse_weekly_reports.py`
+
+### File Format
+- Large PDFs (80-270 pages), most pages are data dumps
+- Valuable content in first ~25 pages (narrative section)
+- Later pages: Primavera printouts, ProjectSight exports, RFIs
+
+### Document Structure
+| Pages | Content |
+|-------|---------|
+| 1 | Title page with date |
+| 2 | Index/Table of contents |
+| 3-5 | **Executive Summary** (Work Progressing, Key Issues, Procurement) |
+| 5-10 | Production charts, rolling schedules |
+| 10-25 | Bid packages, safety, other narratives |
+| 25+ | Data dumps (skip these) |
+
+### Section Name Variations
+Format changed over time, parser handles multiple patterns:
+- "Work Progressing" vs "Last Week Events"
+- "Key Open Issues" vs "Key Issues" vs "OPEN ISSUES"
+- "Procurement" vs "Buyout"
+
+### Parsing Notes
+- Stops extraction when it hits ProjectSight/Primavera printouts
+- Author extraction: "Written by NAME (ROLE)" pattern
+- Date from filename (YYYYMMDD) or first page content
+
+### Limitations
+- PDF structure varies significantly between reports
+- Some reports have 0 extracted items due to non-standard formatting
+- Images/charts not extracted (only text)
+
+---
+
 ## Common Patterns
 
 ### Traceability Standard

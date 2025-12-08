@@ -105,6 +105,10 @@ data/projectsight/tables/*
 data/tbm/tables/*
 !data/tbm/tables/.gitkeep
 
+# Weekly reports (processed output)
+data/weekly_reports/tables/*
+!data/weekly_reports/tables/.gitkeep
+
 # Pending organization (staging area for unclassified files)
 data/pending_organization/*
 !data/pending_organization/.gitkeep
