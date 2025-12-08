@@ -139,15 +139,31 @@ The batch processor exports ALL tables from XER files, not just tasks. Key table
 
 ### 3. TBM (Daily Work Plans)
 
-**Location:** `raw/tbm/`
+**Location:** `raw/tbm/` (source) and `tbm/tables/` (processed)
 
-**Current Status:** 433 Excel files (Mar-Dec 2025)
+**Source:** 421 Excel files (SECAI Daily Work Plan format), Mar 17 - Dec 4, 2025
 
 Daily work plans submitted by subcontractors to SECAI. Contains crew deployment, planned activities, and attendance.
 
-**Subcontractors:** ALK, Alpha Painting, Apache, Baker, Berg, Brazos, Cherry, GDA, Infinity, Kovach, Latcon-VeltriSteel, MK Marlow, Patriot Erectors, Yates
+**Processed Tables:**
 
-**Processing:** Pending - needs extraction script.
+| File | Records | Description |
+|------|---------|-------------|
+| `work_entries.csv` | 13,539 | Individual work activities with crew info |
+| `tbm_files.csv` | 421 | File metadata (date, subcontractor) |
+| `summary_by_subcontractor.csv` | 30 | Total employees by subcontractor |
+| `summary_by_date.csv` | 201 | Daily workforce totals |
+| `summary_by_location.csv` | 18 | Work by building/level |
+| `foremen_summary.csv` | 140 | Foreman-level deployment |
+
+**Key Fields in work_entries.csv:**
+- `report_date`: Date of work plan
+- `tier1_gc`, `tier2_sc`: GC (Yates) and subcontractor
+- `foreman`, `num_employees`: Crew info
+- `work_activities`: Task description
+- `location_building`, `location_level`: FAB, SUP, etc.
+
+**Top Subcontractors by Employees:** Berg (25.6K), MK Marlow (9K), Alert Lock & Key (5K), Cherry Coatings (4.6K)
 
 ### 4. Weekly Reports
 
@@ -173,6 +189,7 @@ Weekly progress reports for Taylor Fab1. Contains narrative summaries, progress 
 | `primavera/analysis/*.md` | ✅ Yes | Analysis documentation |
 | `projectsight/extracted/*` | ❌ No | Large source files |
 | `projectsight/tables/*.csv` | ❌ No | Generated output |
+| `tbm/tables/*.csv` | ❌ No | Generated output |
 
 ### Regenerating Data
 
@@ -186,7 +203,9 @@ python scripts/classify_schedules.py
 # Parse Yates Daily Reports (labor, workflow, weather)
 python scripts/parse_yates_daily_reports.py
 
-# TBM tables - TODO: create processing script
+# Parse TBM daily work plans
+python scripts/parse_tbm_daily_plans.py
+
 # Weekly reports - TODO: create PDF extraction script
 ```
 

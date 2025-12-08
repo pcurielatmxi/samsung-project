@@ -79,6 +79,7 @@ data/raw/**/*
 data/processed/*
 data/output/*
 data/primavera/processed/*.csv
+data/primavera/generated/*.csv
 data/primavera/raw_tables/*.csv
 !data/raw/.gitkeep
 !data/raw/xer/
@@ -99,6 +100,10 @@ data/projectsight/tables/*
 !data/output/.gitkeep
 !data/primavera/processed/.gitkeep
 !data/primavera/raw_tables/.gitkeep
+
+# TBM data (large Excel files and processed output)
+data/tbm/tables/*
+!data/tbm/tables/.gitkeep
 
 # Pending organization (staging area for unclassified files)
 data/pending_organization/*
