@@ -81,7 +81,8 @@ Uses `proj_short_name` from PROJECT table:
 
 ## Weekly Reports (PDF)
 
-**Script:** `scripts/parse_weekly_reports.py`
+**Script (Narrative):** `scripts/parse_weekly_reports.py`
+**Script (Addendums):** `scripts/parse_weekly_report_addendums_fast.py`
 
 ### File Format
 - Large PDFs (80-270 pages), most pages are data dumps
@@ -113,6 +114,39 @@ Format changed over time, parser handles multiple patterns:
 - PDF structure varies significantly between reports
 - Some reports have 0 extracted items due to non-standard formatting
 - Images/charts not extracted (only text)
+
+---
+
+## Weekly Report Addendums
+
+**Script:** `scripts/parse_weekly_report_addendums_fast.py`
+
+### Addendum Structure
+PDF pages 25+ contain ProjectSight data dumps:
+- ADDENDUM #001: SCHEDULE (Primavera - skipped, redundant with XER)
+- ADDENDUM #002: MANPOWER REPORT
+- ADDENDUM #003: RFI LOG
+- ADDENDUM #004: SUBMITTAL LOG
+- ADDENDUM #005: CHANGE ORDER LOG
+
+### Parsing Notes
+- **Uses PyMuPDF (fitz)** for fast extraction (~23s for 37 files vs minutes with pdfplumber)
+- Text extracted as plain string, then regex-parsed
+- Column interleaving in PDF causes individual worker entries to be unreliable
+- Extracts company-level totals for manpower instead
+
+### Output Tables
+| Table | Records | Fields |
+|-------|---------|--------|
+| `addendum_files.csv` | 37 | file_id, filename, report_date, counts |
+| `addendum_rfi_log.csv` | 3,849 | file_id, source_section, rfi_number, subject, dates |
+| `addendum_submittal_log.csv` | 6,940 | file_id, source_section, submittal_number, content, dates |
+| `addendum_manpower.csv` | 613 | file_id, source_section, report_date, company, workers, hours |
+
+### Data Quality
+- RFI/Submittal logs are cumulative (same items appear across weekly reports)
+- Manpower captures daily company totals when "Total Workers:" pattern is found
+- Some PDFs have MuPDF xref errors but still parse successfully
 
 ---
 
