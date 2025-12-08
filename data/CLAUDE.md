@@ -211,6 +211,8 @@ python scripts/parse_tbm_daily_plans.py
 
 ## Key Insights
 
+**Detailed parsing notes:** See [DATA_SOURCE_NOTES.md](DATA_SOURCE_NOTES.md) for file formats, gotchas, and data quality issues.
+
 ### xer_files.csv Schema
 
 Key columns for analysis:
