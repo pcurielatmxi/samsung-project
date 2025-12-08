@@ -243,6 +243,7 @@ def main():
     file_infos = []
     errors = []
 
+    file_id = 0
     for i, filepath in enumerate(excel_files):
         if i % 50 == 0:
             print(f"Processing {i+1}/{len(excel_files)}...")
@@ -250,7 +251,12 @@ def main():
         file_info, entries = parse_tbm_file(filepath)
 
         if file_info:
+            file_id += 1
+            file_info['file_id'] = file_id
             file_infos.append(file_info)
+            # Add file_id to each entry for traceability
+            for entry in entries:
+                entry['file_id'] = file_id
             all_entries.extend(entries)
         else:
             errors.append(filepath.name)
@@ -266,12 +272,18 @@ def main():
     # Work entries table
     if all_entries:
         entries_df = pd.DataFrame(all_entries)
+        # Reorder columns to put file_id first
+        cols = ['file_id'] + [c for c in entries_df.columns if c != 'file_id']
+        entries_df = entries_df[cols]
         entries_df.to_csv(output_dir / 'work_entries.csv', index=False)
         print(f"work_entries.csv: {len(entries_df)} records")
 
     # File info table
     if file_infos:
         files_df = pd.DataFrame(file_infos)
+        # Reorder columns to put file_id first
+        cols = ['file_id'] + [c for c in files_df.columns if c != 'file_id']
+        files_df = files_df[cols]
         files_df.to_csv(output_dir / 'tbm_files.csv', index=False)
         print(f"tbm_files.csv: {len(files_df)} files")
 
