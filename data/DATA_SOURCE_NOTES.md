@@ -150,6 +150,49 @@ PDF pages 25+ contain ProjectSight data dumps:
 
 ---
 
+## Weekly Report Labor Detail
+
+**Script:** `scripts/parse_labor_detail.py`
+
+### File Format
+- Labor detail pages found in ADDENDUM #002: MANPOWER REPORT section
+- Uses PDF text bounding boxes to reconstruct table rows
+- Extracts individual worker entries (not just company totals)
+
+### Parsing Notes
+- **Bounding box approach**: Uses `page.get_text("dict")` to get text with X/Y positions
+- Groups text spans by Y coordinate (3px tolerance) to reconstruct rows
+- Detects company headers by "(details) Status:" pattern
+- Detects worker rows by matching CLASSIFICATIONS list
+- Hours extracted as last decimal number in row
+
+### Output Tables
+| Table | Records | Fields |
+|-------|---------|--------|
+| `labor_detail.csv` | 13,205 | file_id, source_section, report_date, company, status, name, classification, trade, hours |
+| `labor_detail_by_company.csv` | 10 | company, hours, unique_workers |
+| `labor_detail_by_classification.csv` | 18 | classification, hours, unique_workers |
+
+### Data Quality
+- 35/37 files successfully parsed
+- 100% of entries have dates (extracted from filename when not in content)
+- 10 unique companies, 880 unique workers tracked
+- 113,540 total hours extracted
+- 18 job classifications (Worker, Journeyman, Superintendent, etc.)
+- Trade codes follow CSI format (03 - Concrete, 05 - Metals, etc.)
+
+### Files Without Labor Detail
+Two December 2022 reports use a different format that doesn't include DETAILED LABOR section:
+- `[Taylor Fab1] Weekly Report for 20221211.pdf` (208 pages)
+- `[Taylor Fab1] Weekly Report for 20221218.pdf` (227 pages)
+
+These files have MANPOWER content on page 1 but no individual worker tables.
+
+### Traceability
+- `file_id` links each record to source weekly report PDF
+
+---
+
 ## Common Patterns
 
 ### Traceability Standard

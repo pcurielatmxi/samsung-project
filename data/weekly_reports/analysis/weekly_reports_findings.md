@@ -26,6 +26,7 @@ Weekly reports from Yates Construction provide narrative summaries of project st
 | `addendum_rfi_log.csv` | 3,849 | RFI entries from ProjectSight export |
 | `addendum_submittal_log.csv` | 6,940 | Submittal entries from ProjectSight export |
 | `addendum_manpower.csv` | 613 | Daily labor hours by company |
+| `labor_detail.csv` | 13,205 | Individual worker entries (name, classification, trade, hours) |
 
 ### Coverage
 
@@ -177,6 +178,46 @@ Weekly reports contain 5 addendums with ProjectSight data dumps:
 - 6,940 submittal entries across all reports
 - Submittal numbers follow pattern `[Y_SBMT#N]`
 - Note: Cumulative log - same submittals repeat across reports
+
+---
+
+## Labor Detail Analysis
+
+### Individual Worker Data (from labor_detail.csv)
+
+| Company | Total Hours | Unique Workers |
+|---------|-------------|----------------|
+| W & W Steel LLC | 31,704 | 104 |
+| W.G. Yates & Sons | 18,972 | 34 |
+| Grout Tech Inc | 15,993 | 76 |
+| Baker Concrete | 14,965 | 343 |
+| Brazos Urethane | 12,450 | 78 |
+| F D Thomas Inc | 6,786 | 123 |
+| Cobb Mechanical | 4,535 | 42 |
+| Preferred Dallas | 4,411 | 69 |
+| A H Beck Foundation | 3,252 | 15 |
+| Patriot Erectors | 473 | 8 |
+
+**Total**: 113,540 hours tracked across 880 unique workers (35/37 files)
+
+### By Classification
+
+| Classification | Hours | Workers |
+|----------------|-------|---------|
+| Worker | 27,029 | 156 |
+| Journeyman | 11,070 | 222 |
+| Superintendent | 9,643 | 44 |
+| Labor | 3,915 | 50 |
+| Foreman | 3,621 | 53 |
+| Safety Personnel | 3,527 | 13 |
+| Rodbuster | 3,526 | 115 |
+
+### Parsing Notes
+
+- Uses **bounding box approach** with PyMuPDF to reconstruct table rows from PDF
+- Groups text by Y coordinate (3px tolerance) to form rows
+- Extracts: name, classification, trade (CSI code), hours per worker
+- 100% date coverage via filename parsing
 
 ---
 
