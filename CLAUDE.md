@@ -128,6 +128,7 @@ mxi-samsung/
 | Document | Location | Description |
 |----------|----------|-------------|
 | Scope Growth Analysis | [scope_growth_analysis.md](data/primavera/analysis/scope_growth_analysis.md) | Correlation of weekly report events with schedule scope growth |
+| Schedule-Report Correlation | [schedule_weekly_correlation.md](data/primavera/analysis/schedule_weekly_correlation.md) | 65 YATES schedule versions with weekly report highlights |
 | Weekly Report Highlights | [weekly_report_highlights.md](data/weekly_reports/weekly_report_highlights.md) | 177+ curated highlights with file, page, importance |
 | Key Events Timeline | [key_events_timeline.md](data/weekly_reports/key_events_timeline.md) | Critical milestones and scope change events |
 | Executive Summaries | [weekly_report_summaries.md](data/weekly_reports/weekly_report_summaries.md) | Detailed summaries for all 37 reports |

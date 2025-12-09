@@ -1,0 +1,66 @@
+file_id,filename,last_recalc_date,task_count,growth_pct,period_start,period_end,weekly_reports_count,weekly_report_highlights
+110,YATES-T FAB1 schedule - 10-10-22 - To SECAI.xer,2022-10-10,840,,2022-09-26,2022-10-10,2,Precast production holding up erection; goal dates slipping | Column issues from Jacobs Review with corbel heights
+76,YATES-T FAB1 schedule - 10-17-22 - To SECAI.xer,2022-10-17,840,0.0,2022-10-10,2022-10-17,1,Waffle slab clearance issues; upper columns pending design; laydown not finalized
+113,YATES-T FAB1 schedule - 10-21-22 - To SECAI.xer,2022-10-21,841,0.1,2022-10-17,2022-10-21,0,
+62,YATES-T FAB1 schedule - 11-07-22 - To SECAI.xer,2022-11-07,1053,25.2,2022-10-21,2022-11-07,1,E-Line and C&L columns behind schedule
+91,YATES-T FAB1 schedule - 11-22-22 - To SECAI.xer,2022-11-19,1114,5.8,2022-11-07,2022-11-19,1,Quality issues with precast columns; load testing planned
+90,YATES-T FAB1 schedule - 12-07-22 - To SECAI.xer,2022-12-05,1118,0.4,2022-11-19,2022-12-05,2,Thanksgiving week; reduced progress | Year-end acceleration planning initiated
+52,YATES-T FAB1 schedule - 12-5-22 - SECAI inputs updated (1).xer,2022-12-05,1146,2.5,2022-12-05,2022-12-05,0,
+92,YATES-T FAB1 schedule - 12-5-22 - SECAI inputs updated.xer,2022-12-05,1146,0.0,2022-12-05,2022-12-05,0,
+99,YATES-T FAB1 Study schedule update - 12-26-22 - To SECAI.xer,2022-12-26,1322,15.4,2022-12-05,2022-12-26,3,Holiday slowdown; acceleration study underway | Year-end schedule study with acceleration options
+70,YATES-T FAB1 Study Accelerated schedule -1-18-23 - Not Confirmed.xer,2023-01-09,1582,19.7,2022-12-26,2023-01-09,1,
+64,YATES-T FAB1 schedule - 1-09-23 - To SECAI.xer,2023-01-09,1336,-15.5,2023-01-09,2023-01-09,0,
+67,YATES-T FAB1 schedule update - 01-30-23 - To SECAI.xer,2023-01-30,1805,35.1,2023-01-09,2023-01-30,3,***ACCELERATION*** Raker production 6→15-18/wk; SUP design changing; multiple fabricators
+78,YATES-T FAB1 schedule update - 3-26-23 - To SECAI.xer,2023-03-26,2299,27.4,2023-01-30,2023-03-26,6,SUP Roof IFC released (SUE/SUW); Tindall shop tickets; DT slabs starting | ***FIZ RETROFIT DECISION*** SECAI/SAS decision; awaiting final design; L4 beams pending
+72,YATES-T FAB1 schedule update - 4-09-23 - To SECAI (1).xer,2023-04-09,2352,2.3,2023-03-26,2023-04-09,2,"Interior subs mobilizing: Patriot, BERG Drywall, FD Thomas; AFCO novated; interiors budget"
+57,YATES-T FAB1 schedule update - 4-09-23 - To SECAI.xer,2023-04-09,2351,-0.0,2023-04-09,2023-04-09,0,
+109,YATES-T FAB1 schedule update - 4-23-23 - To SECAI.xer,2023-04-23,2365,0.6,2023-04-09,2023-04-23,2,
+96,YATES-T FAB1 schedule update 5-07-23 - To SECAI.xer,2023-05-07,2718,14.9,2023-04-23,2023-05-07,2,Drywall and insulation scope expanding
+87,YATES-T FAB1 schedule - 5-22-23 - SECAI inputs updated.xer,2023-05-22,2721,0.1,2023-05-07,2023-05-22,2,Drywall/insulation progressing; finish packages being defined
+82,YATES-T FAB1 schedule update - 6-04-23 - To SECAI.xer,2023-06-04,2707,-0.5,2023-05-22,2023-06-04,1,
+103,YATES-T FAB1 schedule - 06-18-23.xer,2023-06-18,2712,0.2,2023-06-04,2023-06-18,2,Last weekly report; interior scope continuing
+61,YATES-T FAB1 schedule update - 7-16-23 - To SECAI.xer,2023-07-16,2718,0.2,2023-06-18,2023-07-16,0,
+100,YATES-T FAB1 schedule update - 08-20-23 - To SECAI.xer,2023-08-20,2769,1.9,2023-07-16,2023-08-20,0,
+79,YATES-T FAB1 schedule update - 09-03-23 - To SECAI.xer,2023-09-03,2771,0.1,2023-08-20,2023-09-03,0,
+107,YATES-T FAB1 schedule update - 09-15-23 - To SECAI.xer,2023-09-15,2857,3.1,2023-09-03,2023-09-15,0,
+105,YATES-T FAB1 schedule update - 10-01-23 - To SECAI.xer,2023-10-01,3716,30.1,2023-09-15,2023-10-01,0,
+85,YATES-T FAB1 schedule update - 10-15-23 - To SECAI.xer,2023-10-15,4002,7.7,2023-10-01,2023-10-15,0,
+112,YATES-T FAB1 schedule update - 10-29-23 - To SECAI.xer,2023-10-29,4048,1.1,2023-10-15,2023-10-29,0,
+66,YATES-T FAB1 schedule update - 11-26-2023 - To SECAI.xer,2023-11-26,4250,5.0,2023-10-29,2023-11-26,0,
+94,YATES-T FAB1 schedule update - 12-10-23 - To SECAI.xer,2023-12-10,4257,0.2,2023-11-26,2023-12-10,0,
+86,YATES-T FAB1 schedule update - 12-31-23 - To SECAI.xer,2023-12-31,4293,0.8,2023-12-10,2023-12-31,0,
+80,YATES-T FAB1 schedule update - 12-31-23 - To SECAI - DRAFT.xer,2023-12-31,4602,7.2,2023-12-31,2023-12-31,0,
+69,YATES-T FAB1 schedule update - 01-21-24 - To SECAI.xer,2024-01-21,4681,1.7,2023-12-31,2024-01-21,0,
+101,YATES-T FAB1 schedule update - 02-04-24 - To SECAI.xer,2024-02-04,4767,1.8,2024-01-21,2024-02-04,0,
+104,YATES-T FAB1 schedule update - 2-09-24 - To SECAI.xer,2024-02-09,4826,1.2,2024-02-04,2024-02-09,0,
+65,YATES-T FAB1 schedule update - 3-22-23 - To SECAI.xer,2024-03-22,5015,3.9,2024-02-09,2024-03-22,0,
+102,YATES-T FAB1 schedule update - 04-08-24 - To SECAI.xer,2024-04-08,5213,3.9,2024-03-22,2024-04-08,0,
+77,YATES-T FAB1 schedule - 4-19-23 - To SECAI.xer,2024-04-19,5300,1.7,2024-04-08,2024-04-19,0,
+71,YATES-T FAB1 schedule - 5-31-24 - To SECAI.xer,2024-05-31,5641,6.4,2024-04-19,2024-05-31,0,
+60,YATES-T FAB1 schedule - 6-14-24 - To SECAI.xer,2024-06-14,5895,4.5,2024-05-31,2024-06-14,0,
+81,YATES-T FAB1 schedule - 6-28-24 - To SECAI.xer,2024-06-28,6003,1.8,2024-06-14,2024-06-28,0,
+55,YATES-T FAB1 schedule update -DD 08-09-24 - To SECAI.xer,2024-08-09,6590,9.8,2024-06-28,2024-08-09,0,
+56,YATES-T FAB1 schedule update - 08-23-24 - To SECAI.xer,2024-08-23,6614,0.4,2024-08-09,2024-08-23,0,
+84,YATES-T FAB1 schedule update - 9-20-24 - To SECAI.xer,2024-09-20,6695,1.2,2024-08-23,2024-09-20,0,
+88,YATES-T FAB1 schedule update - 10-04-23 - To SECAI.xer,2024-10-04,6764,1.0,2024-09-20,2024-10-04,0,
+95,YATES-T FAB1 schedule update - 10-18-24 - To SECAI.xer,2024-10-18,6960,2.9,2024-10-04,2024-10-18,0,
+83,YATES-T FAB1 schedule update -DD 11-1-24 - To SECAI.xer,2024-11-01,6984,0.3,2024-10-18,2024-11-01,0,
+97,YATES-T FAB1 schedule update - 11.29.24 - To SECAI.xer,2024-11-29,7053,1.0,2024-11-01,2024-11-29,0,
+58,YATES-T FAB1 schedule update - 12-13-24 - To SECAI.xer,2024-12-13,7153,1.4,2024-11-29,2024-12-13,0,
+63,YATES-T FAB1 schedule update - 12-27-24 - To SECAI.xer,2024-12-27,7158,0.1,2024-12-13,2024-12-27,0,
+54,YATES-T FAB1 schedule update - 1-10-25 - To SECAI.xer,2025-01-10,7188,0.4,2024-12-27,2025-01-10,0,
+106,YATES-T FAB1 schedule update - 1-24-25 - To SECAI.xer,2025-01-24,7187,-0.0,2025-01-10,2025-01-24,0,
+53,YATES-T FAB1 schedule update - 2-07-25 - To SECAI.xer,2025-02-07,7353,2.3,2025-01-24,2025-02-07,0,
+75,YATES-T FAB1 schedule update - 2-21-25 - To SECAI.xer,2025-02-21,7374,0.3,2025-02-07,2025-02-21,0,
+108,YATES-T FAB1 schedule update - 3-28-25 - To SECAI.xer,2025-03-27,7415,0.6,2025-02-21,2025-03-27,0,
+68,YATES-T FAB1 schedule update - 04-04-25 - To SECAI.xer,2025-04-04,7421,0.1,2025-03-27,2025-04-04,0,
+49,YATES-T FAB1 schedule update - 05-02-25 - To SECAI.xer,2025-05-02,7501,1.1,2025-04-04,2025-05-02,0,
+50,YATES-T FAB1 schedule update - 05-23-25 - To SECAI.xer,2025-05-23,7541,0.5,2025-05-02,2025-05-23,0,
+111,YATES-T FAB1 schedule update - 060625 To SECAI.xer,2025-06-06,7566,0.3,2025-05-23,2025-06-06,0,
+89,YATES-T FAB1 schedule update - 07-02-25 - To SECAI.xer,2025-07-02,7392,-2.3,2025-06-06,2025-07-02,0,
+74,YATES-T FAB1 schedule update - 07-18-25 - To SECAI.xer,2025-07-18,12245,65.7,2025-07-02,2025-07-18,0,
+59,YATES-T FAB1 schedule update - 08-22-25 - To SECAI.xer,2025-08-22,12504,2.1,2025-07-18,2025-08-22,0,
+51,YATES-T FAB1 schedule update - 10-03-25 - To SECAI.xer,2025-10-03,12856,2.8,2025-08-22,2025-10-03,0,
+73,YATES-T FAB1 schedule update - DD 10-17-25 - To SECAI.xer,2025-10-17,12912,0.4,2025-10-03,2025-10-17,0,
+93,YATES-T FAB1 schedule update - DD 10-17-25 - To SECAI (1).xer,2025-10-17,12912,0.0,2025-10-17,2025-10-17,0,
+98,YATES-T FAB1 schedule update - DD 10-31-25 - To SECAI (2).xer,2025-10-30,12230,-5.3,2025-10-17,2025-10-30,0,
