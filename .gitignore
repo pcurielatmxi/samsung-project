@@ -109,6 +109,15 @@ data/tbm/tables/*
 data/weekly_reports/tables/*
 !data/weekly_reports/tables/.gitkeep
 
+# Construction drawings (large PDFs and processed images)
+data/drawings/*.pdf
+data/drawings/processed/*
+data/drawings/png/*
+!data/drawings/.gitkeep
+!data/drawings/processed/.gitkeep
+!data/drawings/png/.gitkeep
+!data/drawings/manifest.json
+
 # Pending organization (staging area for unclassified files)
 data/pending_organization/*
 !data/pending_organization/.gitkeep
