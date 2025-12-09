@@ -8,6 +8,10 @@ Extracts:
 - Manpower/Labor Report
 
 Uses fitz for fast text extraction, then regex parsing.
+
+NOTE: This script updates the existing weekly_reports.csv (created by
+parse_weekly_reports.py) with addendum counts (rfi_count, submittal_count,
+manpower_count). Run parse_weekly_reports.py first to create the base file.
 """
 
 import re
@@ -166,20 +170,39 @@ def main():
     output_dir = Path('data/weekly_reports/tables')
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    weekly_reports_path = output_dir / 'weekly_reports.csv'
+
+    # Load existing weekly_reports.csv to get file_id mapping
+    if weekly_reports_path.exists():
+        weekly_df = pd.read_csv(weekly_reports_path)
+        filename_to_id = dict(zip(weekly_df['filename'], weekly_df['file_id']))
+        print(f"Loaded {len(filename_to_id)} file mappings from weekly_reports.csv")
+    else:
+        weekly_df = None
+        filename_to_id = {}
+        print("No existing weekly_reports.csv found - will create file_ids")
+
     pdf_files = sorted(input_dir.glob('*.pdf'))
     print(f"Found {len(pdf_files)} weekly report PDFs")
 
     all_rfi = []
     all_submittal = []
     all_manpower = []
-    file_metadata = []
+    addendum_counts = {}  # file_id -> counts
 
     import time
     total_start = time.time()
 
-    for file_id, pdf_path in enumerate(pdf_files, 1):
+    for i, pdf_path in enumerate(pdf_files, 1):
         start = time.time()
-        print(f"Processing {file_id}/{len(pdf_files)}: {pdf_path.name[:50]}...", end=' ', flush=True)
+
+        # Get file_id from existing mapping or create new one
+        if pdf_path.name in filename_to_id:
+            file_id = filename_to_id[pdf_path.name]
+        else:
+            file_id = i  # Fallback if not in existing mapping
+
+        print(f"Processing {i}/{len(pdf_files)}: {pdf_path.name[:50]}...", end=' ', flush=True)
 
         # Extract text with fitz (fast)
         text = extract_text_fast(pdf_path)
@@ -193,15 +216,12 @@ def main():
         all_submittal.extend(submittal)
         all_manpower.extend(manpower)
 
-        # File metadata
-        file_metadata.append({
-            'file_id': file_id,
-            'filename': pdf_path.name,
-            'report_date': parse_date_from_filename(pdf_path.name),
+        # Track counts for updating weekly_reports.csv
+        addendum_counts[file_id] = {
             'rfi_count': len(rfi),
             'submittal_count': len(submittal),
             'manpower_count': len(manpower),
-        })
+        }
 
         elapsed = time.time() - start
         print(f"{len(rfi)} RFIs, {len(submittal)} submittals, {len(manpower)} labor ({elapsed:.1f}s)")
@@ -212,10 +232,16 @@ def main():
     # Save outputs
     print("\n=== Saving outputs ===")
 
-    if file_metadata:
-        df = pd.DataFrame(file_metadata)
-        df.to_csv(output_dir / 'addendum_files.csv', index=False)
-        print(f"addendum_files.csv: {len(df)} files")
+    # Update weekly_reports.csv with addendum counts
+    if weekly_df is not None and addendum_counts:
+        # Add/update count columns
+        weekly_df['rfi_count'] = weekly_df['file_id'].map(lambda x: addendum_counts.get(x, {}).get('rfi_count', 0))
+        weekly_df['submittal_count'] = weekly_df['file_id'].map(lambda x: addendum_counts.get(x, {}).get('submittal_count', 0))
+        weekly_df['manpower_count'] = weekly_df['file_id'].map(lambda x: addendum_counts.get(x, {}).get('manpower_count', 0))
+        weekly_df.to_csv(weekly_reports_path, index=False)
+        print(f"Updated weekly_reports.csv with addendum counts ({len(weekly_df)} files)")
+    else:
+        print("Warning: weekly_reports.csv not found - run parse_weekly_reports.py first")
 
     if all_rfi:
         df = pd.DataFrame(all_rfi)
