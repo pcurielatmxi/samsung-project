@@ -123,7 +123,16 @@ mxi-samsung/
 
 **Coverage:** August 21, 2022 → June 12, 2023 (10 months, 37 reports)
 
-**Key Analysis:** See [data/primavera/analysis/scope_growth_analysis.md](data/primavera/analysis/scope_growth_analysis.md) for correlation of weekly report events with schedule scope growth.
+**Analysis Documents:**
+
+| Document | Location | Description |
+|----------|----------|-------------|
+| Scope Growth Analysis | [scope_growth_analysis.md](data/primavera/analysis/scope_growth_analysis.md) | Correlation of weekly report events with schedule scope growth |
+| Weekly Report Highlights | [weekly_report_highlights.md](data/weekly_reports/weekly_report_highlights.md) | 177+ curated highlights with file, page, importance |
+| Key Events Timeline | [key_events_timeline.md](data/weekly_reports/key_events_timeline.md) | Critical milestones and scope change events |
+| Executive Summaries | [weekly_report_summaries.md](data/weekly_reports/weekly_report_summaries.md) | Detailed summaries for all 37 reports |
+
+**Narrative Extracts:** `data/weekly_reports/narrative_extracts/` contains raw text extracted from first 20 pages of each PDF (narrative sections only, excludes data dumps).
 
 ### 4. Document Analysis (Planned)
 
@@ -250,6 +259,7 @@ DB_NAME=etl_db
 - Basic schedule metrics
 - Weekly report PDF extraction (37 reports → 27K records)
 - Scope growth analysis with weekly report correlation
+- Weekly report highlights analysis (177+ curated items with page citations)
 
 ### In Progress
 - Schedule comparison analysis

@@ -108,6 +108,10 @@ data/tbm/tables/*
 # Weekly reports (processed output)
 data/weekly_reports/tables/*
 !data/weekly_reports/tables/.gitkeep
+data/weekly_reports/narrative_extracts/*
+!data/weekly_reports/narrative_extracts/.gitkeep
+# Keep analysis markdown files
+!data/weekly_reports/*.md
 
 # Construction drawings (large PDFs and processed images)
 data/drawings/*.pdf
