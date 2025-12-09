@@ -21,9 +21,15 @@ def parse_labor_entries(df: pd.DataFrame) -> pd.DataFrame:
     """
     Extract labor hour entries from the audit log.
 
-    Pattern:
+    Supports two formats:
+
+    Format 1 (early reports ~52-97):
     - "Added/Modified Detailed labor FOR Ongoing Activities (COMPANY: CODE)"
-    - Followed by repeating: Name, value, Trade, value, Classification, value, Hours, Old: X, New: Y
+    - Followed by: Name, value, Trade, value, Classification, value, Hours, Old: X, New: Y
+
+    Format 2 (later reports ~98+):
+    - "Added/Modified Detailed labor (WORKER NAME) FOR Ongoing Activities (COMPANY: CODE)"
+    - Followed by: Start, value, Break, value, End, value, Trade, value, Classification, value, Hours, Old: X, New: Y
     """
     records = []
     i = 0
@@ -32,7 +38,6 @@ def parse_labor_entries(df: pd.DataFrame) -> pd.DataFrame:
     current_report_num = None
     current_modifier = None
     current_timestamp = None
-    current_company = None
 
     while i < n:
         val = str(df.iloc[i]['Done']) if pd.notna(df.iloc[i]['Done']) else ''
@@ -58,13 +63,85 @@ def parse_labor_entries(df: pd.DataFrame) -> pd.DataFrame:
                     i += 1
             continue
 
-        # Detect labor entry header
-        if 'Detailed labor FOR Ongoing Activities' in val:
-            action = 'Added' if val.startswith('Added') else 'Modified'
-            # Extract company from header
-            company_match = re.search(r'\(([^:]+):', val)
-            if company_match:
-                current_company = company_match.group(1).strip()
+        # Detect labor entry header - check for both formats
+        # Format 2: "Added Detailed labor (NAME) FOR Ongoing Activities (COMPANY: CODE)"
+        # Format 1: "Added Detailed labor FOR Ongoing Activities (COMPANY: CODE)"
+
+        format2_match = re.match(r'(Added|Modified|Deleted) Detailed labor \(([^)]+)\) FOR Ongoing Activities \(([^:]+):', val)
+        format1_match = re.match(r'(Added|Modified|Deleted) Detailed labor FOR Ongoing Activities \(([^:]+):', val)
+
+        if format2_match:
+            # Format 2: Name is in the header
+            action = format2_match.group(1)
+            name = format2_match.group(2).strip()
+            company = format2_match.group(3).strip()
+
+            i += 1
+
+            # Parse fields: Start, Break, End, Trade, Classification, Hours
+            trade = ''
+            classification = ''
+            old_hours = None
+            new_hours = None
+
+            j = i
+            while j < n and j < i + 25:  # Max lookahead
+                f = str(df.iloc[j]['Done']) if pd.notna(df.iloc[j]['Done']) else ''
+
+                if f == 'Trade' and j + 1 < n:
+                    trade = str(df.iloc[j + 1]['Done']) if pd.notna(df.iloc[j + 1]['Done']) else ''
+                    j += 2
+                elif f == 'Classification' and j + 1 < n:
+                    classification = str(df.iloc[j + 1]['Done']) if pd.notna(df.iloc[j + 1]['Done']) else ''
+                    j += 2
+                elif f == 'Hours':
+                    j += 1
+                    # Look for Old: and New: values
+                    while j < n and j < i + 30:
+                        hv = str(df.iloc[j]['Done']) if pd.notna(df.iloc[j]['Done']) else ''
+                        if hv.startswith('Old:'):
+                            try:
+                                old_hours = float(hv.replace('Old:', '').strip())
+                            except:
+                                old_hours = 0
+                            j += 1
+                        elif hv.startswith('New:'):
+                            try:
+                                new_hours = float(hv.replace('New:', '').strip())
+                            except:
+                                new_hours = 0
+                            j += 1
+                            break
+                        else:
+                            j += 1
+                    break
+                elif f.startswith('Modified by') or f.startswith('Added') or f.startswith('Deleted') or re.match(r'\d+of\d+', f):
+                    break
+                else:
+                    j += 1
+
+            # Record the entry
+            if name and action != 'Deleted':
+                records.append({
+                    'report_num': current_report_num,
+                    'timestamp': current_timestamp,
+                    'modifier': current_modifier,
+                    'action': action,
+                    'company': company,
+                    'name': name,
+                    'trade': trade,
+                    'classification': classification,
+                    'old_hours': old_hours,
+                    'new_hours': new_hours,
+                    'hours_delta': (new_hours or 0) - (old_hours or 0)
+                })
+
+            i = j
+
+        elif format1_match:
+            # Format 1: Name is on separate line
+            action = format1_match.group(1)
+            current_company = format1_match.group(2).strip()
 
             i += 1
 
@@ -120,7 +197,7 @@ def parse_labor_entries(df: pd.DataFrame) -> pd.DataFrame:
                             j += 1
 
                     # Record the entry
-                    if name and name != 'Name':
+                    if name and name != 'Name' and action != 'Deleted':
                         records.append({
                             'report_num': current_report_num,
                             'timestamp': current_timestamp,
@@ -136,7 +213,7 @@ def parse_labor_entries(df: pd.DataFrame) -> pd.DataFrame:
                         })
 
                     i = j
-                elif field.startswith('Modified by') or field.startswith('Added') or 'of1314' in field:
+                elif field.startswith('Modified by') or field.startswith('Added') or re.match(r'\d+of\d+', field):
                     break
                 else:
                     i += 1
@@ -377,7 +454,7 @@ def parse_report_dates(df: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     """Main processing function."""
-    input_path = Path('data/projectsight/extracted/Yates Daily Reports.xlsx')
+    input_path = Path('data/raw/projectsight/Yates Daily Reports.xlsx')
     output_dir = Path('data/projectsight/tables')
     output_dir.mkdir(parents=True, exist_ok=True)
 
