@@ -167,6 +167,10 @@ def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
             'loc_type': classification['loc_type'],
             'loc_type_desc': classification['loc_type_desc'],
             'loc_id': classification['loc_id'],
+            'building': classification['building'],
+            'building_desc': classification['building_desc'],
+            'level': classification['level'],
+            'level_desc': classification['level_desc'],
             'label': classification['label'],
             # Include schedule fields for analysis
             'target_start_date': row.get('target_start_date'),
@@ -212,6 +216,27 @@ def generate_summary(df: pd.DataFrame) -> None:
         desc = df[df['loc_type'] == loc_type]['loc_type_desc'].iloc[0]
         pct = count / len(df) * 100
         print(f"  {loc_type} ({desc}): {count:,} ({pct:.1f}%)")
+
+    # Building distribution
+    print("\n--- Building Distribution ---")
+    bldg_dist = df['building'].value_counts(dropna=False)
+    for bldg, count in bldg_dist.items():
+        pct = count / len(df) * 100
+        bldg_display = bldg if pd.notna(bldg) else '(none)'
+        print(f"  {bldg_display}: {count:,} ({pct:.1f}%)")
+
+    # Level distribution
+    print("\n--- Level Distribution ---")
+    level_dist = df['level'].value_counts(dropna=False).sort_index()
+    for lvl, count in level_dist.items():
+        pct = count / len(df) * 100
+        if pd.isna(lvl):
+            lvl_display = '(none)'
+        elif lvl in ('GEN', 'MULTI', 'UNK'):
+            lvl_display = lvl  # Don't add L prefix to special codes
+        else:
+            lvl_display = f"L{lvl}"
+        print(f"  {lvl_display}: {count:,} ({pct:.1f}%)")
 
     # Tasks with room-level location
     room_tasks = df[df['loc_type'] == 'RM']

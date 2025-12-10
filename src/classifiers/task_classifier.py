@@ -46,20 +46,61 @@ class TaskClassifier:
         'UNK': {'UNK': 'Unknown'}
     }
 
-    # Location type descriptions
+    # Location type descriptions (precision level of location)
     LOC_TYPES = {
         'RM': 'Room',
         'EL': 'Elevator',
         'ST': 'Stair',
-        'GL': 'Gridline Area',
-        'AR': 'Area Zone',
-        'BL': 'Building Level',
-        'BD': 'Building',
-        'NA': 'Not Applicable'
+        'GL': 'Gridline',
+        'AR': 'Area',
+        'GEN': 'General/Project-Wide'
     }
 
-    # Building codes
-    BUILDINGS = {'FAB', 'SUE', 'SUW', 'FIZ', 'CUB', 'GCS', 'GCSA', 'GCSB'}
+    # Building codes and their full names
+    BUILDINGS = {
+        'FAB': 'Main FAB',
+        'SUE': 'Support East',
+        'SUW': 'Support West',
+        'FIZ': 'FAB Integration Zone',
+        'CUB': 'Central Utilities',
+        'GCS': 'Gas/Chemical Supply',
+        'GCSA': 'GCS Building A',
+        'GCSB': 'GCS Building B',
+        # Special codes for unresolved buildings
+        'GEN': 'Project-Wide',
+        'MULTI': 'Multiple Buildings',
+        'UNK': 'Unknown'
+    }
+
+    # Level codes and their descriptions
+    LEVELS = {
+        '1': 'Level 1',
+        '2': 'Level 2',
+        '3': 'Level 3',
+        '4': 'Level 4',
+        '5': 'Level 5',
+        '6': 'Level 6',
+        'B1': 'Basement 1',
+        # Special codes for unresolved levels
+        'GEN': 'Project-Wide',
+        'MULTI': 'Multiple Levels',
+        'UNK': 'Unknown'
+    }
+
+    # FAB room code building digit mapping: FAB1{level}{building_digit}{room}
+    # e.g., FAB146103 = Level 4, Building 6 (SUE), Room 103
+    FAB_BUILDING_MAP = {
+        '0': 'SUW',   # Support West
+        '6': 'SUE',   # Support East
+        '2': 'FAB',   # Main FAB interior (tentative)
+        '4': 'FIZ',   # FAB Integration Zone (tentative)
+    }
+
+    # Area zone to building mapping
+    AREA_BUILDING_MAP = {
+        'SWA': 'SUW', 'SWB': 'SUW',  # Support West areas
+        'SEA': 'SUE', 'SEB': 'SUE',  # Support East areas
+    }
 
     def __init__(self):
         """Initialize the classifier."""
@@ -171,9 +212,103 @@ class TaskClassifier:
 
         return 'UNK', 'UNK'
 
+    def extract_building_level(self, task_name: str, wbs_name: str = None,
+                                loc_type: str = None, loc_id: str = None) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Extract building and level as separate values.
+
+        Sources (in priority order):
+        1. FAB room code (e.g., FAB146103 → SUE, Level 4)
+        2. Area zone (e.g., SWA1 → SUW)
+        3. Explicit in task/WBS text (e.g., "3F, SUE")
+
+        Args:
+            task_name: The task name string
+            wbs_name: Optional WBS name
+            loc_type: Already extracted location type
+            loc_id: Already extracted location ID
+
+        Returns:
+            Tuple of (building, level) where either may be None
+        """
+        task_upper = str(task_name).upper()
+        wbs_upper = str(wbs_name or '').upper()
+        combined = f"{task_upper} {wbs_upper}"
+
+        building = None
+        level = None
+
+        # 1. Extract from FAB room code: FAB1{level}{building_digit}{room}
+        if loc_type == 'RM' and loc_id:
+            fab_match = re.match(r'FAB1(\d)(\d)', loc_id)
+            if fab_match:
+                level = fab_match.group(1)
+                building_digit = fab_match.group(2)
+                building = self.FAB_BUILDING_MAP.get(building_digit)
+
+        # 2. Extract from area zone prefix in loc_id (SWA, SEA, etc.)
+        if loc_id:
+            zone_prefix = loc_id[:3] if len(loc_id) >= 3 else None
+            if zone_prefix in self.AREA_BUILDING_MAP:
+                building = self.AREA_BUILDING_MAP[zone_prefix]
+
+        # 3. Extract from area zone pattern in text (SEA1, SWA2, etc.) if not from loc_id
+        if not building:
+            zone_match = re.search(r'\b(S[EW][AB])\d', combined)
+            if zone_match:
+                zone_prefix = zone_match.group(1)
+                building = self.AREA_BUILDING_MAP.get(zone_prefix)
+
+        # 4. Extract building from text patterns (if not yet found)
+        if not building:
+            # Use word boundaries to avoid matching inside words like "SUPPORT"
+            for bldg, pattern in [
+                ('SUW', r'\bWSUP\b|\bW[\-\s]?SUP\b|\bSUW\b'),
+                ('SUE', r'\bESUP\b|\bE[\-\s]?SUP\b|\bSUE\b'),
+                ('FIZ', r'\bFIZ\b'),
+                ('CUB', r'\bCUB\b'),
+                ('FAB', r'\bFAB\b'),
+                ('GCSA', r'\bGCS[\-\s]?A\b'),
+                ('GCSB', r'\bGCS[\-\s]?B\b'),
+                ('GCS', r'\bGCS\b'),
+            ]:
+                if re.search(pattern, combined):
+                    building = bldg
+                    break
+
+        # 5. Extract level from text (if not from FAB code)
+        if not level:
+            # Patterns: L1, L2, 1F, 2F, B1, B1F, -4F-, etc.
+            level_match = re.search(r'\bL(\d)\b|\b([B]?\d)F\b', combined)
+            if level_match:
+                level = level_match.group(1) or level_match.group(2)
+
+        # 6. Apply fallbacks for missing building/level
+        # Determine reason for missing values based on context
+        if not building:
+            if loc_type == 'GEN':
+                building = 'GEN'  # General/Project-Wide - no specific building
+            elif loc_type in ('GL', 'AR'):
+                building = 'MULTI'  # Gridlines/Areas often span multiple buildings
+            else:
+                building = 'UNK'  # Unknown - should have building but couldn't extract
+
+        if not level:
+            if loc_type == 'GEN':
+                level = 'GEN'  # General/Project-Wide - no specific level
+            elif loc_type in ('GL', 'AR', 'EL', 'ST'):
+                level = 'MULTI'  # These often span multiple levels
+            else:
+                level = 'UNK'  # Unknown - should have level but couldn't extract
+
+        return building, level
+
     def extract_location(self, task_name: str, wbs_name: str = None) -> Tuple[str, Optional[str]]:
         """
         Extract location type and ID from task name and WBS.
+
+        Priority: WBS FAB codes take precedence over task FAB codes to maintain
+        consistency with the WBS structure familiar to the customer.
 
         Args:
             task_name: The task name string
@@ -182,10 +317,16 @@ class TaskClassifier:
         Returns:
             Tuple of (loc_type, loc_id) where loc_id may be None
         """
-        combined = f"{task_name} {wbs_name or ''}".upper()
+        task_upper = str(task_name).upper()
+        wbs_upper = str(wbs_name or '').upper()
+        combined = f"{task_upper} {wbs_upper}"
 
         # 1. FAB Room Code (highest precision)
-        fab_match = re.search(r'FAB1?(\d{5,6})', combined)
+        # Priority: WBS FAB code > Task FAB code (WBS structure is customer-facing)
+        wbs_fab_match = re.search(r'FAB1?(\d{5,6})', wbs_upper) if wbs_name else None
+        task_fab_match = re.search(r'FAB1?(\d{5,6})', task_upper)
+
+        fab_match = wbs_fab_match or task_fab_match
         if fab_match:
             return 'RM', f"FAB1{fab_match.group(1)}"
 
@@ -199,57 +340,52 @@ class TaskClassifier:
         if st_match:
             return 'ST', f"ST{st_match.group(1).zfill(2)}"
 
-        # 4. Gridline range (e.g., "GL 14-17", "17-18", "A-C/4-5")
+        # 4. Gridline patterns
+        # Range: "GL 14-17", "17-18"
         gl_match = re.search(r'GL[\s\-]*(\d+[\s\-]+\d+)', combined)
         if gl_match:
             gl_id = re.sub(r'\s+', '-', gl_match.group(1))
             return 'GL', f"GL{gl_id}"
 
-        # Pattern: A1, B2, etc. (area designations)
-        area_match = re.search(r'\b([AB][\-\s]?[1-5])\b', combined)
-        if area_match:
-            return 'AR', area_match.group(1).replace(' ', '').replace('-', '')
+        # Single: "GL 33", "GL5"
+        gl_single = re.search(r'\bGL[\s\-]?(\d{1,2})\b', combined)
+        if gl_single:
+            return 'GL', f"GL{gl_single.group(1)}"
 
-        # Pattern: SEA1-5, SWB1-5 (support building zones)
-        zone_match = re.search(r'\b(S[EW][AB]\d)\b', combined)
-        if zone_match:
-            return 'AR', zone_match.group(1)
+        # Letter line: "A LINE", "B LINE"
+        line_match = re.search(r'\b([A-N])\s*LINE\b', combined)
+        if line_match:
+            return 'GL', f"GL-{line_match.group(1)}"
 
-        # Gridline range in task name (e.g., "17-18", "13-9")
+        # Numeric range: "17-18", "13-9"
         gridline_match = re.search(r'\b(\d{1,2})[\s\-]+(\d{1,2})\b', combined)
         if gridline_match:
             g1, g2 = gridline_match.groups()
             return 'GL', f"GL{g1}-{g2}"
 
-        # 5. Building + Level
-        building = None
-        level = None
+        # 5. Area patterns
+        # Penthouse: NE/NW/SE/SW PENTHOUSE
+        pent_match = re.search(r'\b(N[EW]|S[EW])\s*PENTHOUSE\b', combined)
+        if pent_match:
+            return 'AR', f"PENT-{pent_match.group(1)}"
 
-        # Extract building
-        for bldg in ['SUE', 'SUW', 'FIZ', 'CUB', 'FAB', 'GCS']:
-            if bldg in combined:
-                building = bldg
-                break
+        # Milestone areas: A1, B2, etc.
+        area_match = re.search(r'\b([AB][\-\s]?[1-5])\b', combined)
+        if area_match:
+            return 'AR', area_match.group(1).replace(' ', '').replace('-', '')
 
-        # Extract level
-        level_match = re.search(r'\b([B]?\d)[F]?\b', combined)
-        if level_match:
-            level = level_match.group(1)
-            if not level.endswith('F'):
-                level = f"{level}F"
+        # Support zones: SEA1, SWA1, SWB1, SEB1 (with optional hyphen)
+        zone_match = re.search(r'\b(S[EW][AB])[\-]?(\d)\b', combined)
+        if zone_match:
+            return 'AR', f"{zone_match.group(1)}{zone_match.group(2)}"
 
-        if building and level:
-            return 'BL', f"{building}-L{level.replace('F', '')}"
+        # Trade Impact Areas: TIA-1, E.TIA-1
+        tia_match = re.search(r'TIA[\-]?(\d)', combined)
+        if tia_match:
+            return 'AR', f"TIA{tia_match.group(1)}"
 
-        if building:
-            return 'BD', building
-
-        # 6. Check for procurement/design tasks (no location)
-        phase, _ = self.classify_phase_scope(task_name)
-        if phase == 'PRE':
-            return 'NA', None
-
-        return 'NA', None
+        # 6. General/Project-Wide (no specific location identifier found)
+        return 'GEN', None
 
     def classify_task(self, task_name: str, wbs_name: str = None) -> Dict[str, Optional[str]]:
         """
@@ -260,10 +396,11 @@ class TaskClassifier:
             wbs_name: Optional WBS name for additional context
 
         Returns:
-            Dictionary with phase, scope, loc_type, loc_id, and full label
+            Dictionary with phase, scope, loc_type, loc_id, building, level, and full label
         """
         phase, scope = self.classify_phase_scope(task_name)
         loc_type, loc_id = self.extract_location(task_name, wbs_name)
+        building, level = self.extract_building_level(task_name, wbs_name, loc_type, loc_id)
 
         # Build label
         if loc_id:
@@ -276,10 +413,14 @@ class TaskClassifier:
             'scope': scope,
             'loc_type': loc_type,
             'loc_id': loc_id,
+            'building': building,
+            'level': level,
             'label': label,
             'phase_desc': self.PHASES.get(phase, 'Unknown'),
             'scope_desc': self.SCOPES.get(phase, {}).get(scope, 'Unknown'),
-            'loc_type_desc': self.LOC_TYPES.get(loc_type, 'Unknown')
+            'loc_type_desc': self.LOC_TYPES.get(loc_type, 'Unknown'),
+            'building_desc': self.BUILDINGS.get(building, 'Unknown'),
+            'level_desc': self.LEVELS.get(level, f'Level {level}' if level and level.isdigit() else 'Unknown')
         }
 
     def get_phase_description(self, phase: str) -> str:
