@@ -42,14 +42,36 @@ def load_yates_data(latest_only: bool = False) -> tuple:
     wbs = pd.read_csv(data_dir / "projwbs.csv", low_memory=False)
     files = pd.read_csv(data_dir / "xer_files.csv")
 
-    # Filter to YATES files only
-    yates_files = files[files['filename'].str.contains('YATES', case=False, na=False)]
+    # Filter to YATES files (includes SAMSUNG-TFAB1 which is also YATES)
+    yates_files = files[files['filename'].str.contains('YATES|SAMSUNG-TFAB1', case=False, na=False, regex=True)]
     print(f"Found {len(yates_files)} YATES schedule versions")
 
     if latest_only:
-        # Get only the most recent
-        yates_files = yates_files.sort_values('date', ascending=False).head(1)
-        print(f"Using latest: {yates_files.iloc[0]['filename']}")
+        # Parse dates from filenames (more reliable than date column)
+        import re
+        def parse_date_from_filename(filename):
+            # Pattern: MM-DD-YY or MM.DD.YY (but avoid TFAB1 prefix)
+            # Look for date patterns after known prefixes
+            match = re.search(r'(?:update|schedule|TFAB1)[\s\-]*(?:DD\s*)?(\d{1,2})[-.](\d{1,2})[-.](\d{2,4})', filename, re.I)
+            if match:
+                m, d, y = match.groups()
+                y = int(y)
+                if y < 100:
+                    y = 2000 + y if y < 50 else 1900 + y
+                try:
+                    return pd.Timestamp(year=y, month=int(m), day=int(d))
+                except:
+                    pass
+            return pd.NaT
+
+        yates_files = yates_files.copy()
+        yates_files['parsed_date'] = yates_files['filename'].apply(parse_date_from_filename)
+        valid_dates = yates_files[yates_files['parsed_date'].notna()]
+        if len(valid_dates) > 0:
+            yates_files = valid_dates.sort_values('parsed_date', ascending=False).head(1)
+        else:
+            yates_files = yates_files.sort_values('file_id', ascending=False).head(1)
+        print(f"Using latest: {yates_files.iloc[0]['filename']} (file_id={yates_files.iloc[0]['file_id']})")
 
     yates_ids = set(yates_files['file_id'].values)
 

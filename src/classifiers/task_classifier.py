@@ -130,7 +130,7 @@ class TaskClassifier:
             return 'INT', 'MEP'  # MEP Rough-in
         if re.search(r'FIRE(?!PROOF)|SPRINKLER|CAULK|FIRESTOP|SMOKE', t):
             return 'INT', 'FIR'  # Fire Protection
-        if re.search(r'PAINT(?!.*COLUMN)|TILE\b|FLOORING|CEILING(?!.*SYSTEM)|FINISH(?!.*DRYWALL)|CONTROL JOINT|EPOXY|VCT|ACCESS FLOOR|FLOOR STRIP|STRIPING|JOINT SEALANT|ALUMINIUM COVER', t):
+        if re.search(r'PAINT(?!.*COLUMN)|TILE\b|FLOORING|CEILING(?!.*SYSTEM)|FINISH(?!.*DRYWALL)|CONTROL JOINT|EPOXY|VCT|ACCESS FLOOR|FLOOR STRIP|STRIPING|JOINT SEALANT|ALUMINIUM COVER|EMSEAL|EXPANSION JOINT', t):
             return 'INT', 'FIN'  # Finishes
         if re.search(r'DOOR|FRAME(?!.*STUD)|HARDWARE|HOLLOW METAL|DOCK LOCK|DOCK GUARDIAN', t):
             return 'INT', 'DOR'  # Doors & Hardware
@@ -148,7 +148,7 @@ class TaskClassifier:
             return 'INT', 'MSC'
 
         # ============ COMMISSIONING ============
-        if re.search(r'TEST(?!ING.*IMPACT)|COMMISSION|ENERGIZE|START.?UP|PUNCH', t):
+        if re.search(r'TEST(?!ING.*IMPACT)|COMMISSION|ENERGIZE|START.?UP|PUNCH|INPSECTION|INSPECTION', t):
             return 'COM', 'TST'  # Testing
         if re.search(r'TURNOVER|SUBSTANTIAL|HANDOVER|BENEFICIAL', t):
             return 'COM', 'TRN'  # Turnover
