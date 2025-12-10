@@ -172,6 +172,14 @@ def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
             'level': classification['level'],
             'level_desc': classification['level_desc'],
             'label': classification['label'],
+            # Impact tracking fields (for delay analysis)
+            'impact_code': classification.get('impact_code'),
+            'impact_type': classification.get('impact_type'),
+            'impact_type_desc': classification.get('impact_type_desc'),
+            'attributed_to': classification.get('attributed_to'),
+            'attributed_to_desc': classification.get('attributed_to_desc'),
+            'root_cause': classification.get('root_cause'),
+            'root_cause_desc': classification.get('root_cause_desc'),
             # Include schedule fields for analysis
             'target_start_date': row.get('target_start_date'),
             'target_end_date': row.get('target_end_date'),
@@ -245,6 +253,31 @@ def generate_summary(df: pd.DataFrame) -> None:
     if len(room_tasks) > 0:
         unique_rooms = room_tasks['loc_id'].nunique()
         print(f"  Unique rooms tracked: {unique_rooms:,}")
+
+    # Impact/Delay Analysis
+    impact_tasks = df[df['scope'] == 'IMP']
+    print(f"\n--- Impact/Delay Tracking ---")
+    print(f"  Total IMPACT tasks: {len(impact_tasks):,} ({len(impact_tasks)/len(df)*100:.1f}%)")
+    if len(impact_tasks) > 0:
+        # Attribution breakdown
+        attributed = impact_tasks[impact_tasks['attributed_to'].notna()]
+        print(f"  With attribution: {len(attributed):,} ({len(attributed)/len(impact_tasks)*100:.1f}%)")
+        if len(attributed) > 0:
+            print("  Top attributed parties:")
+            attr_dist = attributed['attributed_to'].value_counts().head(5)
+            for party, count in attr_dist.items():
+                pct = count / len(impact_tasks) * 100
+                print(f"    {party}: {count:,} ({pct:.1f}%)")
+
+        # Root cause breakdown
+        with_cause = impact_tasks[impact_tasks['root_cause'].notna()]
+        if len(with_cause) > 0:
+            print("  Root cause categories:")
+            cause_dist = with_cause['root_cause'].value_counts().head(8)
+            for cause, count in cause_dist.items():
+                pct = count / len(impact_tasks) * 100
+                desc = with_cause[with_cause['root_cause'] == cause]['root_cause_desc'].iloc[0]
+                print(f"    {cause} ({desc}): {count:,} ({pct:.1f}%)")
 
     # Unknown classifications
     unk = df[df['phase'] == 'UNK']

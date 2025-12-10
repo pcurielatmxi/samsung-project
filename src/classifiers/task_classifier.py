@@ -102,6 +102,56 @@ class TaskClassifier:
         'SEA': 'SUE', 'SEB': 'SUE',  # Support East areas
     }
 
+    # Impact code prefix meanings
+    IMPACT_CODE_TYPES = {
+        'S.TIA': 'SECAI Trade Impact',
+        'E.TIA': 'Equipment Trade Impact',
+        'S': 'SECAI Related',
+        'D': 'Delay/Obstruction',
+        'C': 'Change Order',
+        'B': 'Backcharge',
+        'ES': 'SECAI Equipment',
+    }
+
+    # Known parties for attribution
+    KNOWN_PARTIES = {
+        # Owner/Engineering
+        'SECAI': 'SECAI (Owner Engineering)',
+        # SECAI Subcontractors
+        'STARCON': 'Starcon (Steel Erector)',
+        'STARTCON': 'Starcon (Steel Erector)',  # common typo
+        'TINDALL': 'Tindall (Precast)',
+        'TINDAL': 'Tindall (Precast)',  # alternate spelling
+        'W&W': 'W&W Steel',
+        'BAKER': 'Baker Concrete',
+        'APACHE': 'Apache Industrial',
+        'BRANDSAFWAY': 'BrandSafway (Scaffold)',
+        'MKM': 'MKM (Scaffold)',
+        'AXIOS': 'Axios',
+        # Yates subcontractors (for comparison)
+        'MAREK': 'Marek (Drywall)',
+        'CHAMBERLIN': 'Chamberlin (Roofing)',
+    }
+
+    # Root cause categories for impact analysis
+    ROOT_CAUSES = {
+        'OBSTRUCTION': 'Physical Obstruction',
+        'SCAFFOLD': 'Scaffolding Conflict',
+        'CRANE': 'Crane/Hoist Conflict',
+        'CABLE': 'Cable Tray Obstruction',
+        'PIPERACK': 'Pipe Rack Obstruction',
+        'MATERIAL': 'Material in Way',
+        'DESIGN': 'Design Issue',
+        'CHANGE': 'Change Order/CCD',
+        'REWORK': 'Rework Required',
+        'HOLD': 'Work Hold/Stop Work',
+        'WAIT': 'Waiting on Direction',
+        'QUALITY': 'Quality/Defect Fix',
+        'ACCESS': 'Access Blocked',
+        'SEQUENCE': 'Out of Sequence',
+        'OTHER': 'Other/Unclassified',
+    }
+
     def __init__(self):
         """Initialize the classifier."""
         pass
@@ -303,6 +353,107 @@ class TaskClassifier:
 
         return building, level
 
+    def extract_impact_info(self, task_name: str) -> Dict[str, Optional[str]]:
+        """
+        Extract impact/delay tracking information from IMPACT tasks.
+
+        Extracts:
+        - impact_code: The bracketed code (e.g., S.TIA-135, D22)
+        - impact_type: Category of the code prefix
+        - attributed_to: Party responsible for the impact
+        - root_cause: Category of the underlying issue
+
+        Args:
+            task_name: The task name string
+
+        Returns:
+            Dictionary with impact tracking fields (all None if not an IMPACT task)
+        """
+        t = str(task_name).upper()
+
+        # Initialize all fields as None
+        result = {
+            'impact_code': None,
+            'impact_type': None,
+            'impact_type_desc': None,
+            'attributed_to': None,
+            'attributed_to_desc': None,
+            'root_cause': None,
+            'root_cause_desc': None,
+        }
+
+        # Only process IMPACT tasks
+        if not re.search(r'\bIMPACT\b', t):
+            return result
+
+        # 1. Extract impact code from brackets [S.TIA-135], [D22], [D25 / D26], etc.
+        code_match = re.search(r'\[([A-Z]\.?[A-Z]*[\-]?\d+(?:\s*/\s*[A-Z]\.?[A-Z]*[\-]?\d+)*)\]', t)
+        if code_match:
+            result['impact_code'] = code_match.group(1)
+
+            # Determine impact type from prefix
+            code = code_match.group(1)
+            for prefix, desc in sorted(self.IMPACT_CODE_TYPES.items(), key=lambda x: -len(x[0])):
+                if code.startswith(prefix):
+                    result['impact_type'] = prefix
+                    result['impact_type_desc'] = desc
+                    break
+
+        # 2. Extract attribution (who caused the impact)
+        # Check for explicit party mentions
+        for party, desc in self.KNOWN_PARTIES.items():
+            if re.search(rf'\b{re.escape(party)}\b', t):
+                result['attributed_to'] = party
+                result['attributed_to_desc'] = desc
+                break
+
+        # If no explicit party but has S.TIA or mentions SECAI patterns, attribute to SECAI
+        if not result['attributed_to']:
+            if result['impact_type'] in ('S.TIA', 'S', 'ES', 'E.TIA'):
+                result['attributed_to'] = 'SECAI'
+                result['attributed_to_desc'] = 'SECAI (Owner Engineering)'
+            elif re.search(r'OWNER|BY SECAI|AWAIT.*SECAI|SECAI.*BLOCK|SECAI.*HOLD', t):
+                result['attributed_to'] = 'SECAI'
+                result['attributed_to_desc'] = 'SECAI (Owner Engineering)'
+
+        # 3. Determine root cause category
+        if re.search(r'SCAFFOLD', t):
+            result['root_cause'] = 'SCAFFOLD'
+        elif re.search(r'CRANE|HOIST', t):
+            result['root_cause'] = 'CRANE'
+        elif re.search(r'CABLE\s*TRAY|CABLE.*OBSTRUCT', t):
+            result['root_cause'] = 'CABLE'
+        elif re.search(r'PIPE\s*RACK|PIPERACK', t):
+            result['root_cause'] = 'PIPERACK'
+        elif re.search(r'MATERIAL.*WAY|IN\s*THE\s*WAY', t):
+            result['root_cause'] = 'MATERIAL'
+        elif re.search(r'CCD|CHANGE\s*ORDER|ADDED\s*SCOPE', t):
+            result['root_cause'] = 'CHANGE'
+        elif re.search(r'REWORK|REMEDIAT|FIX(?:ES)?\b|REPAIR', t):
+            result['root_cause'] = 'REWORK'
+        elif re.search(r'STOP\s*WORK|ON\s*HOLD|HOLD\b', t):
+            result['root_cause'] = 'HOLD'
+        elif re.search(r'WAITING|AWAIT|PENDING', t):
+            result['root_cause'] = 'WAIT'
+        elif re.search(r'DESIGN|DRAWING|DWG|DETAIL', t):
+            result['root_cause'] = 'DESIGN'
+        elif re.search(r'BLOCK|OBSTRUCT|LEAVEOUT|EGRESS', t):
+            result['root_cause'] = 'OBSTRUCTION'
+        elif re.search(r'ACCESS|BLOCKED', t):
+            result['root_cause'] = 'ACCESS'
+        elif re.search(r'OUT.*SEQUENCE|SEQUENCE', t):
+            result['root_cause'] = 'SEQUENCE'
+        elif re.search(r'DEFECT|QUALITY|INSPECT', t):
+            result['root_cause'] = 'QUALITY'
+        else:
+            result['root_cause'] = 'OTHER'
+
+        # Add root cause description
+        if result['root_cause']:
+            result['root_cause_desc'] = self.ROOT_CAUSES.get(result['root_cause'], 'Unknown')
+
+        return result
+
     def extract_location(self, task_name: str, wbs_name: str = None) -> Tuple[str, Optional[str]]:
         """
         Extract location type and ID from task name and WBS.
@@ -396,11 +547,12 @@ class TaskClassifier:
             wbs_name: Optional WBS name for additional context
 
         Returns:
-            Dictionary with phase, scope, loc_type, loc_id, building, level, and full label
+            Dictionary with phase, scope, loc_type, loc_id, building, level, impact info, and full label
         """
         phase, scope = self.classify_phase_scope(task_name)
         loc_type, loc_id = self.extract_location(task_name, wbs_name)
         building, level = self.extract_building_level(task_name, wbs_name, loc_type, loc_id)
+        impact_info = self.extract_impact_info(task_name)
 
         # Build label
         if loc_id:
@@ -408,7 +560,7 @@ class TaskClassifier:
         else:
             label = f"{phase}-{scope}|{loc_type}"
 
-        return {
+        result = {
             'phase': phase,
             'scope': scope,
             'loc_type': loc_type,
@@ -420,8 +572,13 @@ class TaskClassifier:
             'scope_desc': self.SCOPES.get(phase, {}).get(scope, 'Unknown'),
             'loc_type_desc': self.LOC_TYPES.get(loc_type, 'Unknown'),
             'building_desc': self.BUILDINGS.get(building, 'Unknown'),
-            'level_desc': self.LEVELS.get(level, f'Level {level}' if level and level.isdigit() else 'Unknown')
+            'level_desc': self.LEVELS.get(level, f'Level {level}' if level and level.isdigit() else 'Unknown'),
         }
+
+        # Add impact tracking fields
+        result.update(impact_info)
+
+        return result
 
     def get_phase_description(self, phase: str) -> str:
         """Get description for a phase code."""
