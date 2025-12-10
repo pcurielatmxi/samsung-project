@@ -81,6 +81,8 @@ data/output/*
 data/primavera/processed/*.csv
 data/primavera/generated/*.csv
 data/primavera/raw_tables/*.csv
+data/primavera/analysis/*.csv
+!data/primavera/analysis/*.md
 !data/raw/.gitkeep
 !data/raw/xer/
 !data/raw/xer/.gitkeep
