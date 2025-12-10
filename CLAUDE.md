@@ -1,6 +1,6 @@
 # Samsung Taylor FAB1 - Construction Delay Analysis
 
-**Last Updated:** 2025-12-09
+**Last Updated:** 2025-12-10
 
 ## Project Purpose
 
@@ -66,7 +66,8 @@ mxi-samsung/
 │   ├── utils/                  # Utilities (xer_parser.py, etc.)
 │   ├── extractors/             # Data extraction logic
 │   ├── connectors/             # API/web scraping connectors
-│   └── transformers/           # Data normalization
+│   ├── transformers/           # Data normalization
+│   └── classifiers/            # WBS taxonomy classifier
 ├── dags/                       # Airflow DAGs (optional automation)
 └── docs/                       # Documentation
 ```
@@ -261,10 +262,12 @@ DB_NAME=etl_db
 - Weekly report PDF extraction (37 reports → 27K records)
 - Scope growth analysis with weekly report correlation
 - Weekly report highlights analysis (177+ curated items with page citations)
+- **WBS Taxonomy Classification** (333K tasks, 99.95% coverage) - see below
 
 ### In Progress
 - Schedule comparison analysis
 - Delay attribution methodology
+- Cross-source correlation using taxonomy labels
 
 ### TODO
 - Inspection/NCR report processing
@@ -306,6 +309,59 @@ Key growth events identified with weekly report correlation:
 - **Mar 2023**: +27% (FIZ retrofit decision, SUP design changes)
 
 Root causes: Progressive elaboration from summary-level baseline, design finalization, production acceleration, quality/rework tracking. See [scope_growth_analysis.md](data/primavera/analysis/scope_growth_analysis.md).
+
+### WBS Taxonomy Classification
+
+A standardized labeling system for YATES schedule tasks enabling cross-source correlation and progress roll-ups.
+
+**Classification System:**
+
+| Level | Code | Description | Example |
+|-------|------|-------------|---------|
+| Phase | PRE/STR/ENC/INT/COM/ADM | Project stage | STR = Structure |
+| Scope | 30+ codes | Work type | STL = Steel, DRY = Drywall |
+| Location Type | RM/EL/ST/GL/AR/BL/BD/NA | Location granularity | RM = Room (FAB code) |
+| Location ID | Variable | Specific location | FAB146103, EL22, GL17-18 |
+
+**Label Format:** `{PHASE}-{SCOPE}|{LOC_TYPE}:{LOC_ID}`
+- Example: `INT-DRY|RM:FAB146103` = Interior Drywall in Room FAB146103
+
+**Coverage Results (All 65 YATES Schedules):**
+
+| Metric | Value |
+|--------|-------|
+| Total tasks classified | 333,560 |
+| Classification rate | 99.95% |
+| Tasks with FAB room codes | 27,982 (8.4%) |
+| Unique rooms tracked | 382 |
+
+**Phase Distribution:**
+- STR (Structure): 41.3% — Steel, concrete, foundations
+- INT (Interior): 32.6% — Framing, drywall, MEP, finishes
+- ENC (Enclosure): 12.4% — Roofing, panels, glazing
+- PRE (Pre-Construction): 11.1% — Procurement, submittals, fabrication
+- ADM (Administrative): 2.3% — Milestones, impacts, tracking
+- COM (Commissioning): 0.3% — Testing, turnover
+
+**Key Files:**
+- Classifier: [src/classifiers/task_classifier.py](src/classifiers/task_classifier.py)
+- Script: [scripts/generate_wbs_taxonomy.py](scripts/generate_wbs_taxonomy.py)
+- Proposal: [data/analysis/wbs_taxonomy_proposal.md](data/analysis/wbs_taxonomy_proposal.md)
+- Output: `data/primavera/analysis/wbs_taxonomy_enriched.csv` (regenerate with script)
+
+**Regenerate Enriched Data:**
+```bash
+python scripts/generate_wbs_taxonomy.py           # All 65 schedules (333K tasks)
+python scripts/generate_wbs_taxonomy.py --latest-only  # Latest schedule only
+```
+
+**FAB Room Code Structure:**
+```
+FAB1 - L - B - NNNN
+      │   │   └── Room sequence number
+      │   └────── Building area (0=SUW, 6=SUE)
+      └────────── Level (1-6)
+```
 
 ---
 
