@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 """
-Generate Enriched WBS Taxonomy Table for YATES Schedules
+Generate WBS Taxonomy Lookup Table for YATES Schedules
 
-This script processes all YATES schedule tasks and enriches them with:
-- Phase classification (PRE/STR/ENC/INT/COM/ADM)
-- Scope category (DRY/STL/MEP/etc.)
-- Location type (RM/EL/ST/GL/AR/BL/BD/NA)
-- Location ID (FAB146103, EL22, GL17-18, etc.)
+Creates a lookup table mapping task_id to taxonomy classifications with descriptions.
+Join with task.csv on task_id for full task details.
 
-Output: data/primavera/analysis/wbs_taxonomy_enriched.csv
+Output columns:
+- task_id: Primary key (includes file_id prefix)
+- phase/phase_desc: PRE/STR/ENC/INT/COM/ADM/UNK + description
+- scope/scope_desc: Work type (DRY/STL/MEP/etc.) + description
+- loc_type/loc_type_desc: Location granularity (RM/EL/ST/GL/AR/GEN) + description
+- loc_id: Specific location (FAB146103, EL22, GL17-18, etc.)
+- building/building_desc: FAB/SUE/SUW/FIZ/CUB/GCS/GEN/MULTI/UNK + description
+- level/level_desc: 1-6/B1/GEN/MULTI/UNK + description
+- label: Combined classification label
+- impact_code/type/type_desc: For IMPACT tasks only
+- attributed_to/attributed_to_desc: Party attribution for impacts
+- root_cause/root_cause_desc: Root cause category for impacts
+
+Output: data/primavera/analysis/wbs_taxonomy.csv
 
 Usage:
     python scripts/generate_wbs_taxonomy.py [--latest-only] [--output PATH]
@@ -85,49 +95,23 @@ def load_yates_data(latest_only: bool = False) -> tuple:
     return tasks, wbs, yates_files
 
 
-def build_wbs_hierarchy(wbs_df: pd.DataFrame) -> dict:
-    """
-    Build a mapping of wbs_id to full WBS path.
-
-    Returns:
-        Dict mapping wbs_id to tuple of (wbs_name, parent_names...)
-    """
-    # Build parent lookup
-    wbs_lookup = wbs_df.set_index('wbs_id')[['wbs_name', 'parent_wbs_id']].to_dict('index')
-
-    def get_hierarchy(wbs_id, visited=None):
-        if visited is None:
-            visited = set()
-        if wbs_id in visited or wbs_id not in wbs_lookup:
-            return []
-        visited.add(wbs_id)
-        entry = wbs_lookup[wbs_id]
-        result = [entry['wbs_name']]
-        if pd.notna(entry['parent_wbs_id']):
-            result.extend(get_hierarchy(entry['parent_wbs_id'], visited))
-        return result
-
-    return {wbs_id: get_hierarchy(wbs_id) for wbs_id in wbs_lookup.keys()}
-
-
 def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Enrich tasks with WBS hierarchy and taxonomy classifications.
+    Generate taxonomy lookup table for tasks.
+
+    Output is a lean join table with task_id and taxonomy columns only.
+    Join with task.csv on task_id for full task details.
 
     Args:
         tasks_df: Tasks dataframe
         wbs_df: WBS dataframe
 
     Returns:
-        Enriched dataframe with taxonomy columns
+        Lean dataframe with task_id + taxonomy columns only
     """
     classifier = TaskClassifier()
 
-    # Build WBS hierarchy
-    print("Building WBS hierarchy...")
-    wbs_hierarchy = build_wbs_hierarchy(wbs_df)
-
-    # Get WBS name lookup
+    # Get WBS name lookup for classification context
     wbs_names = wbs_df.set_index('wbs_id')['wbs_name'].to_dict()
 
     # Prepare output
@@ -144,22 +128,13 @@ def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
         wbs_id = row.get('wbs_id')
         wbs_name = wbs_names.get(wbs_id, '')
 
-        # Get full WBS path
-        wbs_path = wbs_hierarchy.get(wbs_id, [])
-        wbs_path_str = ' > '.join(reversed(wbs_path)) if wbs_path else ''
-
         # Classify
         classification = classifier.classify_task(task_name, wbs_name)
 
-        # Build result row
+        # Build result row - task_id + taxonomy with descriptions
         result = {
-            'file_id': row.get('file_id'),
             'task_id': row.get('task_id'),
-            'task_code': row.get('task_code'),
-            'task_name': task_name,
-            'wbs_id': wbs_id,
-            'wbs_name': wbs_name,
-            'wbs_path': wbs_path_str,
+            # Taxonomy classification with descriptions
             'phase': classification['phase'],
             'phase_desc': classification['phase_desc'],
             'scope': classification['scope'],
@@ -172,7 +147,7 @@ def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
             'level': classification['level'],
             'level_desc': classification['level_desc'],
             'label': classification['label'],
-            # Impact tracking fields (for delay analysis)
+            # Impact tracking (sparse - only populated for IMPACT tasks)
             'impact_code': classification.get('impact_code'),
             'impact_type': classification.get('impact_type'),
             'impact_type_desc': classification.get('impact_type_desc'),
@@ -180,13 +155,6 @@ def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
             'attributed_to_desc': classification.get('attributed_to_desc'),
             'root_cause': classification.get('root_cause'),
             'root_cause_desc': classification.get('root_cause_desc'),
-            # Include schedule fields for analysis
-            'target_start_date': row.get('target_start_date'),
-            'target_end_date': row.get('target_end_date'),
-            'act_start_date': row.get('act_start_date'),
-            'act_end_date': row.get('act_end_date'),
-            'status_code': row.get('status_code'),
-            'total_float_hr_cnt': row.get('total_float_hr_cnt'),
         }
 
         results.append(result)
@@ -196,17 +164,16 @@ def enrich_tasks(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(results)
 
 
-def generate_summary(df: pd.DataFrame) -> None:
-    """Print summary statistics for the enriched data."""
+def generate_summary(df: pd.DataFrame, tasks_df: pd.DataFrame = None) -> None:
+    """Print summary statistics for the taxonomy data."""
     print("\n" + "=" * 60)
     print("CLASSIFICATION SUMMARY")
     print("=" * 60)
 
     # Phase distribution
     print("\n--- Phase Distribution ---")
-    phase_dist = df['phase'].value_counts()
-    for phase, count in phase_dist.items():
-        desc = df[df['phase'] == phase]['phase_desc'].iloc[0]
+    phase_dist = df.groupby(['phase', 'phase_desc']).size().sort_values(ascending=False)
+    for (phase, desc), count in phase_dist.items():
         pct = count / len(df) * 100
         print(f"  {phase} ({desc}): {count:,} ({pct:.1f}%)")
 
@@ -219,9 +186,8 @@ def generate_summary(df: pd.DataFrame) -> None:
 
     # Location type distribution
     print("\n--- Location Type Distribution ---")
-    loc_dist = df['loc_type'].value_counts()
-    for loc_type, count in loc_dist.items():
-        desc = df[df['loc_type'] == loc_type]['loc_type_desc'].iloc[0]
+    loc_dist = df.groupby(['loc_type', 'loc_type_desc']).size().sort_values(ascending=False)
+    for (loc_type, desc), count in loc_dist.items():
         pct = count / len(df) * 100
         print(f"  {loc_type} ({desc}): {count:,} ({pct:.1f}%)")
 
@@ -241,7 +207,7 @@ def generate_summary(df: pd.DataFrame) -> None:
         if pd.isna(lvl):
             lvl_display = '(none)'
         elif lvl in ('GEN', 'MULTI', 'UNK'):
-            lvl_display = lvl  # Don't add L prefix to special codes
+            lvl_display = lvl
         else:
             lvl_display = f"L{lvl}"
         print(f"  {lvl_display}: {count:,} ({pct:.1f}%)")
@@ -273,57 +239,49 @@ def generate_summary(df: pd.DataFrame) -> None:
         with_cause = impact_tasks[impact_tasks['root_cause'].notna()]
         if len(with_cause) > 0:
             print("  Root cause categories:")
-            cause_dist = with_cause['root_cause'].value_counts().head(8)
-            for cause, count in cause_dist.items():
+            cause_dist = with_cause.groupby(['root_cause', 'root_cause_desc']).size().sort_values(ascending=False).head(8)
+            for (cause, desc), count in cause_dist.items():
                 pct = count / len(impact_tasks) * 100
-                desc = with_cause[with_cause['root_cause'] == cause]['root_cause_desc'].iloc[0]
                 print(f"    {cause} ({desc}): {count:,} ({pct:.1f}%)")
 
     # Unknown classifications
-    unk = df[df['phase'] == 'UNK']
+    unk_df = df[df['phase'] == 'UNK']
     print(f"\n--- Unclassified ---")
-    print(f"  Total: {len(unk)} ({len(unk)/len(df)*100:.2f}%)")
-    if len(unk) > 0:
+    print(f"  Total: {len(unk_df)} ({len(unk_df)/len(df)*100:.4f}%)")
+    if len(unk_df) > 0 and tasks_df is not None:
+        # Look up task names from original data
+        unk_ids = set(unk_df['task_id'].values)
+        unk_tasks = tasks_df[tasks_df['task_id'].isin(unk_ids)]
         print("  Sample unclassified tasks:")
-        for task in unk['task_name'].head(5):
+        for task in unk_tasks['task_name'].head(5):
             print(f"    - {task[:70]}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate enriched WBS taxonomy table')
+    parser = argparse.ArgumentParser(description='Generate WBS taxonomy lookup table')
     parser.add_argument('--latest-only', action='store_true',
                         help='Only process the latest YATES schedule')
     parser.add_argument('--output', type=str,
-                        default='data/primavera/analysis/wbs_taxonomy_enriched.csv',
+                        default='data/primavera/analysis/wbs_taxonomy.csv',
                         help='Output CSV path')
     args = parser.parse_args()
 
     # Load data
     tasks, wbs, files = load_yates_data(latest_only=args.latest_only)
 
-    # Enrich tasks
-    enriched = enrich_tasks(tasks, wbs)
+    # Generate taxonomy lookup table
+    taxonomy = enrich_tasks(tasks, wbs)
 
-    # Generate summary
-    generate_summary(enriched)
+    # Generate summary (pass tasks for UNK sample lookup)
+    generate_summary(taxonomy, tasks)
 
     # Save output
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    enriched.to_csv(output_path, index=False)
-    print(f"\n✓ Saved enriched data to: {output_path}")
-    print(f"  Total records: {len(enriched):,}")
-
-    # Also save a version grouped by file_id for version comparison
-    if not args.latest_only:
-        summary_path = output_path.parent / 'wbs_taxonomy_by_version.csv'
-        version_summary = enriched.groupby(['file_id', 'phase']).size().unstack(fill_value=0)
-        version_summary = version_summary.merge(
-            files[['file_id', 'filename', 'date']],
-            on='file_id'
-        )
-        version_summary.to_csv(summary_path, index=False)
-        print(f"✓ Saved version summary to: {summary_path}")
+    taxonomy.to_csv(output_path, index=False)
+    print(f"\n✓ Saved taxonomy lookup to: {output_path}")
+    print(f"  Total records: {len(taxonomy):,}")
+    print(f"  Columns: {list(taxonomy.columns)}")
 
 
 if __name__ == "__main__":

@@ -152,16 +152,67 @@ class TaskClassifier:
         'OTHER': 'Other/Unclassified',
     }
 
+    # Typo patterns - checked as fallback when main patterns don't match
+    # Format: (regex_pattern, (phase, scope))
+    TYPO_PATTERNS = [
+        # Piping/MEP typos
+        (r'PIPNG|PIPEING|PIIPNG|PPNG', ('INT', 'MEP')),
+        # Drywall typos
+        (r'DRYWAL\b|DRYWLL|DRWALL|GYPUSM|GYSPUM', ('INT', 'DRY')),
+        # Electrical typos
+        (r'ELCTRICAL|ELECTRCAL|ELEC\b|ELECTICAL', ('INT', 'MEP')),
+        # Insulation truncations
+        (r'INSULAT\b|INSUL[^A]|INSLATION', ('INT', 'INS')),
+        # Concrete truncations
+        (r'CONCRET\b|CONCR\b|CONC\b(?!.*STEEL)', ('STR', 'CIP')),
+        # Steel typos
+        (r'STEL\b|STEE\b|STEEEL', ('STR', 'STL')),
+        # Framing typos
+        (r'FRAMNG|FRMNG|FRAMEING', ('INT', 'FRM')),
+        # Roofing typos
+        (r'ROOFNG|ROFING|ROOFIG', ('ENC', 'ROF')),
+        # Impact typos
+        (r'IMAPCT|IMACT|IMPCAT', ('ADM', 'IMP')),
+        # Flange typos (procurement context)
+        (r'FANGE\b|FLNGE\b', ('PRE', 'FAB')),
+    ]
+
+    # WBS-based inference patterns - used when task name is vague
+    WBS_INFERENCE_PATTERNS = [
+        # Structural
+        (r'ERECT.*(?:DS|AD)\s*STEEL|STEEL\s*ERECTION|STRUCTURAL\s*STEEL', ('STR', 'STL')),
+        (r'CONCRETE|SLAB|FOUNDATION|CIP\b|SOG\b', ('STR', 'CIP')),
+        (r'PRECAST|TINDALL', ('STR', 'PRC')),
+        # Enclosure
+        (r'ENCLOSURE|ENVELOPE|EXTERIOR\s*WALL', ('ENC', 'MSC')),
+        (r'ROOFING|CHAMBERLIN|ROOF\s*SYSTEM', ('ENC', 'ROF')),
+        (r'METAL\s*PANEL|IMP\b|INSULATED\s*PANEL', ('ENC', 'PNL')),
+        # Interior
+        (r'INTERIOR|FINISH|ARCHITECTURAL', ('INT', 'MSC')),
+        (r'DRYWALL|MAREK|GYPSUM', ('INT', 'DRY')),
+        (r'MEP|MECHANICAL|ELECTRICAL|PLUMBING', ('INT', 'MEP')),
+        (r'FIRE\s*PROTECTION|SPRINKLER', ('INT', 'FIR')),
+        # Pre-construction
+        (r'PROCUREMENT|BUYOUT|SUBCONTRACT', ('PRE', 'PRO')),
+        (r'SUBMITTAL|SHOP\s*DRAWING', ('PRE', 'SUB')),
+    ]
+
     def __init__(self):
         """Initialize the classifier."""
         pass
 
-    def classify_phase_scope(self, task_name: str) -> Tuple[str, str]:
+    def classify_phase_scope(self, task_name: str, wbs_name: str = None) -> Tuple[str, str]:
         """
         Classify task into Phase and Scope Category.
 
+        Uses a three-tier fallback strategy:
+        1. Primary patterns - specific keyword matching
+        2. Typo tolerance - common misspellings and truncations
+        3. WBS inference - use WBS context when task name is vague
+
         Args:
             task_name: The task name string
+            wbs_name: Optional WBS name for fallback inference
 
         Returns:
             Tuple of (phase_code, scope_code)
@@ -173,7 +224,7 @@ class TaskClassifier:
             return 'PRE', 'PRO'  # Procurement
         if re.search(r'SHOP DRAWING|SUBMITTAL|RFA\b|APPROV|REVIEW|JACOBS|RFI|FIELD MEASURE|RESPONSE|ARCHITECTURAL SET', t):
             return 'PRE', 'SUB'  # Submittals
-        if re.search(r'FABRICAT|LEAD TIME|DELIVER(?!Y)|CONSOLIDATED SET|MOCKUP|FAB &|MATERIAL.*ORDER', t):
+        if re.search(r'FABRICAT|LEAD TIME|DELIVER(?!Y)|CONSOLIDATED SET|MOCKUP|FAB &|MATERIAL.*ORDER|^ORDER\s', t):
             return 'PRE', 'FAB'  # Fabrication
         if re.search(r'DESIGN|ENGINEER|RESOLVE.*ISSUE|RELEASE FOR FAB|IF[CR]\b|ISSUED FOR|DWG ISSUED|MATERIAL SCHEDULE', t):
             return 'PRE', 'DES'  # Design
@@ -185,18 +236,24 @@ class TaskClassifier:
             return 'STR', 'FND'  # Foundations
         if re.search(r'UNDERGROUND|U/G\b|FRENCH DRAIN|EXCAVATE|BACKFILL|LOADING DOCK.*FILL', t):
             return 'STR', 'UGD'  # Underground
-        if re.search(r'SLAB|POUR\b|CURE\b|SOMD|FRP\b|CONCRETE|WAFFLE|CURB|EQPT PAD|F/R/P|CIP\b|KNEE WALL|GROUT|PATCH|OAC PAD', t):
+        if re.search(r'SLAB|POUR\b|CURE\b|SOMD|FRP\b|CONCRETE|WAFFLE|CURB|EQPT PAD|F/R/P|CIP\b|KNEE WALL|GROUT|PATCH|OAC PAD|VIBRATION\s*PAD', t):
             return 'STR', 'CIP'  # Cast-in-Place
         if re.search(r'COLUMN.*(?:PRIME|COAT|GRIND)|(?:PRIME|COAT|GRIND).*COLUMN|SEALER|DENSIFIER|CRC\b', t):
             return 'STR', 'CTG'  # Structural Coating
         if re.search(r'DECKING|DECK\b|DS/AD|DETAILING|DETAINING|GIRDER|TRUSS|ERECT.*STEEL|ANCHOR BOLT|GOAL POST|CLIP|EMBED|HEADER|BASE.?PLATE|MODIFY.*PATRIOT|FLANGE EXTENSION', t):
             return 'STR', 'STL'  # Structural Steel
+        if re.search(r'BEAM|JOIST|PURLIN|GIRT|BRACING|BRIDGING', t):
+            return 'STR', 'STL'  # Structural Steel - beams and supports
+        if re.search(r'SUPPORT\s*STEEL|MISC\.?\s*STEEL|ADD(?:ITIONAL)?\s*STEEL', t):
+            return 'STR', 'MSC'  # Misc Steel
         if re.search(r'STEEL', t) and not re.search(r'STUD|STAIR', t):
             return 'STR', 'STL'  # Structural Steel (catch-all)
         if re.search(r'PRECAST|PC\b.*ERECT', t):
             return 'STR', 'PRC'  # Precast
         if re.search(r'GRATING|PLATFORM(?!.*SCAFFOLD)|RAMP(?!.*CRANE)', t):
             return 'STR', 'MSC'  # Misc Steel
+        if re.search(r'PIPE\s*RACK|PIPERACK', t):
+            return 'STR', 'MSC'  # Misc Steel - pipe rack structures
 
         # ============ ENCLOSURE ============
         if re.search(r'ROOF(?!.*DECK)|ROOFING|MEMBRANE|PARAPET', t):
@@ -225,14 +282,17 @@ class TaskClassifier:
             return 'INT', 'FIN'  # Finishes
         if re.search(r'DOOR|FRAME(?!.*STUD)|HARDWARE|HOLLOW METAL|DOCK LOCK|DOCK GUARDIAN', t):
             return 'INT', 'DOR'  # Doors & Hardware
-        if re.search(r'WALL PROTECTION|CORNER GUARD|ACCESSORI|TOILET PARTITION|SIGNAGE|EXPANSION.*CONTROL|DOCK LEVELER|PEDESTAL.*LAM|DIV\s*10|SPECIALIT', t):
+        if re.search(r'WALL PROTECTION|CORNER GUARD|ACCESSORI|TOILET PARTITION|SIGNAGE|EXPANSION.*CONTROL|DOCK LEVELER|PEDESTAL.*LAM|DIV\s*10|SPECIALIT|PVC\s*ANGLE', t):
             return 'INT', 'SPE'  # Specialties
         if re.search(r'INSULATION|INSUL\b', t):
             return 'INT', 'INS'  # Insulation
         if re.search(r'ELEVATOR(?!.*STEEL)|ELEV\b', t):
             return 'INT', 'ELV'  # Elevators
-        if re.search(r'STAIR(?!.*STEEL)', t):
-            return 'INT', 'STR'  # Stairs
+        # Stair patterns: catch metal stairs, but exclude pure steel erection tasks
+        if re.search(r'METAL\s*STAIR|STAIR.*INSTALL|INSTALL.*STAIR', t):
+            return 'INT', 'STR'  # Interior Stairs (metal stair installation)
+        if re.search(r'STAIR(?!.*ERECT)(?!.*STEEL\s*TRUSS)', t):
+            return 'INT', 'STR'  # Stairs (but not stair steel erection)
         if re.search(r'VESTIBULE|BATHROOM|TOILET|RESTROOM|CLEAN ROOM|DUCT SHAFT|AIR.?LOCK|BUNKER|I/?O\s*R[O]?M', t):
             if re.search(r'CONTROL JOINT|FINISH|INSPECT|TAPE|FLOAT', t):
                 return 'INT', 'FIN'
@@ -247,18 +307,67 @@ class TaskClassifier:
         # ============ ADMINISTRATIVE ============
         if re.search(r'^OWNER|^SECAI|^GC\s|^YATES', t):
             return 'ADM', 'OWN'  # Owner Activities
+        if re.search(r'PROPOSAL|NEGOTIAT|SETTLEMENT|CLAIM|DISPUTE|RESOLUTION|MEDIAT', t):
+            return 'ADM', 'OWN'  # Owner Activities - commercial/contractual
         if re.search(r'IMPACT|DELAY|HOLD\b|WAITING|REWORK|REMEDIATION|REMIDIATION|PENDING', t):
             return 'ADM', 'IMP'  # Impacts/Delays
         if re.search(r'MILESTONE|COMPLETE$|TARGET', t):
             return 'ADM', 'MIL'  # Milestones
         if re.search(r'PRIORITY|REMOBIL|OUT.?OF.?SEQUENCE|FRAGNET|IOCC|CATCH.?UP', t):
             return 'ADM', 'TRK'  # Tracking/Recovery
+        if re.search(r'^OPEN\s|^CLOSE\s|^RESOLVE\s|^SUBMIT\s(?!.*TAL)', t):
+            return 'ADM', 'TRK'  # Tracking/Administrative actions
         if re.search(r'SCAFFOLD|TEMP\b|TEMPORARY|PROTECTION|BARRICADE|HOIST|CRANE RAMP|TOWER CRANE', t):
             return 'ADM', 'TMP'  # Temporary Works
 
-        # ============ CATCH-ALL ============
+        # ============ CATCH-ALL (Primary) ============
         if re.search(r'^INSTALL\b', t):
             return 'INT', 'MSC'
+
+        # ============ FALLBACK 1: Typo Tolerance ============
+        for pattern, classification in self.TYPO_PATTERNS:
+            if re.search(pattern, t):
+                return classification
+
+        # ============ FALLBACK 2: WBS-Based Inference ============
+        if wbs_name:
+            wbs_result = self._infer_from_wbs(wbs_name)
+            if wbs_result[0] != 'UNK':
+                return wbs_result
+
+        # ============ FALLBACK 3: Generic Action Words ============
+        # If task starts with an action verb, try to infer from context
+        if re.search(r'^(?:INSTALL|ERECT|SET|PLACE|LAY|HANG|MOUNT|ATTACH)\b', t):
+            # Generic installation - check WBS again or default to interior misc
+            if wbs_name:
+                wbs_result = self._infer_from_wbs(wbs_name)
+                if wbs_result[0] != 'UNK':
+                    return wbs_result
+            return 'INT', 'MSC'  # Default installation to interior misc
+
+        if re.search(r'^(?:COMPLETE|FINISH|FINAL|CLOSE.?OUT)\b', t):
+            return 'COM', 'TST'  # Completion activities → Commissioning
+
+        if re.search(r'^(?:COORDINATE|SCHEDULE|PLAN|MANAGE|TRACK)\b', t):
+            return 'ADM', 'TRK'  # Coordination → Administrative tracking
+
+        return 'UNK', 'UNK'
+
+    def _infer_from_wbs(self, wbs_name: str) -> Tuple[str, str]:
+        """
+        Fallback: infer phase/scope from WBS when task name is vague.
+
+        Args:
+            wbs_name: The WBS name string
+
+        Returns:
+            Tuple of (phase_code, scope_code), or ('UNK', 'UNK') if no match
+        """
+        w = str(wbs_name).upper()
+
+        for pattern, classification in self.WBS_INFERENCE_PATTERNS:
+            if re.search(pattern, w):
+                return classification
 
         return 'UNK', 'UNK'
 
@@ -549,7 +658,7 @@ class TaskClassifier:
         Returns:
             Dictionary with phase, scope, loc_type, loc_id, building, level, impact info, and full label
         """
-        phase, scope = self.classify_phase_scope(task_name)
+        phase, scope = self.classify_phase_scope(task_name, wbs_name)
         loc_type, loc_id = self.extract_location(task_name, wbs_name)
         building, level = self.extract_building_level(task_name, wbs_name, loc_type, loc_id)
         impact_info = self.extract_impact_info(task_name)
