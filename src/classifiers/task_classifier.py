@@ -590,15 +590,15 @@ class TaskClassifier:
         if fab_match:
             return 'RM', f"FAB1{fab_match.group(1)}"
 
-        # 2. Elevator code
+        # 2. Elevator code - format as FAB1-EL## for consistency with WBS naming
         el_match = re.search(r'EL(?:EV(?:ATOR)?)?[\s\-]*(\d{1,2})', combined)
         if el_match:
-            return 'EL', f"EL{el_match.group(1).zfill(2)}"
+            return 'EL', f"FAB1-EL{el_match.group(1).zfill(2)}"
 
-        # 3. Stair code
-        st_match = re.search(r'ST(?:AIR)?[\s\-]*(\d{1,2})', combined)
+        # 3. Stair code - format as FAB1-ST## for consistency with WBS naming
+        st_match = re.search(r'ST(?:AIR)?[\s\-#]*(\d{1,2})', combined)
         if st_match:
-            return 'ST', f"ST{st_match.group(1).zfill(2)}"
+            return 'ST', f"FAB1-ST{st_match.group(1).zfill(2)}"
 
         # 4. Gridline patterns
         # Range: "GL 14-17", "17-18"
