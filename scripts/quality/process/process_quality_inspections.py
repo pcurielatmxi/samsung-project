@@ -14,9 +14,10 @@ import pandas as pd
 import os
 from pathlib import Path
 
-# Paths
-RAW_DIR = Path("/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/quality")
-OUTPUT_DIR = Path("/home/pcuriel/samsung-project/data/processed/quality")
+# Paths - Windows data folder (OneDrive)
+DATA_ROOT = Path("/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Data")
+RAW_DIR = DATA_ROOT / "raw" / "quality"
+OUTPUT_DIR = DATA_ROOT / "processed" / "quality"
 
 SECAI_FILE = RAW_DIR / "05282025_USA T1 Project_Inspection and Test Log.xlsx"
 YATES_FILE = RAW_DIR / "Yates- WORK INSPECTION REQUEST FAB1 LOG 6.25 REFINED.xlsx"
