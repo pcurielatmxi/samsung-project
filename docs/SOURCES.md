@@ -1,123 +1,203 @@
 # Data Sources Documentation
 
+**Last Updated:** 2025-12-12
+
 ## Overview
 
-This project integrates data from multiple sources for construction delay analysis. Data is either extracted via API, manually exported, or processed from file exports.
+This project integrates data from multiple construction management systems. All data follows the traceability structure defined in the main [CLAUDE.md](../CLAUDE.md).
 
-## Primavera P6 (XER Files)
+## Data Locations
 
-### Overview
-- **Type:** File Export (XER format)
-- **Extraction Method:** Batch processing script
-- **Data:** Schedule tasks, predecessors, resources, WBS, activity codes
+| Type | Location | Description |
+|------|----------|-------------|
+| Raw files | `{WINDOWS_DATA_DIR}/raw/{source}/` | Source files as received |
+| Processed | `{WINDOWS_DATA_DIR}/processed/{source}/` | Parsed CSV tables (100% traceable) |
+| Derived | `{WINDOWS_DATA_DIR}/derived/{source}/` | Enhanced data (includes assumptions) |
+| Analysis | `data/analysis/{source}/` | Findings (tracked in git) |
 
-### Configuration
+---
 
-XER files are stored in `data/raw/xer/` and tracked via `manifest.json`.
+## 1. Primavera P6 (XER Files)
+
+**Raw:** `raw/primavera/*.xer`
+**Processed:** `processed/primavera/*.csv`
+
+### Schedule Grouping
+
+Files represent **two distinct schedule perspectives**:
+
+| Schedule | Files | Date Range | Tasks/File | Maintained By |
+|----------|-------|------------|------------|---------------|
+| **SECAI** | 47 | Oct 2022 - Jun 2025 | 6K-32K | Samsung/SECAI (Owner) |
+| **YATES** | 66 | Oct 2022 - Nov 2025 | 840-13K | Yates Construction (GC) |
+
+**Cross-schedule overlap is only ~4%** - these are different schedule perspectives, not duplicates.
+
+### Processed Tables
+
+| File | Records | Description |
+|------|---------|-------------|
+| `xer_files.csv` | 113 | File metadata (file_id, date, schedule_type) |
+| `task.csv` | 964,002 | All tasks from all files |
+| `taskpred.csv` | 2,002,060 | Task predecessors/dependencies |
+| `taskactv.csv` | 4,138,671 | Task activity code assignments |
+| `taskrsrc.csv` | 266,298 | Task resource assignments |
+| `projwbs.csv` | 270,890 | WBS (Work Breakdown Structure) |
+| `actvcode.csv` | - | Activity code values |
+| `calendar.csv` | - | Calendars |
+| `rsrc.csv` | - | Resources |
+| `udfvalue.csv` | - | User-defined field values |
+
+### Schema Notes
+
+- **Every table has `file_id`** as first column linking to `xer_files.csv`
+- **All ID columns prefixed with file_id**: `{file_id}_{original_id}`
+  - Example: `task_id=715090` in file 48 becomes `task_id="48_715090"`
+- Key fields: `target_end_date` (scheduled finish), `total_float` (late_end - early_end)
+
+### Commands
 
 ```bash
-# Process all XER files from manifest
-python scripts/batch_process_xer.py
-
-# Process only current schedule
-python scripts/batch_process_xer.py --current-only
+python scripts/primavera/process/batch_process_xer.py
+python scripts/primavera/derive/generate_wbs_taxonomy.py
 ```
 
-### Available Data
+---
 
-| Table | Description |
-|-------|-------------|
-| task.csv | All tasks with dates, status, codes |
-| taskpred.csv | Task predecessors/dependencies |
-| taskrsrc.csv | Task resource assignments |
-| projwbs.csv | Work Breakdown Structure |
-| actvcode.csv | Activity code values |
-| calendar.csv | Calendar definitions |
-| rsrc.csv | Resources |
-| udfvalue.csv | User-defined field values |
+## 2. Weekly Reports (PDF)
 
-### Schema
+**Raw:** `raw/weekly_reports/*.pdf`
+**Processed:** `processed/weekly_reports/*.csv`
 
-All tables have `file_id` as first column linking to `xer_files.csv` for version tracking.
+### Source
 
-## ProjectSight (Trimble) - Manual Export
+37 PDF files (Aug 2022 - Jun 2023) - Weekly progress reports from Yates containing executive summaries, issues, and procurement status.
 
-### Overview
-- **Type:** Web Application (manual export)
-- **Extraction Method:** Manual JSON export, then transformation script
-- **Data:** Daily reports, companies, contacts, history
+### Processed Tables
 
-### Current Data
+| File | Records | Description |
+|------|---------|-------------|
+| `weekly_reports.csv` | 37 | Report metadata (date, author, page count) |
+| `key_issues.csv` | 1,108 | Open issues and blockers |
+| `work_progressing.csv` | 1,039 | Work progress items by discipline |
+| `procurement.csv` | 374 | Procurement/buyout status items |
 
-Already extracted and available in `data/projectsight/`:
-- **415 daily reports** with workforce counts, weather, activities
-- Companies and contacts referenced in reports
-- Report revision history
+### Key Fields
 
-### Transformation
+- `file_id`: Links to weekly_reports.csv
+- `report_date`: Week of report
+- `content`: Issue/item description
+
+### Commands
 
 ```bash
-# Transform JSON exports to CSV tables
-python scripts/daily_reports_to_csv.py
+python scripts/weekly_reports/process/parse_weekly_reports.py
 ```
 
-### Available Tables
+---
 
-| Table | Records | Description |
-|-------|---------|-------------|
-| daily_reports.csv | 415 | Report summaries |
-| companies.csv | - | Companies referenced |
-| contacts.csv | - | Contact information |
-| daily_report_history.csv | - | Report revision history |
-| daily_report_changes.csv | - | Field-level changes |
+## 3. TBM Daily Work Plans (Excel)
 
-## Fieldwire (API)
+**Raw:** `raw/tbm/*.xlsx, *.xlsm`
+**Processed:** `processed/tbm/*.csv`
 
-### Overview
-- **Type:** REST API
-- **Extraction Method:** HTTP API Calls
-- **Authentication:** API Key (Bearer Token)
-- **Documentation:** https://apidocs.fieldwire.com
+### Source
+
+421 Excel files (SECAI Daily Work Plan format), Mar - Dec 2025. Daily work plans submitted by subcontractors to SECAI.
+
+### Processed Tables
+
+| File | Records | Description |
+|------|---------|-------------|
+| `work_entries.csv` | 13,539 | Individual work activities with crew info |
+| `tbm_files.csv` | 421 | File metadata (date, subcontractor) |
+
+### Key Fields
+
+- `report_date`: Date of work plan
+- `tier1_gc`, `tier2_sc`: GC (Yates) and subcontractor
+- `foreman`, `num_employees`: Crew info
+- `work_activities`: Task description
+- `location_building`, `location_level`: FAB, SUP, etc.
+
+### Top Subcontractors
+
+Berg (25.6K employees), MK Marlow (9K), Alert Lock & Key (5K), Cherry Coatings (4.6K)
+
+### Commands
+
+```bash
+python scripts/tbm/process/parse_tbm_daily_plans.py
+```
+
+---
+
+## 4. ProjectSight Daily Reports
+
+**Raw:** `raw/projectsight/` (scraped JSON)
+**Processed:** `processed/projectsight/*.csv`
+
+### Source
+
+415 daily reports from Trimble ProjectSight (Jun 2022 - Mar 2023). Contains weather, labor hours, equipment usage.
+
+### Processed Tables
+
+| File | Records | Description |
+|------|---------|-------------|
+| `daily_reports.csv` | 415 | Report summaries |
+| `labor_entries.csv` | 1,589 | Individual labor hour entries |
+| `weather.csv` | 8,963 | Hourly weather readings |
+
+### Commands
+
+```bash
+python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
+python scripts/projectsight/process/daily_reports_to_csv.py
+```
+
+---
+
+## 5. Fieldwire (API)
+
+**Raw:** `raw/fieldwire/*.csv`
+**Processed:** `processed/fieldwire/*.csv`
 
 ### Configuration
 
 ```env
 FIELDWIRE_BASE_URL=https://api.fieldwire.com
 FIELDWIRE_API_KEY=your_api_key_here
-FIELDWIRE_TIMEOUT=30
-FIELDWIRE_RETRY_ATTEMPTS=3
 ```
 
-### Available Endpoints
+### Available Data
 
-#### Projects
-**GET /v2/projects**
+Field task management: punch lists, inspections, task assignments.
 
-#### Tasks
-**GET /v2/projects/{project_id}/tasks**
+---
 
-#### Workers
-**GET /v2/projects/{project_id}/workers**
+## 6. Quality / Inspection Records
 
-### API Features
+**Raw:** `raw/quality/*.xlsx`
 
-- **Pagination:** `?page=1&per_page=100`
-- **Rate Limits:** 1000 requests per hour
-- **Authentication:** `Authorization: Bearer {API_KEY}`
+### Source
 
-## Planned Data Sources
+Two Excel files tracking QA/QC inspections (Mar 2024 - Jun 2025):
 
-| Source | Type | Status | Analysis Value |
-|--------|------|--------|----------------|
-| PDF Weekly Reports | Unstructured PDF | Not started | Progress summaries, narrative context |
-| Inspection Reports | PDF/Structured | Not started | Quality issues, rework indicators |
-| NCR Reports | PDF/Structured | Not started | Non-conformances, contractor issues |
-| Daily Toolbox Meetings | PDF/Structured | Not started | Safety, crew deployment |
-| TCO Reports | TBD | Not started | Turnover status |
+| File | Source | Records |
+|------|--------|---------|
+| Inspection and Test Log | Samsung/SECAI | 17,294 |
+| Work Inspection Request Log | Yates | 19,890 |
 
-## Data Integration Considerations
+### Key Metrics
 
-### Field Mapping
+- **SECAI inspections:** 2.9% failure rate (ARCH, MECH, ELEC)
+- **Yates internal QC:** 7.8% failure rate
+- **Yates official:** 3.1% failure rate
+
+---
+
+## Field Mapping (Cross-Source)
 
 | Primavera | ProjectSight | Fieldwire | Standardized |
 |-----------|--------------|-----------|--------------|
@@ -125,9 +205,3 @@ FIELDWIRE_RETRY_ATTEMPTS=3
 | task_name | - | name | name |
 | status | status | status | status |
 | target_start | report_date | created_at | start_date |
-
-### Storage Strategy
-
-1. **Raw Data:** Store as-is in source-specific directories
-2. **Processed:** Transform to CSV tables with consistent schema
-3. **Analysis:** Combine sources for delay analysis
