@@ -10,13 +10,13 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from dotenv import load_dotenv
-load_dotenv(project_root / '.env')
+load_dotenv(project_root / '.env', override=True)
 
 from playwright.sync_api import sync_playwright
 
 daily_reports_url = (
     "https://prod.projectsightapp.trimble.com/web/app/Project"
-    "?listid=-4038&orgid=4540f425-f7b5-4ad8-837d-c270d5d09490&projid=3"
+    "?listid=-4038&orgid=ffd5880a-42ec-41fa-a552-db0c9a000326&projid=300"
 )
 
 print("Starting browser...")

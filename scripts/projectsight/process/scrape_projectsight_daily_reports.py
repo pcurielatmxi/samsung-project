@@ -46,8 +46,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (override=True to use .env values over shell env)
+load_dotenv(override=True)
 
 
 def create_scraper():
@@ -80,10 +80,10 @@ def create_scraper():
             if not self.username or not self.password:
                 raise ValueError("PROJECTSIGHT_USERNAME and PROJECTSIGHT_PASSWORD must be set in .env")
 
-            # Project-specific URL
+            # Project-specific URL (Taylor Fab1 58202 - Yates Construction Portfolio)
             self.daily_reports_url = (
                 "https://prod.projectsightapp.trimble.com/web/app/Project"
-                "?listid=-4038&orgid=4540f425-f7b5-4ad8-837d-c270d5d09490&projid=3"
+                "?listid=-4038&orgid=ffd5880a-42ec-41fa-a552-db0c9a000326&projid=300"
             )
 
         def start(self):
@@ -949,7 +949,7 @@ def main():
         output_data = {
             'extractedAt': datetime.now().isoformat(),
             'source': 'ProjectSight Standalone Scraper',
-            'project': 'T-PJT > FAB1 > Construction',
+            'project': 'Yates Construction Portfolio > Taylor Fab1 58202',
             'totalAvailable': scraper.get_report_count(),
             'extractedCount': total_count,
             'records': all_records
