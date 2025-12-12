@@ -379,99 +379,6 @@ def create_scraper():
             except:
                 return "unknown"
 
-        def get_available_tabs(self) -> List[str]:
-            """Discover all available tabs in the detail view."""
-            tabs = []
-            try:
-                detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
-                # Look for tab elements - they're usually in a tab bar/header
-                tab_elements = detail_frame.locator('[role="tab"], .mat-tab-label, .nav-link, [class*="tab"]').all()
-                for tab in tab_elements:
-                    try:
-                        tab_text = tab.text_content(timeout=1000)
-                        if tab_text and tab_text.strip():
-                            tabs.append(tab_text.strip())
-                    except:
-                        pass
-            except Exception as e:
-                print(f"    Error getting tabs: {e}")
-            return tabs
-
-        def extract_tab_content(self, tab_name: str) -> Dict:
-            """Extract all content from a specific tab."""
-            data = {'tab_name': tab_name, 'sections': {}, 'raw_text': ''}
-
-            try:
-                detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
-
-                # Click on the tab
-                tab_locator = detail_frame.locator(f'text="{tab_name}"').first
-                if tab_locator.count() > 0:
-                    tab_locator.click()
-                    time.sleep(1)  # Wait for tab content to load
-
-                    # Get the main content area
-                    # Try different possible content containers
-                    content_selectors = [
-                        '.mat-tab-body-active',
-                        '.tab-content',
-                        '.tab-pane.active',
-                        '[role="tabpanel"]',
-                        '.detail-content',
-                        '.form-content'
-                    ]
-
-                    content_text = ""
-                    for selector in content_selectors:
-                        try:
-                            content = detail_frame.locator(selector).first
-                            if content.count() > 0:
-                                content_text = content.text_content(timeout=3000)
-                                if content_text:
-                                    break
-                        except:
-                            continue
-
-                    # If no specific container found, get all visible text
-                    if not content_text:
-                        try:
-                            content_text = detail_frame.locator('body').text_content(timeout=3000)
-                        except:
-                            pass
-
-                    data['raw_text'] = content_text
-
-                    # Try to extract structured sections
-                    self._extract_sections(detail_frame, data)
-
-            except Exception as e:
-                data['error'] = str(e)
-
-            return data
-
-        def _extract_sections(self, frame, data: Dict):
-            """Extract structured sections from the current tab."""
-            # Try to find labeled fields/sections
-            try:
-                # Look for label-value pairs
-                labels = frame.locator('label, .field-label, .mat-form-field-label').all()
-                for label in labels[:50]:  # Limit to prevent timeout
-                    try:
-                        label_text = label.text_content(timeout=500)
-                        if label_text:
-                            label_text = label_text.strip().rstrip(':')
-                            # Try to find associated value
-                            parent = label.locator('..')
-                            value_elem = parent.locator('input, select, textarea, .value, span').first
-                            if value_elem.count() > 0:
-                                value = value_elem.input_value(timeout=500) if value_elem.get_attribute('value') else value_elem.text_content(timeout=500)
-                                if value:
-                                    data['sections'][label_text] = value.strip()
-                    except:
-                        continue
-            except:
-                pass
-
         def extract_daily_report_tab(self) -> Dict:
             """Extract data from the Daily Report tab."""
             data = {
@@ -699,37 +606,78 @@ def create_scraper():
 
             return data
 
+        def extract_additional_info_tab(self) -> Dict:
+            """Extract data from the Additional Info tab."""
+            data = {
+                'raw_content': '',
+                'fields': {}
+            }
+
+            try:
+                detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
+
+                # Click on Additional Info tab
+                additional_info_tab = detail_frame.locator('text="Additional Info"').first
+                if additional_info_tab.count() > 0:
+                    additional_info_tab.click()
+                    time.sleep(1)
+
+                    # Get the full raw content
+                    try:
+                        all_text = detail_frame.locator('body').inner_text(timeout=5000)
+                        data['raw_content'] = all_text[:10000] if all_text else ''
+                    except:
+                        pass
+
+                    # Try to extract labeled fields
+                    try:
+                        labels = detail_frame.locator('label, .field-label, .mat-form-field-label').all()
+                        for label in labels[:50]:
+                            try:
+                                label_text = label.text_content(timeout=500)
+                                if label_text:
+                                    label_text = label_text.strip().rstrip(':')
+                                    parent = label.locator('..')
+                                    value_elem = parent.locator('input, select, textarea, .value, span').first
+                                    if value_elem.count() > 0:
+                                        try:
+                                            value = value_elem.input_value(timeout=500)
+                                        except:
+                                            value = value_elem.text_content(timeout=500)
+                                        if value:
+                                            data['fields'][label_text] = value.strip()
+                            except:
+                                continue
+                    except:
+                        pass
+
+            except Exception as e:
+                data['error'] = str(e)
+                print(f"    Error extracting Additional Info tab: {e}")
+
+            return data
+
         def extract_current_report(self) -> Dict:
-            """Extract data from the currently open report, including all tabs."""
+            """Extract data from the currently open report.
+
+            Extracts data from exactly 3 tabs:
+            - Daily report: Weather, labor, equipment, notes, status
+            - Additional Info: Extra metadata fields
+            - History: Audit trail, created/modified by, changes
+            """
             record_num = self.get_current_record_number()
             report_date = self.extract_report_date()
 
             print(f"    Extracting record {record_num}, date: {report_date}")
 
-            # Discover available tabs
-            available_tabs = self.get_available_tabs()
-            print(f"    Available tabs: {available_tabs}")
-
             report_data = {
                 'recordNumber': record_num,
                 'reportDate': report_date,
                 'extractedAt': datetime.now().isoformat(),
-                'availableTabs': available_tabs,
                 'dailyReport': self.extract_daily_report_tab(),
+                'additionalInfo': self.extract_additional_info_tab(),
                 'history': self.extract_history_tab(),
-                'otherTabs': {}
             }
-
-            # Extract data from any additional tabs (not Daily report or History)
-            known_tabs = ['Daily report', 'History', 'daily report', 'history']
-            for tab in available_tabs:
-                if tab not in known_tabs and tab.lower() not in [t.lower() for t in known_tabs]:
-                    try:
-                        print(f"    Extracting additional tab: {tab}")
-                        tab_data = self.extract_tab_content(tab)
-                        report_data['otherTabs'][tab] = tab_data
-                    except Exception as e:
-                        report_data['otherTabs'][tab] = {'error': str(e)}
 
             return report_data
 
