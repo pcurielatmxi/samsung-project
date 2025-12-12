@@ -24,11 +24,14 @@ projectsight/
 ## Commands
 
 ```bash
-# Scrape (requires .env credentials)
-python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
+# Extract 10 reports (test)
+DISPLAY=:0 python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
 
-# Convert to CSV
-python scripts/projectsight/process/daily_reports_to_csv.py
+# Idempotent extraction - resumes from where it left off
+DISPLAY=:0 python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 50
+
+# Full extraction (all 1320 reports)
+DISPLAY=:0 python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 0
 ```
 
 ## Configuration
@@ -38,8 +41,11 @@ Requires `.env` with:
 - `PROJECTSIGHT_PASSWORD`
 - `PROJECTSIGHT_HEADLESS` (false recommended)
 
-## Key Data
+## Lessons Learned
 
-- Weather conditions
-- Labor hours by trade
-- Equipment usage
+- **dotenv override**: Use `load_dotenv(override=True)` - shell env vars override .env by default
+- **Session persistence**: Cookies saved to `~/.projectsight_sessions/`. Delete to force re-login
+- **Trimble SSO**: Two-step login (username → Next → password). Must wait for buttons to be enabled
+- **Iframe structure**: List in `fraMenuContent`, detail view in `fraDef`
+- **Tabs**: Extract from 3 tabs: Daily report, Additional Info, History
+- **Grid navigation**: Use `click_report_at_position(n)` for direct row access, `click_next_record()` for sequential
