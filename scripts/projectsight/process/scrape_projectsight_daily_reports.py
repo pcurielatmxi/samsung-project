@@ -51,12 +51,17 @@ def create_scraper():
     class ProjectSightScraper:
         """Scraper for ProjectSight Daily Reports."""
 
-        def __init__(self, headless: bool = False):
+        def __init__(self, headless: bool = False, session_dir: str = None):
             self.headless = headless
             self.playwright = None
             self.browser: Optional[Browser] = None
             self.context: Optional[BrowserContext] = None
             self.page: Optional[Page] = None
+
+            # Session persistence
+            self.session_dir = Path(session_dir) if session_dir else Path.home() / '.projectsight_sessions'
+            self.session_file = self.session_dir / 'session_state.json'
+            self.session_dir.mkdir(parents=True, exist_ok=True)
 
             # URLs
             self.base_url = os.getenv('PROJECTSIGHT_BASE_URL', 'https://prod.projectsightapp.trimble.com/')
@@ -76,7 +81,7 @@ def create_scraper():
             )
 
         def start(self):
-            """Start the browser."""
+            """Start the browser, loading existing session if available."""
             self.playwright = sync_playwright().start()
 
             # Choose browser - default to Chromium (better on Windows)
@@ -101,16 +106,44 @@ def create_scraper():
                     ]
                 )
 
-            # Create context with realistic viewport
-            self.context = self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            )
+            # Check if we have a saved session
+            storage_state = None
+            if self.session_file.exists():
+                try:
+                    # Check if session is not too old (7 days)
+                    session_age = time.time() - self.session_file.stat().st_mtime
+                    max_age = int(os.getenv('PROJECTSIGHT_SESSION_VALIDITY_DAYS', '7')) * 86400
+                    if session_age < max_age:
+                        storage_state = str(self.session_file)
+                        print(f"  Loading saved session from {self.session_file}")
+                    else:
+                        print(f"  Session expired ({session_age/86400:.1f} days old), will re-login")
+                        self.session_file.unlink()  # Delete expired session
+                except Exception as e:
+                    print(f"  Error loading session: {e}")
+
+            # Create context with realistic viewport and optional saved session
+            context_args = {
+                'viewport': {'width': 1920, 'height': 1080},
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+            if storage_state:
+                context_args['storage_state'] = storage_state
+
+            self.context = self.browser.new_context(**context_args)
 
             self.page = self.context.new_page()
             self.page.set_default_timeout(30000)  # 30 second timeout
 
             print(f"Browser started (headless={self.headless})")
+
+        def save_session(self):
+            """Save current session state for future reuse."""
+            try:
+                self.context.storage_state(path=str(self.session_file))
+                print(f"  Session saved to {self.session_file}")
+            except Exception as e:
+                print(f"  Error saving session: {e}")
 
         def stop(self):
             """Stop the browser."""
@@ -123,36 +156,95 @@ def create_scraper():
             print("Browser stopped")
 
         def login(self) -> bool:
-            """Login to ProjectSight via Trimble SSO."""
-            print("Logging in to ProjectSight...")
+            """Login to ProjectSight via Trimble SSO (two-step login)."""
+            print("Checking session / logging in to ProjectSight...")
 
             try:
-                # Navigate to daily reports (will redirect to login)
+                # Navigate to daily reports (will redirect to login if session invalid)
                 self.page.goto(self.daily_reports_url, wait_until='networkidle')
                 time.sleep(2)
 
+                # Check if we're already logged in (session still valid)
+                if 'projectsight' in self.page.url.lower() and 'id.trimble.com' not in self.page.url:
+                    print("  Session still valid - no login needed!")
+                    return True
+
                 # Check if we need to login
                 if 'id.trimble.com' in self.page.url or 'sign_in' in self.page.url:
-                    print("  Entering credentials...")
+                    print("  Step 1: Entering username...")
 
-                    # Wait for login form
-                    self.page.wait_for_selector('input[type="text"], input[type="email"]', timeout=15000)
+                    # Wait for username field (Trimble uses id=username-field)
+                    self.page.wait_for_selector('#username-field', timeout=15000)
 
-                    # Enter username
-                    username_input = self.page.locator('input[type="text"], input[type="email"]').first
-                    username_input.fill(self.username)
+                    # Enter username - use type() to trigger JS validation
+                    username_input = self.page.locator('#username-field')
+                    username_input.click()
+                    username_input.fill('')  # Clear first
+                    username_input.type(self.username, delay=50)  # Type with delay to trigger validation
 
-                    # Enter password
-                    password_input = self.page.locator('input[type="password"]').first
-                    password_input.fill(self.password)
+                    # Trigger blur/change events to ensure validation runs
+                    username_input.press('Tab')
+                    time.sleep(1)
 
-                    # Click sign in
-                    self.page.locator('button[type="submit"], input[type="submit"]').first.click()
+                    # Wait for the Next button to become enabled after username entry
+                    next_btn = self.page.locator('#enter_username_submit')
+                    # Wait for button to be enabled (not just visible)
+                    self.page.wait_for_function(
+                        "document.querySelector('#enter_username_submit') && !document.querySelector('#enter_username_submit').disabled",
+                        timeout=10000
+                    )
+                    next_btn.click()
+                    time.sleep(2)
 
-                    # Wait for redirect
-                    print("  Waiting for login to complete...")
-                    self.page.wait_for_url('**/projectsight**', timeout=30000)
+                    print("  Step 2: Entering password...")
+
+                    # Wait for password field to become visible (use specific name selector)
+                    self.page.wait_for_selector('input[name="password"]:visible', timeout=15000)
+
+                    # Enter password - use type() to trigger JS validation
+                    password_input = self.page.locator('input[name="password"]')
+                    password_input.click()
+                    password_input.type(self.password, delay=50)
+
+                    # Trigger validation
+                    password_input.press('Tab')
+                    time.sleep(1)
+
+                    # Wait for sign in button to be enabled
+                    self.page.wait_for_function(
+                        "document.querySelector('button[name=\"password-submit\"]') && !document.querySelector('button[name=\"password-submit\"]').disabled",
+                        timeout=10000
+                    )
+                    sign_in_btn = self.page.locator('button[name="password-submit"]')
+                    sign_in_btn.click()
+
+                    # Wait a moment and take a debug screenshot
                     time.sleep(3)
+                    self.page.screenshot(path='/tmp/after_login_click.png')
+                    print(f"  Debug screenshot saved to /tmp/after_login_click.png")
+                    print(f"  Current URL after click: {self.page.url[:80]}...")
+
+                    # Check for error messages on page
+                    error_msg = self.page.locator('.error, .alert-danger, [class*="error"]').first
+                    if error_msg.count() > 0:
+                        print(f"  Error on page: {error_msg.text_content()}")
+
+                    # Wait for redirect to projectsight (can take a while due to SSO redirects)
+                    print("  Waiting for login to complete (this may take 30-60 seconds)...")
+
+                    # Poll for projectsight URL (up to 90 seconds)
+                    for attempt in range(90):
+                        time.sleep(1)
+                        current_url = self.page.url.lower()
+                        if 'projectsight' in current_url:
+                            print(f"  Redirected to projectsight after {attempt+1}s")
+                            # Wait for page to fully load
+                            self.page.wait_for_load_state('networkidle', timeout=60000)
+                            break
+                        if attempt % 10 == 0:
+                            print(f"    Still waiting... ({attempt}s, current: {self.page.url[:60]}...)")
+                    else:
+                        print(f"  Timeout waiting for projectsight redirect")
 
                 # Handle any alert dialogs
                 self.page.on('dialog', lambda dialog: dialog.accept())
@@ -160,6 +252,8 @@ def create_scraper():
                 # Verify we're on the right page
                 if 'projectsight' in self.page.url.lower():
                     print("  Login successful!")
+                    # Save session for future reuse
+                    self.save_session()
                     return True
                 else:
                     print(f"  Login may have failed. Current URL: {self.page.url}")
@@ -167,6 +261,8 @@ def create_scraper():
 
             except Exception as e:
                 print(f"  Login error: {e}")
+                import traceback
+                traceback.print_exc()
                 return False
 
         def navigate_to_daily_reports(self) -> bool:
@@ -241,11 +337,12 @@ def create_scraper():
                 # Click on the first row's date cell
                 first_row = list_frame.locator('tr[data-id]').first
                 first_row.locator('td').nth(1).click()
-                time.sleep(2)
+                time.sleep(3)  # Give time for detail panel to load
 
-                # Wait for detail panel to load
+                # Wait for detail panel to load - use more specific selector
                 detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
-                detail_frame.locator('text=/Daily report/').wait_for(timeout=10000)
+                # Wait for the tab button specifically (has class "tabButton")
+                detail_frame.locator('.tabButton, [data-gainsight*="tab"]').first.wait_for(timeout=15000)
 
                 return True
             except Exception as e:
@@ -276,6 +373,99 @@ def create_scraper():
             except:
                 return "unknown"
 
+        def get_available_tabs(self) -> List[str]:
+            """Discover all available tabs in the detail view."""
+            tabs = []
+            try:
+                detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
+                # Look for tab elements - they're usually in a tab bar/header
+                tab_elements = detail_frame.locator('[role="tab"], .mat-tab-label, .nav-link, [class*="tab"]').all()
+                for tab in tab_elements:
+                    try:
+                        tab_text = tab.text_content(timeout=1000)
+                        if tab_text and tab_text.strip():
+                            tabs.append(tab_text.strip())
+                    except:
+                        pass
+            except Exception as e:
+                print(f"    Error getting tabs: {e}")
+            return tabs
+
+        def extract_tab_content(self, tab_name: str) -> Dict:
+            """Extract all content from a specific tab."""
+            data = {'tab_name': tab_name, 'sections': {}, 'raw_text': ''}
+
+            try:
+                detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
+
+                # Click on the tab
+                tab_locator = detail_frame.locator(f'text="{tab_name}"').first
+                if tab_locator.count() > 0:
+                    tab_locator.click()
+                    time.sleep(1)  # Wait for tab content to load
+
+                    # Get the main content area
+                    # Try different possible content containers
+                    content_selectors = [
+                        '.mat-tab-body-active',
+                        '.tab-content',
+                        '.tab-pane.active',
+                        '[role="tabpanel"]',
+                        '.detail-content',
+                        '.form-content'
+                    ]
+
+                    content_text = ""
+                    for selector in content_selectors:
+                        try:
+                            content = detail_frame.locator(selector).first
+                            if content.count() > 0:
+                                content_text = content.text_content(timeout=3000)
+                                if content_text:
+                                    break
+                        except:
+                            continue
+
+                    # If no specific container found, get all visible text
+                    if not content_text:
+                        try:
+                            content_text = detail_frame.locator('body').text_content(timeout=3000)
+                        except:
+                            pass
+
+                    data['raw_text'] = content_text
+
+                    # Try to extract structured sections
+                    self._extract_sections(detail_frame, data)
+
+            except Exception as e:
+                data['error'] = str(e)
+
+            return data
+
+        def _extract_sections(self, frame, data: Dict):
+            """Extract structured sections from the current tab."""
+            # Try to find labeled fields/sections
+            try:
+                # Look for label-value pairs
+                labels = frame.locator('label, .field-label, .mat-form-field-label').all()
+                for label in labels[:50]:  # Limit to prevent timeout
+                    try:
+                        label_text = label.text_content(timeout=500)
+                        if label_text:
+                            label_text = label_text.strip().rstrip(':')
+                            # Try to find associated value
+                            parent = label.locator('..')
+                            value_elem = parent.locator('input, select, textarea, .value, span').first
+                            if value_elem.count() > 0:
+                                value = value_elem.input_value(timeout=500) if value_elem.get_attribute('value') else value_elem.text_content(timeout=500)
+                                if value:
+                                    data['sections'][label_text] = value.strip()
+                    except:
+                        continue
+            except:
+                pass
+
         def extract_daily_report_tab(self) -> Dict:
             """Extract data from the Daily Report tab."""
             data = {
@@ -283,71 +473,87 @@ def create_scraper():
                 'labor': {},
                 'equipment': {},
                 'notes': {},
-                'details': {}
+                'details': {},
+                'raw_content': ''
             }
 
             try:
                 detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
 
                 # Click on Daily report tab to ensure it's active
-                detail_frame.locator('text="Daily report"').first.click()
-                time.sleep(0.5)
+                daily_tab = detail_frame.locator('text="Daily report"').first
+                if daily_tab.count() > 0:
+                    daily_tab.click()
+                    time.sleep(1)
 
-                # Extract Weather section
+                # Get full page content for this tab
                 try:
-                    weather_section = detail_frame.locator('text="Weather"').first.locator('..')
-                    data['weather'] = {
-                        'time': self._safe_get_text(detail_frame, 'text=/Time.*N\\/A|Time.*\\d/'),
-                        'conditions': self._safe_get_text(detail_frame, '[title="Conditions"]'),
-                        'temperature': self._safe_get_text(detail_frame, 'text=/Temperature.*N\\/A|Temperature.*\\d/'),
-                        'humidity': self._safe_get_text(detail_frame, 'text=/Humidity.*N\\/A|Humidity.*\\d/'),
-                        'wind': self._safe_get_text(detail_frame, 'text=/Wind.*N\\/A|Wind.*\\d/'),
-                    }
+                    # Screenshot for debugging (optional)
+                    # self.page.screenshot(path=f'/tmp/daily_report_tab.png')
+
+                    # Get all text from the detail frame
+                    all_text = detail_frame.locator('body').inner_text(timeout=5000)
+                    data['raw_content'] = all_text[:5000] if all_text else ''  # Limit size
                 except:
                     pass
 
-                # Extract Labor section summary
+                # Extract specific sections with better selectors
+
+                # Weather section - look for weather card/section
                 try:
-                    data['labor'] = {
-                        'workers': self._safe_get_text(detail_frame, 'text=/\\d+ approved workers/'),
-                        'hours': self._safe_get_text(detail_frame, 'text=/\\d+.*hours|0 hours/'),
-                    }
+                    weather_card = detail_frame.locator('[class*="weather"], [data-section="weather"]').first
+                    if weather_card.count() > 0:
+                        data['weather']['section_text'] = weather_card.text_content(timeout=2000)
                 except:
                     pass
 
-                # Extract Equipment section summary
+                # Extract right panel details (date, status, etc.)
                 try:
-                    equipment_section = detail_frame.locator('text="Equipment"').first.locator('..')
-                    data['equipment'] = {
-                        'count': self._safe_get_text(detail_frame, 'text=/local_shipping.*\\d/'),
-                        'hours': self._safe_get_text(detail_frame, 'text=/alarm.*\\d/'),
-                    }
+                    # Date field - usually a date picker input
+                    date_inputs = detail_frame.locator('input[type="date"], input[placeholder*="date"], input.date-input').all()
+                    for inp in date_inputs[:3]:
+                        try:
+                            val = inp.input_value(timeout=1000)
+                            if val:
+                                data['details']['date'] = val
+                                break
+                        except:
+                            continue
+
+                    # Also try disabled input (display-only date)
+                    if not data['details'].get('date'):
+                        disabled_input = detail_frame.locator('input[disabled]').first
+                        if disabled_input.count() > 0:
+                            data['details']['date'] = disabled_input.input_value(timeout=1000)
+
+                    # Status dropdown
+                    status_select = detail_frame.locator('select, [role="combobox"]').first
+                    if status_select.count() > 0:
+                        data['details']['status'] = status_select.text_content(timeout=1000)
+
+                except Exception as e:
+                    data['details']['error'] = str(e)
+
+                # Labor summary
+                try:
+                    labor_section = detail_frame.locator('text=/Labor|Workers|Workforce/i').first
+                    if labor_section.count() > 0:
+                        parent = labor_section.locator('..').locator('..')
+                        data['labor']['section_text'] = parent.text_content(timeout=2000)
                 except:
                     pass
 
-                # Extract Notes section summary
+                # Equipment summary
                 try:
-                    data['notes'] = {
-                        'comments_count': self._safe_get_text(detail_frame, 'text=/Comments.*\\d/'),
-                        'links_count': self._safe_get_text(detail_frame, 'text=/Links.*\\d/'),
-                    }
-                except:
-                    pass
-
-                # Extract right panel details
-                try:
-                    data['details'] = {
-                        'date': self._safe_get_input_value(detail_frame, 'input[disabled]'),
-                        'status': self._safe_get_combobox_value(detail_frame, 'text="Status"'),
-                        'total_rainfall': self._safe_get_text(detail_frame, 'text=/Total rainfall/'),
-                        'total_snowfall': self._safe_get_text(detail_frame, 'text=/Total snowfall/'),
-                        'lost_productivity': self._safe_get_text(detail_frame, 'text=/Lost productivity/'),
-                        'uom': self._safe_get_combobox_value(detail_frame, 'text="UOM"'),
-                    }
+                    equip_section = detail_frame.locator('text=/Equipment/i').first
+                    if equip_section.count() > 0:
+                        parent = equip_section.locator('..').locator('..')
+                        data['equipment']['section_text'] = parent.text_content(timeout=2000)
                 except:
                     pass
 
             except Exception as e:
+                data['error'] = str(e)
                 print(f"    Error extracting Daily Report tab: {e}")
 
             return data
@@ -363,11 +569,15 @@ def create_scraper():
                 return None
 
         def extract_history_tab(self) -> Dict:
-            """Extract data from the History tab."""
+            """Extract complete data from the History tab."""
             data = {
                 'created_by': None,
                 'created_at': None,
-                'changes': []
+                'last_modified_by': None,
+                'last_modified_at': None,
+                'changes': [],
+                'raw_content': '',
+                'revision_entries': []
             }
 
             try:
@@ -377,45 +587,143 @@ def create_scraper():
                 history_tab = detail_frame.locator('text="History"')
                 if history_tab.count() > 0:
                     history_tab.first.click()
-                    time.sleep(1)
+                    time.sleep(1.5)  # Give time for history to load
 
-                    # Extract creation info
-                    created_text = self._safe_get_text(detail_frame, 'text=/Created by/')
-                    if created_text:
-                        data['created_by'] = created_text
+                    # Get the full raw content of the history tab
+                    try:
+                        all_text = detail_frame.locator('body').inner_text(timeout=5000)
+                        data['raw_content'] = all_text[:10000] if all_text else ''  # Keep more for history
+                    except:
+                        pass
 
-                    # Extract timestamp
-                    timestamp_text = self._safe_get_text(detail_frame, 'text=/\\d{1,2}\\/\\d{1,2}\\/\\d{4}/')
-                    if timestamp_text:
-                        data['created_at'] = timestamp_text
+                    # Extract creation info - look for "Created by" pattern
+                    try:
+                        created_elements = detail_frame.locator('text=/Created by/i').all()
+                        for elem in created_elements[:3]:
+                            text = elem.text_content(timeout=1000)
+                            if text and 'Created by' in text:
+                                data['created_by'] = text.strip()
+                                break
+                    except:
+                        pass
 
-                    # Extract changes list
-                    change_items = detail_frame.locator('.history-change, [class*="change"]').all()
-                    for item in change_items:
+                    # Look for history entries/revisions
+                    # Common patterns: timeline items, list items, cards
+                    history_selectors = [
+                        '.history-item',
+                        '.timeline-item',
+                        '.revision-entry',
+                        '.audit-entry',
+                        '[class*="history"]',
+                        '.mat-list-item',
+                        'mat-expansion-panel',
+                        '.change-entry',
+                        'tr[class*="history"]',
+                        '.activity-item'
+                    ]
+
+                    for selector in history_selectors:
                         try:
-                            data['changes'].append(item.text_content())
+                            items = detail_frame.locator(selector).all()
+                            if items and len(items) > 0:
+                                for item in items[:100]:  # Limit to 100 entries
+                                    try:
+                                        entry_text = item.text_content(timeout=1000)
+                                        if entry_text and entry_text.strip():
+                                            data['revision_entries'].append({
+                                                'text': entry_text.strip(),
+                                                'selector': selector
+                                            })
+                                    except:
+                                        continue
+                                if data['revision_entries']:
+                                    break  # Found entries, stop trying other selectors
                         except:
-                            pass
+                            continue
+
+                    # If no structured entries found, try to extract from raw text
+                    if not data['revision_entries'] and data['raw_content']:
+                        # Split by common patterns
+                        import re
+                        # Look for date patterns that might separate entries
+                        date_pattern = r'(\d{1,2}/\d{1,2}/\d{4})'
+                        parts = re.split(date_pattern, data['raw_content'])
+
+                        # Reconstruct entries
+                        i = 0
+                        while i < len(parts) - 1:
+                            if re.match(date_pattern, parts[i]):
+                                entry = parts[i]
+                                if i + 1 < len(parts):
+                                    entry += parts[i + 1]
+                                data['changes'].append(entry.strip())
+                                i += 2
+                            else:
+                                i += 1
+
+                    # Extract timestamps - look for date/time patterns
+                    try:
+                        time_elements = detail_frame.locator('text=/\\d{1,2}:\\d{2}|\\d{1,2}\\/\\d{1,2}\\/\\d{4}/').all()
+                        timestamps = []
+                        for elem in time_elements[:20]:
+                            try:
+                                timestamps.append(elem.text_content(timeout=500))
+                            except:
+                                pass
+                        if timestamps:
+                            data['timestamps'] = timestamps
+                    except:
+                        pass
+
+                    # Look for "Modified by" or "Updated by" entries
+                    try:
+                        modified_elements = detail_frame.locator('text=/Modified by|Updated by|Changed by/i').all()
+                        for elem in modified_elements[:5]:
+                            text = elem.text_content(timeout=1000)
+                            if text:
+                                if not data['last_modified_by']:
+                                    data['last_modified_by'] = text.strip()
+                                data['changes'].append(text.strip())
+                    except:
+                        pass
 
             except Exception as e:
                 data['error'] = str(e)
+                print(f"    Error extracting History tab: {e}")
 
             return data
 
         def extract_current_report(self) -> Dict:
-            """Extract data from the currently open report."""
+            """Extract data from the currently open report, including all tabs."""
             record_num = self.get_current_record_number()
             report_date = self.extract_report_date()
 
             print(f"    Extracting record {record_num}, date: {report_date}")
 
+            # Discover available tabs
+            available_tabs = self.get_available_tabs()
+            print(f"    Available tabs: {available_tabs}")
+
             report_data = {
                 'recordNumber': record_num,
                 'reportDate': report_date,
                 'extractedAt': datetime.now().isoformat(),
+                'availableTabs': available_tabs,
                 'dailyReport': self.extract_daily_report_tab(),
                 'history': self.extract_history_tab(),
+                'otherTabs': {}
             }
+
+            # Extract data from any additional tabs (not Daily report or History)
+            known_tabs = ['Daily report', 'History', 'daily report', 'history']
+            for tab in available_tabs:
+                if tab not in known_tabs and tab.lower() not in [t.lower() for t in known_tabs]:
+                    try:
+                        print(f"    Extracting additional tab: {tab}")
+                        tab_data = self.extract_tab_content(tab)
+                        report_data['otherTabs'][tab] = tab_data
+                    except Exception as e:
+                        report_data['otherTabs'][tab] = {'error': str(e)}
 
             return report_data
 
@@ -499,8 +807,16 @@ def main():
     print(f"Headless mode: {headless}")
     print(f"Record limit: {args.limit}")
 
-    # Create output path
-    output_dir = Path('/workspaces/mxi-samsung/data/projectsight/extracted')
+    # Create output path using project settings
+    try:
+        # Add project root to path for imports
+        project_root = Path(__file__).parent.parent.parent.parent
+        sys.path.insert(0, str(project_root))
+        from src.config.settings import Settings
+        output_dir = Settings.PROJECTSIGHT_RAW_DIR / 'extracted'
+    except ImportError:
+        # Fallback if settings not available
+        output_dir = Path(__file__).parent.parent.parent.parent / 'data' / 'projectsight' / 'extracted'
     output_dir.mkdir(parents=True, exist_ok=True)
 
     output_file = args.output or output_dir / f'daily_reports_test_{args.limit}.json'
