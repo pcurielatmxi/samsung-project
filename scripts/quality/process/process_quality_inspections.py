@@ -22,6 +22,86 @@ OUTPUT_DIR = DATA_ROOT / "processed" / "quality"
 SECAI_FILE = RAW_DIR / "05282025_USA T1 Project_Inspection and Test Log.xlsx"
 YATES_FILE = RAW_DIR / "Yates- WORK INSPECTION REQUEST FAB1 LOG 6.25 REFINED.xlsx"
 
+# Contractor name standardization mapping
+# Maps variations (lowercase) to canonical names
+CONTRACTOR_MAPPING = {
+    # Berg
+    "berg": "Berg",
+    # Baker
+    "baker": "Baker",
+    # Patriot
+    "patriot": "Patriot",
+    "patirot": "Patriot",  # typo
+    # MK Marlow
+    "mk marlow": "MK Marlow",
+    "mkmarlow": "MK Marlow",
+    "mkm": "MK Marlow",
+    "mk marlowe": "MK Marlow",  # typo
+    "mk  marlow": "MK Marlow",  # double space
+    # Brazos
+    "brazos": "Brazos",
+    # Rolling Plains
+    "rolling plains": "Rolling Plains",
+    "rollind plains": "Rolling Plains",  # typo
+    # Alpha
+    "alpha": "Alpha",
+    "alpha painting": "Alpha",
+    # Apache
+    "apache": "Apache",
+    "apache/infinity": "Apache/Infinity",
+    # FD Thomas
+    "fdt": "FD Thomas",
+    "fd thomas": "FD Thomas",
+    "fdthomas": "FD Thomas",
+    "ftd": "FD Thomas",  # typo
+    # WW
+    "ww": "WW",
+    "wwse": "WW",
+    # Cherry
+    "cherry": "Cherry Coatings",
+    "cherry coatings": "Cherry Coatings",
+    # LATCON
+    "latcon": "LATCON",
+    # Veltri
+    "veltri": "Veltri",
+    # Infinity
+    "infinity": "Infinity",
+    # Kovach
+    "kovach": "Kovach",
+    # GDA
+    "gda": "GDA",
+    "gda contractors": "GDA",
+    # Yates
+    "yates": "Yates",
+    "yat+b30:h30es": "Yates",  # Excel formula error
+    # AH Beck
+    "ah beck": "AH Beck",
+    # P&P / Perry & Perry
+    "p&p": "Perry & Perry",
+    "perry & perry": "Perry & Perry",
+    "ppb": "Perry & Perry",
+    # SnS
+    "sns": "SnS",
+    # Spectra
+    "spectra": "Spectra",
+    # SP/SPS
+    "sp": "SP",
+    "sps": "SP",
+    # Other
+    "grout tech": "Grout Tech",
+    "abr": "ABR",
+    "c&b": "C&B",
+}
+
+
+def standardize_contractor(contractor: str) -> str:
+    """Standardize contractor name to canonical form."""
+    if pd.isna(contractor):
+        return None
+    # Normalize: lowercase, strip whitespace, collapse multiple spaces
+    normalized = " ".join(str(contractor).lower().split())
+    return CONTRACTOR_MAPPING.get(normalized, contractor.strip())
+
 
 def process_secai_inspections():
     """Process SECAI Inspection and Test Log."""
@@ -103,6 +183,9 @@ def process_yates_inspections():
     # Clean dates and filter bad data
     yates_combined['Date'] = pd.to_datetime(yates_combined['Date'], errors='coerce')
     yates_clean = yates_combined[yates_combined['Date'] >= '2020-01-01'].copy()
+
+    # Standardize contractor names
+    yates_clean['Contractor_Normalized'] = yates_clean['Contractor'].apply(standardize_contractor)
 
     # Add calculated fields
     yates_clean['Year'] = yates_clean['Date'].dt.year
