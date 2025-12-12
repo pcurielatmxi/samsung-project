@@ -697,12 +697,15 @@ def create_scraper():
 
             return report_data
 
-        def extract_all_reports(self, limit: Optional[int] = None, skip_dates: Optional[set] = None) -> List[Dict]:
+        def extract_all_reports(self, limit: Optional[int] = None, skip_dates: Optional[set] = None,
+                                  on_record_extracted: Optional[callable] = None) -> List[Dict]:
             """Extract all reports using Next record navigation.
 
             Args:
                 limit: Maximum number of NEW reports to extract (0 = all remaining)
                 skip_dates: Set of report dates to skip (for idempotent extraction)
+                on_record_extracted: Optional callback(report, all_reports) called after each extraction
+                                     for incremental saving
 
             Returns:
                 List of extracted report dictionaries
@@ -744,6 +747,8 @@ def create_scraper():
             report = self.extract_current_report()
             reports.append(report)
             print(f"  Extracted 1/{extract_count}")
+            if on_record_extracted:
+                on_record_extracted(report, reports)
 
             # Navigate through remaining reports using Next record button
             for i in range(1, extract_count):
@@ -756,6 +761,8 @@ def create_scraper():
                 report = self.extract_current_report()
                 reports.append(report)
                 print(f"  Extracted {i + 1}/{extract_count}")
+                if on_record_extracted:
+                    on_record_extracted(report, reports)
 
             return reports
 
@@ -873,14 +880,31 @@ def main():
 
     # Load existing data if in idempotent mode
     existing_data, extracted_dates = None, set()
+    existing_records = []
     if args.skip_existing:
         existing_data, extracted_dates = load_existing_data(output_file)
+        existing_records = existing_data.get('records', []) if existing_data else []
         if extracted_dates:
             print(f"  Will skip {len(extracted_dates)} already-extracted dates")
 
     # Create and run scraper
     ScraperClass = create_scraper()
     scraper = ScraperClass(headless=headless)
+
+    # Incremental save function - saves after each record
+    def save_progress(new_report, all_new_reports):
+        """Save progress after each record extraction."""
+        all_records = merge_records(existing_records, all_new_reports)
+        output_data = {
+            'extractedAt': datetime.now().isoformat(),
+            'source': 'ProjectSight Standalone Scraper',
+            'project': 'Yates Construction Portfolio > Taylor Fab1 58202',
+            'totalAvailable': scraper.get_report_count() if scraper.page else 0,
+            'extractedCount': len(all_records),
+            'records': all_records
+        }
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(output_data, f, indent=2, ensure_ascii=False)
 
     try:
         scraper.start()
@@ -895,12 +919,12 @@ def main():
 
         reports = scraper.extract_all_reports(
             limit=args.limit,
-            skip_dates=extracted_dates if args.skip_existing else None
+            skip_dates=extracted_dates if args.skip_existing else None,
+            on_record_extracted=save_progress if args.skip_existing else None
         )
 
-        # Merge with existing records if in idempotent mode
-        if args.skip_existing and existing_data:
-            existing_records = existing_data.get('records', [])
+        # Final save (handles non-idempotent mode and ensures final state)
+        if args.skip_existing:
             all_records = merge_records(existing_records, reports)
             new_count = len(reports)
             total_count = len(all_records)
@@ -909,7 +933,7 @@ def main():
             new_count = len(reports)
             total_count = len(reports)
 
-        # Save results
+        # Save final results
         output_data = {
             'extractedAt': datetime.now().isoformat(),
             'source': 'ProjectSight Standalone Scraper',
