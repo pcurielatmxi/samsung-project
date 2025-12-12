@@ -191,6 +191,29 @@ Weekly progress reports from Yates containing executive summaries, issues, and p
 
 **Note:** Parser extracts first ~25 pages (narrative section). Later pages are data dumps from Primavera/ProjectSight.
 
+### 5. Quality / Inspection Records
+
+**Location:** `raw/quality/`
+
+**Source:** Two Excel files tracking QA/QC inspections (Mar 2024 - Jun 2025)
+
+| File | Source | Records |
+|------|--------|---------|
+| `05282025_USA T1 Project_Inspection and Test Log.xlsx` | Samsung/SECAI ProjectSight | 17,294 |
+| `Yates- WORK INSPECTION REQUEST FAB1 LOG 6.25 REFINED.xlsx` | Yates Construction | 19,890 |
+
+**Inspection and Test Log (SECAI):** Official QA inspections by discipline
+- Sheets: ARCH (8,294), MECH (3,965), ELEC (5,035)
+- Key fields: Status (Accepted/Failure), Building Type, Author Company, Template, Reasons for failure
+- Overall failure rate: 2.9%
+
+**Work Inspection Request Log (Yates):** Internal QC + Official inspections
+- INTERNAL-YATES: 10,372 records, 7.8% failure rate
+- OFFICIAL-YATES: 9,518 records, 3.1% failure rate
+- Key fields: Date, Contractor, Location, WIR #, Inspection Status, Remarks
+
+**Analysis Value:** Failed inspections indicate rework/delays. Contractor failure patterns support delay attribution. See [raw/quality/CLAUDE.md](raw/quality/CLAUDE.md) for details.
+
 ## Data Governance
 
 ### What's Tracked in Git
@@ -201,6 +224,8 @@ Weekly progress reports from Yates containing executive summaries, issues, and p
 | `raw/xer/*.xer` | ❌ No | Large binary files |
 | `raw/tbm/*` | ❌ No | Large Excel files |
 | `raw/weekly_reports/*` | ❌ No | Large PDF files |
+| `raw/quality/*` | ❌ No | Large Excel files |
+| `raw/quality/CLAUDE.md` | ✅ Yes | Documentation |
 | `primavera/processed/*.csv` | ❌ No | Large generated output |
 | `primavera/analysis/*.md` | ✅ Yes | Analysis documentation |
 | `projectsight/extracted/*` | ❌ No | Large source files |
