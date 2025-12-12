@@ -337,12 +337,28 @@ def create_scraper():
 
         def click_first_report(self) -> bool:
             """Click on the first report row to open detail view."""
+            return self.click_report_at_position(0)
+
+        def click_report_at_position(self, position: int) -> bool:
+            """Click on a report row at a specific position (0-indexed) to open detail view.
+
+            This allows starting extraction from any row in the grid, enabling
+            efficient skip of already-extracted records.
+            """
             try:
                 list_frame = self.page.frame_locator('iframe[name="fraMenuContent"]')
 
-                # Click on the first row's date cell
-                first_row = list_frame.locator('tr[data-id]').first
-                first_row.locator('td').nth(1).click()
+                # Get all rows and click on the specified position
+                rows = list_frame.locator('tr[data-id]')
+                row_count = rows.count()
+
+                if position >= row_count:
+                    print(f"    Position {position} exceeds available rows ({row_count})")
+                    return False
+
+                # Click on the row at the specified position
+                target_row = rows.nth(position)
+                target_row.locator('td').nth(1).click()
                 time.sleep(3)  # Give time for detail panel to load
 
                 # Wait for detail panel to load - use more specific selector
@@ -352,7 +368,7 @@ def create_scraper():
 
                 return True
             except Exception as e:
-                print(f"    Error clicking first report: {e}")
+                print(f"    Error clicking report at position {position}: {e}")
                 return False
 
         def click_next_record(self) -> bool:
@@ -685,39 +701,49 @@ def create_scraper():
             """Extract all reports using Next record navigation.
 
             Args:
-                limit: Maximum number of reports to extract (0 = all)
+                limit: Maximum number of NEW reports to extract (0 = all remaining)
                 skip_dates: Set of report dates to skip (for idempotent extraction)
 
             Returns:
                 List of extracted report dictionaries
+
+            Optimization: When skip_dates is provided, the extraction starts directly
+            from position len(skip_dates) in the grid, avoiding sequential navigation
+            through already-extracted records.
             """
             reports = []
-            skipped_count = 0
             skip_dates = skip_dates or set()
 
             total_count = self.get_report_count()
             print(f"Total reports available: {total_count}")
 
-            extract_count = min(limit, total_count) if limit and limit > 0 else total_count
-            print(f"Will process: {extract_count} reports")
-            if skip_dates:
-                print(f"Will skip dates already extracted: {len(skip_dates)} dates")
+            # Calculate starting position - skip directly to first un-extracted record
+            start_position = len(skip_dates) if skip_dates else 0
+            remaining_count = total_count - start_position
 
-            # Click first report to open detail view
-            print("Opening first report...")
-            if not self.click_first_report():
-                print("Failed to open first report!")
+            if remaining_count <= 0:
+                print(f"All {total_count} reports already extracted!")
                 return reports
 
-            # Extract first report (check if should skip)
-            report_date = self.extract_report_date()
-            if report_date and report_date in skip_dates:
-                print(f"  Skipping 1/{extract_count} (date {report_date} already extracted)")
-                skipped_count += 1
+            # Calculate how many to extract
+            if limit and limit > 0:
+                extract_count = min(limit, remaining_count)
             else:
-                report = self.extract_current_report()
-                reports.append(report)
-                print(f"  Extracted 1/{extract_count}")
+                extract_count = remaining_count
+
+            print(f"Starting from position: {start_position + 1} (skipping {start_position} already extracted)")
+            print(f"Will extract: {extract_count} new reports")
+
+            # Click on the first un-extracted report (at start_position)
+            print(f"Opening report at position {start_position + 1}...")
+            if not self.click_report_at_position(start_position):
+                print(f"Failed to open report at position {start_position}!")
+                return reports
+
+            # Extract first report
+            report = self.extract_current_report()
+            reports.append(report)
+            print(f"  Extracted 1/{extract_count}")
 
             # Navigate through remaining reports using Next record button
             for i in range(1, extract_count):
@@ -727,19 +753,9 @@ def create_scraper():
 
                 time.sleep(0.5)  # Wait for content to load
 
-                # Check if this report should be skipped
-                report_date = self.extract_report_date()
-                if report_date and report_date in skip_dates:
-                    print(f"  Skipping {i + 1}/{extract_count} (date {report_date} already extracted)")
-                    skipped_count += 1
-                    continue
-
                 report = self.extract_current_report()
                 reports.append(report)
                 print(f"  Extracted {i + 1}/{extract_count}")
-
-            if skipped_count > 0:
-                print(f"\nSkipped {skipped_count} already-extracted reports")
 
             return reports
 
