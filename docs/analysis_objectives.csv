@@ -1,0 +1,6 @@
+title,questions,approach
+Central Question,"What is the impact of quality issues and inefficiencies on the project's schedule and labor consumption?",
+Scope Evolution,How much scope was added due to rework or coordination issues?,"Compare 66 YATES schedule snapshots to track task growth. Cross-reference with weekly reports to categorize additions (rework, coordination issues, design changes). Reconcile against change orders when available."
+Delay Attribution,How much schedule impact resulted from quality and performance issues?,"Track completion date movement across snapshots. Correlate with 1,108 documented issues from weekly reports. Identify which activities and trades were involved when delays occurred."
+Resource Consumption,How much labor was consumed and what factors drove consumption?,"Track labor hours by contractor, trade, and date. Correlate labor consumption with documented issues and rework tasks. Quantify labor during problem periods."
+Quality Impact,What quality issues occurred and what rework did they drive?,"Compile NCR and inspection reports by trade and location. Link quality issues to rework tasks in schedule. Quantify rework duration and labor consumed. Supplement with MXI field documentation."

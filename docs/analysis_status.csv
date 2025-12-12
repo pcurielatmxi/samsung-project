@@ -1,0 +1,20 @@
+goal,data_source,collection,preparation,exploration,analysis,conclusions,reporting
+1 - Scope Evolution,YATES Schedules (66 versions),100,100,80,20,0,0
+1 - Scope Evolution,Weekly Reports - Scope Changes,100,100,80,20,0,0
+1 - Scope Evolution,RFI/Submittal Logs,100,100,50,0,0,0
+1 - Scope Evolution,Bid Documents / RFP,0,0,0,0,0,0
+1 - Scope Evolution,Change Orders,0,0,0,0,0,0
+2 - Delay Attribution,YATES Schedules - Critical Path,100,100,50,0,0,0
+2 - Delay Attribution,Weekly Reports - Issues,100,100,100,20,0,0
+2 - Delay Attribution,Activity Code Analysis,100,100,100,20,0,0
+2 - Delay Attribution,Weather Records,0,0,0,0,0,0
+3 - Resource Consumption,Labor Detail Records,100,100,50,0,0,0
+3 - Resource Consumption,TBM Daily Plans,100,100,100,0,0,0
+3 - Resource Consumption,Weekly Reports - Manpower,100,100,100,0,0,0
+3 - Resource Consumption,Contractor Invoices/Cost Data,0,0,0,0,0,0
+4 - Quality Impact,NCR Reports,20,0,0,0,0,0
+4 - Quality Impact,Inspection Reports,20,0,0,0,0,0
+4 - Quality Impact,Weekly Reports - Quality Issues,100,100,100,20,0,0
+4 - Quality Impact,MXI Field Documentation,30,30,0,0,0,0
+4 - Quality Impact,Rework Task Identification,100,100,50,0,0,0
+Supporting,WBS Taxonomy Classification,100,100,100,100,100,100
