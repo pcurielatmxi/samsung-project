@@ -70,7 +70,7 @@ playwright install chromium
 # Step 6: Install Playwright system dependencies
 echo ""
 echo "6. Installing Playwright system dependencies..."
-sudo playwright install-deps chromium
+sudo "$PROJECT_ROOT/.venv/bin/playwright" install-deps chromium
 
 # Step 7: Setup environment file
 echo ""
