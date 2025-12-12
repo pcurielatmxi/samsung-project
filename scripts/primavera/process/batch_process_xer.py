@@ -16,6 +16,19 @@ This ensures:
 - Foreign key relationships are preserved within each file
 - PowerBI and other tools can build proper data models
 
+Schedule Filtering:
+- By default, only YATES (General Contractor) schedules are processed
+- Use --all to process all schedules (YATES + SECAI)
+- Use --schedule-type to explicitly filter by schedule type
+
+WBS Hierarchy Enhancement:
+- projwbs.csv is automatically enhanced with tier columns (depth, tier_1 through tier_6)
+- Each tier represents a level in the WBS hierarchy for easy filtering/grouping
+
+Task Taxonomy Generation:
+- task_taxonomy.csv is automatically generated with phase, scope, location classifications
+- Saved to derived/primavera/ directory (separate from processed data)
+
 Output Tables (all with file_id and prefixed IDs):
 - xer_files.csv        - Metadata about each XER file (from manifest)
 - task.csv             - Tasks (activities)
@@ -35,7 +48,9 @@ Output Tables (all with file_id and prefixed IDs):
 - ... and all other tables in the XER files
 
 Usage:
-    python scripts/batch_process_xer.py
+    python scripts/batch_process_xer.py                 # YATES schedules only (default)
+    python scripts/batch_process_xer.py --all           # All schedules
+    python scripts/batch_process_xer.py --schedule-type SECAI  # SECAI schedules only
     python scripts/batch_process_xer.py --current-only  # Only process current file
     python scripts/batch_process_xer.py --output-dir data/primavera/processed
 """
@@ -46,16 +61,267 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 
-# Add project root to path
-project_root = Path(__file__).parent.parent
+# Add project root to path (scripts/primavera/process -> scripts/primavera -> scripts -> project_root)
+project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.utils.xer_parser import XERParser
+from src.config.settings import Settings
+from src.classifiers.task_classifier import TaskClassifier
 
-# Paths
-MANIFEST_PATH = project_root / "data" / "raw" / "xer" / "manifest.json"
-XER_DIR = project_root / "data" / "raw" / "xer"
-DEFAULT_OUTPUT_DIR = project_root / "data" / "primavera" / "processed"
+# Paths - use Settings for proper WINDOWS_DATA_DIR support
+MANIFEST_PATH = Settings.PRIMAVERA_RAW_DIR / "manifest.json"
+XER_DIR = Settings.PRIMAVERA_RAW_DIR
+DEFAULT_OUTPUT_DIR = Settings.PRIMAVERA_PROCESSED_DIR
+
+# Schedule type constants
+SCHEDULE_YATES = 'YATES'
+SCHEDULE_SECAI = 'SECAI'
+SCHEDULE_UNKNOWN = 'UNKNOWN'
+DEFAULT_SCHEDULE_TYPE = SCHEDULE_YATES
+
+# WBS hierarchy configuration
+DEFAULT_NUM_TIERS = 6
+
+
+def classify_schedule_from_filename(filename: str) -> str:
+    """
+    Classify schedule type from filename.
+
+    This is used for pre-filtering before parsing. For more accurate
+    classification after parsing, use classify_schedules.py which also
+    checks proj_short_name from the PROJECT table.
+
+    Args:
+        filename: XER filename
+
+    Returns:
+        Schedule type: 'YATES', 'SECAI', or 'UNKNOWN'
+    """
+    fname = str(filename).upper()
+
+    # YATES (General Contractor) patterns
+    # Most YATES files contain 'SAMSUNG-FAB' or 'SAMSUNG-TFAB' in the filename
+    if any(pattern in fname for pattern in ['YATES', 'SAMSUNG-FAB', 'SAMSUNG-TFAB']):
+        return SCHEDULE_YATES
+
+    # SECAI (Owner) patterns
+    if any(pattern in fname for pattern in ['SECAI', 'T1 PROJECT', 'T1P1']):
+        return SCHEDULE_SECAI
+
+    return SCHEDULE_UNKNOWN
+
+
+# =============================================================================
+# WBS Hierarchy Functions
+# =============================================================================
+
+def _build_hierarchy_tree(wbs_df: pd.DataFrame) -> dict:
+    """Build lookup structures for WBS hierarchy traversal."""
+    id_to_row = {row['wbs_id']: row.to_dict() for _, row in wbs_df.iterrows()}
+    id_to_parent = dict(zip(wbs_df['wbs_id'], wbs_df['parent_wbs_id']))
+
+    id_to_children = {wbs_id: [] for wbs_id in id_to_row}
+    for wbs_id, parent_id in id_to_parent.items():
+        if pd.notna(parent_id) and parent_id in id_to_children:
+            id_to_children[parent_id].append(wbs_id)
+
+    return {
+        'id_to_row': id_to_row,
+        'id_to_parent': id_to_parent,
+        'id_to_children': id_to_children,
+    }
+
+
+def _get_ancestors(wbs_id: str, tree: dict, max_depth: int = 10) -> list[dict]:
+    """Get list of ancestors from root to this node (inclusive)."""
+    ancestors = []
+    current_id = wbs_id
+    depth = 0
+
+    while depth < max_depth and current_id in tree['id_to_row']:
+        row = tree['id_to_row'][current_id]
+        ancestors.append({
+            'wbs_id': current_id,
+            'wbs_short_name': row['wbs_short_name'],
+            'wbs_name': row['wbs_name'],
+        })
+        parent_id = tree['id_to_parent'].get(current_id)
+        if pd.isna(parent_id) or parent_id not in tree['id_to_row']:
+            break
+        current_id = parent_id
+        depth += 1
+
+    return list(reversed(ancestors))
+
+
+def _get_tier_label(node: dict) -> str:
+    """Get human-friendly label for a WBS node."""
+    name = str(node.get('wbs_name', ''))
+    short = str(node.get('wbs_short_name', ''))
+
+    if not name or name == short:
+        return short
+    if name.startswith('SAMSUNG') or name.startswith('Yates T FAB1'):
+        return short
+    if len(name) > 50:
+        name = name[:47] + '...'
+    return name
+
+
+def _build_tier_columns_for_file(wbs_df: pd.DataFrame, num_tiers: int = 6) -> pd.DataFrame:
+    """Build tier columns for WBS nodes in a single file."""
+    tree = _build_hierarchy_tree(wbs_df)
+    results = []
+
+    for _, row in wbs_df.iterrows():
+        wbs_id = row['wbs_id']
+        ancestors = _get_ancestors(wbs_id, tree)
+        depth = len(ancestors) - 1
+
+        result = {'wbs_id': wbs_id, 'depth': depth}
+        for i in range(num_tiers):
+            tier_num = i + 1
+            if i < len(ancestors):
+                result[f'tier_{tier_num}'] = _get_tier_label(ancestors[i])
+            else:
+                result[f'tier_{tier_num}'] = None
+        results.append(result)
+
+    return pd.DataFrame(results)
+
+
+def enhance_wbs_with_hierarchy(wbs_df: pd.DataFrame, num_tiers: int = DEFAULT_NUM_TIERS,
+                                verbose: bool = True) -> pd.DataFrame:
+    """
+    Enhance WBS DataFrame with tier columns for hierarchy navigation.
+
+    Adds depth and tier_1 through tier_N columns to enable easy filtering
+    and grouping at any level of the WBS hierarchy.
+
+    Args:
+        wbs_df: WBS DataFrame with wbs_id, parent_wbs_id, wbs_short_name, wbs_name
+        num_tiers: Number of tier columns to create (default 6)
+        verbose: Print progress messages
+
+    Returns:
+        Enhanced DataFrame with original columns plus depth and tier columns
+    """
+    if verbose:
+        print(f"  Enhancing WBS with {num_tiers} tier columns...")
+
+    # Remove existing tier columns if present
+    tier_cols = [f'tier_{i}' for i in range(1, num_tiers + 1)]
+    cols_to_drop = [c for c in tier_cols + ['depth'] if c in wbs_df.columns]
+    if cols_to_drop:
+        wbs_df = wbs_df.drop(columns=cols_to_drop)
+
+    # Process each file_id separately (hierarchy is file-specific)
+    all_tier_dfs = []
+    file_ids = wbs_df['file_id'].unique()
+
+    for file_id in file_ids:
+        file_wbs = wbs_df[wbs_df['file_id'] == file_id].copy()
+        if len(file_wbs) > 0:
+            tier_df = _build_tier_columns_for_file(file_wbs, num_tiers=num_tiers)
+            all_tier_dfs.append(tier_df)
+
+    if not all_tier_dfs:
+        return wbs_df
+
+    # Combine and merge
+    tier_data = pd.concat(all_tier_dfs, ignore_index=True)
+    result_df = wbs_df.merge(tier_data, on='wbs_id', how='left')
+
+    # Reorder columns: original columns first, then depth, then tier columns
+    original_cols = [c for c in wbs_df.columns if c not in tier_cols and c != 'depth']
+    new_cols = ['depth'] + tier_cols
+    result_df = result_df[original_cols + new_cols]
+
+    if verbose:
+        print(f"    Added columns: depth, {', '.join(tier_cols)}")
+
+    return result_df
+
+
+# =============================================================================
+# Taxonomy Generation Functions
+# =============================================================================
+
+def generate_task_taxonomy(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame,
+                           verbose: bool = True) -> pd.DataFrame:
+    """
+    Generate taxonomy lookup table for tasks.
+
+    Creates a lean join table with task_id and taxonomy columns:
+    - phase/phase_desc: Construction phase
+    - scope/scope_desc: Work type
+    - loc_type/loc_type_desc: Location granularity
+    - loc_id: Specific location
+    - building/building_desc: Building code
+    - level/level_desc: Floor level
+    - label: Combined classification label
+
+    Args:
+        tasks_df: Tasks dataframe with task_id, task_name, wbs_id
+        wbs_df: WBS dataframe with wbs_id, wbs_name
+        verbose: Print progress messages
+
+    Returns:
+        Taxonomy lookup table (join with task.csv on task_id)
+    """
+    if verbose:
+        print(f"  Generating task taxonomy for {len(tasks_df):,} tasks...")
+
+    classifier = TaskClassifier()
+
+    # Get WBS name lookup for classification context
+    wbs_names = wbs_df.set_index('wbs_id')['wbs_name'].to_dict()
+
+    results = []
+    total = len(tasks_df)
+
+    for idx, (_, row) in enumerate(tasks_df.iterrows()):
+        if verbose and idx % 50000 == 0 and idx > 0:
+            print(f"    Processed {idx:,}/{total:,} ({idx/total*100:.1f}%)")
+
+        task_name = str(row.get('task_name', ''))
+        wbs_id = row.get('wbs_id')
+        wbs_name = wbs_names.get(wbs_id, '')
+
+        # Classify
+        classification = classifier.classify_task(task_name, wbs_name)
+
+        # Build result row - task_id + taxonomy with descriptions
+        result = {
+            'task_id': row.get('task_id'),
+            'phase': classification['phase'],
+            'phase_desc': classification['phase_desc'],
+            'scope': classification['scope'],
+            'scope_desc': classification['scope_desc'],
+            'loc_type': classification['loc_type'],
+            'loc_type_desc': classification['loc_type_desc'],
+            'loc_id': classification['loc_id'],
+            'building': classification['building'],
+            'building_desc': classification['building_desc'],
+            'level': classification['level'],
+            'level_desc': classification['level_desc'],
+            'label': classification['label'],
+            # Impact tracking (sparse - only for IMPACT tasks)
+            'impact_code': classification.get('impact_code'),
+            'impact_type': classification.get('impact_type'),
+            'impact_type_desc': classification.get('impact_type_desc'),
+            'attributed_to': classification.get('attributed_to'),
+            'attributed_to_desc': classification.get('attributed_to_desc'),
+            'root_cause': classification.get('root_cause'),
+            'root_cause_desc': classification.get('root_cause_desc'),
+        }
+        results.append(result)
+
+    if verbose:
+        print(f"    Classified {total:,} tasks")
+
+    return pd.DataFrame(results)
 
 
 def prefix_id_columns(df: pd.DataFrame, file_id: int) -> pd.DataFrame:
@@ -121,6 +387,7 @@ def create_files_table(manifest: dict) -> pd.DataFrame:
         - description: Description from manifest
         - status: current/archived/superseded
         - is_current: Boolean flag for current file
+        - schedule_type: YATES, SECAI, or UNKNOWN (classified from filename)
     """
     rows = []
     current_file = manifest["current"]
@@ -132,7 +399,8 @@ def create_files_table(manifest: dict) -> pd.DataFrame:
             "date": meta.get("date", ""),
             "description": meta.get("description", ""),
             "status": meta.get("status", ""),
-            "is_current": filename == current_file
+            "is_current": filename == current_file,
+            "schedule_type": classify_schedule_from_filename(filename)
         })
 
     df = pd.DataFrame(rows)
@@ -196,6 +464,7 @@ def process_single_xer(xer_path: Path, file_id: int, verbose: bool = True) -> di
 def batch_process(
     output_dir: Path = DEFAULT_OUTPUT_DIR,
     current_only: bool = False,
+    schedule_type: str | None = DEFAULT_SCHEDULE_TYPE,
     verbose: bool = True
 ) -> dict[str, Path]:
     """
@@ -204,6 +473,7 @@ def batch_process(
     Args:
         output_dir: Directory for output CSV files
         current_only: If True, only process the current file
+        schedule_type: Filter by schedule type ('YATES', 'SECAI', or None for all)
         verbose: Print progress messages
 
     Returns:
@@ -227,16 +497,40 @@ def batch_process(
     # Create files metadata table
     files_df = create_files_table(manifest)
 
-    if current_only:
-        files_to_process = files_df[files_df['is_current']]
-        if verbose:
-            print("Mode: Current file only")
-    else:
-        files_to_process = files_df
-        if verbose:
-            print("Mode: All files")
+    # Show schedule type distribution
+    if verbose:
+        type_counts = files_df['schedule_type'].value_counts()
+        print(f"Schedule types in manifest:")
+        for stype, count in type_counts.items():
+            print(f"  {stype}: {count} files")
+        print()
 
-    print()
+    # Apply filters
+    files_to_process = files_df.copy()
+
+    if current_only:
+        files_to_process = files_to_process[files_to_process['is_current']]
+        if verbose:
+            print("Filter: Current file only")
+
+    if schedule_type is not None:
+        files_to_process = files_to_process[files_to_process['schedule_type'] == schedule_type]
+        if verbose:
+            print(f"Filter: {schedule_type} schedules only")
+    else:
+        if verbose:
+            print("Filter: All schedule types")
+
+    if verbose:
+        print(f"Files to process: {len(files_to_process)}")
+
+    # Reassign sequential file_ids after filtering (1, 2, 3, ... instead of gaps)
+    files_to_process = files_to_process.reset_index(drop=True)
+    files_to_process['file_id'] = range(1, len(files_to_process) + 1)
+
+    if verbose:
+        print(f"Reassigned file_ids: 1-{len(files_to_process)}")
+        print()
 
     # Process each file and collect all tables
     all_tables: dict[str, list[pd.DataFrame]] = {}
@@ -277,21 +571,34 @@ def batch_process(
     # Combine and save all tables
     output_files = {}
 
-    # 1. Save xer_files.csv first
+    # 1. Save xer_files.csv first (only processed files, not all manifest files)
     files_output = output_dir / "xer_files.csv"
-    files_df.to_csv(files_output, index=False)
+    files_to_process.to_csv(files_output, index=False)
     output_files['xer_files'] = files_output
 
     if verbose:
         print(f"Saving {len(all_tables) + 1} tables...")
         print("-" * 60)
-        print(f"✓ xer_files.csv ({len(files_df)} rows)")
+        print(f"✓ xer_files.csv ({len(files_to_process)} rows)")
 
-    # 2. Save all other tables
+    # 2. Save all other tables (keep task and projwbs for taxonomy generation)
+    tasks_combined = None
+    wbs_combined = None
+
     for table_name in sorted(all_tables.keys()):
         dfs = all_tables[table_name]
         if dfs:
             combined = pd.concat(dfs, ignore_index=True)
+
+            # Enhance projwbs with hierarchy tier columns
+            if table_name == 'projwbs':
+                combined = enhance_wbs_with_hierarchy(combined, verbose=verbose)
+                wbs_combined = combined
+
+            # Keep tasks for taxonomy generation
+            if table_name == 'task':
+                tasks_combined = combined
+
             output_path = output_dir / f"{table_name}.csv"
             combined.to_csv(output_path, index=False)
             output_files[table_name] = output_path
@@ -299,10 +606,26 @@ def batch_process(
             if verbose:
                 print(f"✓ {table_name}.csv ({len(combined):,} rows)")
 
+    # 3. Generate task taxonomy (derived data)
+    if tasks_combined is not None and wbs_combined is not None:
+        taxonomy_df = generate_task_taxonomy(tasks_combined, wbs_combined, verbose=verbose)
+
+        # Save to derived directory
+        derived_dir = Settings.PRIMAVERA_DERIVED_DIR
+        derived_dir.mkdir(parents=True, exist_ok=True)
+        taxonomy_path = derived_dir / "task_taxonomy.csv"
+        taxonomy_df.to_csv(taxonomy_path, index=False)
+        output_files['task_taxonomy'] = taxonomy_path
+
+        if verbose:
+            print(f"✓ task_taxonomy.csv ({len(taxonomy_df):,} rows) -> {derived_dir}")
+
     if verbose:
         print("-" * 60)
         print(f"\n✅ Batch processing complete!")
         print(f"\nOutput directory: {output_dir}")
+        if tasks_combined is not None:
+            print(f"Derived directory: {Settings.PRIMAVERA_DERIVED_DIR}")
         print(f"Total tables: {len(output_files)}")
 
     return output_files
@@ -313,11 +636,17 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Batch process all XER files from manifest - exports ALL tables',
+        description='Batch process XER files from manifest - exports ALL tables',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+Schedule Filtering:
+  By default, only YATES (General Contractor) schedules are processed.
+  Use --all to include all schedules, or --schedule-type to filter explicitly.
+
 Examples:
-  %(prog)s                              # Process all files
+  %(prog)s                              # YATES schedules only (default)
+  %(prog)s --all                        # Process all schedules
+  %(prog)s --schedule-type SECAI        # SECAI schedules only
   %(prog)s --current-only               # Only process current file
   %(prog)s --output-dir ./output        # Custom output directory
         """
@@ -336,6 +665,22 @@ Examples:
         help='Only process the current file from manifest'
     )
 
+    # Schedule type filtering - mutually exclusive group
+    schedule_group = parser.add_mutually_exclusive_group()
+    schedule_group.add_argument(
+        '--all', '-a',
+        action='store_true',
+        dest='all_schedules',
+        help='Process all schedules (YATES + SECAI + UNKNOWN)'
+    )
+    schedule_group.add_argument(
+        '--schedule-type', '-s',
+        type=str,
+        choices=[SCHEDULE_YATES, SCHEDULE_SECAI, SCHEDULE_UNKNOWN],
+        default=None,
+        help=f'Filter by schedule type (default: {DEFAULT_SCHEDULE_TYPE})'
+    )
+
     parser.add_argument(
         '--quiet', '-q',
         action='store_true',
@@ -344,10 +689,19 @@ Examples:
 
     args = parser.parse_args()
 
+    # Determine schedule_type filter
+    if args.all_schedules:
+        schedule_type = None  # No filter - process all
+    elif args.schedule_type:
+        schedule_type = args.schedule_type
+    else:
+        schedule_type = DEFAULT_SCHEDULE_TYPE  # Default to YATES
+
     try:
         batch_process(
             output_dir=args.output_dir,
             current_only=args.current_only,
+            schedule_type=schedule_type,
             verbose=not args.quiet
         )
         return 0
