@@ -41,13 +41,8 @@ class Settings:
     DB_HOST = os.getenv('DB_HOST', 'localhost')
     DB_PORT = int(os.getenv('DB_PORT', '5432'))
     DB_NAME = os.getenv('DB_NAME', 'etl_db')
-    DB_USER = os.getenv('DB_USER', 'airflow')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', 'airflow')
-
-    # ============================================================================
-    # Airflow Configuration
-    # ============================================================================
-    AIRFLOW_HOME = os.getenv('AIRFLOW_HOME', '/opt/airflow')
+    DB_USER = os.getenv('DB_USER', 'postgres')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', 'postgres')
 
     @classmethod
     def get_database_url(cls) -> str:

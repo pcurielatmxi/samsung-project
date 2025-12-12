@@ -1,6 +1,6 @@
 # Data Directory - Context & Documentation
 
-**Last Updated:** 2025-12-08
+**Last Updated:** 2025-12-12
 **Status:** Living Document - Must be kept updated as data changes
 
 > **IMPORTANT:** This is a living document. Update this file whenever:
@@ -29,7 +29,8 @@ data/
 ├── raw/                        # Raw source files (gitignored except manifest)
 │   ├── xer/                    # Primavera P6 XER exports (113 files)
 │   ├── tbm/                    # Daily work plans from subcontractors (433 files)
-│   └── weekly_reports/         # Weekly progress report PDFs (37 files)
+│   ├── weekly_reports/         # Weekly progress report PDFs (37 files)
+│   └── quality/                # QA/QC inspection records (2 files)
 ├── primavera/                  # Processed Primavera data
 │   ├── processed/              # Batch-processed CSVs (~48 tables)
 │   └── analysis/               # Analysis reports

@@ -2,8 +2,7 @@
 
 ## Prerequisites
 
-- Python 3.11+ (for data analysis)
-- Docker Desktop (optional, for Airflow)
+- Python 3.11+
 - Git
 
 ## Installation Steps
@@ -57,23 +56,6 @@ python scripts/validate_xer_manifest.py
 # Transform already-extracted JSON to CSV
 python scripts/daily_reports_to_csv.py
 ```
-
-## Optional: Airflow Setup (for ETL automation)
-
-### Start Airflow Services
-
-```bash
-# Start all services (Airflow webserver, scheduler, PostgreSQL)
-docker-compose up -d
-
-# Check service status
-docker-compose ps
-```
-
-### Access Airflow UI
-
-1. Open http://localhost:8080
-2. Login with `airflow` / `airflow`
 
 ## Development Setup
 

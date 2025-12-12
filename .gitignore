@@ -46,13 +46,8 @@ htmlcov/
 .tox/
 *.cover
 
-# Airflow
-airflow.db
-airflow.cfg
+# Logs
 logs/
-dags/__pycache__/
-plugins/__pycache__/
-unittests.cfg
 *.log
 
 # Docker

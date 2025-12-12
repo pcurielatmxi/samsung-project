@@ -22,7 +22,6 @@ mxi-samsung/
 ├── notebooks/            # Jupyter notebooks for analysis
 ├── src/                  # Reusable Python modules
 ├── tests/                # Test suite
-├── dags/                 # Airflow DAGs (optional automation)
 └── docs/                 # Documentation
 ```
 

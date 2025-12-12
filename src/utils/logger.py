@@ -29,7 +29,7 @@ def configure_logging(name: str) -> logging.Logger:
     logger.addHandler(console_handler)
 
     # File handler
-    log_dir = Path(settings.AIRFLOW_HOME) / 'logs' / 'etl'
+    log_dir = settings.PROJECT_ROOT / 'logs' / 'etl'
     log_dir.mkdir(parents=True, exist_ok=True)
     file_handler = logging.handlers.RotatingFileHandler(
         log_dir / f'{name}.log',

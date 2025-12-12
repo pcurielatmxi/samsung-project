@@ -105,41 +105,6 @@ Standardized Data: [{"source": "fieldwire", "source_id": "123", "name": "Test", 
 PostgreSQL Table / CSV File
 ```
 
-## Airflow DAG Structure (Optional)
-
-### ETL Pipeline DAG
-
-Typical DAG structure:
-
-```python
-start
-  ↓
-[extract_fieldwire] → [transform_fieldwire] → [load_fieldwire]
-        ↓
-       end_success
-```
-
-### Task Types
-
-**Extract Tasks:** PythonOperator
-```python
-def extract_task():
-    extractor = FieldwireExtractor()
-    data = extractor.extract()
-    if not extractor.validate_extraction(data):
-        raise ValueError("Extraction validation failed")
-    return data
-```
-
-**Transform Tasks:** PythonOperator with XCom
-```python
-def transform_task(**context):
-    raw_data = context['task_instance'].xcom_pull(task_ids='extract')
-    transformer = FieldwireTransformer()
-    data = transformer.transform(raw_data)
-    return data
-```
-
 ## Error Handling
 
 ### Validation at Each Stage
@@ -162,7 +127,6 @@ def transform_task(**context):
 ### Retry Logic
 
 - **Connector retries:** Exponential backoff for API calls
-- **Airflow retries:** Configured at DAG level for task failures
 - **Custom retries:** Helper function `retry_on_exception()` in utils
 
 ## Adding New Data Sources
@@ -223,7 +187,7 @@ class TestMySystemExtractor:
 
 ## Security
 
-- **Credentials:** Store in environment variables or Airflow Connections
+- **Credentials:** Store in environment variables
 - **HTTPS:** Use SSL/TLS for API connections
 - **SQL Injection:** Use parameterized queries (psycopg2 execute_values)
 - **Logging:** Don't log sensitive data (passwords, tokens, PII)
