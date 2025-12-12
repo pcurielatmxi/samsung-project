@@ -1,6 +1,6 @@
 # Samsung Taylor FAB1 - Construction Delay Analysis
 
-**Last Updated:** 2025-12-11
+**Last Updated:** 2025-12-12
 
 ## Project Purpose
 
@@ -46,20 +46,59 @@ Data analysis project for the Samsung Austin semiconductor chip manufacturing fa
 | Bid Documents / RFP | TBD | TBD | ⬜ Pending |
 | Change Orders | TBD | TBD | ⬜ Pending |
 
+## Data Traceability
+
+**IMPORTANT:** For auditing purposes, data is separated by traceability level. This distinction is critical for presenting findings that can withstand scrutiny.
+
+| Folder | Traceability | Description |
+|--------|--------------|-------------|
+| `raw/` | 100% Traceable | Source files exactly as received (XER, PDF, Excel, CSV dumps) |
+| `processed/` | 100% Traceable | Direct parsing of raw files - no assumptions or inference |
+| `derived/` | **NOT Fully Traceable** | Enhanced data with assumptions, inference, or merged sources |
+| `analysis/` | Documentation | Analysis findings, methodology notes (tracked in git) |
+
+### Why This Matters
+
+- **processed/** data can be regenerated deterministically from **raw/** files
+- **derived/** data includes analyst judgment (e.g., WBS taxonomy classification, delay attribution)
+- When presenting findings, clearly distinguish between facts (processed) and interpretations (derived)
+- Auditors can verify processed data independently; derived data requires methodology review
+
+### Examples
+
+| File | Location | Reason |
+|------|----------|--------|
+| `task.csv` (parsed from XER) | `processed/primavera/` | Direct field extraction, no interpretation |
+| `wbs_taxonomy.csv` (with labels) | `derived/primavera/` | Includes classifier-assigned categories |
+| `delay_attribution.csv` | `derived/primavera/` | Correlations involve analyst assumptions |
+
 ## Directory Structure
 
 ```
-mxi-samsung/
-├── data/                       # All project data
-│   ├── raw/xer/                # Primavera XER source files
-│   ├── primavera/processed/    # Parsed schedule tables
-│   ├── primavera/analysis/     # Analysis outputs
-│   ├── weekly_reports/         # Weekly report data
-│   └── tbm/                    # TBM daily plans
+WINDOWS_DATA_DIR/               # External data (not tracked by git)
+├── raw/                        # Source files - FULLY TRACEABLE
+│   ├── primavera/              # XER schedule files
+│   ├── weekly_reports/         # PDF weekly reports
+│   ├── tbm/                    # Excel workbooks
+│   ├── fieldwire/              # CSV data dumps
+│   └── projectsight/           # Raw exports
+├── processed/                  # Parsed data - FULLY TRACEABLE to raw/
+│   ├── primavera/              # Parsed XER tables (task.csv, etc.)
+│   ├── weekly_reports/         # Parsed PDF tables
+│   ├── tbm/                    # Parsed Excel tables
+│   ├── fieldwire/              # Processed CSV data
+│   └── projectsight/           # Processed exports
+└── derived/                    # Enhanced data - INCLUDES ASSUMPTIONS
+    ├── primavera/              # WBS taxonomy, enriched schedules
+    ├── weekly_reports/         # Issue correlations
+    └── ...
+
+PROJECT_ROOT/                   # Repository (tracked by git)
+├── data/analysis/              # Analysis outputs & findings
+│   ├── primavera/              # Schedule analysis
+│   ├── weekly_reports/         # Issue analysis
+│   └── ...
 ├── docs/                       # Documentation
-│   ├── EXECUTIVE_SUMMARY.md    # Analysis objectives & status
-│   ├── analysis_status.csv     # Progress tracking (Power BI)
-│   └── analysis_objectives.csv # Questions & approach (Power BI)
 ├── scripts/                    # Processing scripts
 ├── src/                        # Python modules
 │   └── classifiers/            # WBS taxonomy classifier
@@ -83,12 +122,12 @@ python scripts/validate_xer_manifest.py
 
 ### Key Data Files
 
-| File | Description |
-|------|-------------|
-| `data/primavera/processed/task.csv` | All tasks across schedule versions |
-| `data/primavera/processed/xer_files.csv` | Schedule version metadata |
-| `data/weekly_reports/tables/key_issues.csv` | 1,108 documented issues |
-| `data/primavera/analysis/wbs_taxonomy.csv` | 333K tasks with taxonomy labels |
+| File | Location | Description |
+|------|----------|-------------|
+| `task.csv` | `processed/primavera/` | All tasks across schedule versions |
+| `xer_files.csv` | `processed/primavera/` | Schedule version metadata |
+| `key_issues.csv` | `processed/weekly_reports/` | 1,108 documented issues |
+| `wbs_taxonomy.csv` | `derived/primavera/` | 333K tasks with taxonomy labels (classifier-assigned) |
 
 ### WBS Taxonomy
 
@@ -106,9 +145,10 @@ For detailed technical documentation:
 
 | Document | Purpose |
 |----------|---------|
-| [data/CLAUDE.md](data/CLAUDE.md) | Data directory details |
+| [src/config/settings.py](src/config/settings.py) | Path configuration & traceability docs |
 | [docs/SOURCES.md](docs/SOURCES.md) | Data source APIs & field mapping |
-| [data/primavera/analysis/](data/primavera/analysis/) | Analysis findings |
+| [data/analysis/primavera/](data/analysis/primavera/) | Primavera analysis findings |
+| [data/analysis/weekly_reports/](data/analysis/weekly_reports/) | Weekly reports analysis |
 
 ### Primavera Key Fields
 

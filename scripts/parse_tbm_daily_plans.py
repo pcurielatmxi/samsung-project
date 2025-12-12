@@ -287,52 +287,6 @@ def main():
         files_df.to_csv(output_dir / 'tbm_files.csv', index=False)
         print(f"tbm_files.csv: {len(files_df)} files")
 
-    # Generate summaries
-    if all_entries:
-        entries_df = pd.DataFrame(all_entries)
-
-        # Summary by subcontractor
-        by_subcontractor = entries_df.groupby('tier2_sc').agg({
-            'num_employees': 'sum',
-            'report_date': 'nunique',
-            'work_activities': 'count'
-        }).reset_index()
-        by_subcontractor.columns = ['subcontractor', 'total_employees', 'days_worked', 'work_entries']
-        by_subcontractor = by_subcontractor.sort_values('total_employees', ascending=False)
-        by_subcontractor.to_csv(output_dir / 'summary_by_subcontractor.csv', index=False)
-        print(f"summary_by_subcontractor.csv: {len(by_subcontractor)} subcontractors")
-
-        # Summary by date
-        by_date = entries_df.groupby('report_date').agg({
-            'num_employees': 'sum',
-            'tier2_sc': 'nunique',
-            'work_activities': 'count'
-        }).reset_index()
-        by_date.columns = ['date', 'total_employees', 'subcontractors', 'work_entries']
-        by_date = by_date.sort_values('date')
-        by_date.to_csv(output_dir / 'summary_by_date.csv', index=False)
-        print(f"summary_by_date.csv: {len(by_date)} days")
-
-        # Summary by location
-        by_location = entries_df.groupby(['location_building', 'location_level']).agg({
-            'num_employees': 'sum',
-            'work_activities': 'count'
-        }).reset_index()
-        by_location.columns = ['building', 'level', 'total_employees', 'work_entries']
-        by_location = by_location.sort_values('total_employees', ascending=False)
-        by_location.to_csv(output_dir / 'summary_by_location.csv', index=False)
-        print(f"summary_by_location.csv: {len(by_location)} locations")
-
-        # Foreman summary
-        foremen = entries_df.groupby(['tier2_sc', 'foreman']).agg({
-            'num_employees': 'sum',
-            'report_date': 'nunique'
-        }).reset_index()
-        foremen.columns = ['subcontractor', 'foreman', 'total_crew_days', 'days_worked']
-        foremen = foremen.sort_values('total_crew_days', ascending=False)
-        foremen.to_csv(output_dir / 'foremen_summary.csv', index=False)
-        print(f"foremen_summary.csv: {len(foremen)} foremen")
-
     print("\nDone!")
 
 
