@@ -23,26 +23,74 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 
+class ProjectConfig:
+    """Configuration for a ProjectSight project."""
+
+    def __init__(self, name: str, org_id: str, project_id: str,
+                 trimble_project_id: str, root_folder_id: str):
+        self.name = name
+        self.org_id = org_id
+        self.project_id = project_id
+        self.trimble_project_id = trimble_project_id
+        self.root_folder_id = root_folder_id
+
+    @property
+    def library_url(self) -> str:
+        return f"{ProjectSightSession.BASE_URL}/web/app/Project?pt=205&orgid={self.org_id}&projid={self.project_id}"
+
+    @property
+    def daily_reports_url(self) -> str:
+        return f"{ProjectSightSession.BASE_URL}/web/app/Project?listid=-4038&orgid={self.org_id}&projid={self.project_id}"
+
+    def to_dict(self) -> dict:
+        return {
+            'name': self.name,
+            'orgId': self.org_id,
+            'projectId': self.project_id,
+            'trimbleProjectId': self.trimble_project_id,
+            'rootFolderId': self.root_folder_id,
+        }
+
+
+# Available projects - add more as needed
+PROJECTS = {
+    'taylor_fab1': ProjectConfig(
+        name='Taylor Fab1 58202',
+        org_id='ffd5880a-42ec-41fa-a552-db0c9a000326',
+        project_id='300',
+        trimble_project_id='jFeM-GUk7QI',
+        root_folder_id='GBVZIZkHPRc',
+    ),
+    'tpjt_fab1': ProjectConfig(
+        name='T-PJT FAB1 Construction',
+        org_id='4540f425-f7b5-4ad8-837d-c270d5d09490',
+        project_id='3',
+        trimble_project_id='TKiTy1XRugw',
+        root_folder_id='NDbcNje2RPA',
+    ),
+}
+
+DEFAULT_PROJECT = 'taylor_fab1'
+
+
 class ProjectSightSession:
     """Manages ProjectSight browser session with login and persistence."""
 
-    # Project constants
-    ORG_ID = "ffd5880a-42ec-41fa-a552-db0c9a000326"
-    PROJECT_ID = "300"
-    TRIMBLE_PROJECT_ID = "jFeM-GUk7QI"  # Trimble Connect project ID
-    ROOT_FOLDER_ID = "GBVZIZkHPRc"  # Library root folder
-
-    # URL templates
     BASE_URL = "https://prod.projectsightapp.trimble.com"
-    LIBRARY_URL = f"{BASE_URL}/web/app/Project?pt=205&orgid={ORG_ID}&projid={PROJECT_ID}"
-    DAILY_REPORTS_URL = f"{BASE_URL}/web/app/Project?listid=-4038&orgid={ORG_ID}&projid={PROJECT_ID}"
 
-    def __init__(self, headless: bool = False, session_dir: str = None):
+    def __init__(self, headless: bool = False, session_dir: str = None,
+                 project: str = None):
         self.headless = headless
         self.playwright = None
         self.browser = None
         self.context = None
         self.page = None
+
+        # Project configuration
+        project_key = project or DEFAULT_PROJECT
+        if project_key not in PROJECTS:
+            raise ValueError(f"Unknown project '{project_key}'. Available: {list(PROJECTS.keys())}")
+        self.project = PROJECTS[project_key]
 
         # Session persistence
         self.session_dir = Path(session_dir) if session_dir else Path.home() / '.projectsight_sessions'
@@ -149,23 +197,93 @@ class ProjectSightSession:
         Returns:
             True if login successful or session valid
         """
-        target_url = target_url or self.LIBRARY_URL
+        target_url = target_url or self.project.library_url
         print("Checking session / logging in to ProjectSight...")
 
         try:
             self.page.goto(target_url, wait_until='domcontentloaded', timeout=60000)
             time.sleep(3)
 
-            # Check if already logged in
-            if 'projectsight' in self.page.url.lower() and 'id.trimble.com' not in self.page.url:
-                print("  Session still valid - no login needed!")
-                return True
+            # Check if login is needed - either via redirect or login iframe
+            needs_login = False
+            if 'id.trimble.com' in self.page.url or 'sign_in' in self.page.url:
+                needs_login = True
+                print("  Redirected to login page")
+            else:
+                # Check for login iframe (session expired but no redirect)
+                # Wait longer for iframe to appear
+                print(f"  Checking for login/library iframe...")
+                for check in range(45):  # Wait up to 45 seconds
+                    time.sleep(1)
+
+                    # Check if we got redirected to login page
+                    if 'id.trimble.com' in self.page.url:
+                        needs_login = True
+                        print(f"  Redirected to login page after {check+1}s")
+                        break
+
+                    # Use DOM selectors to detect iframes (more reliable than page.frames)
+                    iframe_count = self.page.locator('iframe').count()
+
+                    # Check for login iframe using page content
+                    login_iframe_count = self.page.locator('iframe[src*="id.trimble.com"]').count()
+
+                    # Check for library iframe (fraMenuContent)
+                    library_iframe_count = self.page.locator('iframe[name="fraMenuContent"]').count()
+
+                    if (check + 1) % 5 == 0:  # Print every 5 seconds
+                        print(f"    Check {check+1}: total={iframe_count}, login={login_iframe_count}, library={library_iframe_count}")
+
+                    if login_iframe_count > 0:
+                        needs_login = True
+                        print(f"  Login iframe detected after {check+1}s - session expired")
+                        break
+
+                    if library_iframe_count > 0:
+                        # Library iframe found - now check its content
+                        # The library iframe should have Trimble Connect content if session is valid
+                        print(f"  Library iframe found after {check+1}s, checking content...")
+                        time.sleep(3)  # Give it time to load
+
+                        # Check if login is within the library iframe
+                        frame_loc = self.page.frame_locator('iframe[name="fraMenuContent"]')
+                        inner_login = frame_loc.locator('iframe[src*="id.trimble.com"]')
+                        if inner_login.count() > 0:
+                            needs_login = True
+                            print(f"  Login iframe found inside fraMenuContent - session expired")
+                            break
+                        else:
+                            print(f"  Library iframe loaded without login - session is valid")
+                            break
+
+            if not needs_login:
+                # Check if projectsight content is loading
+                if 'projectsight' in self.page.url.lower():
+                    print("  Session still valid - no login needed!")
+                    return True
 
             # Need to login
-            if 'id.trimble.com' in self.page.url or 'sign_in' in self.page.url:
+            if needs_login:
+                # Determine if login is in iframe or on main page
+                login_frame = None
+                if 'id.trimble.com' in self.page.url:
+                    # Direct redirect - login on main page
+                    login_context = self.page
+                    print("  Login on main page")
+                else:
+                    # Login in iframe - find the login frame
+                    login_frames = [f for f in self.page.frames if f.url and 'id.trimble.com' in f.url]
+                    if login_frames:
+                        login_frame = login_frames[0]
+                        login_context = login_frame
+                        print(f"  Login in iframe: {login_frame.url[:50]}...")
+                    else:
+                        print("  Error: Could not find login context")
+                        return False
+
                 print("  Step 1: Entering username...")
 
-                # Handle cookie consent if present
+                # Handle cookie consent if present (on main page)
                 try:
                     accept_btn = self.page.locator('button:has-text("Accept All")')
                     if accept_btn.count() > 0:
@@ -174,11 +292,11 @@ class ProjectSightSession:
                 except:
                     pass
 
-                # Wait for username field
-                self.page.wait_for_selector('#username-field', timeout=15000)
+                # Wait for username field in the appropriate context
+                login_context.wait_for_selector('#username-field', timeout=15000)
 
                 # Enter username
-                username_input = self.page.locator('#username-field')
+                username_input = login_context.locator('#username-field')
                 username_input.click()
                 username_input.fill('')
                 username_input.type(self.username, delay=50)
@@ -186,44 +304,57 @@ class ProjectSightSession:
                 time.sleep(1)
 
                 # Wait for Next button to be enabled and click
-                self.page.wait_for_function(
+                login_context.wait_for_function(
                     "document.querySelector('#enter_username_submit') && !document.querySelector('#enter_username_submit').disabled",
                     timeout=10000
                 )
-                self.page.locator('#enter_username_submit').click()
+                login_context.locator('#enter_username_submit').click()
                 time.sleep(2)
 
                 print("  Step 2: Entering password...")
 
                 # Wait for password field
-                self.page.wait_for_selector('input[name="password"]:visible', timeout=15000)
+                login_context.wait_for_selector('input[name="password"]:visible', timeout=15000)
 
                 # Enter password
-                password_input = self.page.locator('input[name="password"]')
+                password_input = login_context.locator('input[name="password"]')
                 password_input.click()
                 password_input.type(self.password, delay=50)
                 password_input.press('Tab')
                 time.sleep(1)
 
                 # Wait for Sign in button to be enabled and click
-                self.page.wait_for_function(
+                login_context.wait_for_function(
                     "document.querySelector('button[name=\"password-submit\"]') && !document.querySelector('button[name=\"password-submit\"]').disabled",
                     timeout=10000
                 )
-                self.page.locator('button[name="password-submit"]').click()
+                login_context.locator('button[name="password-submit"]').click()
+                time.sleep(3)
 
-                # Wait for redirect to projectsight
+                # Check for login errors
+                try:
+                    error_msg = login_context.locator('.error, .alert-error, [role="alert"], .error-message')
+                    if error_msg.count() > 0:
+                        error_text = error_msg.first.text_content()
+                        print(f"  Login error detected: {error_text}")
+                except:
+                    pass
+
+                # Wait for login to complete
                 print("  Waiting for login to complete...")
                 for attempt in range(90):
                     time.sleep(1)
-                    if 'projectsight' in self.page.url.lower():
+                    current_url = self.page.url
+                    if attempt % 10 == 0:
+                        print(f"    Still waiting... ({attempt}s) URL: {current_url[:50]}...")
+
+                    # Check if redirected to projectsight
+                    if 'projectsight' in current_url.lower() and 'id.trimble.com' not in current_url:
                         print(f"  Redirected to projectsight after {attempt+1}s")
                         self.page.wait_for_load_state('networkidle', timeout=60000)
                         break
-                    if attempt % 10 == 0:
-                        print(f"    Still waiting... ({attempt}s)")
                 else:
-                    print("  Timeout waiting for projectsight redirect")
+                    print(f"  Timeout waiting for login completion. Final URL: {self.page.url}")
                     return False
 
             # Verify login success
