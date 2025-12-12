@@ -62,19 +62,32 @@ echo "4. Installing Python dependencies..."
 pip install -r requirements.txt --quiet
 echo "   Installed $(pip list | wc -l) packages"
 
-# Step 5: Install Playwright browsers
+# Step 5: Install Playwright browsers (Python)
 echo ""
-echo "5. Installing Playwright browsers..."
+echo "5. Installing Playwright browsers (Python)..."
 playwright install chromium
+echo "   Python Playwright chromium installed"
 
 # Step 6: Install Playwright system dependencies
 echo ""
 echo "6. Installing Playwright system dependencies..."
 sudo "$PROJECT_ROOT/.venv/bin/playwright" install-deps chromium
+echo "   System dependencies installed"
 
-# Step 7: Setup environment file
+# Step 7: Install Playwright browsers (Node.js MCP)
 echo ""
-echo "7. Setting up environment..."
+echo "7. Installing Playwright browsers (Node.js MCP)..."
+if command -v npx &> /dev/null; then
+    npx playwright install chrome --with-deps
+    echo "   Node.js Playwright chrome installed with dependencies"
+else
+    echo "   ⚠️  Node.js/npm not found - skipping npx playwright install"
+    echo "   Install Node.js to use Playwright MCP server"
+fi
+
+# Step 8: Setup environment file
+echo ""
+echo "8. Setting up environment..."
 if [ ! -f ".env" ]; then
     if [ -f ".env.example" ]; then
         cp .env.example .env
@@ -85,9 +98,9 @@ else
     echo "   .env already exists"
 fi
 
-# Step 8: Make scripts executable
+# Step 9: Make scripts executable
 echo ""
-echo "8. Making scripts executable..."
+echo "9. Making scripts executable..."
 chmod +x scripts/*.py 2>/dev/null || true
 chmod +x setup.sh
 

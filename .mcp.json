@@ -2,11 +2,14 @@
   "mcpServers": {
     "playwright": {
       "type": "stdio",
-      "command": "npx",
+      "command": "bash",
       "args": [
-        "@playwright/mcp@latest"
+        "-c",
+        "source ~/.nvm/nvm.sh && npx @playwright/mcp@latest"
       ],
-      "env": {}
+      "env": {
+        "DISPLAY": ":0"
+      }
     }
   }
 }
