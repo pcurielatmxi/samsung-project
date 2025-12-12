@@ -27,6 +27,16 @@ sudo apt install -y -qq \
     > /dev/null 2>&1
 echo "   System dependencies installed"
 
+# Step 1b: Install Claude Code CLI
+echo ""
+echo "1b. Installing Claude Code CLI..."
+if ! command -v claude &> /dev/null; then
+    curl -fsSL https://claude.ai/install.sh | bash
+    echo "   Claude Code installed"
+else
+    echo "   Claude Code already installed"
+fi
+
 # Step 2: Create virtual environment
 echo ""
 echo "2. Setting up virtual environment..."
