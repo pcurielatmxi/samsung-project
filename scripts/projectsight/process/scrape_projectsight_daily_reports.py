@@ -11,13 +11,19 @@ The script uses Chromium by default and navigates using the "Next record" button
 
 Usage:
     # On Windows - best approach (headed mode with real display)
-    python scripts/scrape_projectsight_daily_reports.py --limit 10
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
 
     # On Linux with Xvfb (virtual display)
-    xvfb-run -a python scripts/scrape_projectsight_daily_reports.py --limit 10
+    xvfb-run -a python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
 
     # Full extraction (all 415 records)
-    python scripts/scrape_projectsight_daily_reports.py --limit 0
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 0
+
+    # Idempotent mode - skip already extracted reports and merge with existing data
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 50
+
+    # Continue extraction from where you left off (run multiple times safely)
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 0
 
 Environment Variables (from .env):
     PROJECTSIGHT_USERNAME - Login email
@@ -727,15 +733,27 @@ def create_scraper():
 
             return report_data
 
-        def extract_all_reports(self, limit: Optional[int] = None) -> List[Dict]:
-            """Extract all reports using Next record navigation."""
+        def extract_all_reports(self, limit: Optional[int] = None, skip_dates: Optional[set] = None) -> List[Dict]:
+            """Extract all reports using Next record navigation.
+
+            Args:
+                limit: Maximum number of reports to extract (0 = all)
+                skip_dates: Set of report dates to skip (for idempotent extraction)
+
+            Returns:
+                List of extracted report dictionaries
+            """
             reports = []
+            skipped_count = 0
+            skip_dates = skip_dates or set()
 
             total_count = self.get_report_count()
             print(f"Total reports available: {total_count}")
 
             extract_count = min(limit, total_count) if limit and limit > 0 else total_count
-            print(f"Will extract: {extract_count} reports")
+            print(f"Will process: {extract_count} reports")
+            if skip_dates:
+                print(f"Will skip dates already extracted: {len(skip_dates)} dates")
 
             # Click first report to open detail view
             print("Opening first report...")
@@ -743,10 +761,15 @@ def create_scraper():
                 print("Failed to open first report!")
                 return reports
 
-            # Extract first report
-            report = self.extract_current_report()
-            reports.append(report)
-            print(f"  Extracted 1/{extract_count}")
+            # Extract first report (check if should skip)
+            report_date = self.extract_report_date()
+            if report_date and report_date in skip_dates:
+                print(f"  Skipping 1/{extract_count} (date {report_date} already extracted)")
+                skipped_count += 1
+            else:
+                report = self.extract_current_report()
+                reports.append(report)
+                print(f"  Extracted 1/{extract_count}")
 
             # Navigate through remaining reports using Next record button
             for i in range(1, extract_count):
@@ -756,9 +779,19 @@ def create_scraper():
 
                 time.sleep(0.5)  # Wait for content to load
 
+                # Check if this report should be skipped
+                report_date = self.extract_report_date()
+                if report_date and report_date in skip_dates:
+                    print(f"  Skipping {i + 1}/{extract_count} (date {report_date} already extracted)")
+                    skipped_count += 1
+                    continue
+
                 report = self.extract_current_report()
                 reports.append(report)
                 print(f"  Extracted {i + 1}/{extract_count}")
+
+            if skipped_count > 0:
+                print(f"\nSkipped {skipped_count} already-extracted reports")
 
             return reports
 
@@ -790,12 +823,60 @@ def create_scraper():
     return ProjectSightScraper
 
 
+def load_existing_data(output_file: Path) -> tuple[dict, set]:
+    """Load existing extraction data and return (data, extracted_dates)."""
+    if not output_file.exists():
+        return None, set()
+
+    try:
+        with open(output_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Extract dates from existing records
+        extracted_dates = set()
+        for record in data.get('records', []):
+            report_date = record.get('reportDate')
+            if report_date:
+                extracted_dates.add(report_date)
+
+        print(f"  Loaded {len(extracted_dates)} existing records from {output_file}")
+        return data, extracted_dates
+    except Exception as e:
+        print(f"  Warning: Could not load existing data: {e}")
+        return None, set()
+
+
+def merge_records(existing_records: list, new_records: list) -> list:
+    """Merge new records with existing, avoiding duplicates by date."""
+    # Use report date as the unique key
+    records_by_date = {}
+
+    # Add existing records first
+    for record in existing_records:
+        date = record.get('reportDate')
+        if date:
+            records_by_date[date] = record
+
+    # Update/add new records (newer extractions overwrite older ones)
+    for record in new_records:
+        date = record.get('reportDate')
+        if date:
+            records_by_date[date] = record
+
+    # Return sorted by date (most recent first)
+    return sorted(records_by_date.values(),
+                  key=lambda x: x.get('reportDate', ''),
+                  reverse=True)
+
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description='Scrape ProjectSight Daily Reports')
     parser.add_argument('--limit', type=int, default=10, help='Limit number of reports to extract')
     parser.add_argument('--headless', action='store_true', help='Run in headless mode')
     parser.add_argument('--output', type=str, default=None, help='Output file path')
+    parser.add_argument('--skip-existing', action='store_true',
+                        help='Skip reports that have already been extracted (idempotent mode)')
     args = parser.parse_args()
 
     # Check headless setting from env
@@ -806,6 +887,7 @@ def main():
     print("=" * 60)
     print(f"Headless mode: {headless}")
     print(f"Record limit: {args.limit}")
+    print(f"Skip existing: {args.skip_existing}")
 
     # Create output path using project settings
     try:
@@ -819,7 +901,18 @@ def main():
         output_dir = Path(__file__).parent.parent.parent.parent / 'data' / 'projectsight' / 'extracted'
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_file = args.output or output_dir / f'daily_reports_test_{args.limit}.json'
+    # Use a consistent output file name for idempotent mode
+    if args.skip_existing:
+        output_file = Path(args.output) if args.output else output_dir / 'daily_reports.json'
+    else:
+        output_file = Path(args.output) if args.output else output_dir / f'daily_reports_test_{args.limit}.json'
+
+    # Load existing data if in idempotent mode
+    existing_data, extracted_dates = None, set()
+    if args.skip_existing:
+        existing_data, extracted_dates = load_existing_data(output_file)
+        if extracted_dates:
+            print(f"  Will skip {len(extracted_dates)} already-extracted dates")
 
     # Create and run scraper
     ScraperClass = create_scraper()
@@ -836,7 +929,21 @@ def main():
             print("Navigation failed!")
             return 1
 
-        reports = scraper.extract_all_reports(limit=args.limit)
+        reports = scraper.extract_all_reports(
+            limit=args.limit,
+            skip_dates=extracted_dates if args.skip_existing else None
+        )
+
+        # Merge with existing records if in idempotent mode
+        if args.skip_existing and existing_data:
+            existing_records = existing_data.get('records', [])
+            all_records = merge_records(existing_records, reports)
+            new_count = len(reports)
+            total_count = len(all_records)
+        else:
+            all_records = reports
+            new_count = len(reports)
+            total_count = len(reports)
 
         # Save results
         output_data = {
@@ -844,15 +951,18 @@ def main():
             'source': 'ProjectSight Standalone Scraper',
             'project': 'T-PJT > FAB1 > Construction',
             'totalAvailable': scraper.get_report_count(),
-            'extractedCount': len(reports),
-            'records': reports
+            'extractedCount': total_count,
+            'records': all_records
         }
 
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
         print(f"\nExtraction complete!")
-        print(f"Extracted {len(reports)} reports")
+        if args.skip_existing:
+            print(f"Extracted {new_count} new reports (total: {total_count})")
+        else:
+            print(f"Extracted {len(reports)} reports")
         print(f"Output saved to: {output_file}")
 
         return 0
