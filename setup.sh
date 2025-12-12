@@ -12,17 +12,22 @@ echo ""
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_ROOT"
 
-# Check Python version
-echo "1. Checking Python..."
-if ! command -v python3 &> /dev/null; then
-    echo "   Python3 not found. Installing..."
-    sudo apt update && sudo apt install -y python3 python3-pip python3-venv
-else
-    PYTHON_VERSION=$(python3 --version)
-    echo "   Found: $PYTHON_VERSION"
-fi
+# Step 1: Install system dependencies
+echo "1. Installing system dependencies..."
+sudo apt update -qq
+sudo apt install -y -qq \
+    git \
+    curl \
+    wget \
+    build-essential \
+    python3 \
+    python3-pip \
+    python3-venv \
+    libpq-dev \
+    > /dev/null 2>&1
+echo "   System dependencies installed"
 
-# Create virtual environment
+# Step 2: Create virtual environment
 echo ""
 echo "2. Setting up virtual environment..."
 if [ ! -d ".venv" ]; then
@@ -36,28 +41,28 @@ fi
 source .venv/bin/activate
 echo "   Activated virtual environment"
 
-# Upgrade pip
+# Step 3: Upgrade pip
 echo ""
 echo "3. Upgrading pip..."
 pip install --upgrade pip --quiet
 
-# Install Python dependencies
+# Step 4: Install Python dependencies
 echo ""
 echo "4. Installing Python dependencies..."
 pip install -r requirements.txt --quiet
 echo "   Installed $(pip list | wc -l) packages"
 
-# Install Playwright browsers
+# Step 5: Install Playwright browsers
 echo ""
 echo "5. Installing Playwright browsers..."
 playwright install chromium
 
-# Install Playwright system dependencies (needs sudo)
+# Step 6: Install Playwright system dependencies
 echo ""
 echo "6. Installing Playwright system dependencies..."
 sudo playwright install-deps chromium
 
-# Setup environment file
+# Step 7: Setup environment file
 echo ""
 echo "7. Setting up environment..."
 if [ ! -f ".env" ]; then
@@ -70,7 +75,7 @@ else
     echo "   .env already exists"
 fi
 
-# Make scripts executable
+# Step 8: Make scripts executable
 echo ""
 echo "8. Making scripts executable..."
 chmod +x scripts/*.py 2>/dev/null || true
