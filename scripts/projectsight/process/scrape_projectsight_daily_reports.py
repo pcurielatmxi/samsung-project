@@ -1040,13 +1040,28 @@ def main():
 
     # Track extraction stats
     extracted_count = 0
+    skipped_count = 0
 
     # Save function - saves each report immediately to its own file
     def save_report_immediately(new_report, all_new_reports):
-        """Save each report to its own JSON file immediately after extraction."""
-        nonlocal extracted_count
+        """Save each report to its own JSON file immediately after extraction.
+
+        Skips saving if the report date already exists as a file (idempotent).
+        """
+        nonlocal extracted_count, skipped_count
+
+        # Check if this report date already exists
+        report_date = new_report.get('reportDate', '')
+        if args.skip_existing and report_date in extracted_dates:
+            skipped_count += 1
+            print(f"    Skipping (already exists): {report_date}")
+            return
+
         output_file = save_report_to_file(new_report, reports_dir)
         extracted_count += 1
+        # Add to extracted_dates so we don't save duplicates within this run
+        if report_date:
+            extracted_dates.add(report_date)
         print(f"    Saved: {output_file.name}")
 
     try:
@@ -1072,6 +1087,7 @@ def main():
 
         print(f"\nExtraction complete!")
         print(f"  New reports extracted: {extracted_count}")
+        print(f"  Skipped (already existed): {skipped_count}")
         print(f"  Total reports in {reports_dir.name}/: {total_files}")
         print(f"  Output directory: {reports_dir}")
 
