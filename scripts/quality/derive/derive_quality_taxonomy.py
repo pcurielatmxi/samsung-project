@@ -27,15 +27,16 @@ DERIVED_DIR = DATA_ROOT / "derived" / "quality"
 BUILDINGS = ['FAB', 'SUE', 'SUW', 'FIZ', 'CUB', 'GCS', 'GCSA', 'GCSB', 'OB1', 'OB2']
 
 # Scope patterns based on TaskClassifier
+# Order matters - more specific patterns should come before general ones
 SCOPE_PATTERNS = [
-    # Interior - Drywall
-    (r'DRYWALL|GYPSUM|BOARD|SHEETROCK|1ST LAYER|2ND LAYER|3RD LAYER|TAPE.*FINISH|CLOSURE WALL', 'DRY'),
+    # Interior - MEP (check first to catch PANELBOARD before BOARD)
+    (r'ELECTRICAL|CONDUIT|CABLE|RACEWAY|PANELBOARD|SWITCHGEAR|WIRING|LIGHTING|LOW VOLTAGE|GROUNDING|PLUMB|HVAC|DUCT|PIPE(?!.*RACK)', 'MEP'),
+    # Interior - Drywall (GYPSUM BOARD, not PANELBOARD)
+    (r'DRYWALL|GYPSUM|GYPSUM BOARD|SHEETROCK|1ST LAYER|2ND LAYER|3RD LAYER|TAPE.*FINISH|CLOSURE WALL', 'DRY'),
     # Interior - Framing
     (r'FRAMING|METAL STUD|STUD FRAME|BOTTOM PLATE', 'FRM'),
     # Interior - Fire Protection
     (r'FIRE|SPRINKLER|CAULK|FIRESTOP|SMOKE|SFRM|FIRE SPRAY|FIREPROOF', 'FIR'),
-    # Interior - MEP
-    (r'ELECTRICAL|CONDUIT|CABLE|RACEWAY|PANELBOARD|WIRING|LIGHTING|LOW VOLTAGE|GROUNDING|PLUMB|HVAC|DUCT|PIPE(?!.*RACK)', 'MEP'),
     # Interior - Finishes
     (r'PAINT|TILE|FLOORING|CEILING|COATING|EPOXY|VCT|FINISH(?!.*DRYWALL)', 'FIN'),
     # Interior - Doors
@@ -56,6 +57,52 @@ SCOPE_PATTERNS = [
     (r'ROOF|MEMBRANE|PARAPET', 'ROF'),
     # Drill & Epoxy (common inspection type)
     (r'DRILL.*EPOXY|EPOXY.*DRILL', 'STL'),
+]
+
+# Failure reason categorization patterns
+# Maps regex patterns to category names for classifying inspection failures
+# Order matters - first match wins, so more specific patterns should come first
+FAILURE_CATEGORIES = [
+    # Time-based failures (check first - very specific)
+    (r'72.?hour|72.?hr|72 hour', '72-Hour Deadline Exceeded'),
+    # Process/administrative issues
+    (r'process.*(noncompli|violation)|not follow.*(process|procedure)|inspection process', 'Inspection Process Violation'),
+    (r'submittal.*(not|reject)|not.*approv|approval.*not|shop drawing.*not', 'Submittal/Approval Issues'),
+    (r'no.*(seci|cm).*inspection|no cm\b', 'Missing CM Inspection'),
+    (r'\bncr\b|stop.?work', 'NCR/Stop Work'),
+    (r'see attach|attached.*report|msr-fsr report', 'See Attached Report'),
+    # Work quality issues
+    (r'missing|incomplete|not complete|not finished', 'Missing/Incomplete Work'),
+    (r'contaminat|debris|dirt|dust|clean', 'Contamination/Debris'),
+    (r'damage|crack|dent|broken|bare metal', 'Damage/Defect'),
+    (r'scratch|foreign material|defect.*found', 'Surface Defects'),
+    (r'runs|drips|sags|overspray|missed area', 'Coating Defects'),
+    # Installation issues
+    (r'screw|fastener|bolt|nail|torque', 'Screw/Fastener Issues'),
+    (r'weld|undercut|arc mark|slag', 'Welding Defects'),
+    (r'level|align|plumb|sagging|bowing|orientation', 'Alignment/Level Issues'),
+    (r'frame|framing|stud|track', 'Framing Issues'),
+    (r'\bbent\b|kinked|deform', 'Bent/Deformed Material'),
+    (r'loose.*hardware|hardware.*loose', 'Loose Hardware'),
+    (r'backpitch|slope|pitch', 'Slope/Pitch Issues'),
+    # Design/drawing issues
+    (r'deviat|does not match.*design|design.*change|not.*per.*spec', 'Design Deviation'),
+    (r'not per drawing|incorrect|wrong|does not match', 'Drawing/Spec Mismatch'),
+    (r'equipment.*not|panel.*not.*match|breaker.*not|device.*not', 'Equipment Mismatch'),
+    # Test failures
+    (r'pressure.*(test|loss|fail)|test.*pressure|leak|head test', 'Pressure/Leak Test Failure'),
+    # Process issues
+    (r'document|photo|not provided|not uploaded|cover sheet|not signed', 'Documentation Issues'),
+    (r'never showed|no.show|not available|no scissor|waited|no one from', 'No-Show/Access Issues'),
+    (r'no one.*behalf|subcontractor.*left|crew left', 'Subcontractor No-Show'),
+    (r'ceiling.*not.*remov|unable to see|no.*access|could not.*access', 'Access/Visibility Issues'),
+    (r'layer.*before.*inspect|before.*was inspect|sequence', 'Sequence/Order Violation'),
+    (r'not ready|pending|still needs', 'Not Ready for Inspection'),
+    (r'code|violation|specification', 'Code/Spec Violation'),
+    # Specific trade issues
+    (r'fire caulk|caulk|firestop|fireproof', 'Fire Protection Issues'),
+    (r'surface prep|rust|coating|paint|primer', 'Surface Prep/Coating'),
+    (r'cable|tray|raceway|ground|conduit', 'Electrical/Cable Issues'),
 ]
 
 
@@ -261,6 +308,28 @@ def extract_scope(text: str) -> Optional[str]:
     return None
 
 
+def categorize_failure_reason(text: str) -> Optional[str]:
+    """
+    Categorize failure reason text into predefined categories.
+
+    Uses keyword pattern matching to classify free-text failure descriptions
+    into standardized categories for analysis.
+
+    Returns:
+        Category name string, or None if text is empty/null
+    """
+    if not text or pd.isna(text):
+        return None
+
+    text_lower = str(text).lower()
+
+    for pattern, category in FAILURE_CATEGORIES:
+        if re.search(pattern, text_lower):
+            return category
+
+    return 'Other'
+
+
 def process_yates_taxonomy():
     """Process Yates inspections and extract taxonomy."""
     print("Processing Yates taxonomy...")
@@ -352,17 +421,23 @@ def process_secai_taxonomy():
                    for b, g in zip(buildings, gridlines)])
     )
 
+    # Categorize failure reasons
+    failure_categories = df['Reasons for failure'].apply(categorize_failure_reason)
+
     # Create taxonomy dataframe
     taxonomy = pd.DataFrame({
         'source': 'secai',
         'source_index': df.index,
         'ir_number': df['IR Number'],
+        'status': df['Status_Normalized'],
         'building': buildings,
         'level': levels,
         'gridline': gridlines,
         'location_id': location_ids,
         'location_type': location_types,
         'scope': scopes,
+        'failure_category': failure_categories,
+        'failure_reason': df['Reasons for failure'],
         'location_raw': df['System / Equip/ Location'],
         'description_raw': df['Template'],
     })
@@ -414,6 +489,12 @@ def main():
 
         print(f"\n  Scope distribution:")
         print(tax['scope'].value_counts().head(10).to_string())
+
+        # Show failure category distribution for SECAI
+        if 'failure_category' in tax.columns:
+            failures = tax[tax['status'] == 'FAILURE']
+            print(f"\n  Failure Category distribution ({len(failures)} failures):")
+            print(failures['failure_category'].value_counts().to_string())
 
         print(f"\n  Sample location_ids:")
         sample_ids = tax[tax['location_id'].notna()]['location_id'].sample(min(10, tax['location_id'].notna().sum()), random_state=42)

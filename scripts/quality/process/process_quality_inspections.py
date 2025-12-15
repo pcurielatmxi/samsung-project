@@ -172,7 +172,7 @@ def process_secai_inspections():
             secai_output[col] = sanitize_text_column(secai_output[col])
 
     output_file = OUTPUT_DIR / "secai_inspection_log.csv"
-    secai_output.to_csv(output_file, index=False)
+    secai_output.to_csv(output_file, index=True, index_label='row_index')
     print(f"  Saved: {output_file}")
     print(f"  Records: {len(secai_output)}")
 
@@ -218,7 +218,7 @@ def process_yates_inspections():
             yates_clean[col] = sanitize_text_column(yates_clean[col])
 
     output_file = OUTPUT_DIR / "yates_all_inspections.csv"
-    yates_clean.to_csv(output_file, index=False)
+    yates_clean.to_csv(output_file, index=True, index_label='row_index')
     print(f"  Saved: {output_file}")
     print(f"  Records: {len(yates_clean)}")
 
