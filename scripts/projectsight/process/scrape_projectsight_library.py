@@ -108,14 +108,18 @@ class ErrorTracker:
         })
         logger.error(f"{message} (folder={folder_id}, path={path})")
 
-    def add_warning(self, message: str, folder_id: str = None, path: str = None):
+    def add_warning(self, message: str, folder_id: str = None, path: str = None, exception: Exception = None):
         self.warnings.append({
             'timestamp': datetime.now().isoformat(),
             'message': message,
             'folder_id': folder_id,
             'path': path,
+            'exception': str(exception) if exception else None,
         })
-        logger.warning(f"{message} (folder={folder_id}, path={path})")
+        log_msg = f"{message} (folder={folder_id}, path={path})"
+        if exception:
+            log_msg += f" - {exception}"
+        logger.warning(log_msg)
 
     def add_navigation_failure(self, folder_id: str, path: str, strategies_tried: List[str] = None):
         self.navigation_failures.append({
@@ -145,7 +149,8 @@ class ErrorTracker:
         logger.info(f"Duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
         logger.info(f"Folders processed: {self.folders_processed}")
         logger.info(f"Folders skipped (recently scanned): {self.folders_skipped}")
-        logger.info(f"Navigation failures: {len(self.navigation_failures)}")
+        unique_nav_failures = len(set(f['folder_id'] for f in self.navigation_failures))
+        logger.info(f"Navigation failures: {len(self.navigation_failures)} ({unique_nav_failures} unique folders)")
         logger.info(f"Extraction failures: {len(self.extraction_failures)}")
         logger.info(f"Warnings: {len(self.warnings)}")
         logger.info(f"Errors: {len(self.errors)}")
@@ -153,10 +158,20 @@ class ErrorTracker:
         if self.navigation_failures:
             logger.info("-" * 40)
             logger.info("NAVIGATION FAILURES:")
-            for fail in self.navigation_failures[:20]:  # Limit to first 20
-                logger.info(f"  - {fail['path']} (id={fail['folder_id']})")
-            if len(self.navigation_failures) > 20:
-                logger.info(f"  ... and {len(self.navigation_failures) - 20} more")
+            # Deduplicate by folder_id, keeping track of occurrence count
+            seen = {}
+            for fail in self.navigation_failures:
+                fid = fail['folder_id']
+                if fid not in seen:
+                    seen[fid] = {'path': fail['path'], 'folder_id': fid, 'count': 1}
+                else:
+                    seen[fid]['count'] += 1
+            unique_failures = list(seen.values())
+            for fail in unique_failures[:20]:  # Limit to first 20 unique
+                count_str = f" (x{fail['count']})" if fail['count'] > 1 else ""
+                logger.info(f"  - {fail['path']} (id={fail['folder_id']}){count_str}")
+            if len(unique_failures) > 20:
+                logger.info(f"  ... and {len(unique_failures) - 20} more unique folders")
 
         if self.extraction_failures:
             logger.info("-" * 40)
@@ -386,13 +401,32 @@ class LibraryScraper:
                 # Strategy 1: Try breadcrumb links first (always visible)
                 strategies_tried.append('breadcrumb')
                 breadcrumb_link = frame.locator(f'nav a[href*="/data/folder/{folder_id}"], ol a[href*="/data/folder/{folder_id}"], .breadcrumb a[href*="/data/folder/{folder_id}"]')
-                if breadcrumb_link.count() > 0:
+                if breadcrumb_link.count() > 0 and breadcrumb_link.first.is_visible():
                     breadcrumb_link.first.click(force=True)
                     time.sleep(2)
                     logger.debug(f"{'  ' * depth}Navigated via breadcrumb to {folder_id}")
                     return True
 
-                # Strategy 2: Try any link with the folder ID (already visible)
+                # Strategy 2: Try breadcrumb dropdown (parent links hidden in dropdown)
+                strategies_tried.append('breadcrumb_dropdown')
+                try:
+                    # Click the breadcrumb dropdown button to reveal hidden parent links
+                    # The button is in a list/listitem structure (ARIA roles, not ol/ul)
+                    breadcrumb_btn = frame.get_by_role('list').get_by_role('button').first
+                    if breadcrumb_btn.count() > 0 and breadcrumb_btn.is_visible():
+                        breadcrumb_btn.click()
+                        time.sleep(0.5)  # Wait for dropdown to appear
+                        # Now try to find and click the link in the dropdown
+                        dropdown_link = frame.locator(f'a[href*="/data/folder/{folder_id}"]')
+                        if dropdown_link.count() > 0 and dropdown_link.first.is_visible():
+                            dropdown_link.first.click()
+                            time.sleep(2)
+                            logger.debug(f"{'  ' * depth}Navigated via breadcrumb dropdown to {folder_id}")
+                            return True
+                except Exception:
+                    pass  # Continue to next strategy
+
+                # Strategy 3: Try any link with the folder ID (already visible in grid)
                 strategies_tried.append('direct_link')
                 folder_link = frame.locator(f'a[href*="/data/folder/{folder_id}"]')
                 if folder_link.count() > 0:
@@ -401,13 +435,13 @@ class LibraryScraper:
                     logger.debug(f"{'  ' * depth}Navigated via direct link to {folder_id}")
                     return True
 
-                # Strategy 3: Scroll through the grid to find the link
+                # Strategy 4: Scroll through the grid to find the link
                 strategies_tried.append('scroll_grid')
                 if self.scroll_grid_to_find_link(frame, folder_id):
                     logger.debug(f"{'  ' * depth}Navigated via scroll to {folder_id}")
                     return True
 
-                # Strategy 4: Try JavaScript navigation
+                # Strategy 5: Try JavaScript navigation
                 strategies_tried.append('javascript')
                 if self.navigate_to_folder_via_js(folder_id):
                     logger.debug(f"{'  ' * depth}Navigated via JS to {folder_id}")
@@ -599,16 +633,74 @@ class LibraryScraper:
             # Return existing items for this folder
             existing_items = self.get_existing_folder_items(folder_id)
             # Still need to process subfolders recursively (they might have failed)
+            # Check if any subfolders need retry (have navigationFailed flag)
+            needs_navigation = any(
+                item.get('type') == 'folder' and item.get('navigationFailed', False)
+                for item in existing_items
+            )
+            # Navigate into parent folder if any child needs retry
+            navigated_into_folder = False
+            if needs_navigation and folder_id != self.project.root_folder_id:
+                logger.debug(f"{'  ' * depth}Navigating into skipped folder for retry: {current_path}")
+                if self.navigate_to_folder(folder_id, depth, path=current_path):
+                    navigated_into_folder = True
+                else:
+                    logger.warning(f"{'  ' * depth}Could not navigate into skipped folder: {current_path}")
+
             for item in existing_items:
                 if item.get('type') == 'folder':
+                    next_depth = depth + 1
+
+                    # Check if next depth would exceed max_depth - if so, just skip
+                    if max_depth > 0 and next_depth > max_depth:
+                        logger.debug(f"{'  ' * next_depth}Max depth reached: {item['path']}")
+                        continue
+
+                    # Check if this child needs retry - if so, ensure we're in the parent folder first
+                    child_needs_retry = item.get('navigationFailed', False)
+
+                    # Check if child would cause navigation:
+                    # 1. Child itself needs retry (has navigationFailed)
+                    # 2. OR child is skipped but has grandchildren that need retry
+                    child_would_navigate = child_needs_retry
+                    if not child_would_navigate and self.should_skip_folder(item['folderId']):
+                        # Child is skipped - check if any grandchild needs retry
+                        grandchildren = self.get_existing_folder_items(item['folderId'])
+                        child_would_navigate = any(
+                            gc.get('type') == 'folder' and gc.get('navigationFailed', False)
+                            for gc in grandchildren
+                        )
+
+                    if child_needs_retry and navigated_into_folder:
+                        # Verify we're still in the parent folder, re-navigate if needed
+                        # (previous sibling processing may have reset to root)
+                        logger.debug(f"{'  ' * depth}Ensuring navigation to parent before retry: {current_path}")
+                        if not self.navigate_to_folder(folder_id, depth, path=current_path):
+                            logger.warning(f"{'  ' * depth}Could not re-navigate to parent folder: {current_path}")
+
                     subfolder_items = self.extract_folder_recursive(
                         item['folderId'],
                         item['path'],
-                        depth + 1,
+                        next_depth,
                         max_depth,
                         parent_folder_id=folder_id
                     )
                     items.extend(subfolder_items)
+
+                    # Navigate back to current folder after processing child
+                    # Only if the child actually caused navigation
+                    if navigated_into_folder and child_would_navigate:
+                        if not self.navigate_to_folder(folder_id, depth, path=current_path):
+                            logger.debug(f"{'  ' * depth}Resetting to root after failed back-navigation from skipped folder child")
+                            self.navigate_to_root()
+                            time.sleep(2)
+                            if folder_id != self.project.root_folder_id:
+                                self.navigate_to_folder(folder_id, depth, path=current_path)
+
+            # Navigate back if we navigated into the folder
+            if navigated_into_folder and parent_folder_id:
+                self.navigate_to_folder(parent_folder_id, depth - 1)
+
             return existing_items + items
 
         # Log appropriate message
@@ -657,18 +749,26 @@ class LibraryScraper:
 
         # Now recursively process subfolders
         for subfolder in subfolders:
+            next_depth = depth + 1
+
+            # Check if next depth would exceed max_depth - if so, just log and skip
+            # (no navigation needed since we won't actually enter the folder)
+            if max_depth > 0 and next_depth > max_depth:
+                logger.debug(f"{'  ' * next_depth}Max depth reached: {subfolder['path']}")
+                continue
+
             subfolder_items = self.extract_folder_recursive(
                 subfolder['folderId'],
                 subfolder['path'],
-                depth + 1,
+                next_depth,
                 max_depth,
                 parent_folder_id=folder_id
             )
             items.extend(subfolder_items)
 
             # After processing subfolder, navigate back to current folder
-            if subfolder_items:
-                if not self.navigate_to_folder(folder_id, depth, path=current_path):
+            # Only navigate back if we actually entered the subfolder (not for max-depth cases)
+            if not self.navigate_to_folder(folder_id, depth, path=current_path):
                     # If we can't navigate back, try going to root and starting fresh
                     logger.debug(f"{'  ' * depth}Resetting to root after failed back-navigation")
                     self.navigate_to_root()
