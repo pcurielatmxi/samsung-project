@@ -29,6 +29,8 @@ BUILDINGS = ['FAB', 'SUE', 'SUW', 'FIZ', 'CUB', 'GCS', 'GCSA', 'GCSB', 'OB1', 'O
 # Scope patterns based on TaskClassifier
 # Order matters - more specific patterns should come before general ones
 SCOPE_PATTERNS = [
+    # Interior - Clean Room / SCP (check first - specialized MEP)
+    (r'CLEAN\s*ROOM|SCP\b|SCP\s*PANEL', 'MEP'),
     # Interior - MEP (check first to catch PANELBOARD before BOARD)
     (r'ELECTRICAL|CONDUIT|CABLE|RACEWAY|PANELBOARD|SWITCHGEAR|WIRING|LIGHTING|LOW VOLTAGE|GROUNDING|PLUMB|HVAC|DUCT|PIPE(?!.*RACK)', 'MEP'),
     # Interior - Drywall (GYPSUM BOARD, not PANELBOARD)
@@ -37,7 +39,9 @@ SCOPE_PATTERNS = [
     (r'FRAMING|METAL STUD|STUD FRAME|BOTTOM PLATE', 'FRM'),
     # Interior - Fire Protection
     (r'FIRE|SPRINKLER|CAULK|FIRESTOP|SMOKE|SFRM|FIRE SPRAY|FIREPROOF', 'FIR'),
-    # Interior - Finishes
+    # Structure - Waterproofing/Coating (before FIN to catch CRC before COATING)
+    (r'WATERPROOF|CRC|DENSIFIER|SEALER|BLUESKIN', 'WPF'),
+    # Interior - Finishes (after WPF so CRC doesn't match COATING)
     (r'PAINT|TILE|FLOORING|CEILING|COATING|EPOXY|VCT|FINISH(?!.*DRYWALL)', 'FIN'),
     # Interior - Doors
     (r'DOOR|FRAME|HARDWARE|HOLLOW METAL', 'DOR'),
@@ -51,8 +55,6 @@ SCOPE_PATTERNS = [
     (r'CONCRETE|SLAB|POUR|REBAR|FORMWORK|CIP|PLACEMENT|TOPPING', 'CIP'),
     # Structure - Steel
     (r'STEEL|WELD|BOLT|DECK|ERECT|TRUSS|GIRDER|EMBED|ANCHOR', 'STL'),
-    # Structure - Waterproofing/Coating
-    (r'WATERPROOF|CRC|DENSIFIER|SEALER', 'WPF'),
     # Enclosure - Roofing
     (r'ROOF|MEMBRANE|PARAPET', 'ROF'),
     # Drill & Epoxy (common inspection type)
@@ -155,7 +157,13 @@ def extract_level(text: str) -> Optional[str]:
     if level_match:
         return level_match.group(1)
 
-    level_match = re.search(r'\bL(\d)\b', text_upper)
+    # Handle truncated "evel 3" (missing L at start)
+    level_match = re.search(r'\bEVEL\s*(\d)', text_upper)
+    if level_match:
+        return level_match.group(1)
+
+    # L1, L2, L3 etc. Also handle mezzanine: L1M, L2M -> extract base level
+    level_match = re.search(r'\bL(\d)M?\b', text_upper)
     if level_match:
         return level_match.group(1)
 
@@ -182,12 +190,17 @@ def extract_gridline(text: str) -> Optional[str]:
     text_upper = str(text).upper()
 
     # Pattern: "A-D/17-20", "K-L/30-33", "C/5-6"
-    # Letter(s)/Number range
+    # Letter(s)/Number range with slash separator
     grid_match = re.search(r'([A-N](?:[\.\d]*)?(?:\s*-\s*[A-N](?:[\.\d]*)?)?)\s*/\s*(\d+(?:[\.\d]*)?(?:\s*-\s*\d+(?:[\.\d]*)?)?)', text_upper)
     if grid_match:
         letters = grid_match.group(1).replace(' ', '')
         numbers = grid_match.group(2).replace(' ', '')
         return f"{letters}/{numbers}"
+
+    # Pattern: "A11-B14", "G13-J13", "J25-J26" (letter+number - letter+number, no slash)
+    grid_match = re.search(r'\b([A-N])(\d+)\s*-\s*([A-N])(\d+)\b', text_upper)
+    if grid_match:
+        return f"{grid_match.group(1)}-{grid_match.group(3)}/{grid_match.group(2)}-{grid_match.group(4)}"
 
     # Pattern: "GL 14-17"
     gl_match = re.search(r'GL\s*(\d+(?:\s*-\s*\d+)?)', text_upper)
@@ -408,6 +421,12 @@ def process_secai_taxonomy():
     buildings.loc[missing_building] = building_type[missing_building].apply(
         lambda x: extract_building(x) or (x.split('>')[0].strip() if '>' in str(x) else None)
     )
+
+    # Fallback: extract building from IR Number if still not found
+    # IR Numbers often contain building codes like "OB1", "FAB", "GCS", etc.
+    missing_building = buildings.isna()
+    if missing_building.any():
+        buildings.loc[missing_building] = df.loc[missing_building, 'IR Number'].apply(extract_building)
 
     # Build composite location_ids
     location_ids = pd.Series([
