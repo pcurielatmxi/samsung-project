@@ -349,22 +349,138 @@ def create_scraper():
 
             This allows starting extraction from any row in the grid, enabling
             efficient skip of already-extracted records.
+
+            Note: The grid uses virtual scrolling and only renders ~90-100 rows at a time.
+            This function scrolls the grid to bring the target row into view using the
+            Infragistics grid's virtualization.
             """
             try:
                 list_frame = self.page.frame_locator('iframe[name="fraMenuContent"]')
+                frame = self.page.frame('fraMenuContent')  # Direct frame access for JS
 
-                # Get all rows and click on the specified position
-                rows = list_frame.locator('tr[data-id]')
-                row_count = rows.count()
+                # For small positions, just click directly
+                if position < 50:
+                    rows = list_frame.locator('tr[data-id]')
+                    row_count = rows.count()
 
-                if position >= row_count:
-                    print(f"    Position {position} exceeds available rows ({row_count})")
-                    return False
+                    if position >= row_count:
+                        print(f"    Position {position} exceeds available rows ({row_count})")
+                        return False
 
-                # Click on the row at the specified position
-                target_row = rows.nth(position)
-                target_row.locator('td').nth(1).click()
-                time.sleep(3)  # Give time for detail panel to load
+                    target_row = rows.nth(position)
+                    target_row.locator('td').nth(1).click()
+                    time.sleep(3)
+                else:
+                    # For large positions, scroll the Infragistics grid
+                    print(f"    Scrolling to position {position}...")
+
+                    if frame:
+                        # Use JavaScript to scroll the grid's virtualized container
+                        # Infragistics grid has various scroll container classes
+                        scroll_js = """
+                            (function(targetPos) {
+                                // Find scrollable containers (Infragistics grid structure)
+                                var containers = document.querySelectorAll(
+                                    '.ui-iggrid-scrolldiv, ' +
+                                    '.ui-iggrid-virtualization-container, ' +
+                                    '.ui-iggrid .ui-widget-content[style*="overflow"]'
+                                );
+
+                                // Also try the main grid content area
+                                var grid = document.querySelector('.ui-iggrid');
+                                if (grid) {
+                                    var scrollable = grid.querySelector('[style*="overflow"]');
+                                    if (scrollable) containers = [scrollable];
+                                }
+
+                                // Estimate row height and calculate scroll position
+                                var rowHeight = 30;
+                                var targetScroll = targetPos * rowHeight;
+
+                                for (var c of containers) {
+                                    if (c.scrollHeight > c.clientHeight) {
+                                        c.scrollTop = targetScroll;
+                                        return {found: true, scrolled: targetScroll, container: c.className};
+                                    }
+                                }
+
+                                // Fallback: try any element with scrollHeight > clientHeight
+                                var allDivs = document.querySelectorAll('div');
+                                for (var div of allDivs) {
+                                    if (div.scrollHeight > 3000 && div.clientHeight < div.scrollHeight) {
+                                        div.scrollTop = targetScroll;
+                                        return {found: true, scrolled: targetScroll, container: 'fallback'};
+                                    }
+                                }
+
+                                return {found: false};
+                            })(""" + str(position) + """)
+                        """
+                        result = frame.evaluate(scroll_js)
+                        if result.get('found'):
+                            print(f"    Scrolled to {result.get('scrolled')}px via {result.get('container')}")
+                            time.sleep(1.5)  # Wait for virtual rows to render
+                        else:
+                            print(f"    Warning: Could not find scrollable container")
+
+                    # After scrolling, find and click the correct row
+                    # With virtual scrolling, row indices in DOM may not match logical position
+                    for attempt in range(10):
+                        rows = list_frame.locator('tr[data-id]')
+                        row_count = rows.count()
+
+                        if row_count == 0:
+                            time.sleep(0.5)
+                            continue
+
+                        # Check what row indices are currently visible
+                        first_data_id = rows.first.get_attribute('data-id')
+
+                        # Try to find row by data-id matching the position
+                        found = False
+                        for i in range(row_count):
+                            row = rows.nth(i)
+                            data_id = row.get_attribute('data-id')
+                            try:
+                                # data-id might be numeric or formatted
+                                if data_id and (data_id == str(position) or
+                                               data_id.endswith(f'_{position}') or
+                                               int(data_id) == position):
+                                    row.locator('td').nth(1).click()
+                                    time.sleep(3)
+                                    found = True
+                                    break
+                            except (ValueError, TypeError):
+                                pass
+
+                        if found:
+                            break
+
+                        # Fallback: click by relative position in visible rows
+                        # Assume first visible row corresponds to some starting index
+                        if attempt == 5:
+                            # Try clicking middle row as approximation
+                            mid = row_count // 2
+                            print(f"    Fallback: clicking visible row {mid} of {row_count}")
+                            rows.nth(mid).locator('td').nth(1).click()
+                            time.sleep(3)
+                            break
+
+                        # Scroll more if not found
+                        if frame:
+                            frame.evaluate(f"""
+                                var divs = document.querySelectorAll('div');
+                                for (var div of divs) {{
+                                    if (div.scrollHeight > 3000) {{
+                                        div.scrollTop += 1000;
+                                        break;
+                                    }}
+                                }}
+                            """)
+                            time.sleep(0.5)
+                    else:
+                        print(f"    Could not scroll to position {position} after multiple attempts")
+                        return False
 
                 # Wait for detail panel to load - use more specific selector
                 detail_frame = self.page.frame_locator('iframe[name="fraDef"]')
