@@ -841,22 +841,19 @@ def create_scraper():
             total_count = self.get_report_count()
             print(f"Total reports available: {total_count}")
 
-            # Calculate starting position - skip directly to first un-extracted record
-            start_position = len(skip_dates) if skip_dates else 0
-            remaining_count = total_count - start_position
+            # Always start from position 0 - date checking handles duplicates
+            # (Grid order may not match chronological order)
+            start_position = 0
+            extract_count = total_count
 
-            if remaining_count <= 0:
-                print(f"All {total_count} reports already extracted!")
-                return reports
-
-            # Calculate how many to extract
+            # Apply limit if specified
             if limit and limit > 0:
-                extract_count = min(limit, remaining_count)
-            else:
-                extract_count = remaining_count
+                extract_count = min(limit, total_count)
 
-            print(f"Starting from position: {start_position + 1} (skipping {start_position} already extracted)")
-            print(f"Will extract: {extract_count} new reports")
+            if skip_dates:
+                print(f"Found {len(skip_dates)} existing reports - will skip by date")
+
+            print(f"Will process: {extract_count} reports (duplicates skipped by date)")
 
             # Click on the first un-extracted report (at start_position)
             print(f"Opening report at position {start_position + 1}...")
