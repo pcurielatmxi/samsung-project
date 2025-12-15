@@ -103,6 +103,16 @@ def standardize_contractor(contractor: str) -> str:
     return CONTRACTOR_MAPPING.get(normalized, contractor.strip())
 
 
+def sanitize_text_column(series: pd.Series) -> pd.Series:
+    """
+    Sanitize text columns by replacing newlines and other problematic characters.
+    This prevents CSV parsing issues in tools like Power Query.
+    """
+    if series.dtype != 'object':
+        return series
+    return series.apply(lambda x: ' '.join(str(x).split()) if pd.notna(x) else x)
+
+
 def process_secai_inspections():
     """Process SECAI Inspection and Test Log."""
     print("Processing SECAI Inspection and Test Log...")
@@ -155,6 +165,12 @@ def process_secai_inspections():
     secai_output['DayOfWeek'] = secai_output['Inspection Request Date'].dt.day_name()
     secai_output['Status_Normalized'] = secai_output['Status'].str.upper().str.strip()
 
+    # Sanitize text columns to remove newlines (prevents CSV parsing issues in Power Query)
+    text_cols = ['Reasons for failure', 'System / Equip/ Location', 'Template', 'IR Number']
+    for col in text_cols:
+        if col in secai_output.columns:
+            secai_output[col] = sanitize_text_column(secai_output[col])
+
     output_file = OUTPUT_DIR / "secai_inspection_log.csv"
     secai_output.to_csv(output_file, index=False)
     print(f"  Saved: {output_file}")
@@ -193,6 +209,13 @@ def process_yates_inspections():
     yates_clean['Week'] = yates_clean['Date'].dt.isocalendar().week
     yates_clean['DayOfWeek'] = yates_clean['Date'].dt.day_name()
     yates_clean['Status_Normalized'] = yates_clean['Inspection Status'].str.upper().str.strip()
+
+    # Sanitize text columns to remove newlines (prevents CSV parsing issues in Power Query)
+    text_cols = ['Remarks', 'Inspection Comment', 'Location', 'Inspection Description',
+                 '3rd\nParty', 'SECAI\nCM']
+    for col in text_cols:
+        if col in yates_clean.columns:
+            yates_clean[col] = sanitize_text_column(yates_clean[col])
 
     output_file = OUTPUT_DIR / "yates_all_inspections.csv"
     yates_clean.to_csv(output_file, index=False)
