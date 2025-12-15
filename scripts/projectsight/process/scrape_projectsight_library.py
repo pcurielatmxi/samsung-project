@@ -757,6 +757,19 @@ class LibraryScraper:
                 logger.debug(f"{'  ' * next_depth}Max depth reached: {subfolder['path']}")
                 continue
 
+            # Determine if this subfolder will actually cause navigation
+            # If it's skipped and has no failing grandchildren, we won't leave current folder
+            subfolder_will_navigate = True
+            if self.should_skip_folder(subfolder['folderId']):
+                # Check if any grandchildren need retry
+                grandchildren = self.get_existing_folder_items(subfolder['folderId'])
+                has_failing_grandchildren = any(
+                    gc.get('type') == 'folder' and gc.get('navigationFailed', False)
+                    for gc in grandchildren
+                )
+                if not has_failing_grandchildren:
+                    subfolder_will_navigate = False
+
             subfolder_items = self.extract_folder_recursive(
                 subfolder['folderId'],
                 subfolder['path'],
@@ -767,8 +780,9 @@ class LibraryScraper:
             items.extend(subfolder_items)
 
             # After processing subfolder, navigate back to current folder
-            # Only navigate back if we actually entered the subfolder (not for max-depth cases)
-            if not self.navigate_to_folder(folder_id, depth, path=current_path):
+            # Only navigate back if the subfolder actually caused navigation
+            if subfolder_will_navigate:
+                if not self.navigate_to_folder(folder_id, depth, path=current_path):
                     # If we can't navigate back, try going to root and starting fresh
                     logger.debug(f"{'  ' * depth}Resetting to root after failed back-navigation")
                     self.navigate_to_root()
