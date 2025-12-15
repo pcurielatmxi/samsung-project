@@ -340,6 +340,143 @@ def create_scraper():
             print(f"  Found {len(reports)} reports in grid")
             return reports
 
+        def scan_grid_for_missing_dates(self, existing_dates: set, total_count: int) -> List[str]:
+            """Fast scan through grid to find missing dates.
+
+            Scrolls through virtualization windows quickly, reading dates without
+            extracting full reports. Returns list of unique missing dates.
+            """
+            print("Scanning grid for missing dates...")
+            missing_dates = set()
+            all_dates_seen = set()
+
+            list_frame = self.page.frame_locator('iframe[name="fraMenuContent"]')
+            frame = self.page.frame('fraMenuContent')
+
+            if not frame:
+                print("  Could not access frame for scanning")
+                return list(missing_dates)
+
+            # Scroll through the grid in larger chunks
+            row_height = 30
+            chunk_size = 60  # Rows to skip per scroll
+
+            scroll_position = 0
+            max_scroll = (total_count + 100) * row_height  # Extra buffer
+            last_dates_set = set()
+            stuck_count = 0
+
+            while scroll_position < max_scroll:
+                # Scroll to position using scrollTop
+                result = frame.evaluate(f"""
+                    (function() {{
+                        var divs = document.querySelectorAll('div');
+                        for (var div of divs) {{
+                            if (div.scrollHeight > 3000 && div.clientHeight < div.scrollHeight) {{
+                                div.scrollTop = {scroll_position};
+                                return {{scrolled: true, actual: div.scrollTop, max: div.scrollHeight}};
+                            }}
+                        }}
+                        return {{scrolled: false}};
+                    }})()
+                """)
+                time.sleep(0.15)  # Brief wait for render
+
+                # Read visible dates
+                rows = list_frame.locator('tr[data-id]').all()
+                current_dates = set()
+
+                for row in rows:
+                    try:
+                        cells = row.locator('td').all()
+                        if len(cells) >= 2:
+                            date_text = cells[1].text_content(timeout=200).strip()
+                            if not date_text:
+                                continue
+
+                            current_dates.add(date_text)
+                            all_dates_seen.add(date_text)
+
+                            # Check if this date is missing (normalize for comparison)
+                            normalized = normalize_date(date_text)
+                            if normalized and normalized not in existing_dates:
+                                if date_text not in missing_dates:
+                                    missing_dates.add(date_text)
+                                    print(f"  Found missing: {date_text}")
+                    except:
+                        continue
+
+                # Check if we're stuck (same dates visible)
+                if current_dates == last_dates_set and len(current_dates) > 0:
+                    stuck_count += 1
+                    if stuck_count > 8:  # Allow more attempts
+                        print(f"  Scroll complete at {scroll_position}px (reached end of data)")
+                        break
+                else:
+                    stuck_count = 0
+                    last_dates_set = current_dates
+
+                # Move to next chunk
+                scroll_position += chunk_size * row_height
+
+                if scroll_position % 6000 < chunk_size * row_height:
+                    print(f"  Scanned ~{len(all_dates_seen)} dates, found {len(missing_dates)} missing")
+
+            print(f"  Scan complete: {len(missing_dates)} unique missing dates found")
+            return list(missing_dates)
+
+        def click_report_by_date(self, target_date: str) -> bool:
+            """Find and click on a report with the specified date.
+
+            Scrolls through the virtualized grid to find the target date,
+            then clicks on it to open the detail view.
+            """
+            list_frame = self.page.frame_locator('iframe[name="fraMenuContent"]')
+            frame = self.page.frame('fraMenuContent')
+
+            if not frame:
+                return False
+
+            row_height = 30
+            chunk_size = 80
+            scroll_position = 0
+            max_scroll = 1500 * row_height  # Max rows to check
+            attempts = 0
+            max_attempts = 30
+
+            while scroll_position < max_scroll and attempts < max_attempts:
+                # Scroll to position
+                frame.evaluate(f"""
+                    var divs = document.querySelectorAll('div');
+                    for (var div of divs) {{
+                        if (div.scrollHeight > 3000 && div.clientHeight < div.scrollHeight) {{
+                            div.scrollTop = {scroll_position};
+                            break;
+                        }}
+                    }}
+                """)
+                time.sleep(0.2)
+
+                # Check visible rows for target date
+                rows = list_frame.locator('tr[data-id]').all()
+                for row in rows:
+                    try:
+                        cells = row.locator('td').all()
+                        if len(cells) >= 2:
+                            date_text = cells[1].text_content(timeout=300).strip()
+                            if date_text == target_date:
+                                # Found it! Click on this row
+                                cells[1].click()
+                                time.sleep(3)
+                                return True
+                    except:
+                        continue
+
+                scroll_position += chunk_size * row_height
+                attempts += 1
+
+            return False
+
         def click_first_report(self) -> bool:
             """Click on the first report row to open detail view."""
             return self.click_report_at_position(0)
@@ -841,24 +978,51 @@ def create_scraper():
             total_count = self.get_report_count()
             print(f"Total reports available: {total_count}")
 
-            # Always start from position 0 - date checking handles duplicates
-            # (Grid order may not match chronological order)
-            start_position = 0
-            extract_count = total_count
+            # If we have existing dates, do a fast scan to find only missing ones
+            if skip_dates:
+                print(f"Found {len(skip_dates)} existing reports")
+                missing_dates = self.scan_grid_for_missing_dates(skip_dates, total_count)
 
-            # Apply limit if specified
+                if not missing_dates:
+                    print("No missing dates found - all reports already extracted!")
+                    return reports
+
+                # Apply limit if specified
+                if limit and limit > 0:
+                    missing_dates = missing_dates[:limit]
+
+                print(f"Will extract {len(missing_dates)} missing reports")
+
+                # Extract each missing date by finding and clicking it
+                for i, target_date in enumerate(missing_dates):
+                    print(f"Finding and extracting: {target_date}...")
+                    if not self.click_report_by_date(target_date):
+                        print(f"  Failed to find report for {target_date}!")
+                        continue
+
+                    report = self.extract_current_report()
+                    reports.append(report)
+                    print(f"  Extracted {i + 1}/{len(missing_dates)}")
+                    if on_record_extracted:
+                        on_record_extracted(report, reports)
+
+                    # Navigate back to list for next date
+                    self.navigate_to_daily_reports()
+                    time.sleep(1)
+
+                return reports
+
+            # No skip_dates - extract all from start
+            extract_count = total_count
             if limit and limit > 0:
                 extract_count = min(limit, total_count)
 
-            if skip_dates:
-                print(f"Found {len(skip_dates)} existing reports - will skip by date")
+            print(f"Will process: {extract_count} reports")
 
-            print(f"Will process: {extract_count} reports (duplicates skipped by date)")
-
-            # Click on the first un-extracted report (at start_position)
-            print(f"Opening report at position {start_position + 1}...")
-            if not self.click_report_at_position(start_position):
-                print(f"Failed to open report at position {start_position}!")
+            # Click on the first report
+            print(f"Opening report at position 1...")
+            if not self.click_report_at_position(0):
+                print(f"Failed to open report at position 0!")
                 return reports
 
             # Extract first report
@@ -912,8 +1076,29 @@ def create_scraper():
     return ProjectSightScraper
 
 
+def normalize_date(date_str: str) -> str:
+    """Normalize date string to M/D/YYYY format (no leading zeros).
+
+    Handles both MM/DD/YYYY and M/D/YYYY formats.
+    """
+    if not date_str:
+        return ""
+    try:
+        parts = date_str.split('/')
+        if len(parts) == 3:
+            month, day, year = parts
+            # Remove leading zeros
+            return f"{int(month)}/{int(day)}/{year}"
+    except:
+        pass
+    return date_str
+
+
 def get_extracted_dates(reports_dir: Path) -> set:
-    """Get set of dates that have already been extracted (individual JSON files)."""
+    """Get set of dates that have already been extracted (individual JSON files).
+
+    Returns dates in normalized format (M/D/YYYY, no leading zeros).
+    """
     extracted_dates = set()
 
     if not reports_dir.exists():
@@ -923,11 +1108,12 @@ def get_extracted_dates(reports_dir: Path) -> set:
         # Extract date from filename (format: YYYY-MM-DD.json)
         date_str = json_file.stem  # e.g., "2024-12-31"
         try:
-            # Convert from YYYY-MM-DD to MM/DD/YYYY for matching
+            # Convert from YYYY-MM-DD to M/D/YYYY (normalized, no leading zeros)
             parts = date_str.split('-')
             if len(parts) == 3:
                 year, month, day = parts
-                extracted_dates.add(f"{month}/{day}/{year}")
+                # Store without leading zeros for matching
+                extracted_dates.add(f"{int(month)}/{int(day)}/{year}")
         except:
             pass
 
@@ -1047,18 +1233,19 @@ def main():
         """
         nonlocal extracted_count, skipped_count
 
-        # Check if this report date already exists
+        # Check if this report date already exists (normalize for comparison)
         report_date = new_report.get('reportDate', '')
-        if args.skip_existing and report_date in extracted_dates:
+        normalized = normalize_date(report_date)
+        if args.skip_existing and normalized in extracted_dates:
             skipped_count += 1
             print(f"    Skipping (already exists): {report_date}")
             return
 
         output_file = save_report_to_file(new_report, reports_dir)
         extracted_count += 1
-        # Add to extracted_dates so we don't save duplicates within this run
-        if report_date:
-            extracted_dates.add(report_date)
+        # Add normalized date so we don't save duplicates within this run
+        if normalized:
+            extracted_dates.add(normalized)
         print(f"    Saved: {output_file.name}")
 
     try:
