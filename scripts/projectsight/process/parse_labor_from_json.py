@@ -182,8 +182,8 @@ def parse_labor_entry(entry_text: str, report_date: str, modifier: str = None,
         'hours_delta': hours_new - hours_old,
 
         # Time tracking
-        'start_time': fields.get('start'),
-        'end_time': fields.get('end'),
+        'start_time': clean_time_value(fields.get('start')),
+        'end_time': clean_time_value(fields.get('end')),
         'break_hours': parse_float(fields.get('break_new', fields.get('break', '0'))),
 
         # Derived flags
@@ -197,6 +197,25 @@ def parse_labor_entry(entry_text: str, report_date: str, modifier: str = None,
     }
 
     return result
+
+
+def clean_time_value(time_str: str) -> Optional[str]:
+    """
+    Clean up potentially malformed time values.
+    Handles truncated AM/PM like "2:30 P" -> "2:30 PM"
+    """
+    if not time_str:
+        return None
+
+    time_str = time_str.strip()
+
+    # Fix truncated AM/PM (e.g., "2:30 P" -> "2:30 PM", "9:00 A" -> "9:00 AM")
+    if re.match(r'.*\d:\d{2}\s+P$', time_str):
+        time_str = time_str + 'M'
+    elif re.match(r'.*\d:\d{2}\s+A$', time_str):
+        time_str = time_str + 'M'
+
+    return time_str if time_str else None
 
 
 def parse_float(value: str) -> float:
