@@ -149,29 +149,8 @@ class ErrorTracker:
         logger.info(f"Duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
         logger.info(f"Folders processed: {self.folders_processed}")
         logger.info(f"Folders skipped (recently scanned): {self.folders_skipped}")
-        unique_nav_failures = len(set(f['folder_id'] for f in self.navigation_failures))
-        logger.info(f"Navigation failures: {len(self.navigation_failures)} ({unique_nav_failures} unique folders)")
         logger.info(f"Extraction failures: {len(self.extraction_failures)}")
-        logger.info(f"Warnings: {len(self.warnings)}")
         logger.info(f"Errors: {len(self.errors)}")
-
-        if self.navigation_failures:
-            logger.info("-" * 40)
-            logger.info("NAVIGATION FAILURES:")
-            # Deduplicate by folder_id, keeping track of occurrence count
-            seen = {}
-            for fail in self.navigation_failures:
-                fid = fail['folder_id']
-                if fid not in seen:
-                    seen[fid] = {'path': fail['path'], 'folder_id': fid, 'count': 1}
-                else:
-                    seen[fid]['count'] += 1
-            unique_failures = list(seen.values())
-            for fail in unique_failures[:20]:  # Limit to first 20 unique
-                count_str = f" (x{fail['count']})" if fail['count'] > 1 else ""
-                logger.info(f"  - {fail['path']} (id={fail['folder_id']}){count_str}")
-            if len(unique_failures) > 20:
-                logger.info(f"  ... and {len(unique_failures) - 20} more unique folders")
 
         if self.extraction_failures:
             logger.info("-" * 40)
