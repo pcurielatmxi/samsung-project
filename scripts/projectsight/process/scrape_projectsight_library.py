@@ -747,6 +747,17 @@ class LibraryScraper:
 
         logger.debug(f"{'  ' * depth}Found {len(subfolders)} subfolders, {len(folder_items) - len(subfolders)} files")
 
+        # Update the current folder's own record to clear navigationFailed flag
+        # This fixes the bug where successfully re-scanned folders kept their old failed status
+        if folder_id != self.project.root_folder_id:
+            for existing_item in self.existing_data.get('items', []):
+                if existing_item.get('folderId') == folder_id and existing_item.get('type') == 'folder':
+                    updated_folder = existing_item.copy()
+                    updated_folder['lastScanned'] = scan_time
+                    updated_folder.pop('navigationFailed', None)
+                    items.append(updated_folder)
+                    break
+
         # Now recursively process subfolders
         for subfolder in subfolders:
             next_depth = depth + 1
