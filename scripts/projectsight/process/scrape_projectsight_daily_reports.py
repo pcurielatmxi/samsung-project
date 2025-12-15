@@ -2,9 +2,17 @@
 """
 ProjectSight Daily Reports Scraper
 
-Extracts daily reports from ProjectSight including both tabs:
+Extracts daily reports from ProjectSight including all tabs:
 - Daily Report tab (Weather, Labor, Equipment, Notes, Status)
-- History tab (Created by, timestamps, field changes)
+- Additional Info tab (Extra metadata fields)
+- History tab (Created by, timestamps, field changes, labor audit trail)
+
+Each report is saved as an individual JSON file (YYYY-MM-DD.json) to:
+- Avoid memory issues with large extractions
+- Enable incremental/resumable extraction
+- Prevent data loss from truncation
+
+Output: raw/projectsight/extracted/daily_reports/YYYY-MM-DD.json
 
 RECOMMENDED: Run on Windows with headed mode (real display).
 The script uses Chromium by default and navigates using the "Next record" button.
@@ -13,17 +21,14 @@ Usage:
     # On Windows - best approach (headed mode with real display)
     python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
 
-    # On Linux with Xvfb (virtual display)
-    xvfb-run -a python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
-
-    # Full extraction (all 415 records)
+    # Full extraction (all records)
     python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 0
 
-    # Idempotent mode - skip already extracted reports and merge with existing data
-    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 50
-
-    # Continue extraction from where you left off (run multiple times safely)
+    # Idempotent mode - skip already extracted reports (run multiple times safely)
     python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 0
+
+    # On Linux with Xvfb (virtual display)
+    xvfb-run -a python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
 
 Environment Variables (from .env):
     PROJECTSIGHT_USERNAME - Login email
@@ -420,9 +425,9 @@ def create_scraper():
                     # Screenshot for debugging (optional)
                     # self.page.screenshot(path=f'/tmp/daily_report_tab.png')
 
-                    # Get all text from the detail frame
+                    # Get all text from the detail frame (no size limit)
                     all_text = detail_frame.locator('body').inner_text(timeout=5000)
-                    data['raw_content'] = all_text[:5000] if all_text else ''  # Limit size
+                    data['raw_content'] = all_text if all_text else ''
                 except:
                     pass
 
@@ -518,10 +523,10 @@ def create_scraper():
                     history_tab.first.click()
                     time.sleep(1.5)  # Give time for history to load
 
-                    # Get the full raw content of the history tab
+                    # Get the full raw content of the history tab (no size limit)
                     try:
                         all_text = detail_frame.locator('body').inner_text(timeout=5000)
-                        data['raw_content'] = all_text[:10000] if all_text else ''  # Keep more for history
+                        data['raw_content'] = all_text if all_text else ''
                     except:
                         pass
 
@@ -638,10 +643,10 @@ def create_scraper():
                     additional_info_tab.click()
                     time.sleep(1)
 
-                    # Get the full raw content
+                    # Get the full raw content (no size limit)
                     try:
                         all_text = detail_frame.locator('body').inner_text(timeout=5000)
-                        data['raw_content'] = all_text[:10000] if all_text else ''
+                        data['raw_content'] = all_text if all_text else ''
                     except:
                         pass
 
@@ -794,8 +799,60 @@ def create_scraper():
     return ProjectSightScraper
 
 
+def get_extracted_dates(reports_dir: Path) -> set:
+    """Get set of dates that have already been extracted (individual JSON files)."""
+    extracted_dates = set()
+
+    if not reports_dir.exists():
+        return extracted_dates
+
+    for json_file in reports_dir.glob('*.json'):
+        # Extract date from filename (format: YYYY-MM-DD.json)
+        date_str = json_file.stem  # e.g., "2024-12-31"
+        try:
+            # Convert from YYYY-MM-DD to MM/DD/YYYY for matching
+            parts = date_str.split('-')
+            if len(parts) == 3:
+                year, month, day = parts
+                extracted_dates.add(f"{month}/{day}/{year}")
+        except:
+            pass
+
+    return extracted_dates
+
+
+def save_report_to_file(report: dict, reports_dir: Path) -> Path:
+    """Save a single report to its own JSON file.
+
+    Filename format: YYYY-MM-DD.json (based on report date)
+    """
+    report_date = report.get('reportDate', 'unknown')
+
+    # Convert MM/DD/YYYY to YYYY-MM-DD for filename
+    try:
+        parts = report_date.split('/')
+        if len(parts) == 3:
+            month, day, year = parts
+            filename = f"{year}-{month.zfill(2)}-{day.zfill(2)}.json"
+        else:
+            filename = f"unknown_{report.get('recordNumber', 'x')}.json"
+    except:
+        filename = f"unknown_{report.get('recordNumber', 'x')}.json"
+
+    output_file = reports_dir / filename
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+
+    return output_file
+
+
 def load_existing_data(output_file: Path) -> tuple[dict, set]:
-    """Load existing extraction data and return (data, extracted_dates)."""
+    """Load existing extraction data and return (data, extracted_dates).
+
+    DEPRECATED: Use get_extracted_dates() with individual files instead.
+    Kept for backward compatibility with old single-file format.
+    """
     if not output_file.exists():
         return None, set()
 
@@ -817,35 +874,12 @@ def load_existing_data(output_file: Path) -> tuple[dict, set]:
         return None, set()
 
 
-def merge_records(existing_records: list, new_records: list) -> list:
-    """Merge new records with existing, avoiding duplicates by date."""
-    # Use report date as the unique key
-    records_by_date = {}
-
-    # Add existing records first
-    for record in existing_records:
-        date = record.get('reportDate')
-        if date:
-            records_by_date[date] = record
-
-    # Update/add new records (newer extractions overwrite older ones)
-    for record in new_records:
-        date = record.get('reportDate')
-        if date:
-            records_by_date[date] = record
-
-    # Return sorted by date (most recent first)
-    return sorted(records_by_date.values(),
-                  key=lambda x: x.get('reportDate', ''),
-                  reverse=True)
-
-
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description='Scrape ProjectSight Daily Reports')
     parser.add_argument('--limit', type=int, default=10, help='Limit number of reports to extract')
     parser.add_argument('--headless', action='store_true', help='Run in headless mode')
-    parser.add_argument('--output', type=str, default=None, help='Output file path')
+    parser.add_argument('--output-dir', type=str, default=None, help='Output directory for individual report files')
     parser.add_argument('--skip-existing', action='store_true',
                         help='Skip reports that have already been extracted (idempotent mode)')
     args = parser.parse_args()
@@ -866,45 +900,38 @@ def main():
         project_root = Path(__file__).parent.parent.parent.parent
         sys.path.insert(0, str(project_root))
         from src.config.settings import Settings
-        output_dir = Settings.PROJECTSIGHT_RAW_DIR / 'extracted'
+        base_output_dir = Settings.PROJECTSIGHT_RAW_DIR / 'extracted'
     except ImportError:
         # Fallback if settings not available
-        output_dir = Path(__file__).parent.parent.parent.parent / 'data' / 'projectsight' / 'extracted'
-    output_dir.mkdir(parents=True, exist_ok=True)
+        base_output_dir = Path(__file__).parent.parent.parent.parent / 'data' / 'projectsight' / 'extracted'
 
-    # Use a consistent output file name for idempotent mode
-    if args.skip_existing:
-        output_file = Path(args.output) if args.output else output_dir / 'daily_reports.json'
-    else:
-        output_file = Path(args.output) if args.output else output_dir / f'daily_reports_test_{args.limit}.json'
+    # Directory for individual report files
+    reports_dir = Path(args.output_dir) if args.output_dir else base_output_dir / 'daily_reports'
+    reports_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load existing data if in idempotent mode
-    existing_data, extracted_dates = None, set()
-    existing_records = []
+    print(f"Output directory: {reports_dir}")
+
+    # Get already-extracted dates from individual files
+    extracted_dates = set()
     if args.skip_existing:
-        existing_data, extracted_dates = load_existing_data(output_file)
-        existing_records = existing_data.get('records', []) if existing_data else []
+        extracted_dates = get_extracted_dates(reports_dir)
         if extracted_dates:
-            print(f"  Will skip {len(extracted_dates)} already-extracted dates")
+            print(f"  Found {len(extracted_dates)} already-extracted reports")
 
     # Create and run scraper
     ScraperClass = create_scraper()
     scraper = ScraperClass(headless=headless)
 
-    # Incremental save function - saves after each record
-    def save_progress(new_report, all_new_reports):
-        """Save progress after each record extraction."""
-        all_records = merge_records(existing_records, all_new_reports)
-        output_data = {
-            'extractedAt': datetime.now().isoformat(),
-            'source': 'ProjectSight Standalone Scraper',
-            'project': 'Yates Construction Portfolio > Taylor Fab1 58202',
-            'totalAvailable': scraper.get_report_count() if scraper.page else 0,
-            'extractedCount': len(all_records),
-            'records': all_records
-        }
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(output_data, f, indent=2, ensure_ascii=False)
+    # Track extraction stats
+    extracted_count = 0
+
+    # Save function - saves each report immediately to its own file
+    def save_report_immediately(new_report, all_new_reports):
+        """Save each report to its own JSON file immediately after extraction."""
+        nonlocal extracted_count
+        output_file = save_report_to_file(new_report, reports_dir)
+        extracted_count += 1
+        print(f"    Saved: {output_file.name}")
 
     try:
         scraper.start()
@@ -917,41 +944,20 @@ def main():
             print("Navigation failed!")
             return 1
 
+        # Extract reports - each one is saved immediately via callback
         reports = scraper.extract_all_reports(
             limit=args.limit,
             skip_dates=extracted_dates if args.skip_existing else None,
-            on_record_extracted=save_progress if args.skip_existing else None
+            on_record_extracted=save_report_immediately
         )
 
-        # Final save (handles non-idempotent mode and ensures final state)
-        if args.skip_existing:
-            all_records = merge_records(existing_records, reports)
-            new_count = len(reports)
-            total_count = len(all_records)
-        else:
-            all_records = reports
-            new_count = len(reports)
-            total_count = len(reports)
-
-        # Save final results
-        output_data = {
-            'extractedAt': datetime.now().isoformat(),
-            'source': 'ProjectSight Standalone Scraper',
-            'project': 'Yates Construction Portfolio > Taylor Fab1 58202',
-            'totalAvailable': scraper.get_report_count(),
-            'extractedCount': total_count,
-            'records': all_records
-        }
-
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(output_data, f, indent=2, ensure_ascii=False)
+        # Final summary
+        total_files = len(list(reports_dir.glob('*.json')))
 
         print(f"\nExtraction complete!")
-        if args.skip_existing:
-            print(f"Extracted {new_count} new reports (total: {total_count})")
-        else:
-            print(f"Extracted {len(reports)} reports")
-        print(f"Output saved to: {output_file}")
+        print(f"  New reports extracted: {extracted_count}")
+        print(f"  Total reports in {reports_dir.name}/: {total_files}")
+        print(f"  Output directory: {reports_dir}")
 
         return 0
 

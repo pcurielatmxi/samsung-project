@@ -289,22 +289,58 @@ def extract_labor_from_history(history: Dict, report_date: str) -> List[Dict]:
     return entries
 
 
-def process_daily_reports(input_file: Path) -> Tuple[List[Dict], Dict]:
+def load_records_from_source(input_path: Path) -> List[Dict]:
     """
-    Process the daily_reports.json file and extract all labor entries.
+    Load records from either a single JSON file or a directory of individual JSON files.
 
     Args:
-        input_file: Path to daily_reports.json
+        input_path: Path to either:
+            - A single daily_reports.json file (old format)
+            - A directory containing individual YYYY-MM-DD.json files (new format)
+
+    Returns:
+        List of record dictionaries
+    """
+    if input_path.is_dir():
+        # New format: directory of individual JSON files
+        print(f"Loading individual report files from {input_path}/...")
+        records = []
+        json_files = sorted(input_path.glob('*.json'))
+
+        for json_file in json_files:
+            try:
+                with open(json_file, 'r', encoding='utf-8') as f:
+                    record = json.load(f)
+                    records.append(record)
+            except Exception as e:
+                print(f"  Warning: Could not load {json_file.name}: {e}")
+
+        print(f"  Loaded {len(records)} report files")
+        return records
+    else:
+        # Old format: single combined JSON file
+        print(f"Loading combined file {input_path}...")
+        with open(input_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        records = data.get('records', [])
+        print(f"  Found {len(records)} records in combined file")
+        return records
+
+
+def process_daily_reports(input_path: Path) -> Tuple[List[Dict], Dict]:
+    """
+    Process daily reports and extract all labor entries.
+
+    Args:
+        input_path: Path to either:
+            - A single daily_reports.json file (old format)
+            - A directory containing individual YYYY-MM-DD.json files (new format)
 
     Returns:
         Tuple of (labor_entries list, stats dict)
     """
-    print(f"Loading {input_file}...")
-    with open(input_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-
-    records = data.get('records', [])
-    print(f"  Found {len(records)} daily report records")
+    records = load_records_from_source(input_path)
 
     all_entries = []
     stats = {
@@ -547,7 +583,7 @@ def write_company_summary_csv(entries: List[Dict], output_file: Path):
 
 def main():
     parser = argparse.ArgumentParser(description='Parse labor entries from ProjectSight daily reports JSON')
-    parser.add_argument('--input', type=str, help='Input JSON file path')
+    parser.add_argument('--input', type=str, help='Input path (directory of individual JSONs or single combined JSON file)')
     parser.add_argument('--output-dir', type=str, help='Output directory for CSV files')
     args = parser.parse_args()
 
@@ -563,23 +599,40 @@ def main():
         raw_dir = project_root / 'data' / 'raw' / 'projectsight'
         processed_dir = project_root / 'data' / 'processed' / 'projectsight'
 
-    input_file = Path(args.input) if args.input else raw_dir / 'extracted' / 'daily_reports.json'
+    # Determine input path - prefer new directory format, fall back to old combined file
+    if args.input:
+        input_path = Path(args.input)
+    else:
+        # Try new format first (directory of individual files)
+        new_format_path = raw_dir / 'extracted' / 'daily_reports'
+        old_format_path = raw_dir / 'extracted' / 'daily_reports.json'
+
+        if new_format_path.exists() and new_format_path.is_dir():
+            input_path = new_format_path
+        elif old_format_path.exists():
+            input_path = old_format_path
+        else:
+            input_path = new_format_path  # Will show appropriate error
+
     output_dir = Path(args.output_dir) if args.output_dir else processed_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 70)
     print("ProjectSight Labor Entry Parser")
     print("=" * 70)
-    print(f"Input:  {input_file}")
+    print(f"Input:  {input_path}")
     print(f"Output: {output_dir}")
     print()
 
-    if not input_file.exists():
-        print(f"ERROR: Input file not found: {input_file}")
+    if not input_path.exists():
+        print(f"ERROR: Input path not found: {input_path}")
+        print(f"\nExpected either:")
+        print(f"  - Directory: {raw_dir / 'extracted' / 'daily_reports'}/")
+        print(f"  - File:      {raw_dir / 'extracted' / 'daily_reports.json'}")
         return 1
 
     # Process the data
-    entries, stats = process_daily_reports(input_file)
+    entries, stats = process_daily_reports(input_path)
 
     # Print stats
     print()
