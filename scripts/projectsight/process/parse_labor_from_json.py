@@ -2,8 +2,8 @@
 """
 Parse Labor Entries from ProjectSight Daily Reports JSON
 
-Extracts structured labor data from the history/audit trail in the scraped
-daily_reports.json file. This replaces the unreliable Excel export approach.
+Extracts structured labor data from the history/audit trail in the individual
+daily report JSON files (YYYY-MM-DD.json format).
 
 The history tab contains audit entries like:
     Added Detailed labor (Person Name) FOR Ongoing Activities (Company: Activity)
@@ -19,12 +19,10 @@ The history tab contains audit entries like:
 
 Output:
     - labor_entries.csv: All labor entries with full audit trail
-    - labor_summary_by_date.csv: Daily totals by company/trade
-    - labor_summary_by_worker.csv: Worker-level summary with total hours
 
 Usage:
     python scripts/projectsight/process/parse_labor_from_json.py
-    python scripts/projectsight/process/parse_labor_from_json.py --input path/to/daily_reports.json
+    python scripts/projectsight/process/parse_labor_from_json.py --input path/to/daily_reports/
 """
 
 import argparse
@@ -32,7 +30,7 @@ import csv
 import json
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
@@ -289,43 +287,30 @@ def extract_labor_from_history(history: Dict, report_date: str) -> List[Dict]:
     return entries
 
 
-def load_records_from_source(input_path: Path) -> List[Dict]:
+def load_records_from_directory(input_path: Path) -> List[Dict]:
     """
-    Load records from either a single JSON file or a directory of individual JSON files.
+    Load records from a directory of individual JSON files.
 
     Args:
-        input_path: Path to either:
-            - A single daily_reports.json file (old format)
-            - A directory containing individual YYYY-MM-DD.json files (new format)
+        input_path: Path to directory containing individual YYYY-MM-DD.json files
 
     Returns:
         List of record dictionaries
     """
-    if input_path.is_dir():
-        # New format: directory of individual JSON files
-        print(f"Loading individual report files from {input_path}/...")
-        records = []
-        json_files = sorted(input_path.glob('*.json'))
+    print(f"Loading individual report files from {input_path}/...")
+    records = []
+    json_files = sorted(input_path.glob('*.json'))
 
-        for json_file in json_files:
-            try:
-                with open(json_file, 'r', encoding='utf-8') as f:
-                    record = json.load(f)
-                    records.append(record)
-            except Exception as e:
-                print(f"  Warning: Could not load {json_file.name}: {e}")
+    for json_file in json_files:
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                record = json.load(f)
+                records.append(record)
+        except Exception as e:
+            print(f"  Warning: Could not load {json_file.name}: {e}")
 
-        print(f"  Loaded {len(records)} report files")
-        return records
-    else:
-        # Old format: single combined JSON file
-        print(f"Loading combined file {input_path}...")
-        with open(input_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        records = data.get('records', [])
-        print(f"  Found {len(records)} records in combined file")
-        return records
+    print(f"  Loaded {len(records)} report files")
+    return records
 
 
 def process_daily_reports(input_path: Path) -> Tuple[List[Dict], Dict]:
@@ -333,14 +318,12 @@ def process_daily_reports(input_path: Path) -> Tuple[List[Dict], Dict]:
     Process daily reports and extract all labor entries.
 
     Args:
-        input_path: Path to either:
-            - A single daily_reports.json file (old format)
-            - A directory containing individual YYYY-MM-DD.json files (new format)
+        input_path: Path to directory containing individual YYYY-MM-DD.json files
 
     Returns:
         Tuple of (labor_entries list, stats dict)
     """
-    records = load_records_from_source(input_path)
+    records = load_records_from_directory(input_path)
 
     all_entries = []
     stats = {
@@ -448,142 +431,9 @@ def write_labor_entries_csv(entries: List[Dict], output_file: Path):
     print(f"  Wrote {len(entries)} entries to {output_file}")
 
 
-def write_daily_summary_csv(entries: List[Dict], output_file: Path):
-    """Write daily summary by company/trade to CSV file."""
-    # Aggregate by date, company, trade
-    summary = defaultdict(lambda: {
-        'total_hours': 0.0,
-        'overtime_hours': 0.0,
-        'workers': set()
-    })
-
-    for entry in entries:
-        if entry['action'] == 'Added' and entry['hours_new'] > 0:
-            # Use empty string for None values to ensure sortability
-            date = entry['report_date'] or ''
-            company = entry['company'] or 'UNKNOWN'
-            trade = entry['trade_full'] or 'UNKNOWN'
-
-            key = (date, company, trade)
-            summary[key]['total_hours'] += entry['hours_new']
-            if entry['is_overtime']:
-                summary[key]['overtime_hours'] += max(0, entry['hours_new'] - 8.0)
-            summary[key]['workers'].add(entry['person_name'])
-
-    # Write summary
-    rows = []
-    for (date, company, trade), data in sorted(summary.items(), key=lambda x: (x[0][0] or '', x[0][1] or '', x[0][2] or '')):
-        rows.append({
-            'report_date': date,
-            'company': company,
-            'trade': trade,
-            'total_hours': round(data['total_hours'], 2),
-            'overtime_hours': round(data['overtime_hours'], 2),
-            'worker_count': len(data['workers'])
-        })
-
-    fieldnames = ['report_date', 'company', 'trade', 'total_hours', 'overtime_hours', 'worker_count']
-    with open(output_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
-
-    print(f"  Wrote {len(rows)} summary rows to {output_file}")
-
-
-def write_worker_summary_csv(entries: List[Dict], output_file: Path):
-    """Write worker-level summary with total hours across all dates."""
-    # Aggregate by worker and company
-    summary = defaultdict(lambda: {
-        'total_hours': 0.0,
-        'days_worked': set(),
-        'trades': set(),
-        'classifications': set(),
-        'overtime_hours': 0.0
-    })
-
-    for entry in entries:
-        if entry['action'] == 'Added' and entry['hours_new'] > 0:
-            key = (entry['person_name'], entry['company'] or 'UNKNOWN')
-            summary[key]['total_hours'] += entry['hours_new']
-            if entry['report_date']:
-                summary[key]['days_worked'].add(entry['report_date'])
-            if entry['trade_full']:
-                summary[key]['trades'].add(entry['trade_full'])
-            if entry['classification']:
-                summary[key]['classifications'].add(entry['classification'])
-            if entry['is_overtime']:
-                summary[key]['overtime_hours'] += max(0, entry['hours_new'] - 8.0)
-
-    # Write summary
-    rows = []
-    for (worker, company), data in sorted(summary.items(), key=lambda x: -x[1]['total_hours']):
-        rows.append({
-            'person_name': worker,
-            'company': company,
-            'total_hours': round(data['total_hours'], 2),
-            'days_worked': len(data['days_worked']),
-            'avg_hours_per_day': round(data['total_hours'] / max(1, len(data['days_worked'])), 2),
-            'overtime_hours': round(data['overtime_hours'], 2),
-            'trades': '; '.join(sorted(data['trades'])),
-            'classifications': '; '.join(sorted(data['classifications']))
-        })
-
-    fieldnames = ['person_name', 'company', 'total_hours', 'days_worked', 'avg_hours_per_day',
-                  'overtime_hours', 'trades', 'classifications']
-    with open(output_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
-
-    print(f"  Wrote {len(rows)} worker summaries to {output_file}")
-
-
-def write_company_summary_csv(entries: List[Dict], output_file: Path):
-    """Write company-level summary with monthly breakdown."""
-    # Aggregate by company and month
-    summary = defaultdict(lambda: {
-        'total_hours': 0.0,
-        'workers': set(),
-        'overtime_hours': 0.0
-    })
-
-    for entry in entries:
-        if entry['action'] == 'Added' and entry['hours_new'] > 0:
-            company = entry['company'] or 'UNKNOWN'
-            year = entry['year'] or 0
-            month = entry['month'] or 0
-
-            key = (company, year, month)
-            summary[key]['total_hours'] += entry['hours_new']
-            summary[key]['workers'].add(entry['person_name'])
-            if entry['is_overtime']:
-                summary[key]['overtime_hours'] += max(0, entry['hours_new'] - 8.0)
-
-    # Write summary
-    rows = []
-    for (company, year, month), data in sorted(summary.items()):
-        rows.append({
-            'company': company,
-            'year': year,
-            'month': month,
-            'total_hours': round(data['total_hours'], 2),
-            'worker_count': len(data['workers']),
-            'overtime_hours': round(data['overtime_hours'], 2)
-        })
-
-    fieldnames = ['company', 'year', 'month', 'total_hours', 'worker_count', 'overtime_hours']
-    with open(output_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
-
-    print(f"  Wrote {len(rows)} company monthly summaries to {output_file}")
-
-
 def main():
     parser = argparse.ArgumentParser(description='Parse labor entries from ProjectSight daily reports JSON')
-    parser.add_argument('--input', type=str, help='Input path (directory of individual JSONs or single combined JSON file)')
+    parser.add_argument('--input', type=str, help='Input directory containing individual YYYY-MM-DD.json files')
     parser.add_argument('--output-dir', type=str, help='Output directory for CSV files')
     args = parser.parse_args()
 
@@ -599,20 +449,11 @@ def main():
         raw_dir = project_root / 'data' / 'raw' / 'projectsight'
         processed_dir = project_root / 'data' / 'processed' / 'projectsight'
 
-    # Determine input path - prefer new directory format, fall back to old combined file
+    # Determine input path (directory of individual JSON files)
     if args.input:
         input_path = Path(args.input)
     else:
-        # Try new format first (directory of individual files)
-        new_format_path = raw_dir / 'extracted' / 'daily_reports'
-        old_format_path = raw_dir / 'extracted' / 'daily_reports.json'
-
-        if new_format_path.exists() and new_format_path.is_dir():
-            input_path = new_format_path
-        elif old_format_path.exists():
-            input_path = old_format_path
-        else:
-            input_path = new_format_path  # Will show appropriate error
+        input_path = raw_dir / 'extracted' / 'daily_reports'
 
     output_dir = Path(args.output_dir) if args.output_dir else processed_dir
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -624,11 +465,9 @@ def main():
     print(f"Output: {output_dir}")
     print()
 
-    if not input_path.exists():
-        print(f"ERROR: Input path not found: {input_path}")
-        print(f"\nExpected either:")
-        print(f"  - Directory: {raw_dir / 'extracted' / 'daily_reports'}/")
-        print(f"  - File:      {raw_dir / 'extracted' / 'daily_reports.json'}")
+    if not input_path.exists() or not input_path.is_dir():
+        print(f"ERROR: Input directory not found: {input_path}")
+        print(f"\nExpected directory: {raw_dir / 'extracted' / 'daily_reports'}/")
         return 1
 
     # Process the data
@@ -654,20 +493,11 @@ def main():
     if stats['date_range']['min'] and stats['date_range']['max']:
         print(f"Date range: {stats['date_range']['min'].strftime('%Y-%m-%d')} to {stats['date_range']['max'].strftime('%Y-%m-%d')}")
 
-    # Write output files
+    # Write output file
     print()
-    print("Writing output files...")
+    print("Writing output file...")
     write_labor_entries_csv(entries, output_dir / 'labor_entries.csv')
-    write_daily_summary_csv(entries, output_dir / 'labor_summary_by_date.csv')
-    write_worker_summary_csv(entries, output_dir / 'labor_summary_by_worker.csv')
-    write_company_summary_csv(entries, output_dir / 'labor_summary_by_company_month.csv')
 
-    print()
-    print("Output files created:")
-    print(f"  - labor_entries.csv               : Full audit trail of all labor entries")
-    print(f"  - labor_summary_by_date.csv       : Daily totals by company/trade")
-    print(f"  - labor_summary_by_worker.csv     : Worker-level totals and statistics")
-    print(f"  - labor_summary_by_company_month.csv : Company monthly breakdown")
     print()
     print("Done!")
     return 0
