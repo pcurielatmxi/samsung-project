@@ -63,10 +63,11 @@ Logo files are automatically loaded from OneDrive:
 - **Success Green:** RGB(0, 128, 0) / #008000
 
 ### Fonts
-- **Titles:** Arial Bold, 28-36pt
-- **Subtitles:** Arial, 18-24pt
-- **Body Text:** Arial, 14-18pt
-- **Footnotes:** Arial, 10-12pt
+- **Titles:** Segoe UI Bold, 28-36pt
+- **Subtitles:** Segoe UI, 18-24pt
+- **Body Text:** Segoe UI, 14-18pt
+- **Footer/Page Numbers:** Segoe UI Semibold, 12pt
+- **Footnotes:** Segoe UI, 10-12pt
 
 ### Layout Standards
 - Left margin: 0.5 inches
@@ -266,19 +267,16 @@ def add_table(slide, data, left, top, width, height):
 
 ## Footer Standard
 
-Add to every slide except title:
+Footer appears on a banner at the bottom of every slide (except title). Uses Segoe UI Semibold font.
 
-```python
-def add_footer(slide, prs, page_num, total_pages):
-    footer = slide.shapes.add_textbox(
-        Inches(0.5), Inches(7.0), Inches(12), Inches(0.3)
-    )
-    tf = footer.text_frame
-    p = tf.paragraphs[0]
-    p.text = f"MXI | Samsung Taylor FAB1 Analysis | Confidential | Page {page_num} of {total_pages}"
-    p.font.size = Pt(10)
-    p.font.color.rgb = RGBColor(128, 128, 128)
-```
+**Format:** `[Page #]  MXI  |  Samsung Taylor FAB1  |  [Report Title]  |  [Date]`
+
+The footer is automatically added by `MXIPresentation` and includes:
+- Page number (left side)
+- Company branding (MXI)
+- Project name (Samsung Taylor FAB1)
+- Report title (from presentation title)
+- Date (month/year)
 
 ## Complete Example
 

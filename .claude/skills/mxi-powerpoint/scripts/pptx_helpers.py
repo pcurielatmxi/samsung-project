@@ -269,7 +269,7 @@ class MXIPresentation:
                 height=Inches(0.45)
             )
 
-        # Page number at beginning of footer (bold)
+        # Page number at beginning of footer (semibold)
         page_box = slide.shapes.add_textbox(
             Inches(0.5), banner_top + Inches(0.18), Inches(0.5), Inches(0.35)
         )
@@ -277,21 +277,19 @@ class MXIPresentation:
         p = tf.paragraphs[0]
         p.text = str(self.slide_count)
         p.font.size = Pt(12)
-        p.font.bold = True
         p.font.color.rgb = RGBColor(200, 210, 220)
-        p.font.name = "Segoe UI"
+        p.font.name = "Segoe UI Semibold"
 
-        # Footer text on banner (bold)
+        # Footer text on banner (semibold) - includes project, report title, and date
         footer = slide.shapes.add_textbox(
-            Inches(1.0), banner_top + Inches(0.18), Inches(8), Inches(0.35)
+            Inches(1.0), banner_top + Inches(0.18), Inches(10), Inches(0.35)
         )
         tf = footer.text_frame
         p = tf.paragraphs[0]
-        p.text = "MXI  |  Samsung Taylor FAB1"
+        p.text = f"MXI  |  Samsung Taylor FAB1  |  {self.title}  |  {self.date}"
         p.font.size = Pt(12)
-        p.font.bold = True
         p.font.color.rgb = RGBColor(200, 210, 220)
-        p.font.name = "Segoe UI"
+        p.font.name = "Segoe UI Semibold"
 
     def add_content_slide(self, title: str, bullets: List[str],
                           sub_bullets: dict = None) -> 'Slide':
