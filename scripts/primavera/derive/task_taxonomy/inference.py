@@ -29,6 +29,9 @@ from .extractors import (
     extract_building_from_task_code,
     extract_building_from_z_area,
     extract_trade_from_task_name,
+    extract_elevator_from_task_name,
+    extract_stair_from_task_name,
+    extract_gridline_from_task_name_and_area,
 )
 
 
@@ -295,28 +298,73 @@ def infer_phase(row: pd.Series) -> tuple[str | None, str | None, str | None]:
     return (None, None, None)
 
 
-def infer_location_type(row: pd.Series) -> tuple[str | None, str | None, str | None, str | None]:
+def infer_location_type(row: pd.Series) -> tuple[str | None, str | None]:
     """
-    Infer location type from task name.
+    Infer generalized location type and code from task context.
 
-    Location type categorizes where work occurs: BLD (building), GRD (grid),
-    ROM (room), etc.
-    Only available from task name inference.
+    Uses precedence system to determine most specific location:
+    1. ROOM - specific room (FAB112155)
+    2. ELEVATOR - specific elevator (ELV-A-1)
+    3. STAIR - specific stairwell (STR-B-2)
+    4. GRIDLINE - specific gridline/area grid (5, SEA-5)
+    5. AREA - grid area (SEA-5, SWA-1, FIZ1)
+    6. LEVEL - floor level (1, 2, 3, ROOF)
+    7. BUILDING - entire building (FAB, SUE, SUW)
+    8. MULTI - multi-level or multi-location
+    9. None - could not determine
 
     Args:
-        row: Combined task context row with loc_type, loc_type_desc, loc_id columns
+        row: Combined task context row with all location columns:
+            - room, area, level, building (from WBS)
+            - task_name (for pattern matching)
 
     Returns:
-        Tuple of (loc_type, loc_type_desc, loc_id, source)
+        Tuple of (location_type, location_code)
     """
-    loc_type = row.get('loc_type')
-    loc_type_desc = row.get('loc_type_desc')
-    loc_id = row.get('loc_id')
+    task_name = row.get('task_name')
 
-    if loc_type and pd.notna(loc_type):
-        return (loc_type, loc_type_desc, loc_id, 'inferred')
+    # Priority 1: ROOM - specific room code (FAB112155)
+    room = row.get('room')
+    if room and pd.notna(room):
+        return ('ROOM', str(room))
 
-    return (None, None, None, None)
+    # Priority 2: ELEVATOR - specific elevator code
+    elevator = extract_elevator_from_task_name(task_name)
+    if elevator:
+        return ('ELEVATOR', elevator)
+
+    # Priority 3: STAIR - specific stairwell code
+    stair = extract_stair_from_task_name(task_name)
+    if stair:
+        return ('STAIR', stair)
+
+    # Priority 4: GRIDLINE - specific gridline number
+    area = row.get('area')
+    tier_4 = row.get('tier_4')
+    gridline = extract_gridline_from_task_name_and_area(task_name, area, tier_4)
+    if gridline:
+        return ('GRIDLINE', str(gridline))
+
+    # Priority 5: AREA - grid area (SEA-5, SWA-1, FIZ1)
+    if area and pd.notna(area):
+        return ('AREA', str(area))
+
+    # Priority 6: LEVEL - floor level
+    level = row.get('level')
+    if level and pd.notna(level):
+        return ('LEVEL', str(level))
+
+    # Priority 7: BUILDING - entire building
+    building = row.get('building')
+    if building and pd.notna(building):
+        return ('BUILDING', str(building))
+
+    # Priority 8: MULTI - multi-level task (check for "ALL LEVELS" patterns)
+    if task_name and pd.notna(task_name):
+        if 'ALL LEVEL' in str(task_name).upper():
+            return ('MULTI', 'ALL_LEVELS')
+
+    return (None, None)
 
 
 def infer_impact(row: pd.Series) -> dict:
@@ -388,7 +436,7 @@ def infer_all_fields(row: pd.Series) -> dict:
     sub_contractor, sub_source = infer_subcontractor(row)
     sub_trade, sub_trade_desc, sub_trade_source = infer_sub_trade(row)
     phase, phase_desc, phase_source = infer_phase(row)
-    loc_type, loc_type_desc, loc_id, loc_type_source = infer_location_type(row)
+    location_type, location_code = infer_location_type(row)
     impact = infer_impact(row)
 
     return {
@@ -421,11 +469,9 @@ def infer_all_fields(row: pd.Series) -> dict:
         'phase': phase,
         'phase_desc': phase_desc,
         'phase_source': phase_source,
-        # Location type (inferred only)
-        'loc_type': loc_type,
-        'loc_type_desc': loc_type_desc,
-        'loc_id': loc_id,
-        'loc_type_source': loc_type_source,
+        # Location (unified type and code system)
+        'location_type': location_type,
+        'location_code': location_code,
         # Label (combined classification)
         'label': row.get('label'),
         # Impact tracking (inferred only, sparse)

@@ -109,7 +109,7 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
         'sub_contractor': {'activity_code': 0, 'none': 0},
         'sub_trade': {'inferred': 0, 'none': 0},
         'phase': {'inferred': 0, 'none': 0},
-        'loc_type': {'inferred': 0, 'none': 0},
+        'location_type': {'ROOM': 0, 'ELEVATOR': 0, 'STAIR': 0, 'GRIDLINE': 0, 'AREA': 0, 'LEVEL': 0, 'BUILDING': 0, 'MULTI': 0, 'none': 0},
         'impact': {'inferred': 0, 'none': 0},
     }
 
@@ -129,7 +129,7 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
         stats['sub_contractor'][result['sub_source'] or 'none'] += 1
         stats['sub_trade'][result['sub_trade_source'] or 'none'] += 1
         stats['phase'][result['phase_source'] or 'none'] += 1
-        stats['loc_type'][result['loc_type_source'] or 'none'] += 1
+        stats['location_type'][result['location_type'] or 'none'] += 1
         stats['impact'][result['impact_source'] or 'none'] += 1
 
     if verbose:

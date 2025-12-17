@@ -44,6 +44,9 @@ from .extractors import (
     extract_building_from_task_code,
     extract_building_from_z_area,
     extract_trade_from_task_name,
+    extract_elevator_from_task_name,
+    extract_stair_from_task_name,
+    extract_gridline_from_task_name_and_area,
 )
 
 __all__ = [
@@ -78,4 +81,7 @@ __all__ = [
     'extract_building_from_task_code',
     'extract_building_from_z_area',
     'extract_trade_from_task_name',
+    'extract_elevator_from_task_name',
+    'extract_stair_from_task_name',
+    'extract_gridline_from_task_name_and_area',
 ]

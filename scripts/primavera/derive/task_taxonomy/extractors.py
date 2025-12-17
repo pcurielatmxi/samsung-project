@@ -339,3 +339,105 @@ def extract_level_from_z_level(z_level_value) -> str | None:
             return level
 
     return None
+
+
+def extract_elevator_from_task_name(task_name: str) -> str | None:
+    """
+    Extract elevator code from task_name.
+
+    Elevator code patterns:
+    - ELV-A-1, ELV-A-2, ELV-A-3 (elevator letters with levels)
+    - ELV_A_1, ELV A 1 (alternate formats)
+    - Explicit "Elevator A", "Elevator B", etc.
+
+    Returns: Elevator code (ELV-A-1, ELV-B-2, etc.) or None
+    """
+    if not task_name or pd.isna(task_name):
+        return None
+
+    task_name_upper = str(task_name).upper()
+
+    # Pattern 1: ELV-A-1, ELV-B-2 format (most common)
+    elv_match = re.search(r'ELV\s*[-_]?\s*([A-Z])\s*[-_]?\s*(\d)', task_name_upper)
+    if elv_match:
+        return f"ELV-{elv_match.group(1)}-{elv_match.group(2)}"
+
+    # Pattern 2: Explicit "Elevator A", "Elevator B" with optional level
+    explicit_elv = re.search(r'(?:ELEVATOR|ELEV)\s+([A-Z])\s*(?:\(L(\d)\)|-\s*(\d))?', task_name_upper)
+    if explicit_elv:
+        letter = explicit_elv.group(1)
+        level = explicit_elv.group(2) or explicit_elv.group(3)
+        if level:
+            return f"ELV-{letter}-{level}"
+        return f"ELV-{letter}"
+
+    return None
+
+
+def extract_stair_from_task_name(task_name: str) -> str | None:
+    """
+    Extract stairwell code from task_name.
+
+    Stair code patterns:
+    - STR-A-1, STR-B-2 format
+    - STAIR-A, STAIR B, STAIRWELL B format
+    - Can include level: STR-A-1, STR-B-2
+
+    Returns: Stair code (STR-A-1, STR-B-2, etc.) or None
+    """
+    if not task_name or pd.isna(task_name):
+        return None
+
+    task_name_upper = str(task_name).upper()
+
+    # Pattern 1: STR-A-1, STR-B-2 format (most common)
+    stair_match = re.search(r'STR\s*[-_]?\s*([A-Z])\s*[-_]?\s*(\d)', task_name_upper)
+    if stair_match:
+        return f"STR-{stair_match.group(1)}-{stair_match.group(2)}"
+
+    # Pattern 2: STAIR/STAIRWELL A, STAIRWELL B with optional level
+    explicit_stair = re.search(r'(?:STAIR|STAIRWELL|STAIRS)\s+([A-Z])\s*(?:\(L(\d)\)|-\s*(\d))?', task_name_upper)
+    if explicit_stair:
+        letter = explicit_stair.group(1)
+        level = explicit_stair.group(2) or explicit_stair.group(3)
+        if level:
+            return f"STR-{letter}-{level}"
+        return f"STR-{letter}"
+
+    return None
+
+
+def extract_gridline_from_task_name_and_area(task_name: str, area: str, tier_4: str) -> str | None:
+    """
+    Extract gridline number from task_name and area context.
+
+    Gridline patterns:
+    - Direct: "Gridline 5", "Grid 5", "GL-5"
+    - From area patterns: SEA-5, SWA-3, SEB-2 (rightmost digit)
+    - From tier_4 area codes: "SEA - 1", "SWB - 4"
+
+    Returns: Gridline number (1-33) or None
+    """
+    if task_name:
+        task_name_upper = str(task_name).upper()
+
+        # Pattern 1: Direct gridline reference
+        gridline_match = re.search(r'(?:GRIDLINE|GRID|GL)\s*[:-]?\s*(\d+)', task_name_upper)
+        if gridline_match:
+            return gridline_match.group(1)
+
+    # Pattern 2: Extract from area code (SEA-5, SWA-3, etc.)
+    if area and pd.notna(area):
+        area_upper = str(area).upper()
+        area_digit = re.search(r'[-_](\d+)$', area_upper)
+        if area_digit:
+            return area_digit.group(1)
+
+    # Pattern 3: Extract from tier_4 area pattern
+    if tier_4 and pd.notna(tier_4):
+        tier_4_upper = str(tier_4).upper()
+        tier4_area = re.search(r'(?:SE[AB]|SW[AB]|AREA)\s*[-_]?\s*(\d+)', tier_4_upper)
+        if tier4_area:
+            return tier4_area.group(1)
+
+    return None
