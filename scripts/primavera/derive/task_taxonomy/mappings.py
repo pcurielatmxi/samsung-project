@@ -151,6 +151,36 @@ WBS_TRADE_PATTERNS = [
     (r'UNDERGROUND\s*UTIL', 9),                               # EARTHWORK
 ]
 
+# =============================================================================
+# Task Name Pattern Mappings (fallback for tasks missing scope)
+# =============================================================================
+
+# Patterns to match in task_name for trade inference when scope is missing
+# Order matters - more specific patterns first
+TASK_NAME_TRADE_PATTERNS = [
+    # Steel patterns (trade_id=2)
+    (r'PENETRATION\s*SUPPORT\s*STEEL', 2),      # DSAD penetration support steel
+    (r'DS/?AD\b', 2),                            # DS/AD steel
+    (r'STEEL\s*FRAMING', 2),                    # Steel framing
+    (r'STEEL\s*STAIR', 2),                      # Steel stairs
+    (r'STEEL\s*LANDING', 2),                    # Steel landings
+    (r'\bSTEEL\s*INSTALL', 2),                  # Install steel
+    (r'INSTALL\s*.*\bSTEEL\b', 2),              # Install ... steel
+    (r'\bMISC\.?\s*STEEL\b', 2),                # Misc steel
+    # Concrete patterns (trade_id=1)
+    (r'COLUMN\s*CRACK\s*REPAIR', 1),            # Column crack repair
+    (r'CONCRETE\s*REPAIR', 1),                  # Concrete repair
+    (r'SIKA\s*\d+\s*INJECTION', 1),             # Sika injection (concrete repair)
+    (r'\bCFRP\b', 1),                           # CFRP (carbon fiber reinforced polymer)
+    # Earthwork patterns (trade_id=9)
+    (r'EXCAVAT', 9),                            # Excavation
+    (r'BACKFILL', 9),                           # Backfill
+    # General patterns (trade_id=12)
+    (r'TEMP\s*STAIR', 12),                      # Temp stairs
+    (r'DISMANTLE.*TEMP', 12),                   # Dismantle temp
+    (r'SCAFFOLD.*PLATFORM', 12),                # Scaffolding
+]
+
 
 def get_trade_details(trade_id: int) -> dict:
     """Get trade_code and trade_name for a trade_id."""

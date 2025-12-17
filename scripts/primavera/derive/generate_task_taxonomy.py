@@ -102,7 +102,7 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
     # Track statistics for each field's source
     stats = {
         'trade': {'activity_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
-        'building': {'activity_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
+        'building': {'activity_code': 0, 'task_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
         'level': {'activity_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
         'area': {'wbs': 0, 'none': 0},
         'room': {'wbs': 0, 'none': 0},

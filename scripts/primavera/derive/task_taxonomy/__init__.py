@@ -41,6 +41,9 @@ from .extractors import (
     extract_area_from_wbs,
     extract_room_from_wbs,
     extract_level_from_z_level,
+    extract_building_from_task_code,
+    extract_building_from_z_area,
+    extract_trade_from_task_name,
 )
 
 __all__ = [
@@ -72,4 +75,7 @@ __all__ = [
     'extract_area_from_wbs',
     'extract_room_from_wbs',
     'extract_level_from_z_level',
+    'extract_building_from_task_code',
+    'extract_building_from_z_area',
+    'extract_trade_from_task_name',
 ]

@@ -34,6 +34,7 @@ def build_activity_code_lookup(
             'Z-BLDG': value,
             'Z-LEVEL': value,
             'Z-SUB CONTRACTOR': value,
+            'Z-AREA': value,
         }
     """
     # Build actvtype lookup: actv_code_type_id -> actv_code_type
@@ -52,7 +53,7 @@ def build_activity_code_lookup(
 
     # Build task -> activity codes lookup
     task_actv_lookup = {}
-    code_types_of_interest = {'Z-TRADE', 'Z-BLDG', 'Z-LEVEL', 'Z-SUB CONTRACTOR'}
+    code_types_of_interest = {'Z-TRADE', 'Z-BLDG', 'Z-LEVEL', 'Z-SUB CONTRACTOR', 'Z-AREA'}
 
     for _, row in taskactv_df.iterrows():
         task_id = row['task_id']
@@ -120,10 +121,12 @@ def build_task_context(
         has_bldg = sum(1 for v in task_actv_lookup.values() if 'Z-BLDG' in v)
         has_level = sum(1 for v in task_actv_lookup.values() if 'Z-LEVEL' in v)
         has_sub = sum(1 for v in task_actv_lookup.values() if 'Z-SUB CONTRACTOR' in v)
+        has_area = sum(1 for v in task_actv_lookup.values() if 'Z-AREA' in v)
         print(f"    Z-TRADE: {has_trade:,} tasks")
         print(f"    Z-BLDG: {has_bldg:,} tasks")
         print(f"    Z-LEVEL: {has_level:,} tasks")
         print(f"    Z-SUB CONTRACTOR: {has_sub:,} tasks")
+        print(f"    Z-AREA: {has_area:,} tasks")
 
     # Prepare WBS columns
     wbs_cols = ['wbs_id', 'wbs_name', 'tier_2', 'tier_3', 'tier_4', 'tier_5', 'tier_6']
@@ -133,7 +136,10 @@ def build_task_context(
     # Merge tasks with WBS
     if verbose:
         print("  Merging tasks with WBS hierarchy...")
-    context = tasks_df[['task_id', 'task_name', 'wbs_id']].merge(
+    # Include task_code for additional building/area extraction
+    task_cols = ['task_id', 'task_name', 'task_code', 'wbs_id']
+    available_task_cols = [c for c in task_cols if c in tasks_df.columns]
+    context = tasks_df[available_task_cols].merge(
         wbs_subset,
         on='wbs_id',
         how='left'
@@ -153,6 +159,9 @@ def build_task_context(
     )
     context['z_sub_contractor'] = context['task_id'].map(
         lambda x: task_actv_lookup.get(x, {}).get('Z-SUB CONTRACTOR')
+    )
+    context['z_area'] = context['task_id'].map(
+        lambda x: task_actv_lookup.get(x, {}).get('Z-AREA')
     )
 
     # Run TaskClassifier on all tasks

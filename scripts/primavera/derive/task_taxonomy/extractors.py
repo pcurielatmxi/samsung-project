@@ -38,7 +38,7 @@ Room codes like FAB112155 encode: FAB + [Level digit] + [5-digit room ID]
 
 import re
 import pandas as pd
-from .mappings import WBS_TRADE_PATTERNS
+from .mappings import WBS_TRADE_PATTERNS, TASK_NAME_TRADE_PATTERNS
 
 
 def safe_upper(val) -> str:
@@ -184,6 +184,125 @@ def extract_room_from_wbs(tier_5: str, wbs_name: str) -> str | None:
         room_match = re.search(r'(FAB\d{6})', text)
         if room_match:
             return room_match.group(1)
+
+    return None
+
+
+def extract_trade_from_task_name(task_name: str) -> int | None:
+    """
+    Extract trade_id from task_name using pattern matching.
+
+    This is a fallback for tasks where Z-TRADE and WBS don't provide trade info,
+    and the TaskClassifier scope didn't map to a trade.
+
+    Returns: trade_id (1-12) or None
+    """
+    if not task_name or pd.isna(task_name):
+        return None
+
+    task_name_upper = str(task_name).upper()
+
+    for pattern, trade_id in TASK_NAME_TRADE_PATTERNS:
+        if re.search(pattern, task_name_upper, re.IGNORECASE):
+            return trade_id
+
+    return None
+
+
+def extract_building_from_task_code(task_code: str) -> str | None:
+    """
+    Extract building code from task_code second segment.
+
+    Task code format: PREFIX.AREA.NUMBER (e.g., CN.SWA5.1580)
+
+    Area patterns:
+    - SEA*, SEB* -> SUE (Support East)
+    - SWA*, SWB* -> SUW (Support West)
+    - FIZ* -> FIZ (Data Center)
+    - BB* -> FAB (FAB basement)
+    - FAB* -> FAB
+
+    Returns: Building code (FAB, SUE, SUW, FIZ) or None
+    """
+    if not task_code or pd.isna(task_code):
+        return None
+
+    parts = str(task_code).upper().split('.')
+    if len(parts) < 2:
+        return None
+
+    # Check prefix first (for FIZ.EAST, FIZ.WEST patterns)
+    prefix = parts[0]
+    if prefix == 'FIZ':
+        return 'FIZ'
+
+    # Check area segment
+    area = parts[1]
+
+    # Support East patterns
+    if area.startswith('SEA') or area.startswith('SEB'):
+        return 'SUE'
+
+    # Support West patterns
+    if area.startswith('SWA') or area.startswith('SWB'):
+        return 'SUW'
+
+    # FIZ patterns
+    if area.startswith('FIZ'):
+        return 'FIZ'
+
+    # FAB basement patterns (BB = basement block)
+    if area.startswith('BB'):
+        return 'FAB'
+
+    # FAB patterns
+    if area.startswith('FAB'):
+        return 'FAB'
+
+    return None
+
+
+def extract_building_from_z_area(z_area_value: str) -> str | None:
+    """
+    Extract building code from Z-AREA activity code value.
+
+    Z-AREA patterns:
+    - SUES-*, SUEN-* -> SUE (Support East South/North)
+    - SUWS-*, SUWN-* -> SUW (Support West South/North)
+    - SUE - *, SUW - * -> SUE/SUW
+    - FIZ*, Area FIZ* -> FIZ
+    - Fab A*, Fab B* -> FAB
+    - PENTHOUSE -> infer from direction (NORTH EAST -> SUE, etc.)
+
+    Returns: Building code (FAB, SUE, SUW, FIZ) or None
+    """
+    if not z_area_value or pd.isna(z_area_value):
+        return None
+
+    val = str(z_area_value).upper().strip()
+
+    # Support East patterns
+    if re.search(r'^SUES|^SUEN|^SUE\s*-|SUPPORT.*EAST', val):
+        return 'SUE'
+
+    # Support West patterns
+    if re.search(r'^SUWS|^SUWN|^SUW\s*-|SUPPORT.*WEST', val):
+        return 'SUW'
+
+    # FIZ patterns
+    if re.search(r'^FIZ|AREA\s*FIZ|DATA\s*CENTER', val):
+        return 'FIZ'
+
+    # FAB patterns
+    if re.search(r'^FAB\s*[AB]|FAB\s*BUILDING|^A[1-5]\s*-|^B[1-5]\s*-', val):
+        return 'FAB'
+
+    # Penthouse patterns - infer building from direction
+    if 'PENTHOUSE' in val:
+        if 'EAST' in val:
+            return 'SUE'
+        elif 'WEST' in val:
+            return 'SUW'
 
     return None
 

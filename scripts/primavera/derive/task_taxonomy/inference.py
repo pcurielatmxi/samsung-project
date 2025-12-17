@@ -26,6 +26,9 @@ from .extractors import (
     extract_area_from_wbs,
     extract_room_from_wbs,
     extract_level_from_z_level,
+    extract_building_from_task_code,
+    extract_building_from_z_area,
+    extract_trade_from_task_name,
 )
 
 
@@ -33,11 +36,18 @@ def infer_trade(row: pd.Series) -> tuple[int | None, str | None, str | None, str
     """
     Infer trade classification from activity code, WBS, or task name.
 
+    Priority order:
+    1. Z-TRADE activity code (highest priority)
+    2. WBS tier_4 context
+    3. TaskClassifier scope code
+    4. Task name pattern matching (fallback)
+
     Args:
         row: Combined task context row with columns:
             - z_trade: Z-TRADE activity code value
             - tier_4: WBS tier_4 value
             - scope: Inferred scope from TaskClassifier
+            - task_name: Task name for pattern matching
 
     Returns:
         Tuple of (trade_id, trade_code, trade_name, source)
@@ -59,10 +69,18 @@ def infer_trade(row: pd.Series) -> tuple[int | None, str | None, str | None, str
             details = get_trade_details(trade_id)
             return (trade_id, details['trade_code'], details['trade_name'], 'wbs')
 
-    # Priority 3: Task name inference
+    # Priority 3: TaskClassifier scope
     scope = row.get('scope')
     if scope and pd.notna(scope):
         trade_id = SCOPE_TO_TRADE_ID.get(scope)
+        if trade_id:
+            details = get_trade_details(trade_id)
+            return (trade_id, details['trade_code'], details['trade_name'], 'inferred')
+
+    # Priority 4: Task name pattern matching (fallback)
+    task_name = row.get('task_name')
+    if task_name and pd.notna(task_name):
+        trade_id = extract_trade_from_task_name(task_name)
         if trade_id:
             details = get_trade_details(trade_id)
             return (trade_id, details['trade_code'], details['trade_name'], 'inferred')
@@ -72,18 +90,27 @@ def infer_trade(row: pd.Series) -> tuple[int | None, str | None, str | None, str
 
 def infer_building(row: pd.Series) -> tuple[str | None, str | None]:
     """
-    Infer building code from activity code, WBS, or task name.
+    Infer building code from activity codes, task_code, WBS, or task name.
+
+    Priority order:
+    1. Z-BLDG activity code (highest priority, explicit building assignment)
+    2. Z-AREA activity code (structured area with building prefix)
+    3. task_code segment (e.g., CN.SWA5.1234 -> SUW)
+    4. WBS tier hierarchy
+    5. TaskClassifier inference (lowest priority)
 
     Args:
         row: Combined task context row with columns:
             - z_bldg: Z-BLDG activity code value
+            - z_area: Z-AREA activity code value
+            - task_code: P6 task code (PREFIX.AREA.NUMBER format)
             - tier_3, tier_4: WBS tier values
-            - building: Inferred building from TaskClassifier
+            - building_inferred: Inferred building from TaskClassifier
 
     Returns:
         Tuple of (building, source)
     """
-    # Priority 1: Activity code
+    # Priority 1: Z-BLDG activity code (direct building assignment)
     z_bldg = row.get('z_bldg')
     if z_bldg and pd.notna(z_bldg):
         key = str(z_bldg).lower().strip()
@@ -91,7 +118,21 @@ def infer_building(row: pd.Series) -> tuple[str | None, str | None]:
         if building:
             return (building, 'activity_code')
 
-    # Priority 2: WBS context
+    # Priority 2: Z-AREA activity code (structured area with building)
+    z_area = row.get('z_area')
+    if z_area and pd.notna(z_area):
+        building = extract_building_from_z_area(z_area)
+        if building:
+            return (building, 'activity_code')
+
+    # Priority 3: task_code segment (e.g., CN.SWA5.1234 -> SUW)
+    task_code = row.get('task_code')
+    if task_code and pd.notna(task_code):
+        building = extract_building_from_task_code(task_code)
+        if building:
+            return (building, 'task_code')
+
+    # Priority 4: WBS context
     tier_3 = row.get('tier_3')
     tier_4 = row.get('tier_4')
     building = extract_building_from_wbs(tier_3, tier_4)
