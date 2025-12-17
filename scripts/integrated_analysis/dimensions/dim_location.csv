@@ -55,3 +55,20 @@ OB2-2F,OB2,2F,Office Building 2,Level 2,1120
 OB2-3F,OB2,3F,Office Building 2,Level 3,1130
 OB2-ROOF,OB2,ROOF,Office Building 2,Roof,1140
 SITE,SITE,EXT,Site Work,Exterior/Site,9000
+SUE-5F,SUE,5F,Support Building East,Level 5,260
+SUE-6F,SUE,6F,Support Building East,Level 6,270
+SUE-MULTI,SUE,MULTI,Support Building East,Multiple Levels,280
+SUW-5F,SUW,5F,Support Building West,Level 5,360
+SUW-6F,SUW,6F,Support Building West,Level 6,370
+SUW-MULTI,SUW,MULTI,Support Building West,Multiple Levels,380
+FAB-MULTI,FAB,MULTI,Main FAB Building,Multiple Levels,180
+FIZ-4F,FIZ,4F,FAB Integration Zone,Level 4,550
+FIZ-6F,FIZ,6F,FAB Integration Zone,Level 6,560
+FIZ-MULTI,FIZ,MULTI,FAB Integration Zone,Multiple Levels,570
+SUP-MULTI,SUP,MULTI,Support Building (Generic),Multiple Levels,460
+MULTI-1F,MULTI,1F,Multiple Buildings,Level 1,9110
+MULTI-2F,MULTI,2F,Multiple Buildings,Level 2,9120
+MULTI-3F,MULTI,3F,Multiple Buildings,Level 3,9130
+MULTI-4F,MULTI,4F,Multiple Buildings,Level 4,9140
+MULTI-B1,MULTI,B1,Multiple Buildings,Basement Level 1,9101
+MULTI-MULTI,MULTI,MULTI,Multiple Buildings,Multiple Levels,9100

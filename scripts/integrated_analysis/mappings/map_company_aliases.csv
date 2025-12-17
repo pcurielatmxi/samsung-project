@@ -146,3 +146,14 @@ PS,THE GEORGE D ALAN COMPANY DBA GDA CONTRACTORS,17,1.0,PS DBA variant
 PS,W & W-AFCO STEEL LLC,11,1.0,PS hyphen variant
 PS,"W & W-AFCO STEEL, LLC",11,1.0,PS hyphen with comma
 PS,zzz DO NOT USE - W. G. YATES & SONS CONSTRUCTION COMPANY-,2,0.7,PS obsolete record
+P6,CHERRY COATING,6,1.0,P6 Z-SUB variant (typo)
+P6,ALK,22,1.0,P6 Z-SUB abbreviation for Alert Lock & Key
+P6,PERRY & PERRY,21,1.0,P6 Z-SUB code
+P6,SPECTRA,23,1.0,P6 Z-SUB code
+P6,BERNCO,31,1.0,P6 Z-SUB code
+P6,H2I,32,1.0,P6 Z-SUB code
+P6,SELECT PREFAB,33,1.0,P6 Z-SUB code
+P6,FINISH PAINT,0,0.5,P6 Z-SUB activity description (not a company)
+P6,DOORS AND HARDWARE,0,0.5,P6 Z-SUB activity description (not a company)
+P6,FLOOR STRIPING PAINT,0,0.5,P6 Z-SUB activity description (not a company)
+P6,WATER PROOFING GL33,0,0.5,P6 Z-SUB activity description with gridline

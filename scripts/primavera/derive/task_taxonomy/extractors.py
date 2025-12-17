@@ -40,6 +40,26 @@ import re
 import pandas as pd
 from .mappings import WBS_TRADE_PATTERNS, TASK_NAME_TRADE_PATTERNS
 
+# Level code normalization: map raw codes to dim_location format
+LEVEL_NORMALIZATION = {
+    '1': '1F', '2': '2F', '3': '3F', '4': '4F', '5': '5F', '6': '6F',
+    'L1': '1F', 'L2': '2F', 'L3': '3F', 'L4': '4F', 'L5': '5F', 'L6': '6F',
+    'ROOF': 'ROOF', 'RF': 'ROOF', 'R': 'ROOF',
+    'B1': 'B1', 'UG': 'UG', 'BSMT': 'B1', 'BASEMENT': 'B1',
+    'MULTI': 'MULTI', 'ALL': 'MULTI',
+}
+
+
+def normalize_level(level: str | None) -> str | None:
+    """
+    Normalize level codes to dim_location format.
+
+    Converts: '1' -> '1F', 'L2' -> '2F', 'ROOF' -> 'ROOF', etc.
+    """
+    if level is None:
+        return None
+    return LEVEL_NORMALIZATION.get(str(level).upper().strip(), level)
+
 
 def safe_upper(val) -> str:
     """Convert value to uppercase string, handling None/NaN."""

@@ -1,4 +1,5 @@
 company_id,canonical_name,short_code,tier,primary_trade_id,notes
+0,Unknown/Activity Code,UNKNOWN,OTHER,,Placeholder for unmapped or activity description codes
 1,Samsung Electronics Co America,SECAI,OWNER,12,Project owner
 2,W.G. Yates & Sons Construction,YATES,GC,12,General contractor
 3,Baker Concrete Construction,BAKER,T1_SUB,1,Concrete contractor - topping slabs SOMD elevated slabs
@@ -29,3 +30,6 @@ company_id,canonical_name,short_code,tier,primary_trade_id,notes
 28,Performance Contracting,PCI,T1_SUB,8,Insulation and fireproofing
 29,Lindamood Demolition,LINDAMOOD,T1_SUB,9,Demolition and earthwork
 30,ISEC,ISEC,T1_SUB,5,Interior systems contractor
+31,Bernco,BERNCO,T1_SUB,,Unknown trade - from P6 Z-SUB
+32,H2I Group,H2I,T1_SUB,,Unknown trade - from P6 Z-SUB
+33,Select Prefab,SELECT_PREFAB,T1_SUB,,Prefabrication - from P6 Z-SUB

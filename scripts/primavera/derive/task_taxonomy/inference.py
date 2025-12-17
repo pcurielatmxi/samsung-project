@@ -33,6 +33,7 @@ from .extractors import (
     extract_elevator_from_task_name,
     extract_stair_from_task_name,
     extract_gridline_from_task_name_and_area,
+    normalize_level,
 )
 
 
@@ -166,6 +167,9 @@ def infer_level(row: pd.Series) -> tuple[str | None, str | None]:
     Note: Z-LEVEL is often misused (contains trade names), so WBS is often
     more reliable. Activity code still takes priority when it's a valid level.
 
+    All returned levels are normalized to dim_location format:
+    '1' -> '1F', '2' -> '2F', etc.
+
     Args:
         row: Combined task context row with columns:
             - z_level: Z-LEVEL activity code value
@@ -173,14 +177,14 @@ def infer_level(row: pd.Series) -> tuple[str | None, str | None]:
             - level: Inferred level from TaskClassifier
 
     Returns:
-        Tuple of (level, source)
+        Tuple of (level, source) where level is in dim_location format
     """
     # Priority 1: Activity code (when valid level pattern)
     z_level = row.get('z_level')
     if z_level and pd.notna(z_level):
         level = extract_level_from_z_level(z_level)
         if level:
-            return (level, 'activity_code')
+            return (normalize_level(level), 'activity_code')
 
     # Priority 2: WBS context
     tier_3 = row.get('tier_3')
@@ -189,13 +193,13 @@ def infer_level(row: pd.Series) -> tuple[str | None, str | None]:
     wbs_name = row.get('wbs_name')
     level = extract_level_from_wbs(tier_3, tier_4, tier_5, wbs_name)
     if level:
-        return (level, 'wbs')
+        return (normalize_level(level), 'wbs')
 
     # Priority 3: Task name inference
     inferred_level = row.get('level_inferred')
     if inferred_level and pd.notna(inferred_level):
         if inferred_level not in ('UNK', 'GEN'):
-            return (inferred_level, 'inferred')
+            return (normalize_level(inferred_level), 'inferred')
 
     return (None, None)
 

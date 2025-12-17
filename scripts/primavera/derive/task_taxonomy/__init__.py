@@ -48,6 +48,7 @@ from .extractors import (
     extract_elevator_from_task_name,
     extract_stair_from_task_name,
     extract_gridline_from_task_name_and_area,
+    normalize_level,
 )
 
 __all__ = [
@@ -86,4 +87,5 @@ __all__ = [
     'extract_elevator_from_task_name',
     'extract_stair_from_task_name',
     'extract_gridline_from_task_name_and_area',
+    'normalize_level',
 ]
