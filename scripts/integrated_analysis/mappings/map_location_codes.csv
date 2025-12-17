@@ -63,3 +63,11 @@ P6,FIZ,FIZ-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
 P6,GCS,GCS-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
 P6,OB1,OB1-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
 P6,OB2,OB2-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
+TBM,FAB-B1F,FAB-B1,typo,TBM typo B1F should be B1
+TBM,LAYDOWN-OUTSIDE(GROUND FLOOR),SITE,transform,TBM laydown area -> site work
+TBM,LAYDOWN-1F,SITE,transform,TBM laydown area -> site work
+TBM,SUP-OUTSIDE(GROUND FLOOR),SITE,transform,TBM exterior work -> site
+TBM,FAB-OUTSIDE(GROUND FLOOR),SITE,transform,TBM exterior work -> site
+TBM,OFFICE-OUTSIDE(GROUND FLOOR),SITE,transform,TBM exterior work -> site
+TBM,SUP-5F,SUP-5F,direct,TBM Building-Level format
+TBM,SUP-6F,SUP-6F,direct,TBM Building-Level format

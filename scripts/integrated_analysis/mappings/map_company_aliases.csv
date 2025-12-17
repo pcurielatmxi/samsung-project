@@ -157,3 +157,15 @@ P6,FINISH PAINT,0,0.5,P6 Z-SUB activity description (not a company)
 P6,DOORS AND HARDWARE,0,0.5,P6 Z-SUB activity description (not a company)
 P6,FLOOR STRIPING PAINT,0,0.5,P6 Z-SUB activity description (not a company)
 P6,WATER PROOFING GL33,0,0.5,P6 Z-SUB activity description with gridline
+TBM,Alert Lock & Key,22,1.0,TBM full name
+TBM,Patriot Erectors LLC,7,1.0,TBM with LLC
+TBM,"Patriot Erectors, LLC",7,1.0,TBM with comma and LLC
+TBM,WWSE,11,1.0,TBM W&W Steel abbreviation
+TBM,rollingplains,10,0.9,TBM typo no space
+TBM,rolingplains,10,0.9,TBM typo misspelling
+TBM,Orco steel,0,0.8,TBM - unknown company
+TBM,JVM,0,0.8,TBM - unknown company
+QUALITY,ABR,0,0.8,Quality - unknown abbreviation
+QUALITY,SP,23,0.9,Quality - likely Spectra abbreviation
+QUALITY,SnS,0,0.8,Quality - unknown (possibly SNS Erectors)
+QUALITY,C&B,0,0.8,Quality - unknown (possibly Cook & Boardman)

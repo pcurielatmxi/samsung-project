@@ -1,0 +1,4 @@
+source,total_records,has_company_field,pct_has_company_field,company_mapped,pct_company_mapped,has_location_field,pct_has_location_field,location_valid,pct_location_valid,has_trade,pct_has_trade
+P6_TAXONOMY,345993,92852,26.8,92852,26.8,321555,92.9,321555,92.9,338520.0,97.8
+TBM,13539,13539,100.0,13539,100.0,13295,98.2,13295,100.0,,
+QUALITY_YATES,19876,19875,100.0,19875,100.0,19865,99.9,N/A,N/A,,

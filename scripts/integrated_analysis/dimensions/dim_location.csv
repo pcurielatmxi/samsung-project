@@ -28,6 +28,8 @@ SUP-1F,SUP,1F,Support Building (Generic),Level 1,410
 SUP-2F,SUP,2F,Support Building (Generic),Level 2,420
 SUP-3F,SUP,3F,Support Building (Generic),Level 3,430
 SUP-4F,SUP,4F,Support Building (Generic),Level 4,440
+SUP-5F,SUP,5F,Support Building (Generic),Level 5,445
+SUP-6F,SUP,6F,Support Building (Generic),Level 6,448
 SUP-ROOF,SUP,ROOF,Support Building (Generic),Roof,450
 FIZ-UG,FIZ,UG,FAB Integration Zone,Underground,500
 FIZ-1F,FIZ,1F,FAB Integration Zone,Level 1,510
