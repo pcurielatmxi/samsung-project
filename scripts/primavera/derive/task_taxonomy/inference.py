@@ -26,6 +26,7 @@ from .extractors import (
     extract_area_from_wbs,
     extract_room_from_wbs,
     extract_level_from_z_level,
+    extract_building_from_z_level,
     extract_building_from_task_code,
     extract_building_from_z_area,
     extract_trade_from_task_name,
@@ -125,6 +126,13 @@ def infer_building(row: pd.Series) -> tuple[str | None, str | None]:
     z_area = row.get('z_area')
     if z_area and pd.notna(z_area):
         building = extract_building_from_z_area(z_area)
+        if building:
+            return (building, 'activity_code')
+
+    # Priority 2.5: Z-LEVEL activity code (cardinal directions like "STAIR 5 (WEST)")
+    z_level = row.get('z_level')
+    if z_level and pd.notna(z_level):
+        building = extract_building_from_z_level(z_level)
         if building:
             return (building, 'activity_code')
 

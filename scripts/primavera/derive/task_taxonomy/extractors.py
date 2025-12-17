@@ -307,6 +307,43 @@ def extract_building_from_z_area(z_area_value: str) -> str | None:
     return None
 
 
+def extract_building_from_z_level(z_level_value: str) -> str | None:
+    """
+    Extract building code from Z-LEVEL activity code value based on cardinal directions.
+
+    Z-LEVEL sometimes contains cardinal direction indicators:
+    - (WEST), WEST, W -> SUW (Support West)
+    - (EAST), EAST, E -> SUE (Support East)
+    - (NORTH), NORTH, N -> SUE/SUW depending on context
+    - (SOUTH), SOUTH, S -> SUE/SUW depending on context
+
+    Returns: Building code (SUE, SUW) or None
+    """
+    if not z_level_value or pd.isna(z_level_value):
+        return None
+
+    val = str(z_level_value).upper().strip()
+
+    # Check for cardinal directions in parentheses or as separate words
+    # WEST patterns
+    if re.search(r'\(WEST\)|\bWEST\b|\s+W\s*$|\s+W\)', val):
+        return 'SUW'
+
+    # EAST patterns
+    if re.search(r'\(EAST\)|\bEAST\b|\s+E\s*$|\s+E\)', val):
+        return 'SUE'
+
+    # NORTH patterns (default to SUE for Support East North)
+    if re.search(r'\(NORTH\)|\bNORTH\b|\s+N\s*$|\s+N\)', val):
+        return 'SUE'
+
+    # SOUTH patterns (default to SUE for Support East South)
+    if re.search(r'\(SOUTH\)|\bSOUTH\b|\s+S\s*$|\s+S\)', val):
+        return 'SUE'
+
+    return None
+
+
 def extract_level_from_z_level(z_level_value) -> str | None:
     """
     Extract floor level from Z-LEVEL activity code value.

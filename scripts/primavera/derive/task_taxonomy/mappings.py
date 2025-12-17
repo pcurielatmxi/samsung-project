@@ -176,6 +176,7 @@ TASK_NAME_TRADE_PATTERNS = [
     (r'EXCAVAT', 9),                            # Excavation
     (r'BACKFILL', 9),                           # Backfill
     # General patterns (trade_id=12)
+    (r'DEMO\s*(?:EXISTING|STRUCTURE)', 12),     # Demo existing (demolition)
     (r'TEMP\s*STAIR', 12),                      # Temp stairs
     (r'DISMANTLE.*TEMP', 12),                   # Dismantle temp
     (r'SCAFFOLD.*PLATFORM', 12),                # Scaffolding
