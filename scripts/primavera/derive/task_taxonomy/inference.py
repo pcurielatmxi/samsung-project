@@ -298,7 +298,7 @@ def infer_phase(row: pd.Series) -> tuple[str | None, str | None, str | None]:
     return (None, None, None)
 
 
-def infer_location_type(row: pd.Series) -> tuple[str | None, str | None]:
+def infer_location_type(row: pd.Series, building: str | None = None, level: str | None = None, area: str | None = None, room: str | None = None) -> tuple[str | None, str | None]:
     """
     Infer generalized location type and code from task context.
 
@@ -314,17 +314,28 @@ def infer_location_type(row: pd.Series) -> tuple[str | None, str | None]:
     9. None - could not determine
 
     Args:
-        row: Combined task context row with all location columns:
-            - room, area, level, building (from WBS)
-            - task_name (for pattern matching)
+        row: Combined task context row
+        building: Inferred building code (optional, can be passed directly)
+        level: Inferred level (optional, can be passed directly)
+        area: Inferred area (optional, can be passed directly)
+        room: Inferred room (optional, can be passed directly)
 
     Returns:
         Tuple of (location_type, location_code)
     """
     task_name = row.get('task_name')
 
+    # Use passed-in values or try to get from row
+    if room is None:
+        room = row.get('room')
+    if building is None:
+        building = row.get('building')
+    if level is None:
+        level = row.get('level')
+    if area is None:
+        area = row.get('area')
+
     # Priority 1: ROOM - specific room code (FAB112155)
-    room = row.get('room')
     if room and pd.notna(room):
         return ('ROOM', str(room))
 
@@ -339,7 +350,6 @@ def infer_location_type(row: pd.Series) -> tuple[str | None, str | None]:
         return ('STAIR', stair)
 
     # Priority 4: GRIDLINE - specific gridline number
-    area = row.get('area')
     tier_4 = row.get('tier_4')
     gridline = extract_gridline_from_task_name_and_area(task_name, area, tier_4)
     if gridline:
@@ -350,12 +360,10 @@ def infer_location_type(row: pd.Series) -> tuple[str | None, str | None]:
         return ('AREA', str(area))
 
     # Priority 6: LEVEL - floor level
-    level = row.get('level')
     if level and pd.notna(level):
         return ('LEVEL', str(level))
 
     # Priority 7: BUILDING - entire building
-    building = row.get('building')
     if building and pd.notna(building):
         return ('BUILDING', str(building))
 
@@ -436,7 +444,8 @@ def infer_all_fields(row: pd.Series) -> dict:
     sub_contractor, sub_source = infer_subcontractor(row)
     sub_trade, sub_trade_desc, sub_trade_source = infer_sub_trade(row)
     phase, phase_desc, phase_source = infer_phase(row)
-    location_type, location_code = infer_location_type(row)
+    # Pass inferred location fields to location_type inference
+    location_type, location_code = infer_location_type(row, building=building, level=level, area=area, room=room)
     impact = infer_impact(row)
 
     return {
