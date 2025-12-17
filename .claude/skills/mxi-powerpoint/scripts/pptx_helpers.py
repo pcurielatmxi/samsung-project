@@ -662,21 +662,20 @@ class MXIPresentation:
         return slide
 
     def add_section_slide(self, section_title: str, section_number: int = None) -> 'Slide':
-        """Add a section divider slide - title with number, accent line, and banner at bottom."""
+        """Add a section divider slide - centered title with number, matching content slide footer."""
         slide = self.prs.slides.add_slide(self.prs.slide_layouts[6])
 
-        # Section number and title on same line
-        title_top = Inches(2.8)
+        # Section number and title with dash separator
+        title_top = Inches(3.0)
         if section_number:
-            # Number in accent color
             num_text = f"0{section_number}" if section_number < 10 else str(section_number)
-            full_title = f"{num_text}   {section_title}"
+            full_title = f"{num_text} - {section_title}"
         else:
             full_title = section_title
 
-        # Section title - navy on white
+        # Section title - centered, navy on white
         title_box = slide.shapes.add_textbox(
-            Inches(0.9), title_top, Inches(11.5), Inches(1.2)
+            Inches(0.5), title_top, Inches(12.333), Inches(1.2)
         )
         tf = title_box.text_frame
         p = tf.paragraphs[0]
@@ -685,49 +684,10 @@ class MXIPresentation:
         p.font.bold = True
         p.font.color.rgb = MXIColors.NAVY
         p.font.name = "Segoe UI"
+        p.alignment = PP_ALIGN.CENTER
 
-        # Accent line under title
-        line = slide.shapes.add_shape(
-            MSO_SHAPE.RECTANGLE,
-            Inches(0.9), title_top + Inches(1.0),
-            Inches(5.0), Inches(0.04)
-        )
-        line.fill.solid()
-        line.fill.fore_color.rgb = MXIColors.ACCENT
-        line.line.fill.background()
-        line.shadow.inherit = False
-
-        # Banner at bottom
-        banner_height = Inches(0.65)
-        banner_top = self.prs.slide_height - banner_height
-
-        if MXIAssets.BANNER.exists():
-            slide.shapes.add_picture(
-                str(MXIAssets.BANNER),
-                Inches(0), banner_top,
-                width=self.prs.slide_width,
-                height=banner_height
-            )
-        else:
-            banner = slide.shapes.add_shape(
-                MSO_SHAPE.RECTANGLE,
-                Inches(0), banner_top,
-                self.prs.slide_width, banner_height
-            )
-            banner.fill.solid()
-            banner.fill.fore_color.rgb = MXIColors.NAVY
-            banner.line.fill.background()
-            banner.shadow.inherit = False
-
-        # MXI Logo on right side of banner
-        if self.show_logo and MXIAssets.LOGO_TRANSPARENT.exists():
-            slide.shapes.add_picture(
-                str(MXIAssets.LOGO_TRANSPARENT),
-                Inches(11.5), banner_top + Inches(0.1),
-                height=Inches(0.45)
-            )
-
-        self.slide_count += 1
+        # Use standard footer (same as content slides)
+        self._add_slide_footer(slide)
         return slide
 
     def save(self, filename: str = None, output_dir: str = None):
