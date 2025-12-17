@@ -25,6 +25,11 @@ PyMuPDF>=1.24.0          # Fast PDF text/image extraction
 pdfplumber>=0.11.0       # Table extraction from PDFs
 
 # ============================================================================
+# PowerPoint Generation
+# ============================================================================
+python-pptx>=1.0.0       # Create/edit PowerPoint presentations
+
+# ============================================================================
 # Visualization & Images
 # ============================================================================
 matplotlib>=3.8.0
