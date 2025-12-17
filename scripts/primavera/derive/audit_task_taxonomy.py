@@ -105,7 +105,7 @@ def build_audit_dataset(
 
     # Randomly sample tasks from taxonomy
     print(f"\nRandomly sampling {num_samples:,} tasks...")
-    sampled_taxonomy = taxonomy_df.sample(n=min(num_samples, len(taxonomy_df)), random_state=42)
+    sampled_taxonomy = taxonomy_df.sample(n=min(num_samples, len(taxonomy_df)))
 
     # Merge with task data
     audit = sampled_taxonomy.merge(
