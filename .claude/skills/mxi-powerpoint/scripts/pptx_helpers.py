@@ -163,7 +163,7 @@ class MXIPresentation:
         p.font.size = Pt(36)
         p.font.bold = True
         p.font.color.rgb = MXIColors.WHITE
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         # Subtitle
         if self.subtitle:
@@ -175,7 +175,7 @@ class MXIPresentation:
             p.text = self.subtitle
             p.font.size = Pt(18)
             p.font.color.rgb = RGBColor(180, 195, 210)
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
 
         # Project info box (below banner, on white background)
         info_box = slide.shapes.add_textbox(
@@ -187,13 +187,13 @@ class MXIPresentation:
         p.font.size = Pt(16)
         p.font.bold = True
         p.font.color.rgb = MXIColors.NAVY
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         p = tf.add_paragraph()
         p.text = "Performance Analysis"
         p.font.size = Pt(14)
         p.font.color.rgb = MXIColors.GRAY
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         # Date and prepared by (no bottom MXI logo - minimalistic)
         footer_box = slide.shapes.add_textbox(
@@ -204,7 +204,7 @@ class MXIPresentation:
         p.text = f"{self.date}  |  Prepared by MXI"
         p.font.size = Pt(12)
         p.font.color.rgb = MXIColors.LIGHT_GRAY
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         self.slide_count += 1
         return slide
@@ -221,7 +221,7 @@ class MXIPresentation:
         p.font.size = Pt(28)
         p.font.bold = True
         p.font.color.rgb = MXIColors.NAVY
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         # Accent line under title - spans most of width
         line = slide.shapes.add_shape(
@@ -265,32 +265,33 @@ class MXIPresentation:
         if self.show_logo and MXIAssets.LOGO_TRANSPARENT.exists():
             slide.shapes.add_picture(
                 str(MXIAssets.LOGO_TRANSPARENT),
-                Inches(12.0), banner_top + Inches(0.1),
+                Inches(12.3), banner_top + Inches(0.1),
                 height=Inches(0.45)
             )
 
-        # Footer text on banner (white text) - bigger font
-        footer = slide.shapes.add_textbox(
-            Inches(0.5), banner_top + Inches(0.18), Inches(8), Inches(0.35)
-        )
-        tf = footer.text_frame
-        p = tf.paragraphs[0]
-        p.text = "MXI  |  Samsung Taylor FAB1"
-        p.font.size = Pt(12)
-        p.font.color.rgb = RGBColor(200, 210, 220)
-        p.font.name = "Arial"
-
-        # Page number on banner - bigger font
+        # Page number at beginning of footer (bold)
         page_box = slide.shapes.add_textbox(
-            Inches(11.0), banner_top + Inches(0.18), Inches(0.8), Inches(0.35)
+            Inches(0.5), banner_top + Inches(0.18), Inches(0.5), Inches(0.35)
         )
         tf = page_box.text_frame
         p = tf.paragraphs[0]
         p.text = str(self.slide_count)
         p.font.size = Pt(12)
+        p.font.bold = True
         p.font.color.rgb = RGBColor(200, 210, 220)
-        p.font.name = "Arial"
-        p.alignment = PP_ALIGN.RIGHT
+        p.font.name = "Segoe UI"
+
+        # Footer text on banner (bold)
+        footer = slide.shapes.add_textbox(
+            Inches(1.0), banner_top + Inches(0.18), Inches(8), Inches(0.35)
+        )
+        tf = footer.text_frame
+        p = tf.paragraphs[0]
+        p.text = "MXI  |  Samsung Taylor FAB1"
+        p.font.size = Pt(12)
+        p.font.bold = True
+        p.font.color.rgb = RGBColor(200, 210, 220)
+        p.font.name = "Segoe UI"
 
     def add_content_slide(self, title: str, bullets: List[str],
                           sub_bullets: dict = None) -> 'Slide':
@@ -324,7 +325,7 @@ class MXIPresentation:
             p.text = f"•  {bullet}"
             p.font.size = Pt(15)
             p.font.color.rgb = MXIColors.DARK_GRAY
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.space_before = Pt(5)
             p.space_after = Pt(5)
             p.level = 0
@@ -336,7 +337,7 @@ class MXIPresentation:
                     sp.text = f"    ‒  {sub}"  # Indented dash for sub-bullets
                     sp.font.size = Pt(13)
                     sp.font.color.rgb = MXIColors.GRAY
-                    sp.font.name = "Arial"
+                    sp.font.name = "Segoe UI"
                     sp.level = 1
                     sp.space_before = Pt(3)
                     sp.space_after = Pt(3)
@@ -367,7 +368,7 @@ class MXIPresentation:
         p.font.size = Pt(16)
         p.font.bold = True
         p.font.color.rgb = MXIColors.BLUE
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         # Left column content
         left_box = slide.shapes.add_textbox(
@@ -380,7 +381,7 @@ class MXIPresentation:
             p.text = item
             p.font.size = Pt(14)
             p.font.color.rgb = MXIColors.GRAY
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.space_before = Pt(1)
             p.space_after = Pt(1)
 
@@ -394,7 +395,7 @@ class MXIPresentation:
         p.font.size = Pt(16)
         p.font.bold = True
         p.font.color.rgb = MXIColors.BLUE
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         # Right column content
         right_box = slide.shapes.add_textbox(
@@ -407,7 +408,7 @@ class MXIPresentation:
             p.text = item
             p.font.size = Pt(14)
             p.font.color.rgb = MXIColors.GRAY
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.space_before = Pt(1)
             p.space_after = Pt(1)
 
@@ -454,7 +455,7 @@ class MXIPresentation:
             p.font.size = Pt(10)
             p.font.italic = True
             p.font.color.rgb = MXIColors.LIGHT_GRAY
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.alignment = PP_ALIGN.CENTER
 
         self._add_slide_footer(slide)
@@ -502,7 +503,7 @@ class MXIPresentation:
             p.font.color.rgb = MXIColors.DARK_GRAY
             p.font.bold = True
             p.font.size = Pt(11)
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.alignment = PP_ALIGN.LEFT
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
@@ -523,7 +524,7 @@ class MXIPresentation:
                 p = cell.text_frame.paragraphs[0]
                 p.font.size = Pt(11)
                 p.font.color.rgb = MXIColors.DARK_GRAY
-                p.font.name = "Arial"
+                p.font.name = "Segoe UI"
                 p.alignment = PP_ALIGN.LEFT
                 cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
@@ -579,7 +580,7 @@ class MXIPresentation:
             p.text = kpi["label"]
             p.font.size = Pt(13)
             p.font.color.rgb = MXIColors.GRAY
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.alignment = PP_ALIGN.CENTER
 
             # KPI value
@@ -592,7 +593,7 @@ class MXIPresentation:
             p.text = str(kpi["value"])
             p.font.size = Pt(32)
             p.font.bold = True
-            p.font.name = "Arial"
+            p.font.name = "Segoe UI"
             p.alignment = PP_ALIGN.CENTER
 
             # Determine color based on trend
@@ -651,7 +652,7 @@ class MXIPresentation:
         p.font.size = Pt(40)
         p.font.bold = True
         p.font.color.rgb = MXIColors.NAVY
-        p.font.name = "Arial"
+        p.font.name = "Segoe UI"
 
         # Accent line under title
         line = slide.shapes.add_shape(
