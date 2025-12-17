@@ -349,8 +349,9 @@ def extract_elevator_from_task_name(task_name: str) -> str | None:
     - ELV-A-1, ELV-A-2, ELV-A-3 (elevator letters with levels)
     - ELV_A_1, ELV A 1 (alternate formats)
     - Explicit "Elevator A", "Elevator B", etc.
+    - Numeric "Elevator #01", "Elevator 1", etc.
 
-    Returns: Elevator code (ELV-A-1, ELV-B-2, etc.) or None
+    Returns: Elevator code (ELV-A-1, ELV-B-2, ELV-01, etc.) or None
     """
     if not task_name or pd.isna(task_name):
         return None
@@ -370,6 +371,15 @@ def extract_elevator_from_task_name(task_name: str) -> str | None:
         if level:
             return f"ELV-{letter}-{level}"
         return f"ELV-{letter}"
+
+    # Pattern 3: Numeric elevators (Elevator #01, Elevator 1, etc.)
+    numeric_elv = re.search(r'(?:ELEVATOR|ELEV)\s+[#]?(\d+)', task_name_upper)
+    if numeric_elv:
+        elv_num = numeric_elv.group(1)
+        # Pad single digits to 2 digits for consistency (1 -> 01)
+        if len(elv_num) == 1:
+            elv_num = f"0{elv_num}"
+        return f"ELV-{elv_num}"
 
     return None
 
