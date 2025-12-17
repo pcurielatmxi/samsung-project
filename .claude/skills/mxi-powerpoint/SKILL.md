@@ -66,7 +66,7 @@ Logo files are automatically loaded from OneDrive:
 - **Titles:** Segoe UI Bold, 28-36pt
 - **Subtitles:** Segoe UI, 18-24pt
 - **Body Text:** Segoe UI, 14-18pt
-- **Footer/Page Numbers:** Segoe UI Semibold, 12pt
+- **Footer:** Segoe UI, 12pt
 - **Footnotes:** Segoe UI, 10-12pt
 
 ### Layout Standards
@@ -267,16 +267,17 @@ def add_table(slide, data, left, top, width, height):
 
 ## Footer Standard
 
-Footer appears on a banner at the bottom of every slide (except title). Uses Segoe UI Semibold font.
+Footer appears on a banner at the bottom of every slide (except title). Uses Segoe UI font.
 
-**Format:** `[Page #]  MXI  |  Samsung Taylor FAB1  |  [Report Title]  |  [Date]`
+**Layout:**
+- **Left aligned:** `[Page #]    Samsung Taylor FAB1`
+- **Center aligned:** `[Report Title]  |  [Date mm/dd/yyyy]`
+- **Right side:** MXI logo
 
 The footer is automatically added by `MXIPresentation` and includes:
-- Page number (left side)
-- Company branding (MXI)
-- Project name (Samsung Taylor FAB1)
-- Report title (from presentation title)
-- Date (month/year)
+- Page number and project name (left)
+- Report title and date (center)
+- MXI logo (right)
 
 ## Complete Example
 

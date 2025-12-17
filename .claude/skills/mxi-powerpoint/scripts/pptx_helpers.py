@@ -92,7 +92,7 @@ class MXIPresentation:
 
         self.title = title
         self.subtitle = subtitle
-        self.date = date or datetime.now().strftime("%B %Y")
+        self.date = date or datetime.now().strftime("%m/%d/%Y")
         self.slide_count = 0
 
         # Logo settings
@@ -269,27 +269,29 @@ class MXIPresentation:
                 height=Inches(0.45)
             )
 
-        # Page number at beginning of footer (semibold)
-        page_box = slide.shapes.add_textbox(
-            Inches(0.5), banner_top + Inches(0.18), Inches(0.5), Inches(0.35)
+        # Left side: Page number and project name (left aligned)
+        left_box = slide.shapes.add_textbox(
+            Inches(0.5), banner_top + Inches(0.18), Inches(4), Inches(0.35)
         )
-        tf = page_box.text_frame
+        tf = left_box.text_frame
         p = tf.paragraphs[0]
-        p.text = str(self.slide_count)
+        p.text = f"{self.slide_count}    Samsung Taylor FAB1"
         p.font.size = Pt(12)
         p.font.color.rgb = RGBColor(200, 210, 220)
-        p.font.name = "Segoe UI Semibold"
+        p.font.name = "Segoe UI"
+        p.alignment = PP_ALIGN.LEFT
 
-        # Footer text on banner (semibold) - includes project, report title, and date
-        footer = slide.shapes.add_textbox(
-            Inches(1.0), banner_top + Inches(0.18), Inches(10), Inches(0.35)
+        # Center: Report title and date (center aligned)
+        center_box = slide.shapes.add_textbox(
+            Inches(4), banner_top + Inches(0.18), Inches(5.333), Inches(0.35)
         )
-        tf = footer.text_frame
+        tf = center_box.text_frame
         p = tf.paragraphs[0]
-        p.text = f"MXI  |  Samsung Taylor FAB1  |  {self.title}  |  {self.date}"
+        p.text = f"{self.title}  |  {self.date}"
         p.font.size = Pt(12)
         p.font.color.rgb = RGBColor(200, 210, 220)
-        p.font.name = "Segoe UI Semibold"
+        p.font.name = "Segoe UI"
+        p.alignment = PP_ALIGN.CENTER
 
     def add_content_slide(self, title: str, bullets: List[str],
                           sub_bullets: dict = None) -> 'Slide':
@@ -343,6 +345,51 @@ class MXIPresentation:
         self._add_slide_footer(slide)
         return slide
 
+    def _add_column_content(self, tf, content: List[str]):
+        """Add content to a column with colored icons."""
+        for i, item in enumerate(content):
+            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+            p.level = 0
+            p.space_before = Pt(2)
+            p.space_after = Pt(2)
+
+            # Check for icons at the start and apply colors
+            icon = None
+            icon_color = None
+            text = item
+
+            if item.startswith("✓ ") or item.startswith("✔ "):
+                icon = item[0] + " "
+                icon_color = MXIColors.GREEN
+                text = item[2:]
+            elif item.startswith("✗ ") or item.startswith("✘ ") or item.startswith("X ") or item.startswith("× "):
+                icon = item[0] + " "
+                icon_color = MXIColors.RED
+                text = item[2:]
+            elif item.startswith("⚠ ") or item.startswith("! "):
+                icon = item[0] + " "
+                icon_color = MXIColors.YELLOW
+                text = item[2:]
+
+            if icon and icon_color:
+                # Add icon with color
+                run = p.add_run()
+                run.text = icon
+                run.font.size = Pt(14)
+                run.font.color.rgb = icon_color
+                run.font.name = "Segoe UI"
+                # Add text with gray color
+                run = p.add_run()
+                run.text = text
+                run.font.size = Pt(14)
+                run.font.color.rgb = MXIColors.DARK_GRAY
+                run.font.name = "Segoe UI"
+            else:
+                p.text = item
+                p.font.size = Pt(14)
+                p.font.color.rgb = MXIColors.DARK_GRAY
+                p.font.name = "Segoe UI"
+
     def add_two_column_slide(self, title: str,
                              left_title: str, left_content: List[str],
                              right_title: str, right_content: List[str]) -> 'Slide':
@@ -355,6 +402,7 @@ class MXIPresentation:
         col_width = Inches(5.5)
         center_gap = Inches(0.9)
         right_start = left_margin + col_width + center_gap
+        content_indent = Inches(0.3)  # Indentation for content
 
         # Left column title
         left_title_box = slide.shapes.add_textbox(
@@ -365,23 +413,16 @@ class MXIPresentation:
         p.text = left_title
         p.font.size = Pt(16)
         p.font.bold = True
-        p.font.color.rgb = MXIColors.BLUE
+        p.font.color.rgb = MXIColors.ACCENT
         p.font.name = "Segoe UI"
 
-        # Left column content
+        # Left column content (indented)
         left_box = slide.shapes.add_textbox(
-            left_margin, Inches(2.2), col_width, Inches(4.5)
+            left_margin + content_indent, Inches(2.1), col_width - content_indent, Inches(4.5)
         )
         tf = left_box.text_frame
         tf.word_wrap = True
-        for i, item in enumerate(left_content):
-            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-            p.text = item
-            p.font.size = Pt(14)
-            p.font.color.rgb = MXIColors.GRAY
-            p.font.name = "Segoe UI"
-            p.space_before = Pt(1)
-            p.space_after = Pt(1)
+        self._add_column_content(tf, left_content)
 
         # Right column title
         right_title_box = slide.shapes.add_textbox(
@@ -392,23 +433,16 @@ class MXIPresentation:
         p.text = right_title
         p.font.size = Pt(16)
         p.font.bold = True
-        p.font.color.rgb = MXIColors.BLUE
+        p.font.color.rgb = MXIColors.ACCENT
         p.font.name = "Segoe UI"
 
-        # Right column content
+        # Right column content (indented)
         right_box = slide.shapes.add_textbox(
-            right_start, Inches(2.2), col_width, Inches(4.5)
+            right_start + content_indent, Inches(2.1), col_width - content_indent, Inches(4.5)
         )
         tf = right_box.text_frame
         tf.word_wrap = True
-        for i, item in enumerate(right_content):
-            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-            p.text = item
-            p.font.size = Pt(14)
-            p.font.color.rgb = MXIColors.GRAY
-            p.font.name = "Segoe UI"
-            p.space_before = Pt(1)
-            p.space_after = Pt(1)
+        self._add_column_content(tf, right_content)
 
         self._add_slide_footer(slide)
         return slide
