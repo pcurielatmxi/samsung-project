@@ -392,8 +392,9 @@ def extract_stair_from_task_name(task_name: str) -> str | None:
     - STR-A-1, STR-B-2 format
     - STAIR-A, STAIR B, STAIRWELL B format
     - Can include level: STR-A-1, STR-B-2
+    - Numeric stair IDs: STAIR #01, STAIR #3, STAIRWELL 1
 
-    Returns: Stair code (STR-A-1, STR-B-2, etc.) or None
+    Returns: Stair code (STR-A-1, STR-B-2, STR-01, STR-03, etc.) or None
     """
     if not task_name or pd.isna(task_name):
         return None
@@ -413,6 +414,15 @@ def extract_stair_from_task_name(task_name: str) -> str | None:
         if level:
             return f"STR-{letter}-{level}"
         return f"STR-{letter}"
+
+    # Pattern 3: Numeric stairs (STAIR #01, STAIR #3, STAIRWELL 1, etc.)
+    numeric_stair = re.search(r'(?:STAIR|STAIRWELL|STAIRS)\s+[#]?(\d+)', task_name_upper)
+    if numeric_stair:
+        stair_num = numeric_stair.group(1)
+        # Pad single digits to 2 digits for consistency (3 -> 03, etc.)
+        if len(stair_num) == 1:
+            stair_num = f"0{stair_num}"
+        return f"STR-{stair_num}"
 
     return None
 
