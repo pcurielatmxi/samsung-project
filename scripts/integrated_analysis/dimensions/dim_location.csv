@@ -1,0 +1,57 @@
+location_id,building,level,building_full,level_full,sort_order
+FAB-UG,FAB,UG,Main FAB Building,Underground,100
+FAB-B1,FAB,B1,Main FAB Building,Basement Level 1,101
+FAB-1F,FAB,1F,Main FAB Building,Level 1,110
+FAB-2F,FAB,2F,Main FAB Building,Level 2,120
+FAB-3F,FAB,3F,Main FAB Building,Level 3,130
+FAB-4F,FAB,4F,Main FAB Building,Level 4,140
+FAB-5F,FAB,5F,Main FAB Building,Level 5,150
+FAB-6F,FAB,6F,Main FAB Building,Level 6,160
+FAB-ROOF,FAB,ROOF,Main FAB Building,Roof,170
+SUE-UG,SUE,UG,Support Building East,Underground,200
+SUE-B1,SUE,B1,Support Building East,Basement Level 1,201
+SUE-1F,SUE,1F,Support Building East,Level 1,210
+SUE-2F,SUE,2F,Support Building East,Level 2,220
+SUE-3F,SUE,3F,Support Building East,Level 3,230
+SUE-4F,SUE,4F,Support Building East,Level 4,240
+SUE-ROOF,SUE,ROOF,Support Building East,Roof,250
+SUW-UG,SUW,UG,Support Building West,Underground,300
+SUW-B1,SUW,B1,Support Building West,Basement Level 1,301
+SUW-1F,SUW,1F,Support Building West,Level 1,310
+SUW-2F,SUW,2F,Support Building West,Level 2,320
+SUW-3F,SUW,3F,Support Building West,Level 3,330
+SUW-4F,SUW,4F,Support Building West,Level 4,340
+SUW-ROOF,SUW,ROOF,Support Building West,Roof,350
+SUP-UG,SUP,UG,Support Building (Generic),Underground,400
+SUP-B1,SUP,B1,Support Building (Generic),Basement Level 1,401
+SUP-1F,SUP,1F,Support Building (Generic),Level 1,410
+SUP-2F,SUP,2F,Support Building (Generic),Level 2,420
+SUP-3F,SUP,3F,Support Building (Generic),Level 3,430
+SUP-4F,SUP,4F,Support Building (Generic),Level 4,440
+SUP-ROOF,SUP,ROOF,Support Building (Generic),Roof,450
+FIZ-UG,FIZ,UG,FAB Integration Zone,Underground,500
+FIZ-1F,FIZ,1F,FAB Integration Zone,Level 1,510
+FIZ-2F,FIZ,2F,FAB Integration Zone,Level 2,520
+FIZ-3F,FIZ,3F,FAB Integration Zone,Level 3,530
+FIZ-ROOF,FIZ,ROOF,FAB Integration Zone,Roof,540
+CUB-UG,CUB,UG,Central Utilities Building,Underground,600
+CUB-1F,CUB,1F,Central Utilities Building,Level 1,610
+CUB-2F,CUB,2F,Central Utilities Building,Level 2,620
+CUB-3F,CUB,3F,Central Utilities Building,Level 3,630
+CUB-ROOF,CUB,ROOF,Central Utilities Building,Roof,640
+GCS-UG,GCS,UG,Gas/Chemical Supply,Underground,700
+GCS-1F,GCS,1F,Gas/Chemical Supply,Level 1,710
+GCS-ROOF,GCS,ROOF,Gas/Chemical Supply,Roof,720
+GCSA-1F,GCSA,1F,GCS Building A,Level 1,810
+GCSA-ROOF,GCSA,ROOF,GCS Building A,Roof,820
+GCSB-1F,GCSB,1F,GCS Building B,Level 1,910
+GCSB-ROOF,GCSB,ROOF,GCS Building B,Roof,920
+OB1-1F,OB1,1F,Office Building 1,Level 1,1010
+OB1-2F,OB1,2F,Office Building 1,Level 2,1020
+OB1-3F,OB1,3F,Office Building 1,Level 3,1030
+OB1-ROOF,OB1,ROOF,Office Building 1,Roof,1040
+OB2-1F,OB2,1F,Office Building 2,Level 1,1110
+OB2-2F,OB2,2F,Office Building 2,Level 2,1120
+OB2-3F,OB2,3F,Office Building 2,Level 3,1130
+OB2-ROOF,OB2,ROOF,Office Building 2,Roof,1140
+SITE,SITE,EXT,Site Work,Exterior/Site,9000

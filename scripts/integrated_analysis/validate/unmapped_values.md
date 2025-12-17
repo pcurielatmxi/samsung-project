@@ -1,0 +1,17665 @@
+# Unmapped Values Report
+
+## P6
+
+## QUALITY
+
+### Unmapped Companies/Contractors
+-  Chaparral Insulation
+- ABR
+- AM Technical Solutions
+- AMKOR
+- AMTS
+- AXIOS Industrial
+- Austin Bridge & Road
+- Austin Global
+- B&K
+- B&k
+- BKI
+- BRYCON
+- BakerTriangle
+- Batchelor & Kimball, Inc.
+- BrandSafway
+- Brycon
+- Bumyang U.S.A corp
+- C&B
+- CTI
+- CTI (Central Texas Industrial)
+- Central Texas Industrial
+- Chaparral Insulation
+- Chapparal
+- Cherry Painting Company Inc. (Cherry Coatings)
+- Coram
+- DOOTA IT
+- Dean_CEC LLC
+- Dynamic Systems Inc
+- Fine Tech
+- Greenberry
+- Greenberry Industrial, LLC
+- HANYANG ENG USA Inc.
+- Hanwha
+- Harris and Hart (H&H)
+- Hensel Phelps Construction Company
+- JMEG
+- JMOR
+- LS Cable & System
+- MK  Marlow
+- McCarthy
+- Minyard
+- Nomura
+- Northstar Fire Protection of Texas
+- Nouveu
+- PCI
+- PCL
+- POLK
+- PORT
+- PPB
+- Palacios Marine and Industrial
+- Performance
+- Porter Company
+- Prime Controls
+- Prism Electric
+- Process Service Specialists of Delaware, LLC
+- Rosendin
+- SBTA
+- SBTA, Inc.
+- SE&A
+- SK Electric, Inc.
+- SNS
+- SP
+- SPS
+- STI
+- Shinsung
+- SnS
+- Steely Farm
+- TEI-Tech
+- TRIAD
+- Triad
+- Vector System
+- Way Engineering
+- Way Mechnical
+- Wonbang Tech USA, INC.
+- chaparralis
+- finetech
+- thesteelyfarm
+
+### Unmapped Locations/Buildings
+- "#3 MCC RM GCS1B, L03, SECTOR 08, 36D"
+- "GCS B Sump Pit CRC Post-Install @ C42 (PIT-1G115B
+- #2 I/O RM 102 (L3 B14-B15)
+- (1F A-C, 14-16) CCR 109
+- (1M C-D 29-30) GCS A & B bridge
+- (1M D 36) Vestibule GCS RM 100
+- (1M D-E 37) Tepid water skid
+- (1M D8-D9) LSS-CCR Break 105A & Meeting 105C
+- (Catch Up) 2nd/3rd Layer Drywall
+- (Framing & Drywall) 1st Layer Drywall
+- (Framing & Drywall) 2nd Layer Drywall
+- (Framing & Drywall) Framing/1st Layer Drywall
+- (I/O RM-1) G-H 4-6
+- (L1 A-C, 13-14) Inert BSGS-1 108 RM
+- (under Level 3A) L/4
+- -CUB-399-CUB Level 2 A-B/28.5 Deck Support Paint
+- 1" Domestic Water 04A
+- 10%HE/N2 / FAB / F~G / 22~24
+- 10%HE/N2 / FAB / G~J / 20~25
+- 10%HE/N2 / FAB / H~J / 14~15, 19~20/
+- 10%HE/N2 / GCS-A / A~C / 2~14
+- 10%HE/N2 / GCS-A / A~C / 2~4
+- 10%HE/NE , GCS A - 1F - A~C/4~6
+- 10%He/N2, GCS-A, A~C / 10~14
+- 10%He/N2, GCS-A, A~C / 2~4
+- 102 / NCR 1284 / GCS-A col 1-14 x A-C
+- 102/ Sprinkler Air/ FAB Col: 5-12 x L-N
+- 103/ Sprinkler Hydro / GCS A Col: 14-17 x A-E
+- 103/ Visual / GCS A Col: 14-17 x A-E
+- 104 WC / Hydro / GCS-A col: A-E x 17-23
+- 105A (roof)/Hydro-Air/CUB col A-B x 16-19
+- 106 / 24 Hr Air / GCS-A Col: 18-20 exterior east s
+- 106 / Hydro / GCS-A Col: 18-20 exterior east side
+- 106 / Visual / GCS-A Col: 18-20 exterior east side
+- 108/Hydro-Air/GCSA col A-D x 29-30
+- 108/Visual/GCSA col A-D x 29-30
+- 108M / Visual / CUB Col: 23-30 x D-G
+- 109M / Visual / CUB Col: 35-40 x D-G
+- 10H, 11H, 12H, 13H, 14H, 15J, 22J
+- 11-9 Column West J-G Line FAB 3F
+- 111A (roof)/Visual/CUB col A-B x 40-43
+- 113/ Sprinkler Visual/ GCS-B Col: 47-51 x A-E
+- 115 /Firestopping /Stairwell 3: Column 25 x A
+- 118 / Visual / GCS-B col: East Side x 33-36; 49-54
+- 11C module fillet welds, bolt up F-G/20.1-21.2
+- 11F, 12F, 13F, 14F, 15F, 13E, 14E, 15E
+- 12-11 Column East J-G Line FAB 3F
+- 12-11 Column J-G Line West FAB Lvl 3
+- 12C,10C,3B EAST,1B,8A.1 modules painted welds
+- 12E, 18E, 21E, 22E, 23E, 31E, 16F, 18F, 20F, 21F,
+- 1391
+- 16-17 Cable tray L1M-B4
+- 18-17 Column West J-G Line
+- 1B & 5B module assembly & tie ins H-K/4-7
+- 1F - A-C / 25-29 - Vertical Wall
+- 1F - A-C / 25-29 - Verticals
+- 1F - A-E / 1-3 - (5) Sump Pits
+- 1F - F.3-H.8 / 1-2
+- 1F - F.3-H.8 / 3 Line - Verticals
+- 1F - F.3-H.8 / 3Line Vertical Wall
+- 1F - F.3-L / 1 Line - Vertical
+- 1F - F.3-L / 1 Line- Vertical
+- 1F - F.3-L /1Line Vertical Wall
+- 1F - G04-G18 - Trench
+- 1F - H.8 / 6.3-7 Trench
+- 1F - J/Line 7.3 - 8.3 Trench
+- 1F 18/A, 19/C, 21/A
+- 1F 22.3-23 / Line J Trenches
+- 1F 23.3-J25.6 / Trenches
+- 1F A / 1-4 Trenches
+- 1F A-B / Line 4 Trenches
+- 1F A-B / Line4 Trenches
+- 1F A-B / Linea 4
+- 1F A-B/ Linea 4
+- 1F A-C / 25-29
+- 1F A-C.3 / 1Line Trenches
+- 1F A-C.3 / LINE 1 Trenches
+- 1F A-C.3 / Line 1 Trenches
+- 1F A-C.3 /Linea 1
+- 1F A-E / 1-3 5 Pits
+- 1F A-E 1-3 5 Pits
+- 1F A-Line / 1-4 Trenches
+- 1F A.6 / 6 Sump Pit
+- 1F A1-A4 Trenches
+- 1F A15.6 / Sump Pit
+- 1F A18 / Sump Pit
+- 1F A18 / Sump pit
+- 1F A21 / Sump pit
+- 1F B-B.3 / 3.3-4 Trenches
+- 1F B-B.3 / Line 3 Trench
+- 1F B-B.3/3.3-4
+- 1F B.3 / 3.3-4 Trenches
+- 1F B.6 / 13 Sump Pit
+- 1F B.8 / D.3 Trenches
+- 1F B.8-D.3 / 3-3.3 Trenches
+- 1F B10 / Sump Pit
+- 1F B13.3 / Sump Pit
+- 1F B15.6 / Sump Pit
+- 1F B15.6 Sump Pit
+- 1F B25 / Sump Pits
+- 1F B25/Sump Pits
+- 1F B3-B4 / Trench
+- 1F C-D / 22-23 Sump Pit
+- 1F C-D / 26-27 Sump Pit
+- 1F C-D / 29.6 Sump Pit
+- 1F C.3-E.8 / Line 1 Trench
+- 1F C.5-F / 1-1.3 Trenches
+- 1F C.5-F / 1-1.5 Trenches
+- 1F C.5-F / 1-1.5 trenches
+- 1F C19 Sump pits
+- 1F C19.3 / Sump Pit
+- 1F C22 / Sump Pits
+- 1F C8.3
+- 1F C9.6
+- 1F Ceiling K-L\ 3-4, 6, 6-7, 7-8
+- 1F D.3 -F / Linea 3
+- 1F D.3-F / Line3 Trenches
+- 1F D.3-F.3 Trenches
+- 1F D.3-F/ Line 3
+- 1F D.8-C / Line3 Trenches
+- 1F E.2-F/ LINE 3 Trenches
+- 1F E18-E32
+- 1F E5-E18
+- 1F E5-E18 Trenches
+- 1F F-F.3 / 1-3 Floor
+- 1F F-F.3 / Line 1 Vertical
+- 1F F-F.3 / Line 3 Vertical
+- 1F F.3-G / Line 1 Trenches
+- 1F F.3-G Line 1
+- 1F F.3-H.6/1-2
+- 1F F.3-H.8 - 3 Line - Vertica
+- 1F F.3-H.8/1-2
+- 1F F3-G / Line 1
+- 1F FAB F1-G1
+- 1F FAB H1-M1
+- 1F FIZ Pipe Rack/ 1F FAB A-F,1-3
+- 1F G-H / Line 1
+- 1F G-H / Line 1 Trenches
+- 1F G-H/ Linea 1
+- 1F G.3-H.8 / 6.3-7
+- 1F G.3-H.8 / 6.3-7 Treches
+- 1F G.3-H.8 / 7-7.3
+- 1F G.6- N /2-3 Trenches
+- 1F G.6-H.8 / 6.3-7 Trenches
+- 1F G.6-N / 2-3
+- 1F G.6-N / 2-3 Floor
+- 1F H 29-J29
+- 1F H-J / Line 1 Floor
+- 1F H-J / Line 1 Trenches
+- 1F H-J/Line 1
+- 1F H.8-K / 29.5
+- 1F H.8-K29.5 / Trenches
+- 1F H.8-M / 2.6-3 Floor
+- 1F H.8-N / 2-3 / FLOOR
+- 1F H.8-N / 2-3 / Floor
+- 1F H8 -K/29.5
+- 1F H8 -K/29.5 / Trenches
+- 1F J Line / 7.38.3
+- 1F J-K / 29.3 Line Trench
+- 1F J-K / Line 1
+- 1F J-K / Linea 1
+- 1F J-L / Line 1 Trenches
+- 1F J13-J14
+- 1F J13-J14 / Trenches
+- 1F J13-J14 Trenches
+- 1F J14- J17
+- 1F J14-J17
+- 1F J14-J17 / Trenches
+- 1F J14-J17 Trenches
+- 1F J18 - J19 Trenches
+- 1F J18-J21.3 / Trenches
+- 1F J18-J21.3 /Trenches
+- 1F J18-J32 Sump pits
+- 1F J18-J32 Trenches/Pits
+- 1F J18.5 Sump pits
+- 1F J19-J20.5 / Trenches
+- 1F J19-J21.3
+- 1F J21.3-J22.3 Trenches
+- 1F J22.3-J23 Trenches
+- 1F J23-25.6 / Trenches
+- 1F J23.3 - J25.6 Trenches
+- 1F J25.6-J26.5 / Trenches
+- 1F J25.6-J29.5 / Trenches
+- 1F J26.5- J29.5 Trenches
+- 1F J26.5-29.5 / Trenches
+- 1F J28.5 Sump pits
+- 1F J29.5 - J32 Trenches
+- 1F J29.5-J32 / Trenches
+- 1F J30.5 / Sump Pit
+- 1F J5- J14 Sump pits
+- 1F J5- J7.3 Trenches
+- 1F J5-J14 / Sump Pits
+- 1F J5-J17
+- 1F J5-J17 Sump Pits
+- 1F J5-J7.3
+- 1F J5-J7.3 / Trenches
+- 1F J5-J7.3 Trenches
+- 1F J7.3-J8.3 Trenches
+- 1F J8.3-J9.3 / Trenches
+- 1F J8.3-J9.3 Trenches
+- 1F J9.3 - J13
+- 1F J9.3- J13 / Trenches
+- 1F J9.3-13 Trenches
+- 1F J9.3-J13 Trenches
+- 1F JLine / 5-7.3
+- 1F JLine 21.3-22.3 Trenches
+- 1F JLine 7.3-8.3
+- 1F JLine 9.3-13 Trenches
+- 1F K-L / 14.6 Sump Pit
+- 1F K-L / 20.6 Sump Pit
+- 1F K-L / 26.6 Sump Pit
+- 1F K-L / 3-3.3 Sump Pit
+- 1F K-L / 7.6 Sump Pit
+- 1F L-M.4 / Line 12
+- 1F L-M.8 / Line 1 Vertical wall
+- 1F L-N / 1-2
+- 1F L-N / 1-2 Floor
+- 1F L-N / LINE 5 TRENCHES
+- 1F L-N / Line 1 Vertical Wall
+- 1F L-N / Linea 1 vertical wall
+- 1F L-N / Vertical Wall
+- 1F L-N/1-2 Trenches
+- 1F L9 Sump pit
+- 1F LINE N / 1.3-2 VERTICAL
+- 1F Line A / 1.4 Trenches
+- 1F Line F / 1.3-3 Trenches
+- 1F Line F / 1.3-3.3 Trench
+- 1F Line F / 1.5 -3 Trenches
+- 1F Line F / 1.5-3 Trenches
+- 1F Line L / 5-9 Trenches
+- 1F Line N / 1.3 -2
+- 1F Line N / 1.3-2 Vertical
+- 1F Line N / 1.3-2 Vertical Walls
+- 1F Line/F / 1.5-3 Trenches
+- 1F Line/N / 15-17 Trenches
+- 1F Linea A /1-4
+- 1F M-N / Line 3 Vertical Wall
+- 1F M-N / Line 3 Vertical Walls
+- 1F M-N / Line 3 Vertical wall
+- 1F M-N/ Line 3 Vertical Wall
+- 1F M.3 / 21.6 Sump Pit
+- 1F M.4-N / 11-12 Trench
+- 1F M.8-N / Line 1 Vertical Wall
+- 1F N6.8 / Sump Pit
+- 1F N9.3 / Sump Pit
+- 1F, FAB, J-H 18-19
+- 1F, Sector 04, Columns A-C/14-16
+- 1F,FAB, G-F 10-11
+- 1F,FAB, G-F 26-27
+- 1F,FAB, G-H 21-22
+- 1F,FAB, J-H 27-28
+- 1F,MCC Room, N-M, 18-19
+- 1F1G26IO-1F1 LOCAL E14 Fiberoptic cable installati
+- 1F1G26IO-1F1 LOCAL E17 Fiberoptic cable installati
+- 1F1G26IO-1F1 LOCAL E27 Fiberoptic cable installati
+- 1F1G26IO-1F1 LOCAL J11 Fiberoptic cable installati
+- 1F1G26IO-1F1 LOCAL J26 Fiberoptic cable installati
+- 1F4B5IO-1F1B15IO Fiberoptic cable installation
+- 1FL (A-B 29-31)
+- 1FL (A-B 31.5-34)
+- 1FL (B 25-25.5) ELEV. #3 MACH. RM
+- 1FL - Columns G6, H6, H8 (CDA RM-1)
+- 1FL J-K 18-19 Fire Pump RM
+- 1FL Line 39 (B) and (E)
+- 1L D 51-53
+- 1L G13.2 - G13.6 (IO Rm2) S Interior Wall 1L G15.2 - H15.2 (Bunker Rm 2)
+- 1L G13.2 - G13.6 (IO Rm2) S Interior Wall 1L G15.2 - H15.2 (Bunker Rm 2) 1L H15.2 - H15.6 (Bunker Rm 1) 1L G24.4 - G24.6 (IO Rm 3)
+- 1L H20 - H20.6 (Bunker Rm 3)
+- 1L H20 - H20.6 (Bunker Rm 3)1L G21.2 - H21.6 (Bunker Rm 4)1L G24.6 -H24.6(Bunker Rm 5)Level 1 L-M/18, 19Level 2 D-G/3-5.4
+- 1M 6-10, B-C Elec RM 100
+- 1M B-C, 5-6
+- 1M B5-B7 Battery
+- 1M C11-C12.5 and C13 Elec. RM 100
+- 1M C14-C15 Strobe
+- 1M Corridor-2 RM 110 (C-D/15~17)
+- 1M D-E, 13-14, MCC Rm 107
+- 1M D-E, 8-9 LSS-CCR RM 105
+- 1M D28-D29 Piping room
+- 1M D9 HVAC Mach rm
+- 1M GCS A & B Bridge (C-D 29-32)
+- 1M Open Office (C-G 2-3)
+- 1ST FLOOR FIZZ NE CABLE TRAY
+- 1st Floor - L4 & K1
+- 1st Floor FAB G7 / G13
+- 1st level (A,B,C,E,F,N/33)
+- 1st level (A,B,C,F,N/33)
+- 2 SUW L4.8-5 E,W Face
+- 2) 1-1/4" CONDUIT AND PULL BOX [C-21] SUE UPW
+- 2.5 " CONDUIT X2, GCS_A_CCR (GCS1 01 04 109 >HUB1
+- 20" CWR Field Welds Drops, CUB LEVEL 1 E04 to E15
+- 20" CWR Field Welds, CUB LEVEL 1M E04 TO E07
+- 20" CWS Field Welds Drops, CUB LEVEL 1 C11 to C15
+- 20" CWS Field Welds Drops, CUB LEVEL 1 C4 to C11
+- 20" CWS Field Welds Drops, CUB LEVEL 1 C4 to c7
+- 20" CWS Field Welds Drops, CUB LEVEL 1 D08 to D11
+- 20" LCHS PIPE AND WELDS CHILLERS. F04 TO F08
+- 20" and 56" LCHS, CUB LEVEL 1M SECTOR 21: F04-F06
+- 20" and 64" HCHS, CUB LEVEL 1M SECTOR 22: F09-F14
+- 2025-10-03 00:00:00
+- 204B (roof)/24 Hr Air/GCSA col entire roof
+- 205 FU / Hydro / FAB col G-J x 3-8
+- 206/Hydro-Visual/FAB col 9-15 x G-L
+- 207/Hydro-Visual/FAB col 15-21 x G-L
+- 208/Hydro-Visual/FAB col 21-27 x G-L
+- 209/Hydro-Visual/FAB col 27-34 x G-L
+- 20E, 22F, 23F, 16G, 17G, 19G
+- 213/Hydro/FAB col B-G x 15-21
+- 214/Hydro/FAB col B-G x 21-27
+- 23-24.6/ G3-H8
+- 24" Industrial Water 01 & 02
+- 25-C + girder
+- 27-28 D second deck
+- 2F & 3F Ceiling C-D 19-20
+- 2F - E.3-F.8 / 11.6-14.3
+- 2F - E.3-F.8 / 18.6-22
+- 2F - G-G.3 / 3-10.6
+- 2F - G.3-H.8 / 5.4-8
+- 2F - G.3-H.8 / 8-10
+- 2F - J28-J28.6
+- 2F C-D / 12.6-13.3
+- 2F C-D / 17-18 Floor
+- 2F Ceiling K-L\ 13-14, 14-15
+- 2F D-E.3 / 12-17
+- 2F D-E.3 / 3-4.2
+- 2F D-E.3 / 4.2-8
+- 2F D-E.3 / 8-12
+- 2F D-E.3 12-17
+- 2F E.3-F.8/32.3-33
+- 2F E.3-G / 3-8
+- 2F E.3-G 3-8
+- 2F E12-E13 / Trenches
+- 2F E13-E17 / Trenches
+- 2F E18-E23 / Trenches
+- 2F E24-E26 / Trenches
+- 2F E29-E26 / Trenhces
+- 2F E29-E32 / Trenches
+- 2F E5-E12 / Trenches
+- 2F F.8-G/24.6-32
+- 2F FAB 25-Line G-E
+- 2F FAB AD Zone D25-D23.5 (top 2 rows)
+- 2F FAB AD Zone D27-D25 (top 2 rows)
+- 2F FAB AD Zone D29-D27 (top 2 rows)
+- 2F FAB AD Zone D29-D32 (top 2 rows)
+- 2F FAB AD Zone D31-D32
+- 2F FAB AD Zone K9-K11
+- 2F FAB Cont. Wall 9-line G-E
+- 2F FAB D14-D18
+- 2F FAB D19-D22
+- 2F FAB D3-D5
+- 2F FAB D3-E.3
+- 2F FAB D6-D11
+- 2F FAB G10.3 (Above Door Parts)
+- 2F FAB G3 thru G6
+- 2F FAB G3.6 (Above Door Parts)
+- 2F FAB G30-J30
+- 2F FAB G6.3 (Above Door Part)
+- 2F FAB G8.3 Above Door Part
+- 2F FAB K12-K18
+- 2F FAB K19-K23
+- 2F FAB K25-K27
+- 2F FAB K4-K6
+- 2F FAB K6-K9.5
+- 2F G- G.3/24.6-32
+- 2F G-G.3 / 10.6-24.6
+- 2F G-G.3 / 24.6-32
+- 2F G-G.3 3-10.6
+- 2F G.3- H.8 / 30.3-32
+- 2F G.3- H.8 / 5.3-5.6 trenches
+- 2F G.3-G.5 14-18
+- 2F G.3-G.6 / 14-18
+- 2F G.3-H.6 / 3.6-5.4
+- 2F G.3-H.6 / 3.6-5.4 Trenches
+- 2F G.3-H.6 / 5.4-7.6
+- 2F G.3-H.8 / 10-14
+- 2F G.3-H.8 / 18-23.6
+- 2F G.3-H.8 / 23.6-24.6
+- 2F G.3-H.8 / 24.6-26
+- 2F G.3-H.8 / 26-29
+- 2F G.3-H.8 / 26-30.3
+- 2F G.3-H.8 / 32-32.6
+- 2F G.3-H.8 / 4-4.3
+- 2F G.3-H.8 / 4.6-5
+- 2F G.3-H.8 / 4.6-5 Trenches
+- 2F G.3-H.8 / 5.3-5.6
+- 2F G.3-H.8 / 6- 6.7 Trenches
+- 2F G.3-H.8 / 6-6.3
+- 2F G.3-H.8 / 6-6.3 Trenches
+- 2F G.3-H.8 / 6.6-7 Trenches
+- 2F G.3-H.8 / 7.3-7.6 Trenches
+- 2F G.3-H.8 / 8-10
+- 2F G.3-H.8 10-14
+- 2F G.3-H.8 10-23.6
+- 2F G.3-H.8 30.3-32
+- 2F G.3-H.8 8-10
+- 2F G.5-H.8 / 14-18
+- 2F G.5-H.8 / 18-23.6
+- 2F G.6-H / 3-3.3 Trenches
+- 2F G.6-H.8 / 14-18
+- 2F G11-G19 / Trenches
+- 2F G13-G16 Trenches
+- 2F G19-G24.6 / Trenches
+- 2F G24.6-G32 Trenches
+- 2F G4-G11 / Trenches
+- 2F H.8-J / 24-31.3
+- 2F H.8-J /17-24
+- 2F H.8-J/8.6-17
+- 2F HUB ROOM 5
+- 2F J-K / 28-29.3
+- 2F J-K/10-17
+- 2F J30
+- 2F J31.3 - J31.6
+- 2F J8.3-J17 Trenches
+- 2F, 3G, 7J, 7F, 8F, 10F, 10G, 11E, 13J, 13G
+- 2F, FAB, 8-line, G.3-H.9 (G-J)
+- 2F, FAB1, East of G11-G12
+- 2F, FAB1, East of G15-G16
+- 2F, FAB1, west of G27-G28
+- 2F- B.6-D27-28
+- 2F- E.3-F.8 / 32-32.3
+- 2F- F.8-G / 32-33
+- 2H
+- 2J
+- 2nd Flr FAB HUB Room #2 G-12
+- 2nd Flr Hub Room #3 G-19
+- 2nd level (M/14-16, 18)
+- 2nd level H.8-J/33
+- 3 Level-Ceiling 7-6/H.8-G
+- 3 Level-Ceiling G-H.8/5-6
+- 3" HCH (S) (R) LINE
+- 3) 1-1/2" CONDUIT [G-24] FAB
+- 30-32 West FAB 3rd Floor
+- 302 (roof)/24 Hr Air/GCS-B col ALL
+- 306 / Hydro / FAB Col G-L x 3-9
+- 306 / Visual / FAB Col G-L x 3-9
+- 307/Hydro-Visual/FAB col 9-15 x G-L
+- 308 / Hydro-Visual / FAB col 15-21 x G-J
+- 309 / Sprinkler Hydro-Visual / FAB col 21-27 x G-J
+- 310 / Hydro-Visual (Partial) / FAB/Col G-K x 27-33
+- 310 / Hydro-Visual / FAB / Col G-K x 27-33
+- 311 / Hydro-Visual / FAB Col A-F x 1-3
+- 312/Hydro-Visual/FAB col 3-9 x C-G
+- 313/Hydro-Visual/FAB col 9-15 x C-G
+- 314 / Hydro-Vis / FAB Col: 15-21 x E-G
+- 315 / Hydro-Visual / FAB col 21-27 x D-G
+- 316/Hydro-Visual (Partial)/FAB col 27-33 x D-G
+- 316/Hydro-Visual/FAB col 27-33 x D-G
+- 32" CHS-R/CUB/UPW AREA/LEVEL 1/F24
+- 320/ Sprinkler Hydro / FAB Col: 24-34 x A-E
+- 3A & 3A.1 module bolt ups and tie ins K-G/8-13
+- 3F - A-A.3 / 24-29
+- 3F - E Line / 30.6-32
+- 3F - E13-E14
+- 3F - E22-E25
+- 3F - E3-E4
+- 3F - G-L / 1-3
+- 3F - J3-J4
+- 3F 1-1.2/ D3-D6
+- 3F 2-3 / E.6-F
+- 3F 2.6-3/ E-E.6
+- 3F A-C / 1-3
+- 3F A-C / 3 Line Vertical
+- 3F A-C /Line 3 Vertical Wall
+- 3F A.3-C / 24-28
+- 3F A.3-C / 28-29
+- 3F AD Zone D20-24
+- 3F C-F / 1-3
+- 3F C58-C60 Shaft #11
+- 3F D-E / 25.3
+- 3F D-E.3 / 25
+- 3F D.3- D.6 / 1- 1.2
+- 3F D.3-D.6 / 1-1.2
+- 3F D.3-D.6/1-1.2
+- 3F E Line / 10-11
+- 3F E-E.6 / 2.6-3
+- 3F E.6-F / 2-3
+- 3F E.6-F/2-3
+- 3F E10-E11/E26-29/E30-32
+- 3F E22-E25
+- 3F E25-E26
+- 3F E26-E29
+- 3F E3-E4 & E13-E14
+- 3F F-G / 2-3
+- 3F FA Lab L~N / 5~9
+- 3F FAB 33 East
+- 3F FAB 33 West
+- 3F FAB AD Zone Col. D10-D10.9
+- 3F FAB AD Zone Col. K7-K9.9
+- 3F FAB AD Zone D11-D13
+- 3F FAB AD Zone D16-D17
+- 3F FAB AD Zone D17-E17
+- 3F FAB AD Zone D18-E18
+- 3F FAB AD Zone D19-D20
+- 3F FAB AD Zone D24-D27
+- 3F FAB AD Zone D29-D30
+- 3F FAB AD Zone D31-D32
+- 3F FAB AD Zone D32-E32
+- 3F FAB AD Zone D4-E4
+- 3F FAB AD Zone D5-D8
+- 3F FAB AD Zone D5-E5
+- 3F FAB AD Zone D8-D10
+- 3F FAB AD Zone J22-J25
+- 3F FAB AD Zone J27-J28 & J30-J31
+- 3F FAB AD Zone K12.1-K15.9
+- 3F FAB AD Zone K18-K22
+- 3F FAB AD Zone K23-K29
+- 3F FAB AD Zone K3-K4
+- 3F FAB AD Zone K30-K32
+- 3F FAB AD Zone K32-J32
+- 3F FAB AD Zone K5-K7
+- 3F FAB Ad Zone D11-D12
+- 3F FAB Ad Zone D3-D4
+- 3F FAB Ad Zone D3-E3
+- 3F FAB C-D x 30-31
+- 3F FAB Column F26 (bottom)
+- 3F FAB Column F26 (top 2 rows)
+- 3F FAB Column F27 (bottom)
+- 3F FAB Column F27 (top 2 rows)
+- 3F FAB Column F28 (top 2 rows)
+- 3F FAB Column F29 (top 2 rows)
+- 3F FAB Column F30 (top 2 rows)
+- 3F FAB Column F31 (top 2 rows)
+- 3F FAB Column F32 (top 2 rows)
+- 3F FAB Column G10 (top 2 rows)
+- 3F FAB Column G11 (top 2 rows)
+- 3F FAB Column G13 (top 2 rows)
+- 3F FAB Column G16 (top 2 rows)
+- 3F FAB Column G17 (top 2 rows)
+- 3F FAB Column G18 (top 2 rows)
+- 3F FAB Column G19 (top 2 rows)
+- 3F FAB Column G20 (top 2 rows)
+- 3F FAB Column G21 (top 2 rows)
+- 3F FAB Column G22 (top 2 rows)
+- 3F FAB Column G23 (top 2 rows)
+- 3F FAB Column G24 (top 2 rows)
+- 3F FAB Column G25 (top 2 rows)
+- 3F FAB Column G26 (top 2 rows)
+- 3F FAB Column G27 (top 2 rows)
+- 3F FAB Column G29 (top 2 rows)
+- 3F FAB Column G30 (top 2 rows)
+- 3F FAB Column G31 (top 2 rows)
+- 3F FAB Column G32 (top 2 rows)
+- 3F FAB Column G4 (top 2 rows)
+- 3F FAB Column G5 (top 2 rows)
+- 3F FAB Column G6 (top 2 rows)
+- 3F FAB Column G7 (top 2 rows)
+- 3F FAB Column G8 (top 2 rows)
+- 3F FAB Column G9 (top 2 rows)
+- 3F FAB E-F 18-21
+- 3F FAB E25-28
+- 3F FAB East Corridoor 18-25
+- 3F FAB E~G / 4~9; J~G 4-5 (Partial)
+- 3F FAB F2-G2 (VIP window)
+- 3F FAB F28 (Bottom 2 Rows)
+- 3F FAB F29 (Bottom 2 Rows)
+- 3F FAB F9.9-E9
+- 3F FAB FIZZ G2-H2
+- 3F FAB FIZZ H1-N1
+- 3F FAB G-Line 18-21
+- 3F FAB G21-26
+- 3F FAB G26-30
+- 3F FAB G8-J8 Below A/F C/W (Harness Needed)
+- 3F FAB H-J / 29-30
+- 3F FAB J-H / 29-30
+- 3F FAB J-Line 21-24
+- 3F FAB J24-27
+- 3F FAB J27-30
+- 3F FAB SMOCK A1-A2
+- 3F FAB SMOCK A1-F1
+- 3F FAB SMOCK A2-B2 (South POV)
+- 3F FAB SMOCK A3-B3
+- 3F FAB SMOCK B2-C2 (South POV)
+- 3F FAB SUW L13-L15
+- 3F FAB Support A24-A29
+- 3F FAB Support A24-C24
+- 3F FAB Support A30-A33
+- 3F FAB Support C29-C30
+- 3F FAB Support C30.5-C33
+- 3F FAB Support C32-C33
+- 3F FAB Support Col. L6-L9
+- 3F FAB Support L16-M16, M16-M17 East POV
+- 3F FAB Support L6-L9 (bottom 2 rows)
+- 3F FAB Support L9-L11
+- 3F FAB Support L9-M9 North view
+- 3F FAB Support L9-M9 South view
+- 3F FAB Support M9-N9 North view
+- 3F FAB Support M9-N9 South view
+- 3F FAB Support N10-N16
+- 3F FAB Support N3.5-N9
+- 3F FAB Support N3.5-N9 bottom row
+- 3F FAB West 24-27
+- 3F FAB column E/29~30
+- 3F FAB support A33-C33
+- 3F FAB&FIZ F~J / 1~3
+- 3F G-E/12~18
+- 3F G-L / 1-2.6
+- 3F G-L / 1-3
+- 3F G-L / 2.6-3
+- 3F G-L 2.6-3 Surface Prep
+- 3F GL/ 2.6 - 3
+- 3F J3-J4
+- 3F L-M / 2-2.3
+- 3F L.6-M.5 / 18-19 Trenches
+- 3F L.6-M.5/18-19
+- 3F L30-N30 Below A/F
+- 3F M-N / 2-3 Floor
+- 3F M.-N / 29.6-30
+- 3F M.3-M.6 / 3-3.3
+- 3F M.5-N / 18-19 Trenches
+- 3F M.6-N / 29.6-30
+- 3F M.6-N / 30-33
+- 3F M.6-N 29.6-30
+- 3F Main FAB E~G / 12~15 (Partial)
+- 3F Main FAB E~G / 4~11
+- 3F Main FAB E~G / 4~9 (Partial) J~G 4-5 (Partial)
+- 3F Main FAB E~G / 4~9 (Partial) J~G 4~5 (Partial)
+- 3F Main FAB E~G / 6~9
+- 3F Main FAB E~G / 9~12
+- 3F Main FAB E~G / 9~12 (Partial) Walkable Ceiling
+- 3F Main FAB E~J / 4~5
+- 3F Main FAB J / 27~32
+- 3F Main FAB J~G / 13-14
+- 3F Main FAB J~G / 16-18
+- 3F Main FAB J~G / 6~12 (Partial)
+- 3F N-M.6 / 30-33
+- 3F SMOCK C2-C3 (East POV)
+- 3F SMOCK F2-E2 (North POV)
+- 3F SMOCK S/L Storage A2-A3
+- 3F SMOCK S/L Storage AC2-C3 (West POV)
+- 3F SUB C/R L~M / 10~14
+- 3F, FAB, AD Zone, E-E.5, 1-2
+- 3F, FAB, AD Zone, E.5-F, 1-2
+- 3F, FAB, AD Zone, E11-E13
+- 3F, FAB, AD Zone, E15-E17
+- 3F, FAB, AD Zone, E18-E21
+- 3F, FAB, AD Zone, E21-E23
+- 3F, FAB, AD Zone, E23-E25
+- 3F, FAB, AD Zone, E25-E26
+- 3F, FAB, AD Zone, E26-J28
+- 3F, FAB, AD Zone, E28-E29
+- 3F, FAB, AD Zone, E29-E30
+- 3F, FAB, AD Zone, E3-E4
+- 3F, FAB, AD Zone, E30-E32
+- 3F, FAB, AD Zone, E9-E11
+- 3F, FAB, AD Zone, J10-J11
+- 3F, FAB, AD Zone, J10-J12
+- 3F, FAB, AD Zone, J12-J13 & J15-J16
+- 3F, FAB, AD Zone, J13-J15
+- 3F, FAB, AD Zone, J16-J17
+- 3F, FAB, AD Zone, J18-J22
+- 3F, FAB, AD Zone, J25-J27
+- 3F, FAB, AD Zone, J28-J30
+- 3F, FAB, AD Zone, J3-J4
+- 3F, FAB, AD Zone, J31-J32
+- 3F, FAB, AD Zone, J5-J7
+- 3F, FAB, AD Zone, J7-J10
+- 3F, FAB, Airlock, L-J 4-5
+- 3F, FAB, E13-E14
+- 3F, FAB, E14-E15
+- 3F, FAB, E15-E16
+- 3F, FAB, J19-J20
+- 3F, FAB, J25-J26
+- 3F, FAB, SMOCK RM, A1-D1 & E1-F1
+- 3F, FAB, Smock, 2C-3E.5
+- 3F, FAB, Smock, A1-F2
+- 3F-G / 2-3
+- 3FM.5-N/18-19 Trenches
+- 3J, 8J, 10J, 8H, 7H, 4G, 7G, 8G, 4E, 8E
+- 3L J/K - COL-10
+- 3L J/K - COL-12
+- 3rd C53-C56 Shaft #10
+- 3rd Floor 27-30 E-J
+- 3rd Floor FAB 21-24 J-E
+- 3rd Floor FAB AF 5-4 Column West J-G Line
+- 3rd Floor FAB E-J 18-21
+- 3rd Floor FAB E25
+- 3rd Floor FAB F-G 18-21
+- 3rd Floor FAB FA LAB N3-N9
+- 3rd Floor FAB G-E 18-26
+- 3rd Floor FAB G-E 21-24
+- 3rd Floor FAB J-G 24-27
+- 3rd Floor FAB J-G 24-32.5
+- 3rd Floor FAB J30-32
+- 3rd Floor Wafer Room
+- 3rd Floor West Side FAB J-G Line
+- 3rd Level (C/3)
+- 3rd Level (C/5)
+- 3rd Level (C/5) N
+- 3rd Level (L/9,10) South Side
+- 3rd floor ,SUB CR ,column M9
+- 3rd level (A/3.3-B/3.3)
+- 4
+- 4 Level /Trusses-13.5-14.25/E-J
+- 4 Level Grid Lines 4-6/Transition from SFRM to IFRM
+- 4 Level/Trusses -12-13/E-J
+- 401
+- 402 / Visual / FAB col 3-9 x G-K
+- 403/Hydro-Visual/FAB col 9-15 x G-L
+- 404 / Hydro-Visual / FAB col 15-21 x G-L
+- 405 / Sprinkler Hydro-Visual / FAB col 21-27 x G-J
+- 406 / Hydro-Visual / FAB / Col G-K x 27-33
+- 407 / Visual / FAB col D-G x 2-9
+- 408/Hydro-Visual/FAB col 9-15 x C-G
+- 409 / Hydro-Visual / FAB Col. 15-21 x E-G
+- 410 / Hydro-Visual / FAB col 21-27 x D-G
+- 411/Hydro-Visual/FAB col 27-33 x D-G
+- 4F A.6-B/31-32.3
+- 501/Hydro-Visual/FAB col 3-9 x G-L
+- 502/Hydro-Visual/FAB col 9-15 x G-K
+- 503/Hydro-Visual/FAB col 15-21 x G-K
+- 504/Hydro-Visual/FAB col 21-27 x G-K
+- 505/Hydro-Visual/FAB col 27-33 x G-K
+- 506/Hydro-Visual/FAB col 3-9 x D-G
+- 507/Hydro-Visual/FAB col 9-15 x D-G
+- 508/Hydro-Visual/FAB col 15-21 x D-G
+- 509/Hydro-Visual/FAB col 21-27 x D-G
+- 510/Hydro-Visual/FAB col 27-33 x D-G
+- 511/Hydro-Vis/FAB col 3-18 x K-L
+- 516 (wet)/Hydro/FAB col 18-32 x K-L
+- 56" CWR Field Welds, CUB LEVEL 1M G11 to G12
+- 56" CWR WELD AND 48" CWS WELDS, C LEVEL, E08-E10
+- 56" LCHS FIELD WELDS, CUB, F09 LEVEL C
+- 5B module assembly and tie ins bolt ups K-H/6-7
+- 5C & 1A module painted welds G-K/4-8
+- 6-3 Column East G-E Line FAB 3F
+- 6-3 Column West Side J-G Line 3rd Floor FAB
+- 6A Module bolt up assembly and tie ins D-G/11-15
+- 701/Hydro-Vis/OB1-ColA17-A15/1-(-2) & A2-A0/1-(-2)
+- 9-6 Column West Side J-G Line 3rd Floor FAB
+- 930
+- A 1M MCC Room
+- A 1M Main Electrical Room
+- A 47 ACID VESTIBULE
+- A MEZZ C-E/7-9
+- A ROOF A-B/15-17
+- A ROOF A-B/25-26
+- A ROOF A-C/8-9
+- A-24 Toilet (W)-1/Toilet (M)-1
+- A-24, wall 34, wall35, wall 36
+- A-C (16) – Emergency Generator Rm-1
+- A-C (17-18) – MCC RM-1
+- A-C/28-29
+- A13
+- A14 CCR
+- A16.1/A-A/16.1/A-B16.1/A-B17/A-B17.1
+- A1K / Piping / Fab 1 Col A7 Bryce M (970) 817-1097
+- A21 Vestibule
+- A25 Fire Alarm Room
+- A39 Acid Vestiblue
+- A42 Riser Room
+- A6IO-M18IO Fiberoptic cable installation
+- AB FIZ PIT B2 A6 IO ROOM
+- ACCESS FL/ FAB 3F (A-C/29-33)
+- ACCESS FL/ FAB 3F (M-N/30-33)
+- ACCESS FLOOR/ FAB1 3F - A-B/29-33
+- ACCESS FLOOR/ FAB1 3F - A-C,29-33
+- ACCESS FLOOR/ FAB1 3F - A-C/24-29
+- ACCESS FLOOR/ FAB1 3F - A/29.5
+- ACCESS FLOOR/ FAB1 3F - A/30
+- ACCESS FLOOR/ FAB1 3F - A/31
+- ACCESS FLOOR/ FAB1 3F - A/32
+- ACCESS FLOOR/ FAB1 3F - B-C, 29-30
+- ACCESS FLOOR/ FAB1 3F - B-C/30-31
+- ACCESS FLOOR/ FAB1 3F - G-J, 30-33
+- ACCESS FLOOR/ FAB1 3F - L-N,30-32
+- ACCESS FLOOR/ FAB1 3F - L-N/30-33
+- ACCESS FLOOR/ FAB1 3F - L-N/32-33
+- ACCESS FLOOR/ FAB1 3F - M-N/30-33
+- ACID (C 41-43)
+- ACID (C 44-45)
+- ACID (D 41-43)
+- ACID (D 44-45)
+- ACID (D 46-47)
+- ACID (E 41-42)
+- ACID (E 43-45)
+- ACID /COATED DUCT/ GCS A B7
+- ACID COATED DUCT/ J-H 18-21 HARNESS REQUIRED
+- ACID COATED DUCT/ K-G/21-24/ HARNESS REQUIRED
+- ACID COATED DUCT/ K-G/24-27/HARNESS REQUIRED
+- ACID COATED DUCT/ K-G/27-30/HARNESS REQUIRED
+- ACID COATED DUCT/L3/ D-G/18-21/HARNESS REQUIRED
+- ACID COATED DUCT/L3/ D-G/24-27/HARNESS REQUIRED
+- ACID COATED DUCT/L3/ E-G/3-4/HARNESS REQUIRED
+- ACID COATED DUCT/L3/ E-G/4-8/HARNESS REQUIRED
+- ACID EXH COATED RISERS/ SUW L30-K31/NO HARNESS
+- ACID EXHAUST/GCS A/L1/C 9-12
+- ACID EXHAUST/GCS-A / C 8/9
+- ACID EXHAUST/GCS-A B-7
+- ACID EXHAUST/GCS-A/L1/_ C-4
+- ACID EXHAUST/GCS-B B/45 BRING FALL PROTECTION
+- ACID EXHAUST/GCS-B C-E 44/47 BRING FALL PROTECTION
+- ACID EXHAUST/GCS-B_A 32 -41
+- ACID EXHAUST/GCS-B_A 42-56
+- ACID EXHAUST/GCS-B_A 49/56
+- ACID EXHAUST/GCS-B_A/C 40-44
+- ACID EXHAUST/GCS-B_A/C 54-58
+- ACID EXHAUST/GCS-B_A/E 47-51
+- ACID EXHAUST/GCS-B_A/E 52-58
+- ACID EXHAUST/GCS-B_C/E 40-44
+- ACID EXHAUST/GCSA/L1/C 7-8
+- ACID Exhaust duct / 2F, J-20
+- ACID/ COATED DUCT / 2F CSF D3/G3-D8/G8
+- ACID/ COATED DUCT / 3F G-J/15-18
+- ACID/ COATED DUCT / 4F TRUSS D-13/D14
+- ACID/ COATED DUCT / 4F TRUSS D-15
+- ACID/ COATED DUCT / 4F TRUSS D-19-20
+- ACID/ COATED DUCT / 4F TRUSS D-21-23
+- ACID/ COATED DUCT / 4F TRUSS D-24-26
+- ACID/ COATED DUCT / 4F TRUSS D-27-29
+- ACID/ COATED DUCT / 4F TRUSS D-5/D-6
+- ACID/ COATED DUCT / 4F TRUSS D-8/D-11
+- ACID/ COATED DUCT / 4F TRUSS K 12-18
+- ACID/ COATED DUCT / 4F TRUSS K 6-8
+- ACID/ COATED DUCT / 4F TRUSS K 8-12
+- ACID/ COATED DUCT / FSF BUNKER ROOM C7-8
+- ACID/ COATED DUCT / MEZZANNINE H4-8
+- ACID/ COATED DUCT / SUW K19-21
+- ACID/ COATED DUCT / SUW K21-24
+- ACID/ COATED DUCT / SUW L24-27
+- ACID/ COATED DUCT / TRUSS D21-H24
+- ACID/ COATED DUCT / TRUSS D24-H27
+- ACID/ COATED DUCT / TRUSS D27-H30
+- ACID/ COATED DUCT/ FSF MODULES D24-33
+- ACID/ COATED DUCT/ SUW K30-M33
+- ACID/ALKA COATED RISERS/ SUW L21-K24
+- ACID/ALKA COATED RISERS/ SUW L24-K28
+- ACID/ALKA COATED RISERS/ SUW L27-K30/NO HARNESS
+- ADMF/SUE/L3
+- AHU / HCHS/HCHR / L1
+- AHU / HVAC / Fab 1-3F- Column A10-A11
+- AHU / HVAC / Fab 1-3F- Column A11-A12
+- AHU / HVAC / Fab 1-3F- Column A13-A14
+- AHU / HVAC / Fab 1-3F- Column A14-A15
+- AHU / HVAC / Fab 1-3F- Column A15-A16
+- AHU / HVAC / Fab 1-3F- Column A17-A18
+- AHU / HVAC / Fab 1-3F- Column A19-A20
+- AHU / HVAC / Fab 1-3F- Column A20-A21
+- AHU / HVAC / Fab 1-3F- Column A21-A22
+- AHU / HVAC / Fab 1-3F- Column A23-A24
+- AHU / HVAC / Fab 1-3F- Column A5-A6
+- AHU / HVAC / Fab 1-3F- Column A7-A8
+- AHU / HVAC / Fab 1-3F- Column A9-A10
+- AHU / IA / L3
+- AHU DCC J/K 24.3
+- AHU DCC L1 L3 HP/LP BLEEDERS
+- AHU J/K 20.3, 26.6
+- AHU L 1 E 15.3
+- AHU L1 BW ON G 9.6 HCHR/S
+- AHU L1 D/E 4.0,7.0 G 9.6,12.6 BW AIR HANDLERS
+- AHU L1 DCC IA PIPING E 24.3 E 3
+- AHU L1 DCC J/K 24.3 RFI 6870
+- AHU L1 E/D 14.0 HCHR BW ON PIPE RACK
+- AHU L1 F8 /14, F22.3 / J.K 23.6
+- AHU L1 G (SEC 21) 3.6 THRU 9.6
+- AHU L1 G (SEC 22) 10 THRU 11.3
+- AHU L1 G (SEC 22) H-J 14, DE, 24.3, JK 10.3
+- AHU L1 G (SEC 22, 42) 11.6 THRU 14.6
+- AHU L1 G 15.0 BW ON PIPE RACK HCHR/S
+- AHU L1 G 9.6
+- AHU L1 H-J (SEC 22) 9.6
+- AHU L1 HCHR/S BW INSPECTION
+- AHU L1 HCHR/S E 22.3/E-3 E 24.6 F 7.3/ F 8
+- AHU L1 HCHR/S G 4.6,10.3,14.3 BW
+- AHU L1 HCHR/S G 6.6, 7.3 CS
+- AHU L1 HCHR/S GW 16.3,16.3-5.16.6,16.6-5
+- AHU L1 HCHS E/D 15.0 BW
+- AHU L1 IA BW ON L1 PIPE RACK
+- AHU L1 IA BW ON PIPE RACK E/F 15.0
+- AHU L1 J 17
+- AHU L1 J/K 3.3 PIPE RACK
+- AHU L1 J/K 31.6 BW INSTALLATION RFI-7666
+- AHU L1 STRUCTUAL BEAM BOLT-UPS
+- AHU/DCC HP-LP- BLEEDERS CS
+- AHUs / HVAC / Fab 1 Level 2 Electrical Room
+- AHUs/HVAC/Fab Electrical Rooms Col 25-32
+- AIR DUCT MODULE / FIZ / L3
+- AIR DUCT MODULE / SUE / L3
+- AKWG/IWW20_1G111B/WASTE WATER ROOM
+- ALKA /ACID/SUB-MAINS/C-O/MODULES/ FSF H-J 15-18
+- ALKA Exhaust / GCS A / 1F / A-C 22/25
+- ALKA Exhaust / GCS A / 1F / A-D 27/29
+- ALKA Exhaust / GCS A / 1F / C-3/5
+- ALKA Exhaust / GCS A / 1F / C-6/7
+- ALKA Exhaust / GCS A / 1F / D-28
+- ALKA-ACID / COATED DUCT / FSF C25, D24
+- ALKA/ACID / COATED DUCT / FSF ALKA
+- ALKA/ACID / COATED DUCT / FSF D-12 /D-14
+- ALKA/ACID / COATED DUCT / FSF D-9/D-11
+- ALKA/ACID / COATED DUCT / FSF H-J 21-24
+- ALKA/ACID / COATED DUCT / FSF H-J 24-27
+- ALKA/ACID / COATED DUCT / FSF H-J 27-30
+- ALKA/ACID / COATED DUCT / GCS A LEVEL 1 A7/C7
+- ALKA/ACID / COATED DUCT / GCS/ A-C 25-27
+- ALKA/ACID COATED RISERS/SUE/L1 COL C-D/29-30
+- ALKALI/ COATED / MODULE LATERALS/ FSF D15/17
+- ALKALI/ COATED DUCT / 3F E-13/14
+- ALKALI/ COATED DUCT / FSF D18/20
+- ALKALI/ACID /COATED DUCT/ CSF D3/G3-D9/G9
+- ALKALI/ACID /COATED DUCT/ CSF-FSF D3/G3-D9/G9
+- AWG/IWW2O_1G111A/WASTE WATER ROOM
+- AWW(P)/FAB1 Lv1 Col M16
+- AWW(P)/FAB1 Lv1 Col M17
+- AWW/AWT-A/SUW Lv1 Col M17
+- AWW/AWT_1F111A/FAB1 Lv1 Col M16
+- AWW/AWT_1F111A~C/FAB1 Lv1 Col M16
+- AX-WI-A-SUP-CRW-RE-0515
+- AX-WI-A-SUP-CRW-RE-0531
+- Above Ceiling HVAC & Plumbing - Level 3 - East OFF
+- Access Floor - Lower Structure/ FAB 3F - A-C/29-33
+- Access Floor installation IO room #1
+- Access Floor installation IO room #2
+- Access Floor/ 3F -West (G-J, 27-29)
+- Access Floor/ FAB1 3F - (G-J,24-26)
+- Access Floors/ 3F - CRT LAB
+- Access Floors/ 3F FAB - East (E-G,23-25)
+- Access Floors/ 3F FAB - West (G-J,32-33)
+- Access Floors/ 3F FAB - West G-J :: 19-21
+- Acid Exhaust / GCS A / 1F / C 5/8
+- Air Curtain Fans
+- Air Duct Leakage Test OA
+- AirLock Spare, Fab, Level-2, SUW
+- AirLock, Spare S.GAS, Fab, Level-2, SUW
+- AkWW/AKWWT_1F111/FAB1 LV1 COL N13
+- Alkali (C 18-19)
+- Alkali (C 20-22)
+- Alkali (C 23-25)
+- Alkali (C 26-27)
+- Alkali (CL 19-21 C-D) GCS A BLDG
+- Alkali 129 RM (E 17-26)
+- Alkali Rm 129 (D-E 28-29)
+- Alkali Vent
+- All Levels C- D/33
+- All Levels C-D/33
+- All Levels C-D/33 and Level 2 and 5 D-E/33
+- All Levels J-L/33
+- All Levels J-L/33 abd Level 3 L-M/32.5-33
+- All piping above and in walls rough-in inspection
+- All stairwells in the CUB
+- Anchor hole depth and cleanliness check. IW shoe s
+- Arch./Metal Panel-Z-Girts/Material InspectionYard
+- B ROOF B-C/38-39
+- B Roof B-C/30-31
+- B/4 Level 1
+- BASKET AND CABLE TRAY/FAB LVL 2 G20 HUB ROOM
+- BASKET AND CABLE TRAY/FAB LVL 2,AD Cable Tray10, A
+- BASKET TRAYS/FAB LVL 2 G28 HUB ROOM
+- BD TK/DEREATOR TK/CUB/LVL1/PRE WALK FOR HYDRO TEST
+- BFW/ Boiler room
+- BLDG A HCH LINE COL. 10E-12C
+- BLDG A OAC ROOM 213-A INSIDE THE ROOM ONLY.
+- BLDG A ROOFTOP OAC ROOMS 211A ,212A-B
+- BLDG A ROOFTOP PIPERACK NFW LINE AND OAC ROOMS 213
+- BO2 / SN2, Fab, Level-1, Col. G15/16
+- BOILER RM PIT 1U113C, D16 IO ROOM
+- BOILER ROOM SUMP PITS and D16IO RM A/B
+- Battery RM A-B (5-7.5)
+- Berg Laydown Yard
+- Berg Laydown Yard NCR-0204
+- Berg Laydown yard
+- Bituminous Coating Mock-up
+- Boiler Flue/ Boiler Rm Level 1
+- Boiler Flue/ Boiler Stack Rm Level 2 & 3
+- C 2-6
+- C 27+Girder to C 28
+- C 32-33
+- C-13
+- C-17
+- C-18
+- C-25
+- C-29
+- C-4
+- C-D 33 Line All Of Them
+- C/19 level 1
+- C1 Riser Room
+- C18 IT Security Room 1st Floor FAB
+- C18 IT Security Room 3rd Floor FAB
+- C18 Security Room 2nd Floor FAB
+- C2
+- C2-4
+- C4 Security Room 2nd Floor FAB
+- C4 Security Room 4th Floor FAB
+- C5-6, A6-7
+- C7-C14 Corridor
+- CABLE AND BASKET TRAY/FAB LVL 2, G.3~K,3~6
+- CABLE AND BASKET TRAY/FAB LVL 2, G.5~H.8- 9~15.
+- CABLE AND BASKET TRAY/FAB LVL 2, G~J/4.3~7.6
+- CABLE AND BASKET TRAY/FAB LVL 2,G.3~J.3/3~9, J30
+- CABLE PULL - NTP Antenna / CUB Roof
+- CABLE TRAT INSPECTION AT 21 TO 21.5 B Aug 5
+- CABLE TRAY , FAB CSF SECTOR 41,42 . E LINE
+- CABLE TRAY - COLUMN 32-36 B
+- CABLE TRAY / FAB LVL 2, G22~G8
+- CABLE TRAY /CSF SECTOR 21~25, J AND K LINE
+- CABLE TRAY /FAB LVL 2 G22~G33
+- CABLE TRAY 39-42 B ON AUG 5
+- CABLE TRAY INSPECTION GCS-A L1 IO ROOM 16
+- CABLE TRAY INSPECTION GCS-B 1M SEC 11 50-51
+- CABLE TRAY WATERFALLS/FAB LVL 2, E LINE 6.6,12,13
+- CABLE TRAY WATERFALLS/FAB LVL 2, E-Line 15-21
+- CABLE TRAY WATERFALLS/FAB LVL 2, E-Line 21-33
+- CABLE TRAY WATERFALLS/FAB LVL 2, E5@4.6, F6@6, F4@
+- CABLE TRAY WATERFALLS/FAB LVL 2,(J-13.3),(J-20.3),
+- CABLE TRAY/FAB LVL 2 , G19,G28 HUB ROOMS
+- CABLE TRAY/FAB LVL 2 -MOD-9,10,15,AD C-B 27,18,19,
+- CABLE TRAY/FAB LVL 2 HUB ROOM -G8,G11
+- CABLE TRAY/FAB LVL 2, CW9~10, CW14~21
+- CABLE TRAY/FAB LVL 2, G16,G24
+- CABLE TRAY/FAB LVL 2,(G.3~H.8,14.6~22),(G.3~H.8,30
+- CABLE TRAY/FAB LVL 2,G-LINE B-9,13,16,20,23,28, E-
+- CABLE TRAY/FAB LVL 2-MODULE-12,13,22,23,G-G-18,21,
+- CABLE/BASKET TRAY/FAB LVL 2, G.3~J/4.6~8(MEZZ)
+- CAT 6 UTP / Flush Mount Conduits / FIZ 1F - J3
+- CCR A
+- CCR A, L01, B/14-15
+- CCR Corridor
+- CCR Rooms
+- CCR and Inert Rooms
+- CD
+- CD (H) / GCS A BLDG LEVEL 1 (11-12 D-E)
+- CD 9.1 SUEL4, L3 Column 11-A Harness Req
+- CD HYDRO TEST/ combined test/PCL/GREENBERRY
+- CD(H) / CUB/LV2/K5-A20
+- CD(H) /PRESSURE TEST/ CUB/LV2/K5-A20
+- CD(H)-CUB1/LV1/A20-22,D20-22
+- CD(H)/CUB1/LV1/A20-22, HYDRO-TEST
+- CD(H)/CUB1/LV1/A20-22, Pre- walk for testing
+- CD, ED, 9.1 SUEL4, L3 Column 15-A Harness Requir
+- CD, ED, 9.1 SUEL4, L3 Column 16.3-A Harness Requir
+- CD, ED, 9.1 SUEL4, L3 Column 17.6-A Harness Requir
+- CD, ED, WSS 9.1 SUEL4, L3 Column 26.6A Harness Req
+- CD, ED, WSS 9.1 SUEL4, L3 Column 8.3-A Harness Req
+- CD, ED, WSS 9.1 SUEL4, L3 Column 9.6-A Harness Req
+- CD, ED, WSS(R) 9.1 SUEL4 Column 13.6-A Harness Req
+- CD, ED, WSS(R) 9.1 SUEL4 Column 7-A Harness Requir
+- CD, ED, WSS(R) 9.1 SUEL4 Column11-A Harness Requir
+- CD, ED, WSS(R) 9.1 SUEL4 Column12-A Harness Requir
+- CD, ED, WSS(R) SUEL4 Colum 28.3-A Harness Requir
+- CD, ED,WSS 9.1 SUEL4, L3 Column 20A Harness Requir
+- CD, ED,WSS 9.1 SUEL4, L3 Column 21.3-A Harness Req
+- CD, ED,WSS 9.1 SUEL4, L3 Column 22.3-A Harness Req
+- CD, WSS 9.1 SUEL4, L3 Column 28A Harness Req
+- CD,ED,WSS, 9.1 SUEL4, L3 Column 23.5A Harness Requ
+- CD/CDT_1G111/LEVEL 1 (11-12 D-E) TO LEVEL 1M (26)
+- CITY WATER TANK / CWT_1U111B/A - CUB-1 COLUMN 16
+- CJP & Fillet welds A-D/21-22;E-F/22;A-B/27-30
+- CJP & fillet welds E-G/18-23;K/11-12;J/14-15;F/15-
+- COATED DUCT/SUB-MAINS/MODULES/C-O/ FSF H-J 18-21
+- COL A - 24.0
+- COL A - 25.0
+- COL A - 26.0
+- COMM. CONDUITS / CUB 2F, SECTOR 04&24 [H26]
+- CONDUIT / FIZ 2F / SECTOR 41&61 [B3]
+- CONDUIT / GCS-A, L01M, BATT RM
+- CONDUITS / CUB 2F / SECTOR 04 & 24 [H26]
+- CONDUITS / CUB 2F / SECTOR 04 & 24 [H27]
+- CONDUITS / CUB 2F / SECTOR 04 [H26]
+- CONDUITS / FIZ 2F / SECTOR 61 [C3]
+- CORROSIVE&INERT Storage (A-C/7-8)
+- CP BOX INSTALLATION FAB L3
+- CP BOXES INSTALLATION/FAB 3F COLUMN J5, J8, J30
+- CRC UPW Floor Zone B E-G 28-29.5 Completion Inspec
+- CRC UPW Rm Cont Pits Pads & Floor B31-33 Final Ins
+- CSF CE 11
+- CSF CE 13
+- CSF CE-12
+- CSF CE-21
+- CSF CW 21
+- CSF CW-22
+- CSF E-G LINE CL12 CABLE TRAY
+- CSF Fizz South Electrical Room
+- CSF J LINE S22 CABLE TRAY
+- CSF J LINE S23 CABLE TRAY
+- CSF MODULE CE 6,CE10 TS BOLT
+- CSF Pipe Rack/ FAB 2F (D-E, 25-26)
+- CSF Pipe Rack/ FAB 2F :: D-E, 24-26/ UT Testing
+- CSF Pipe Rack/ FAB1 2F : D-E, 26-28
+- CSF Pipe Rack/ FAB1 2F : D-E,27
+- CSF S22 MODULE CABLE TRAY
+- CSF S23 MODULE CABLE TRAY
+- CSF S24 MODULE CABLE TRAY
+- CSF S25 MODULE CABLE TRAY
+- CSF SECTOR 41
+- CSF SECTOR 41,42,61
+- CSF SOUTH ELECTRICAL ROOM
+- CSF Slurry Room GN2 and LPA
+- CSF, G-H, 29-30
+- CSF, level 2, G-J, 3-8
+- CSF- C20
+- CUB / AHU / Second Floor / Column K2
+- CUB / Ground / G4-8 / H4-8
+- CUB / LV 1 / SECTOR 09 / K60 / PLUMBING
+- CUB / LV 2 / E-F / 9-14 / HCHS
+- CUB / LV1 / A21 - 23
+- CUB / LV1 / A23 / Natural Gas MECH COMPLETE WALK
+- CUB / LV1 / A23 / Natural Gas Pressure TEST
+- CUB / LV1 / A23 / Natural Gas Pressure Test
+- CUB / LV1 / A29 / chem lines pressure test
+- CUB / Level 1M / Sector 06 - 08 /Column K38-K48.5
+- CUB / Level 1M / Sector 23 / A27
+- CUB / Level 2 / Sector 26 / Column C35
+- CUB 101/ Firestopping / Col 1-3 x C-D
+- CUB 101/Firestopping/Column 1-2 x C-K
+- CUB 1st Floor Office Area
+- CUB 1st Floor Office Area (multiple locations)
+- CUB 2ND LEVEL ELECTRICAL ROOM, C-D/21
+- CUB > Level 1
+- CUB > Level 1 > CUB110105-ELEV. #1 MACH. RM.
+- CUB > Level 1 > CUB110125-CCR FIELD MAN RM.
+- CUB > Level 1 > CUB110302-FIRE PUMP RM.
+- CUB > Level 1 > CUB110401-RAW WATER PIT-1
+- CUB > Level 1 > CUB110502-INDUSTRIAL WATER #1 (PH1)
+- CUB > Level 1 > CUB110503-RO REJECT WATER PIT-1
+- CUB > Level 1 > CUB110504-RECOVERY WATER PIT-2
+- CUB > Level 1 > CUB110505-RECOVERY WATER PIT-1
+- CUB > Level 1 > CUB110506-CEDI WATER PIT-2
+- CUB > Level 1 > CUB110507-CEDI WATER PIT-1
+- CUB > Level 1 > CUB110509-DI WATER PIT-1
+- CUB > Level 1 > CUB112201-CHILLER RM.-1 (PH1)
+- CUB > Level 1 > CUB112302-BOILER RM.-1 (PH1)
+- CUB > Level 1 > CUB112410-TR
+- CUB > Level 1M
+- CUB > Level 2
+- CUB > Level 2 > CUB122301-I/O RM.-1 (PH-1)
+- CUB A1-16 Expansion Foam Pre-Pour Rebar Inspect
+- CUB A1-16/B-K1 Expansion Foam Pour Back Pour
+- CUB A20 - A21 Boiler Room Knockout Panel Header In
+- CUB A24 Bathroom / Firestopping / A24
+- CUB A40 Louver Leave Out Panel 2nd Layer & Screw I
+- CUB A40 Louver Leave Out Panel Insulation Inspecti
+- CUB A48-49 Louver Framing & Waterproofing Inspect
+- CUB A50 Louver Framing & Waterproofing Inspection
+- CUB A50 Louver Leave Out Panel 2nd Layer & Screw I
+- CUB A51 Louver Leave Out Panel 2nd Layer & Screw I
+- CUB A51 Louver Leave Out Panel Insulation Inspecti
+- CUB AWW-1 Concrete Substrate Inspect
+- CUB AWW-2 Concrete Substrate Inspect
+- CUB Applied FP Smokestack Rm A16-19.5
+- CUB Awning Steel A31,A33,A37,A41&A53 (External Onl
+- CUB Awning Steel A41, A36, and A19 Final Paint Ins
+- CUB Awning Steel Lvl1 21A Final Paint Inspect
+- CUB Awning Steel Lvl1 K18 Final Paint Inspect
+- CUB Awning Steel Lvl2 J3,J4 & B16 Final Paint Insp
+- CUB Awning Steel Lvl2 K35 Final Paint Inspect
+- CUB B&K Pipe Penetrations - West Dyke Wall B22 Pre
+- CUB BOILER RM BFW VALVE, D16 IO ROOM
+- CUB BOILER ROOM BOILERS F,G,H SECTOR 24 & D16 IO
+- CUB BOILER ROOM DA TANK & BLOWDOWN TANKS IN SECTO
+- CUB BOILERS F, G, AND H AND D16IO RM
+- CUB CRC 4.1 Boiler Rm.1 (PH1) A-E 18-21 Trench & S
+- CUB CRC CT Basin #11 PH2 Substrate Inspect
+- CUB CRC CT Basin #9 & #10 ph2 Substrate Inspect
+- CUB CRC CT Basin Ph.2 #1 Inside and Outside Compet
+- CUB CRC CT Basin Ph2 #1-6 Exterior Wall Substrate
+- CUB CRC CT Basin Ph2 #10 Pedestal Inspect
+- CUB CRC CT Basin Ph2 #11 Pedestal Inspect
+- CUB CRC CT Basin Ph2 #2 Inside and Outside Complet
+- CUB CRC CT Basin Ph2 #3 & #4 Substrate Inspect
+- CUB CRC CT Basin Ph2 #3 Inside Complet
+- CUB CRC CT Basin Ph2 #3 OutsideCompletion Inspect.
+- CUB CRC CT Basin Ph2 #4 Inside Completion Inspect.
+- CUB CRC CT Basin Ph2 #5 & #6 Substrate Inspect
+- CUB CRC CT Basin Ph2 #5 & 7 Inside Completion Insp
+- CUB CRC CT Basin Ph2 #5 Inside Completion Inspect.
+- CUB CRC CT Basin Ph2 #6 Pedestal Inspect
+- CUB CRC CT Basin Ph2 #6-11 Exterior Wall Substrate
+- CUB CRC CT Basin Ph2 #7 Pedestal Inspect
+- CUB CRC CT Basin Ph2 #8 Pedestal Inspect
+- CUB CRC CT Basin Ph2 #9 Pedestal Inspect
+- CUB CRC CT Basin Ph2 4-8Inside Completion Inspect.
+- CUB CRC CT Basin Phase 1 Exterior wall inspect
+- CUB CRC Chem Rm #503 A32 (Cont. Pits Only) Complet
+- CUB CRC Chem Rm #503 Outside Floor and Trenches A3
+- CUB CRC Chem Rm 504 & 506 A-B 30-32 Final Inspect
+- CUB CRC Floor & Tench Chem Rm A-B 31-32 Final Insp
+- CUB CRC Floor D-E 31-34 Final Inspect
+- CUB CRC Floor Nomura Skid Locations C32-36 Complet
+- CUB CRC Nomura Equipment Pads C32-34 Final Inspect
+- CUB CRC Trenches A40-G40 Completion Inspect
+- CUB CRC Trenches B23-G23 & Sump Pit B23.5 Completi
+- CUB CRC Trenches C-D 4-7 Completion Inspect.
+- CUB CRC Trenches C7.5-11, E4-7.5, and D-F Completi
+- CUB CRC Trenches D7.5-11 Completion Inspect
+- CUB CRC Trenches F4-7.5 & C11.5-16 C
+- CUB CRC Trenches G23-31 Completion Inspect
+- CUB CRC Trenches G31-40 Completion Inspect
+- CUB CRC Trenches G8-11 Completion Inspect
+- CUB CRC Trenches H4.5-5.5, H5.5-G5.5, G5.5-8, & Su
+- CUB CRC UPW Equip Pad A-B 34-35 Final Inspect
+- CUB CRC UPW Floor Area 5 C-D 31-34 Completion Insp
+- CUB CRC UPW Floor Zone B E-F 29-30 Completion Ins
+- CUB CRC UPW Rm Containment Pits B31-33 Final Inspe
+- CUB CRC UPW-10 Pre-Patch Impact Echo Locations (8)
+- CUB CRC UPW-2 Impact Echo Testing Pre-Patch
+- CUB CRC UPW-2 Substrate Inspect
+- CUB CRC UPW-4 1st Lift Wall Repair Pour
+- CUB CRC UPW-4 2nd Lift Wall Repair Pour
+- CUB CRC UPW-4 Patch Substrate Inspect
+- CUB CRC UPW-6 Substrate Inspect
+- CUB CRC UPW-7 Curb Final Inspect
+- CUB CRC UPW-8 Pre-Patch Impact Echo Locations Insp
+- CUB CRC Vinyl Ester Novolac Laminate System - Ultr
+- CUB CRC trenches K5-H4 Completion Inspect
+- CUB CTP Pads G19 Pour
+- CUB CTP Pads G19 Pre-Pour Rebar Inspect
+- CUB Col E 21
+- CUB Curb 61E-F Pour
+- CUB Curb 61E-F Pre-Pour Rebar Inspect
+- CUB C~D 4~22 / D~H 16~17 / G~H 13~17
+- CUB D15 IO ROOM CUB IWW2 TANK LEVEL TRANSMITTERS
+- CUB D16 IO ROOM, BOILER ROOM DA TANKS
+- CUB DA & BLOWDOWN TANKS & D16 IO RM
+- CUB Deck Support Level 2 D20 Paint Inspect (Harnes
+- CUB Deck Support Level 2 D20 Weld & Bolt (Harness
+- CUB Deck Support Level 2 E-G35 Depth Inspect
+- CUB Deck Support Level 2 E-G35 Paint Inspect (Harn
+- CUB Densifier H-K 60-61 Post Install Inspect
+- CUB Density Testing Equipment Pads A21 (Raba requi
+- CUB Diesel Pad A16 Pre-Pour Rebar Inspect
+- CUB Drain Pour-Back Pre-Pour Rebar Inspect
+- CUB Edge of Slab Firestopping K14-15 Inspect
+- CUB Edge of Slab Firestopping K4.5-5 & K6-6.5 Insp
+- CUB Emseal at A20/K20 Expansion Joint Inspect
+- CUB Equip Pads 2nd Lift C-D 8-12 Pour
+- CUB Equip Pads 2nd Lift C-D 8-12 Pre-Pour Rebar In
+- CUB Equip Pads 2nd Lift E-F 14-16 Pour
+- CUB Equip Pads 2nd Lift E-F 14-16 Pre-Pour Rebar I
+- CUB Equip Pads J-K 4-7 Pour
+- CUB Equip Pads J-K 4-7 Pre-Pour Rebar Inspect
+- CUB Equipment Pad A21 Pre-Pour Rebar Inspect
+- CUB Equipment Pad H18 Pour
+- CUB Equipment Pad H18 Pre-Pour Rebar Inspect
+- CUB Equipment Pad Paint J5.5 Mock-up
+- CUB Equipment Pads A21 Pour
+- CUB Equipment Pads A22 Pour
+- CUB Equipment Pads A22 Pre-Pour Rebar Inspect
+- CUB Equipment Pads K1, A25 & A33 Pour
+- CUB Euipment Pad D-E 11-16 Pour
+- CUB Euipment Pad D-E 11-16 Pre-pour Rebar Inspect
+- CUB Exterior A1-17 Owner Punch Inspect
+- CUB Exterior Framing A21 Inspect
+- CUB Exterior Framing A53 Inspect
+- CUB Exterior Owner Punch Walk (A-K 61).
+- CUB Exterior Owner Punch Walk (K33-45)
+- CUB Exterior Owner Punch Walk (K45-61)
+- CUB FARS Aboveground Installation at Stair #1 & #2
+- CUB Fire Caulking Fire Pump Rm. J-K 18-19
+- CUB Fire Caulking Level 1 A27-B27,B27-B30 & A30-B3
+- CUB Fire Caulking Lvl 2 North Wall A-B26 Inspect.
+- CUB Fire Caulking Sector 1 & 21 Inspect.
+- CUB Fire Caulking UPW Chemical Rm 3- 1 (A-B 30-34)
+- CUB Framing & Waterproofing A40 Louver Inspection.
+- CUB Framing & Waterproofing A51 Louver Inspection
+- CUB Gyp Wall Corridor (1A-112115), Panel Rm-2 (1A-
+- CUB Gyp Wall Elev. #3 Shaft A-B26 Framing Inspect
+- CUB Gyp Wall Elevator #1 (01M) Framing Inspect.
+- CUB Gyp Wall G-H12 Drywall & Screw Inspect (North
+- CUB Gyp Wall G-H12 Drywall & Screw Inspect (South
+- CUB Gyp Wall IT-2 (CUB110902) K61 2nd Layer & Scre
+- CUB Gyp Wall Level 1 GL A26 & Level 2 Elevator #3
+- CUB Gyp Wall Lvl 2 Stair #3 North Wall A26 2nd Lay
+- CUB Gyp Wall Lvl2 C-D30 2nd Layer & Screw (COT) In
+- CUB Gyp Wall Stair #3 A26 Framing Inspect
+- CUB Gyp Wall Stair #3 North Wall A26 Framing Inspe
+- CUB Gyp Wall Stair #4 A42 2nd Layer & Screw Inspec
+- CUB Gyp Wall Stair #4 Lvl 2 A42 2nd Layer & Screw
+- CUB Gyp Wall Stair #5 K60 2nd Layer & Screw Inspec
+- CUB H2 & D2 LVL1
+- CUB IMP Panel Re-Skin A14 Mock-up (SECAI required
+- CUB IOR-1U1G5-UTIL - IOR-1U2B24-UTIL FIBEROPTIC
+- CUB IW PUMP STATION, G5 IO ROOM
+- CUB IW Pump Rm-1 (112201) Caulking A-E 21-22 Insp
+- CUB IW Pump Rm.-1(112201) A-E 21-22 Completion Ins
+- CUB IW Pump Station Pad SE Pour
+- CUB IW Pump Station Pads SE Pre-Pour Rebar Inspect
+- CUB IW-1 Phase 1 XR-5 Floor Inspection
+- CUB IW-1 Phase 1 XR-5 Liner East Termination Bar A
+- CUB IW-2 Ph1 SECAI Touch up Completion Inspect
+- CUB IW-2 XR-5 Liner Air Lance Test.
+- CUB IW-2 XR-5 Liner Floor Cleanliness Inspect (Har
+- CUB IW-2 XR-5 Liner Floor Cleanliness Inspect GL23
+- CUB IW-2 XR-5 Liner Floor Seam Inspect
+- CUB IW-2 XR-5 Liner Termination Bar Inspect.
+- CUB IW-2 XR-5 North, & West Wall Inspect (H
+- CUB IW-2 XR-5 Pipe Penetration Inspect
+- CUB IW-2 XR-5 Submerged Pipe Penetration Inspect
+- CUB IWW Pump Rm.(112401) A-C 22-23 Final Inspect
+- CUB In-Space Installation GL 46-52
+- CUB Inertia Pads Pour Staged @ A52 (3-day breaks r
+- CUB Inertia Pads Pour Staged @ B53
+- CUB Inertia Pads Pour Staged @ B53 (3-day breaks r
+- CUB Inertia Pads Pour Staged @ B53.2
+- CUB L1 E9-12 CABLE TRAY
+- CUB L1 F9.3-12 CABLE TRAY
+- CUB L1 Fire Riser Rm-1 (A-B 23.5-24 Fire Caulking
+- CUB L1 G5 RISER, CUB L2 NTP ANTENNA S1
+- CUB L1 G5-D16IO FIBEROPTIC CABLE
+- CUB L1 S1
+- CUB L1 S1&21
+- CUB L1 S1,2 CABLE TRAY
+- CUB L1 S22,23
+- CUB L1 S23 CABLE TRAY
+- CUB L1 S23,24
+- CUB L1 S24
+- CUB L1 S4 CABLE TRAY
+- CUB L2R S2,3,4
+- CUB LEVEL 1 NG PAD & D16 IO RM
+- CUB LEVEL 1 SECTOR 03
+- CUB LEVEL 1 SECTOR 2
+- CUB LEVEL 1 SECTOR 22 E7.9-E9
+- CUB LEVEL 1 SECTOR 22 F7.9-E9
+- CUB LEVEL 1 SECTOR 23
+- CUB LEVEL 1 SECTOR 24
+- CUB LEVEL 1 SECTOR 3
+- CUB LEVEL 1 SECTOR 4
+- CUB LEVEL 1 SECTORS 23,24,25 APOLLO RS-485 COMMS
+- CUB LEVEL 1M SECTOR 24/25
+- CUB LEVEL 2 SECTOR 25
+- CUB LV1 C4 - C9
+- CUB LVL1 D2-D8
+- CUB LVL1 D2-D9
+- CUB LVL1 G4-G10
+- CUB Level 2 A-B/19-20 Deck Support Weld & Bolt Ins
+- CUB Level 2 A-B/26 Deck Support Weld & Bolt Inspec
+- CUB Level 2 A-B/28.5 Deck Support Weld & Bolt Insp
+- CUB Level 2 Applied FP Stair 4&5 Penthouse Punch
+- CUB Level 2 C-D/6-7 Deck Support Weld & Bolt Inspe
+- CUB Level 2 C-D/7-8 Deck Support Weld & Bolt Inspe
+- CUB Louver Steel K45-46 Weld & Bolt Inspect
+- CUB Lvl 1, Sec 22,23
+- CUB Lvl 3 Roof Penthouse #1, and Electrical Rm. Fi
+- CUB MCC ROOM VFDs AND D16 IO RM
+- CUB Metal Panel Infill Header Framing K27-31.5 Ins
+- CUB NG PAD
+- CUB PUMP ROOM/Firestopping/Column 18-19 x H-K
+- CUB Pedestal CT Basin Ph2 #1 & #2 Pour
+- CUB Pedestal CT Basin Ph2 #1 Close-Up Inspect
+- CUB Pedestal CT Basin Ph2 #10 Pre-Pour Rebar Inspe
+- CUB Pedestal CT Basin Ph2 #11 Pre-Pour Rebar Insp
+- CUB Pedestal CT Basin Ph2 #2 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #3 & #4 Pour
+- CUB Pedestal CT Basin Ph2 #3 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #4 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #5 & #6 Pour
+- CUB Pedestal CT Basin Ph2 #5 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #6 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #7 & #8 Pour
+- CUB Pedestal CT Basin Ph2 #7 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #8 Pre-Pour Rebar Inspec
+- CUB Pedestal CT Basin Ph2 #9 - 11 Pour
+- CUB Pedestal CT Basin Ph2 #9 Pre-Pour Rebar Inspec
+- CUB Perimeter Steel E-F61 Lower Final Paint Inspec
+- CUB Perimeter Steel E-F61 Weld & Bolt Inspect
+- CUB Perimeter Steel K14-15 Final Paint Inspect
+- CUB Perimeter Steel K14-15 Weld & Bolt Inspect
+- CUB Pond Lid Pour-Back at H40 Pour
+- CUB Pond Lid Pre-Pour-Back at H40
+- CUB Precast Lvl1 Final Sign Off - Balance of Bldg
+- CUB Prism Backfill at A20
+- CUB Roof Drain A21-38 & K38-58 Pour back Pre-Pour
+- CUB Roof Drain K2 Pre-Pour Inspect.
+- CUB Roof GL1-20 Drain Pour Back Pour
+- CUB Roof Membrane A-D 40-45 Inspect
+- CUB Roof Membrane A-D 44-53 Inspect
+- CUB Roof Membrane CT Basin Ph2 #1 Pedestal Inspect
+- CUB Roof Membrane CT Basin Ph2 #2 Pedestal Inspect
+- CUB Roof Membrane CT Basin Ph2 #3 Pedestal Inspect
+- CUB Roof Membrane D-H 40-42 Inspect
+- CUB Roof Membrane D-H 58-61 Inspect
+- CUB Roof Membrane H-K 58-61 Inspect
+- CUB Roof Membrane K2 Inspect
+- CUB Roof Membrane Parapet B-K GL1/K1-20(NCR 0154)
+- CUB Roof Owner Punch Walk (A-K 55-61)
+- CUB Roof Owner Punch Walk A-K 16-24
+- CUB Roof Punch B-K 1-6
+- CUB Roof Punch H-K 6-16
+- CUB Roof Topping Slab 11A A-H 40-43.5 Pour
+- CUB Roof Topping Slab 11A A-H 40-43.5 Pre-Pour Ins
+- CUB Roof Topping Slab A-D 45-53 Pre-Pour Inspect
+- CUB Roof Topping Slab B-C 16-19 & A-C 19-20 Pour
+- CUB Roof Topping Slab B-C 16-19 & A-C 19-20 Pre-Po
+- CUB Roof Topping Slab B-D 53-61 Pour
+- CUB Roof Topping Slab B-D 53-61 Pre-Pour Inspect
+- CUB Roof Topping Slab D-K 58-61 Pour
+- CUB Roof Topping Slab D-K 58-61 Pre-Pour Inspect
+- CUB SECTOR 24 ELEC RM
+- CUB SECTOR 24 ER
+- CUB STAIRWELL #5, J-K/60-61
+- CUB Saw Cut Joints H-K 5-20 Substrate Inspect
+- CUB Saw Cut Joints L2 A-C 27-40 Substrate Inspect
+- CUB Saw Cut Joints L2 A-D 5-16 Substrate Inspect
+- CUB Saw Cut Joints L2 GL35-40 Substrate Inspect
+- CUB Saw Cut Joints Lvl 2 A-K/43-61 Substrate Inspe
+- CUB Saw Cut Joints Lvl 2 C-K 18-21 & A-C 22-24 Sub
+- CUB Sealer Transformer Walls A-B 53-61 Substrate I
+- CUB Slab Opening Embed B-C20 Lvl 2 Weld & Bolt Ins
+- CUB Stair #3, CP2 @ GL 29-30/C and related piping
+- CUB Stair #4 & #5
+- CUB Stair Chem Rm A30-32 Weld & Bolt Inspect
+- CUB Stair Lvl2 B16 IO Rm Bolt Inspect
+- CUB Stair Waste Water Rm-IWW A-B22 Weld & Bolt In
+- CUB Stairs A32-A34 Weld & Bolt Inspect
+- CUB Stairwell 1 & 2
+- CUB Trestle A21 Berridge Sheathing Inspect (RFI-64
+- CUB Trestle A53 Berridge Air Barrier Mock-up (RFI-
+- CUB Trestle A53 Berridge Caulking Inspect (RFI-640
+- CUB Trestle A53 Berridge Panel Inspect (RFI-6402)
+- CUB Trestle A53 Berridge Sheathing Inspect (RFI-64
+- CUB Trestle A53 Infill Hat Channel Inspect (RFI-64
+- CUB Trestle A8 Berridge Panel Inspect (RFI-6402)
+- CUB UPW Area E-F 24-27, D-G 27-31, CUB 2F MCC Room
+- CUB UPW-1 Concrete Subrate Inspect
+- CUB UPW-1 Fiberglass Grind/Prep (Pre-Primer 27)
+- CUB UPW-1 Floor Primer 27 Inspect (Consumption & A
+- CUB UPW-1 Floor Surface Prep Grinding (Pre-Primer
+- CUB UPW-1 Floor Topcoat Completion Inspect
+- CUB UPW-1 Primer 27 Inspect (Consumption & Applica
+- CUB UPW-1 Primer 67 Inspect
+- CUB UPW-1 Substrate Cleanliness Inspect
+- CUB UPW-10 Concrete Substrate Inspect
+- CUB UPW-2 Cleanliness Inspect
+- CUB UPW-2 Concrete Substate Inspect
+- CUB UPW-2 Fiberglass Grind/Prep Mock-up Inspection
+- CUB UPW-2 Final Inspect
+- CUB UPW-2 Floor Cleanliness Inspect (Pre-Primer 27
+- CUB UPW-2 Floor Completion Inspect
+- CUB UPW-2 Floor Primer 27 Inspect (Consumption & A
+- CUB UPW-2 Primer 27 Inspect
+- CUB UPW-2 Primer 67 Inspect
+- CUB UPW-2 Walls and Ceiling Completion Inspect
+- CUB UPW-3 Cleanliness Inspect
+- CUB UPW-3 Concrete Substrate Inspect
+- CUB UPW-3 Floor Topcoat Completion Inspect
+- CUB UPW-3 Primer 27 Inspect (Consumption & Applica
+- CUB UPW-3 Primer 67 Inspect (Consumption & Applica
+- CUB UPW-3 Topcoat Wall Completion Inspect
+- CUB UPW-4 Primer 67 Walls & Floor Inspect (Consump
+- CUB UPW-4 concrete substrate inspect
+- CUB UPW-5 Cleanliness Inspect
+- CUB UPW-5 Concrete Substrate Inspect
+- CUB UPW-5 Floor Cleanliness Inspect (Pre-Primer 27
+- CUB UPW-5 Floor Primer 27 Inspect (Consumption & A
+- CUB UPW-5 Floor Topcoat Completion Inspect
+- CUB UPW-5 Primer 67 Inspect (Consumption & Applica
+- CUB UPW-5 Surface Prep Grinding (Pre-Primer 27) In
+- CUB UPW-5 Wall Topcoat Completion Inspect
+- CUB UPW-6 Primer 67 Inspect (Consumption & Applica
+- CUB UPW-6 Substrate Cleanliness Inspect
+- CUB UPW-7 Concrete Substrate Inspect
+- CUB UPW-7 Primer 27 Inspect (Consumption & Applica
+- CUB UPW-7 Surface Prep Grinding (Pre-Primer 27) In
+- CUB UPW-7 Wall Topcoat Completion Inspect
+- CUB UPW-8 Concrete Substrate Inspect
+- CUB UPW-9 Cleanliness Inspect
+- CUB UPW-9 Concrete Substrate Inspect
+- CUB UPW-9 Primer 27 Inspect (Consumption & Applica
+- CUB UPW-9 Primer 27 Inspect .(Cleanliness & Surfac
+- CUB UPW-9 Primer 27 Inspect. (Consumption & Applic
+- CUB UPW-9 Primer 67 Inspect (Consumption & Applica
+- CUB UPW-9 Surface Prep Grinding (Pre-Primer 27) In
+- CUB UPW-9 Wall Topcoat Completion Inspect
+- CUB Waterproofing A23.5-29 Inspect
+- CUB Waterproofing A43-A52
+- CUB Waterproofing B-K61 Inspect
+- CUB Waterproofing K35-44.5 Inspect
+- CUB Waterproofing K36-38 Inspect
+- CUB Waterproofing K53-46 Inspect
+- CUB Waterproofing K53-61 Inspect
+- CUB Weatherstation, CUB South Exterior, CCR Room,
+- CUB lvl 2 K26
+- CUB through to FIZ Fiber routing
+- CUB, Chillers, CUB
+- CUB, G/25-26
+- CUB-191-CUB UPW-6 Concrete Substrate Inspect
+- CUB-2-CUB Window K1 Water Test
+- CUB-CW(S)
+- CUB-IW
+- CUB-IW PUMP
+- CUB1 / CW, DHW, S, D, V / 1F/ D-K/1-4
+- CUB1 / LEVEL 1 / SECTOR 25 / COLUMN A27
+- CUB1 / LEVEL 2 / A19-K6 / 24" ST(H) PRESSURE TEST
+- CUB1 / LEVEL 2/ Column A42
+- CUB1 / LV1 / A ~ B20
+- CUB1 / LV1 / A-C / 23 - 24
+- CUB1 / LV1 / A21-23, C21-23
+- CUB1 / LV1 / C~D / 4.5~11.5
+- CUB1 / LV1 / C~E / 20~21
+- CUB1 / LV1 / C~H / 4~14
+- CUB1 / LV1 / D49 - 50
+- CUB1 / LV1 / D49-50
+- CUB1 / LV1 / D~E / 20~21
+- CUB1 / LV1 / D~E/20~21
+- CUB1 / LV1 / E12~15
+- CUB1 / LV1 / E4 - E7
+- CUB1 / LV1 / E8~E12
+- CUB1 / LV1 / E~H / 4~10
+- CUB1 / LV1 / G10 ~ G15
+- CUB1 / LV1m / A31
+- CUB1 / Level 1 / Column D8 / Module 4C
+- CUB1 / Level 1 / Sector 06 thru 8 / K34 thru K48
+- CUB1 / Level 1M / Sector 04 / HCH S&R
+- CUB1 / Level 1M / Sector 09 / K58 / Plumbing
+- CUB1 / Level 1M / Sector 09 / k60 / Plumbing
+- CUB1 / Level 1M / Sector 27 / A42 / Plumbing
+- CUB1 / Level 1M / Sector 27 / A44 / Plumbing
+- CUB1 / Level 1M/ Sector 09/ K61 / Plumbing
+- CUB1 / Level 2 / Column A24 / Plumbing
+- CUB1 / Level 2 / Sector 24 / Column A26
+- CUB1 / Level 2 / Sector 29 / B57 / Plumbing
+- CUB1 / Level 2 / Sector 29 / B60 / Plumbing
+- CUB1 / Level 3 / Column A16 / Plumbing
+- CUB1 / Sector 01 / Column K5
+- CUB1 / Sector 03 / Column K18.5
+- CUB1 / Sector 06 thru 08 / Column K34-K48
+- CUB1 / Sector 27 / Column A42
+- CUB1/ LV 1/ A21 - 23
+- CUB1/LV1/A8/RD/ERD
+- CUB:1F D-K/1-4 CCR Rm
+- CUS04
+- CUSO4 / GCS B BLDG CHEM ROOM (CL 58-60 B-C)
+- CUSO4 / GCS B BLDG CHEM ROOM (CL 58-60 C-D)
+- CUSO4 / GCS B BLDG CHEM ROOM (CL 58-60 C-E)
+- CUSO4/PIT_1G1118C/CHEM
+- CUWW(P)/FAB1 LV1 Col L12-M17
+- CW & DHW(S) /BATHROOM / A 24 / LEVEL 1
+- CW and HW domestic water systems insulation
+- CW and TW COL 39-62
+- CW and TW in GCS B Sector 7-12
+- CW and TW in Sector 2 through 6
+- CW and TW in Sector 2 through 6 Pressure Test
+- CW and TW systems in GCS b COL 47-61
+- CW-DHW/Copper/Level 1 sector 2 Col. N11
+- CW-DHW/Copper/Level 3 sector 3 N17
+- CW-DHW/Copper/Lv.1 A01 N4
+- CW-DHW/Copper/Lv.1 A64 Col. A21
+- CW/BAOTHROOM SHOWER/LV1-A24
+- CW05P, CW05E, CW07P, CW08P
+- CW07P
+- CW10P
+- CW13P
+- CW15P
+- CWS(R) Chillers Welds, Cub, D04 to D08
+- CWS, 20" DROP WELDS C8 TO C11
+- CWS, 20", 18", FIELD WELDS, SECTOR 21: C04 TO C08
+- CWS/20" FIELD WELD/CUB LEVEL 1M SECTOR 21: E6
+- CWS/48" FIELD WELD/CUB LEVEL 1M SECTOR 21: E6
+- Cable Tray
+- Cable Tray / L1, L1M, L3, Sector 12
+- Cable Tray / L1, Sector 03
+- Cable Tray / L1, Sector 10, 49-50 D-E
+- Cable Tray / L1M, Sector 10, 47-48 B
+- Cable Tray / L3, Sector 08
+- Cable Tray / Sector 08
+- Cable Tray Cover / South water fall, Trestle
+- Cable Tray--GROUNDING ONLY
+- Cable Tray--MVCABLE SPACING & STRAPPING
+- Cable Tray--Vertical Drops
+- Cable Tray/ L1, Sector 09
+- Cable tray
+- Chemical block 10
+- Cherry Coatings Laydown Yard
+- Cherry Laydown Yard
+- Cherry spray tent
+- Chiller RM-1(A-C 7-8)
+- Chiller Rm.-1(A-G 20-23)
+- Chillers, CUB, CL F4 - F19
+- City Water
+- City Water, Sanitary Sewer and Vent
+- Col 08 row D mezz Dk
+- Col 11-12 row D
+- Col 27-28 row D second floor
+- Col 28 row A-B
+- Col 28 row A-B 2" TW
+- Col 28-35 roa C mezz Dk
+- Col 31 row B mezz dk
+- Col 31 row C-D
+- Col 32 row D, Col 31 row C
+- Col 32 row c-d
+- Col 32-35 row D east&west
+- Col 34 row D
+- Col 35 row D
+- Col 38 row C east wall
+- Col 38 row C mezz Dk
+- Col 38-39 row D mezz dk
+- Col 5 row A main and mezz dk
+- Col 61-62 row E
+- Col A24.0
+- Columns A 13 -14
+- Columns A-B 30-32
+- Columns A-B 49-51
+- Columns A-B 52-54
+- Columns A-B/16~17
+- Columns A-C/1~2
+- Columns A/24.5~25.5
+- Columns B-C 30-32
+- Columns B-C 32-34
+- Columns B-C 34-36
+- Columns B/41~42
+- Columns B/43~45
+- Columns C-D 16-17
+- Columns C-D 30-32
+- Columns C-D 30-34
+- Columns C-D 34-39
+- Columns C-E 59.5-62
+- Columns D-E 30-32
+- Columns E/13~14
+- Columns Hall 2 (D-E 15-16)
+- Columns at 1st floor FAB
+- Com/Network Fiber/L1 Win Win Room Sector 01,02,03
+- Com/UTP Cables/L1 Win Win Room Sector 01,02,03
+- Communication /Basket Tray/OB1-L-S1,S11,S12,&S13
+- Communication/Basket Tray/OB1-L1-S01,02,03,&12
+- Communication/Basket Tray/OB1-L1-S12
+- Communication/Basket Tray/OB1-L2-S01 & S02
+- Communication/Basket Tray/OB1-L2-S1,S2,S3,S12,&13
+- Communications Basket Tray L7 Penthouse
+- Communications/BAsekt Tray/OB1-L3-S02
+- Communications/Basket Tray/OB1-L2-S02
+- Communications/Basket Tray/OB1-L2-S03, 12, & 13
+- Communications/Basket Tray/OB1-L2-S2,3,&12 - L3
+- Communications/Basket Tray/OB1-L2-S3
+- Communications/Basket Tray/OB1-L3-S01&S02
+- Communications/Basket Tray/OB1-L3-S11
+- Communications/Data Cable
+- Communications/Data Cable/FIber/ OB1-L3-All S
+- Communications/Fibe Cable/OB1-L3 S2,S3
+- Communications/Fiber Cable/OB1-L1-7 - Sector
+- Communications/Fiber Cable/OB1-L2-3
+- Communications/Fiber Cable/OB1-L3-L4
+- Communications/Fiber Cable/OB1-L3-L6
+- Communications/Fiber Cable/OB1-L3-L7
+- Communications/Fiber Cable/OB1-L7 - S1, 2, & 3
+- Condensate Drain/Vis/OB1-L1S3
+- Conduit (1) MGU / CUB 2F / Sector 04 & 24
+- Conduit - NTP Antenna / CUB Roof
+- Conduit - UPS / SUE 2F / Electrical Room [C25]
+- Conduit / GCS-A, L02, Sector 04; #2 MCC Room [D16]
+- Conduit [LV] / SUE 2F SECTOR 65 / [C25]
+- Conduit [VCB/ECB - SB/MB] / SUW 2F [M26]
+- Conduits / CUB 1F, Sector 23 [D18]
+- Conduits / GCS-A, L01M, MCC & BATT RM [C15]
+- Conduits / SUW 2F / Sector 02 [M14]
+- Conduits [LV] / SUE 2F / Elect. Rm [C25]
+- Conduits [LV] / SUE 3F / Elect. Rm [C5]
+- Conduits [MCC] / SUE 2F Sector 64 & 65 / [C25]
+- Conduits [SB/MB], LV Panels, SUE-L3 A-C 5-13
+- Cook & Boardman Laydown Yard
+- Corridor 2 E-5
+- Corridor-1 (C 1-4)
+- Corridor-1 (C 4-6)
+- Corridor-2 (C-D 11-13)
+- Corridor-2 (C-D 12-15.5)
+- Corridor-2 (C-D 13-16)
+- Corridor-2 (C-D 9-11)
+- Corridor-2 (C-D 9-12)
+- Corrosive/Oxidizer-2 (C 6-8)
+- Corrosive/Oxidizer-2 (C-E 5-8)
+- Corrosive/Oxidizer/Hallway
+- CuWW(P)/FAB1 Lv1 Col L12
+- CuWW/CUP_1F111A~C/FAB1 Lv1 Col L12
+- CuWW/CUT_1F111/FAB1 Lv1 Col L12
+- CuWW/CUT_1F111/FAB1 Lv1 Col M12
+- CuWW/CUT_1F111/FAB1 Lv1 M12
+- Curb ,Gutter & Valley Gutter SE Office & E CUB
+- Curb and Gutter
+- Curb and Gutter Pouring
+- D (16-19) – Chiller RM-1
+- D/28
+- D12
+- DCC / HCHR(S)-IA / L3
+- DCC / HCHS/HCHR / L1
+- DCC / HCHS/HCHR / L3
+- DCC / IA / L1
+- DCC / L3 / STEEL
+- DCC / STEEL / L3
+- DCC HCHS/HCHR/IA L3
+- DCC L-3 HCHR(S)
+- DCC L-3 HCHR(S) -IA
+- DCC L-3 HCHR(S) / IA
+- DCC L-3 HCHR/HS/IA
+- DCC L1 BW ON PIPE RACK E/D 13.0,17.0,25.0,29.0
+- DCC L1 E 14.0
+- DCC L1 E 3.0/10.0, G 3.0
+- DCC L1 E/D 9.3,11.0,19.0,21.6,25.0 BW ON PIPE RACK
+- DCC L1 HCHR E/D 29.0 BW ON PIPE RACK
+- DCC L1 HCHR G 14.0 BW
+- DCC L1 HCHR/S E 15.6, 29.0 BW ON PIPE RACK
+- DCC L1 HCHR/S E 23.6 AND J 14.0 BW INSTALLATION
+- DCC L1 HCHR/S G 8.6,13.9 BW ON PIPE RACK
+- DCC L1 HCHR/S J/K 13.3,22.3,23.3,23.6 BW ON PIPE S
+- DCC L1 HCHR/S J/K 16.3,18.3 BW ON PIPE RACK
+- DCC L1 HCHR/S J/K 8.3,10.3,12.3 BW ON PIPE RACK
+- DCC L1 IA BW ON E 10.0, G 15.0 304L PIPE
+- DCC L1 LCHR/S O-LET WELDS E 3.0/10.0 G 3.0
+- DCC L1 LCHS/LCHR
+- DCC L3
+- DCC L3 AIR DUCT RACK
+- DCC L3 COL E/D 11.0
+- DCC L3 COL E/D 15.0
+- DCC L3 COL E/D 20, 22
+- DCC L3 COL J/K 15, 19
+- DCC L3 COL K 15.0
+- DCC L3 COL-13 HCHR/HCHS/IA
+- DCC L3 D 27.0,28.0 GW FOR BOLT HOLES
+- DCC L3 E 19.0, 20.0
+- DCC L3 E 31
+- DCC L3 E/D 15.0
+- DCC L3 E/D 19.0
+- DCC L3 E/D 19.0 MODULE LEGS FW
+- DCC L3 E/D 20.0 FW ON MODULE LEGS HCHR/S
+- DCC L3 E/D 24.0
+- DCC L3 E/D 24.0 HCHR/S IA BW INSTALLATION
+- DCC L3 E/D 27
+- DCC L3 E/D 27.0 FW ON MODULE LEGS
+- DCC L3 E/D 28.0
+- DCC L3 E/D 28.0, 31.0
+- DCC L3 E/D 6.0
+- DCC L3 E/D 6.0 HCHR/S BW INSTALLATION
+- DCC L3 E/D 6.0,8.0 FW MODULE LEGS HCHR/S
+- DCC L3 E/D 7
+- DCC L3 E/D 7.3,7.6,8.0 GW ON BOLT HOLES
+- DCC L3 E/D 8.0
+- DCC L3 E/D 8.0 HCHR/S IA PIPE BW INSTALLATION
+- DCC L3 E/D 8.0,9.0 HCHR/S CJP INSPECTIONS
+- DCC L3 E/D HCHR/S 31.0 FW ON MODULE LEGS
+- DCC L3 E/D HCHR/S 6.6,6.6-5,6.7 CJP
+- DCC L3 E/G/H 23.0 THRU 24.0 GW ON BOLT HOLES HCHR/
+- DCC L3 EID 6.0, 8.0
+- DCC L3 HCHR/S 11.0,11.0-5,11.3
+- DCC L3 HCHR/S 19.0 20.0 CJP
+- DCC L3 HCHR/S CJP 6, 15.0
+- DCC L3 HCHR/S CLP D/E 21.0 22.0
+- DCC L3 HCHR/S E 23.0
+- DCC L3 HCHR/S E/D 12.0 BW INSTALLATION
+- DCC L3 HCHR/S E/D 12.1,12.2,12.3,12.3-5,12.6,12.6-
+- DCC L3 HCHR/S E/D 15.0 BW PIPE INSPECTIONS
+- DCC L3 HCHR/S E/D 15.0 FW ON MODULE LEGS
+- DCC L3 HCHR/S E/D 20.0, 22.0 BW INSTALLATION
+- DCC L3 HCHR/S E/D 24.1 FW ON MODULE LEGS
+- DCC L3 HCHR/S E/D 28.1 FW ON MODULE LEGS
+- DCC L3 HCHR/S E/D 7.0 PIPE BW INSTALLATION
+- DCC L3 HCHR/S E/D 7.6 GW INSPECTION ON BOLT HOLES
+- DCC L3 HCHR/S GW BOLT HOLES E 13.3,13.3-5,13.6,13.
+- DCC L3 HCHR/S GW BOLT HOLES E/D 24.0 THRU 25.0
+- DCC L3 HCHR/S GW BOLT HOLES SLOTS
+- DCC L3 HCHR/S IA BW INSTALLATION E/D 11.0
+- DCC L3 HCHR/S IA J/K 6.0 PIPE BW
+- DCC L3 HCHR/S IA PIPING E/D 28.0,31.0 BW INSTALL
+- DCC L3 HCHR/S J 14.0 CJP
+- DCC L3 HCHR/S J 18.1,18.2,18.3,18.3-5,18.6,18.6-5,
+- DCC L3 HCHR/S J 31.0 CJP WELD INSPECTION
+- DCC L3 HCHR/S J 8.0,9.0 CJP
+- DCC L3 HCHR/S J/K 10.0 CJP WELD INSPECTION
+- DCC L3 HCHR/S J/K 10.0 FW ON MODULE LEGS
+- DCC L3 HCHR/S J/K 12.0,13.0 FW ON MODULE LEGS
+- DCC L3 HCHR/S J/K 22.0 FW ON MODULE LEGS
+- DCC L3 HCHR/S J/K 24.0 FW ON MODULE LEGS
+- DCC L3 HCHR/S J/K 27.0 FW ON MODULE LEGS
+- DCC L3 HCHR/S J/K 29.0 MODULE LEG FW
+- DCC L3 HCHR/S J/K 6.0,7.0,8.0 CJP WELDS
+- DCC L3 HCHR/S J/K 9.0 FW ON MODULE LEGS
+- DCC L3 HCHS
+- DCC L3 HCHS E 24.0 BW INSTALLATION
+- DCC L3 HCHS(R)
+- DCC L3 HCHS/HCHR
+- DCC L3 HCHS/HCHR/IA
+- DCC L3 J 13
+- DCC L3 J 15, 29
+- DCC L3 J 19, 20, 24
+- DCC L3 J 21.0 CJP WELD INSPECTION
+- DCC L3 J 22.0 CJP INSPECTIONS ON HCHR/S PIPE RACK
+- DCC L3 J/K 10.0
+- DCC L3 J/K 14.0
+- DCC L3 J/K 24 0
+- DCC L3 J/K 24.0,25.0 CJP ON PIPE RACK
+- DCC L3 J/K 26.0, 28.0
+- DCC L3 J/K 26.0,28.0 MODULE LEGS PIPE RACK HCHR/S
+- DCC L3 J/K 29.0
+- DCC L3 J/K 31.0 HCHR/S GW ON BOLT HOLES
+- DCC L3 J/K 6.0
+- DCC L3 K 15.0 HCHR/S IA BW
+- DCC L3 RK-14,15,16,17
+- DCC MODULE DUCT
+- DCC- L 1 J/K 8.3, 10.3, 12.3
+- DI/HYDRO PREWALK/MECH PIPE COMP/A20-H15
+- DOT Tank S24
+- DWL 04A - 1" PVC S Pond
+- Disconnect / L1, Sector 08
+- Disconnects
+- Disconnects / L1, Sector 03
+- Disconnects / L1, Sector 04
+- Disconnects / L1, Sector 05
+- Disconnects / L1, Sector 07, Sector 08
+- Disconnects L01, Sector 08, A-B
+- Dock Leveler Slab AA-AB/31-31.5
+- Dock Leveler Slab Level 1 AA-AB/16-16.5; AA-AB/31-31.5
+- Domestic Cold Water/Pipe/OB1-L4-L7-All Sectors
+- Domestic Hot Water/Pipe/OB1-L4-L7-All Sectors
+- Downspouts - Canopy Entrance - Level 1 - Sector 22
+- Drywall/Ceiling/Level 3 VIP & Janitor Closet
+- Duct Leakage Test for (144) PSA #1340-629
+- Duct Leakage Test for (145) PSA #1321-181
+- Duct Leakage Test for (146) PSA #1374-639
+- Duct Leakage Test for (147) RA #1364-201
+- Duct Leakage Test for (148) PSA #980-652A
+- Duct Leakage Test for (149) PSA #962-222
+- Duct Leakage Test for (150) PSA #1249-664
+- Duct Leakage Test for (151) RA #1230-242
+- Duct Leakage Test for (19) RA #3121-3127
+- Duct Leakage Test for (29) RA #4405-4415
+- Duct Leakage Test for (31) OA #3150-4433
+- Duct Leakage Test for (76) PSA #192-245
+- E 10-13
+- E 16-20
+- E CUB
+- E CUB, Manhole Grounding
+- E FAB 1 Foundation Drain
+- E FAB-1
+- E FAB-1 COL 27
+- E FAB1
+- E FSF-1 @ COL 27
+- E GCS B
+- E Office, Underground Raceway
+- E SUBSTATION MH VACUUM TEST
+- E Substation
+- E-33 Column
+- E-6
+- E-7
+- E-8 / E-9
+- E-House 1F12S and 1F12M lashing
+- E-House 1F13S and 1F13M Lashing and Firestopping
+- E-House 1F13S and 1F13M Termination
+- E-House 1F13S and 1F13M Torquing
+- E.3-E.8 26-26.6
+- E11, F10, G10, G12, G13, J10, J13, J14
+- E16
+- E29
+- E32
+- E5 Mezz
+- EA
+- EA DUCT
+- EA SPEC GAS CORRIDOR
+- EA, FA
+- EA, FA & H/G
+- EA, FA, VOC
+- EA/ Exhaust & Supply Fans/ Level 1 & 2 A-K,1-35
+- EA/ Exhaust Air/ CUB CL A-B, 24-25
+- EA/ Exhaust Fan/ CUB CL H-K, 60-61
+- EA/FA
+- EA/FA / GCS B L01 C-D 55-58
+- EA/FA / GCS B L01 D-E 55-58
+- EA/FA Alkali D-E 17-29
+- EA/FA D-C 52-55
+- EA/FA Flammable-1
+- EA/FA GCS A Alkali 17-22 B-C
+- EA/FA GCS A Alkali 22-25 A-C
+- EA/FA GCS A MEZZANINE
+- EA/FA HVAC Inspection
+- EA/FA/HG GCS A MEZZ RISER SHAFT
+- EA/FA/HG GCS L01 B7
+- ED LINE / HCH LINE
+- ED LINE / HCH LINE BLDG A COL.A 14-16
+- ED LINE COL 36-37 A-C
+- ED PIPING AHU L1 J/K 7 THRU 14.6 AND 22.6 THRU 32.
+- ED, 9.1 SUEL4, L3 Column 24-A SouthHarness Requir
+- EEA, HGEX, VOC
+- EHU Units
+- ELEC PANEL RM-6 GCS1B, L01, SECTOR 12, 58A
+- ELEC/ Cable Tray/ SUW
+- ELEC/ DISCONNECT & RACEWAYS/FIZ
+- ELEC/ Grounding & Raceway/ FSF
+- ELEC/ LV Cables/FIZ
+- ELEC/ LV Cables/FIZ-SUE
+- ELEC/ LV Transformer & Panelboards & Raceways/ SUW
+- ELEC/ Lighting & Cable Tray & Raceway/ FSF
+- ELEC/ Lighting & Cable Tray & Raceway/FSF
+- ELEC/ Lighting & Cable Tray/FSF
+- ELEC/ Module Paint/FSF
+- ELEC/ Module Structure (Rack)/FSF
+- ELEC/ Raceway & Boxes/GCS
+- ELEC/ Raceway/FIZ
+- ELEC/ Temporary Power/SUE
+- ELEC/ Wiring Device & Raceways/ FSF
+- ELEC/Cable Tray & Raceway/FSF
+- ELEC/Cable Tray/FAB
+- ELEC/Cable Tray/FIZ
+- ELEC/Cable Tray/FIZ-SUE
+- ELEC/Cable Tray/FSF
+- ELEC/Cable Tray/LVL1-FSF-J8
+- ELEC/Cable Tray/LVL1-SUW-M17
+- ELEC/Cable Tray/LVL1-SUW-M18
+- ELEC/Cable Tray/LVL1-SUW-M20
+- ELEC/Cable Tray/LVL1-SUW-M4
+- ELEC/Cable Tray/LVL1-SUW-M6
+- ELEC/Cable Tray/SUE
+- ELEC/Cable Tray/SUW
+- ELEC/Column Band /LVL1-FSF-H11
+- ELEC/Comm Cable Tray/LVL1-SUE-C18
+- ELEC/DISCONNECT & RACEWAYS/SUE
+- ELEC/Disconnect & Raceways/FIZ-SUE
+- ELEC/Disconnect & Raceways/SUE
+- ELEC/Disconnect & Raceways/SUW
+- ELEC/Disconnect/LVL1-FSF-J13
+- ELEC/Disconnect/LVL1-FSF-J13.3
+- ELEC/Disconnect/LVL1-FSF-J18.3
+- ELEC/Disconnect/LVL1-FSF-J20.3
+- ELEC/Disconnect/LVL1-FSF-J22.3
+- ELEC/Disconnects/LVL1-FSF-H5
+- ELEC/Disconnects/LVL1-FSF-J10.3
+- ELEC/Disconnects/LVL1-FSF-J8.6
+- ELEC/FSF
+- ELEC/Grounding & Bonding - Raceways & Boxes/SUW
+- ELEC/Grounding & Bonding/ SUE
+- ELEC/Grounding & Bonding/FSF
+- ELEC/Grounding & Bonding/LVL1-SUE-A6
+- ELEC/Grounding & Bonding/LVL1-SUE-B16
+- ELEC/Grounding & Bonding/LVL1-SUW-L.5-19
+- ELEC/Grounding & Bonding/SUE
+- ELEC/Grounding & Bonding/SUW
+- ELEC/Grounding & Raceway/ SUW
+- ELEC/Grounding & Raceway/SUE
+- ELEC/LGT CABLE TRAY/FAB1FSF
+- ELEC/LGT/FAB1FSF
+- ELEC/LV Cable & Raceway/ FSF
+- ELEC/LV Cable & Raceway/FSF
+- ELEC/LV Cable & Raceway/SUE
+- ELEC/LV Cable & Raceway/SUW
+- ELEC/LV Cable & Switchboard/FSF1/FIZ2
+- ELEC/LV Cable/LVL1-FSF-22.3
+- ELEC/LV Cable/LVL1-FSF-J20.3
+- ELEC/LV Cable/LVL1-FSF-J26.3
+- ELEC/LV Cable/LVL1-SUW-L17
+- ELEC/LV Cable/SUE
+- ELEC/LV Cable/SUW
+- ELEC/LV Cables & Raceways & WD & PNBL/FSF
+- ELEC/LV Cables & Raceways/FSF
+- ELEC/LV Cables & Raceways/FSF-NOMORA
+- ELEC/LV Cables/LVL1-FSF-J13
+- ELEC/LV Cables/LVL1-FSF-J18.3
+- ELEC/LV Transformer & LV Cable/FSF
+- ELEC/LV Transformer & Raceways/FIZ
+- ELEC/LV Transformer & Raceways/FSF
+- ELEC/Lighting & Cable Tray & Raceway/ FSF
+- ELEC/Lighting & Cable Tray/FSF
+- ELEC/Lighting & Raceway/ FSF
+- ELEC/Lighting & Raceway/ LVL1-SUW-ELEV. MECH. EM-3
+- ELEC/Lighting & cable tray/ FSF
+- ELEC/Lv Cables/LVL1-FSF-J13.3
+- ELEC/MCC/LVL1-SUW-N19
+- ELEC/MV CABLE/OB1
+- ELEC/Module Paint/FSF
+- ELEC/Panelboards/LVL1-SUW-M17
+- ELEC/Panelboards/LVL1-SUW-N19
+- ELEC/Raceway & Boxes/FSF
+- ELEC/Raceway & Boxes/LVL1-FSF-G6
+- ELEC/Raceway & Boxes/LVL1-FSF-G9
+- ELEC/Raceway & Boxes/LVL1-FSF-H5
+- ELEC/Raceway & Boxes/LVL1-FSF-J10.3
+- ELEC/Raceway & Boxes/LVL1-FSF-J13
+- ELEC/Raceway & Boxes/LVL1-FSF-J18.3
+- ELEC/Raceway & Boxes/LVL1-FSF-J20.3
+- ELEC/Raceway & Boxes/LVL1-FSF-J22.3
+- ELEC/Raceway & Boxes/LVL1-FSF-J8.6
+- ELEC/Raceway & Boxes/LVL1-SUW-L20
+- ELEC/Raceway & Boxes/LVL1-SUW-L21
+- ELEC/Raceway & Boxes/LVL1-SUW-L8
+- ELEC/Raceway & Boxes/LVL1-SUW-N4
+- ELEC/Raceway & Boxes/LVL2-SUW-L7
+- ELEC/Raceway & Boxes/LVL2-SUW-M9
+- ELEC/Raceway & Boxes/SUW
+- ELEC/Raceway/FIZ
+- ELEC/Raceway/LVL1-SUW-L12
+- ELEC/Raceway/LVL1-SUW-L5/M9
+- ELEC/Raceway/LVL1-SUW-M18
+- ELEC/Raceway/LVL1-SUW-M19
+- ELEC/Raceway/SITE
+- ELEC/Raceway/SUE
+- ELEC/Raceway/SUW
+- ELEC/TEMP/LVL1-SUW-L17
+- ELEC/VFD/LVL1-SUW-N19
+- ELEC/WD & Raceways/LVL1-SUW-L17
+- ELEC/Wiring Devices/LVL1-FSF-G3
+- ELEC/Wiring Devices/LVL1-FSF-G6
+- ELEC/Wiring Devices/LVL1-FSF-G9
+- ELEV. #3 (A-B 25-26)
+- ELEV. 5 L-L.5/31-32 Levels 2,3
+- ELEV/LV Cables/LVL1-FSF-H5
+- ELEV/LV Cables/LVL1-FSF-J10.3
+- ELEV/LV Cables/LVL1-FSF-J8.6
+- ESite
+- EWW(P) / NEW TRESTLE (CL 26-29 A-B)
+- EWW(P) / NEW TRESTLE (CL 26-29 A-B) Harness Req.
+- EWW(P)/ WASTE WATER ROOM/CL 58
+- EWW(P)/FAB1 Lv1 COL M16
+- EWW(P)/FAB1 Lv1 SUW Col M17
+- EWW/EWWT_1F111 EWWP_1F111A~C/FAB1 Lv1 COL L14
+- EWW/EWWT_1F111/FAB1 LV1 Col L14
+- EWW/EWWp_1F111A~C/FAB1 Lv1 COL M15
+- East Water Meter Pad
+- East of FAB
+- East of FAB A.1-A16-A17.6
+- East of FAB AA-31, AB/31-32 & Ab.5/32.5
+- East of FAB AA.1/16-17.6
+- East side of office building under bridge
+- East side of office building, sector 3, under brid
+- Elec/Cable tray/FSF
+- Elec/LV Cable/CUB
+- Elec/LV Cable/Site
+- Elec/LV Transformer & Raceways /FSF
+- Elec/Raceway and Boxes/CUB
+- Elec/Raceway and Boxes/FAB FSF
+- Elec/Underground Raceways/SITE
+- Electrical / GROUNDING / CUB Lvl 1
+- Electrical / Grounding-Torquing / CUB LEV 1
+- Electrical / Grounding-Torquing / CUB LEV2 SECT 04
+- Electrical / LV CABLE PLACEMENT / CUB Lvl 2
+- Electrical / LV CABLE TORQUING / CUB LEV 2 SECT 24
+- Electrical / LV Cable Megging/ CUB Lvl 2
+- Electrical / LV TRANS/CUB lvl 2
+- Electrical / Lighting/ CUB LEV2 SECT 1, 23
+- Electrical / Lighting/ CUB Stairwell 1 & 2
+- Electrical / MV CABLE TORQUING / CUB LEV2
+- Electrical / MV Cable / CUB
+- Electrical / OH CONDUIT / CUB LEV2 SECT 04
+- Electrical / OH CONDUIT / CUB LEV2 SECT 04, 25
+- Electrical / OH Conduit / CUB Lvl 2
+- Electrical / Panel Board / CUB Lvl 1
+- Electrical / Panel Board / CUB Lvl 1 Sec 24
+- Electrical / Panel Board / CUB Lvl 1, Sec 1
+- Electrical / Panel Board / CUB Lvl 1, Sec 22
+- Electrical / Panel Board / CUB Lvl 1, Sec 22,23
+- Electrical / Panel Board / CUB Lvl 1, Sec 3
+- Electrical / Panel Board / CUB Lvl 2
+- Electrical / Panel Board / CUB Lvl 2, Sec 22
+- Electrical / Panel Board / CUB Lvl 2, Sec 23
+- Electrical / Panel LV Torq/Meg/ CUB Lvl 1
+- Electrical / Panel LV Torq/Term/ CUB Lvl 1
+- Electrical / RACEWAYS/ CUB Lvl 1
+- Electrical / WIRING DEV / CUB Lvl 1 SEC 3
+- Electrical Room Mezz DK
+- Electrical room
+- Electrical/ Bus Torqueing/ CUB L2 Sec 24
+- Electrical/ CABLE TRAY/ CUB L1, Sec 2, 21, 22
+- Electrical/ CABLE TRAY/ CUB Lvl 1, Sec 22, 23
+- Electrical/ CABLE TRAY/ CUB Lvl 1,1M, Sec 2
+- Electrical/ CABLE TRAY/ CUB Lvl 2, Sec 23
+- Electrical/ CABLET RAY/ CUB level 1 sec 22, 23
+- Electrical/ CABLET RAY/ CUB level 1M sec 22
+- Electrical/ CABLET RAY/ CUB level 1M sec 4, 24
+- Electrical/ CABLETRAY / CUB Lvl 1M, Sec.24
+- Electrical/ CABLETRAY CUB 1M Sec 01, 02, 21
+- Electrical/ CABLETRAY CUB 1M Sec 01, 02, 23, 24
+- Electrical/ CABLETRAY GROUNDING/ CUB 1M Sec 02
+- Electrical/ CABLETRAY GROUNDING/ CUB 1M Sec 02, 22
+- Electrical/ CABLETRAY/ CUB L1 Sec 4, 24
+- Electrical/ CABLETRAY/ CUB L1M Sec 24
+- Electrical/ CABLETRAY/ CUB Lvl 1 Sec 5, 6, 25, 26
+- Electrical/ CABLETRAY/ CUB Lvl 1, Sec 02
+- Electrical/ CABLETRAY/ CUB Lvl 1, Sec IPW
+- Electrical/ CABLETRAY/ CUB level 1 sec 2
+- Electrical/ CABLETRAY/ CUB level 1 sec 22, 23
+- Electrical/ CABLETRAY/ CUB level 1 sec 4,24
+- Electrical/ CABLETRAY/ CUB level 1M sec 1
+- Electrical/ CABLETRAY/ CUB level 1M sec 23
+- Electrical/ CABLETRAY/ CUB level 2 sec 4
+- Electrical/ CABLETRAY/ LVL1M SEC 1
+- Electrical/ Cable TRAY/ CUB L1 SEC 21, 22
+- Electrical/ Cable Tray/ CUB L1 Sec 2
+- Electrical/ Cable Tray/ CUB L1 Sec 21, 22
+- Electrical/ Cable Tray/ CUB L1 Sec 22
+- Electrical/ Cable Tray/ CUB L1M Sec 21
+- Electrical/ Cable Tray/ CUB Lvl 1, Sec 22, 23
+- Electrical/ Cabletray/ CUB 1M Sec 24
+- Electrical/ Cabletray/ CUB L21 Sec 3
+- Electrical/ Cabletray/ CUB level 1 sec 23
+- Electrical/ DISCO PLACEMENT/ CUB Lvl 1, Sec 22, 23
+- Electrical/ Disconnect Placement/ CUB L1, Sec 23
+- Electrical/ FIRESTOPPING/ CUB Lvl 1, Sec 1
+- Electrical/ FIRESTOPPING/ CUB Lvl 1, Sec 21
+- Electrical/ FIRESTOPPING/ CUB level 1 sec 21
+- Electrical/ GROUNDING/ CUB L2
+- Electrical/ GROUNDING/ CUB Lvl 1 Sec 22, 23
+- Electrical/ GROUNDING/ CUB Lvl 2, Sec 25
+- Electrical/ GROUNDING/ CUB level 1
+- Electrical/ GROUNDING/ CUB level 2 sec 23
+- Electrical/ GROUNDING/ FAB Lvl 2, Sec 41, 61
+- Electrical/ Grounding/ CUB Lvl 1, Sec 24(Outside)
+- Electrical/ LV CABLE/ CUB level 2 sec 24
+- Electrical/ LV CABLE/ CUB level 2 sec 4
+- Electrical/ LV CABLE/ FAB level 2 sec 46
+- Electrical/ LV Cable / CUB L1 Sec 01
+- Electrical/ LV Cable / CUB L1 Sec 21
+- Electrical/ LV Cable / CUB L1 Sec 22
+- Electrical/ LV Cable / CUB L1 Sec 22, 23
+- Electrical/ LV Cable / CUB L1 Sec 23
+- Electrical/ LV Cable / CUB L1 Sec 3
+- Electrical/ LV Cable / CUB L1, 2 Sec 23
+- Electrical/ LV Cable / CUB L1, Sec 23
+- Electrical/ LV Cable / CUB L2
+- Electrical/ LV Cable / CUB L2 Sec 24
+- Electrical/ LV Cable / CUB L2 Sec 4
+- Electrical/ LV Cable / CUB L2, Sec
+- Electrical/ LV Cable / CUB L2, Sec 25
+- Electrical/ LV Cable / CUB Lvl 1 Sec 3
+- Electrical/ LV Cable / CUB Lvl 1, Sec 22, 23
+- Electrical/ LV Cable / CUB Lvl 1, Sec 3
+- Electrical/ LV Cable / CUB Lvl 2 Sec 25
+- Electrical/ LV Cable / CUB Lvl 2, Sec 22
+- Electrical/ LV Cable / CUB Lvl 2, Sec 23
+- Electrical/ LV Cable / CUB Lvl 2, Sec 24
+- Electrical/ LV Cable / CUB level 2 sec 24
+- Electrical/ LV Cable / CUB level 2 sec 4
+- Electrical/ LV Cable /CUB Lvl 1 Sec 21, 22
+- Electrical/ LV Cable /CUB Lvl 1, Sec 23, 3
+- Electrical/ LV Cable /CUB Lvl 1, Sec 24
+- Electrical/ LV Cable /CUB Lvl 2 Sec 4
+- Electrical/ LV Cable /CUB Lvl 2 Sec 4, 25
+- Electrical/ LV Cable Megg/ CUB L1,2 Sec 1,23,24
+- Electrical/ LV Cable Megging/ CUB L1 Sec 24
+- Electrical/ LV Cable Megging/ CUB L1,2 Sec 23,24
+- Electrical/ LV Cable Megging/ CUB L2 Sec 1
+- Electrical/ LV Cable Megging/ CUB L2 Sec 4, 23, 24
+- Electrical/ LV Cable Megging/ CUB L2 Sec 4, 24
+- Electrical/ LV Cable Placement/ CUB L 1,2
+- Electrical/ LV Cable Placement/ CUB L1
+- Electrical/ LV Cable Placement/ CUB L1, 1M
+- Electrical/ LV Cable Placement/ CUB L1, 2
+- Electrical/ LV Cable Placement/ CUB L1M
+- Electrical/ LV Cable Placement/ CUB L2
+- Electrical/ LV Cable Placement/ CUB Lvl 1
+- Electrical/ LV Cable Placement/ CUB Lvl 1, 2
+- Electrical/ LV Cable Placement/ CUB Lvl 1, 2, Sec
+- Electrical/ LV Cable Placement/ CUB Lvl 1, Sec 21,
+- Electrical/ LV Cable Placement/ CUB Lvl 1, Sec 24
+- Electrical/ LV Cable Placement/ CUB Lvl 1,2
+- Electrical/ LV Cable Placement/ CUB Lvl 1,2 Sec.4-
+- Electrical/ LV Cable Placement/ CUB Lvl 1,2, Sec 1
+- Electrical/ LV Cable Placement/ CUB Lvl 1A,1M, 2,
+- Electrical/ LV Cable Placement/ CUB Lvl 1A,1M, 2,3
+- Electrical/ LV Cable Placement/ CUB Lvl 1M, 2
+- Electrical/ LV Cable Placement/ CUB Lvl 1M, Sec 22
+- Electrical/ LV Cable Placement/ CUB Lvl 1M, Sec 23
+- Electrical/ LV Cable Placement/ CUB Lvl 2
+- Electrical/ LV Cable Placement/ CUB Lvl 2, Sec 24
+- Electrical/ LV Cable Placement/ CUB Mezz, Sec.2
+- Electrical/ LV Cable Placement/CUB Lvl 1, 1M
+- Electrical/ LV Cable Placement/CUB Lvl 1, 2,
+- Electrical/ LV Cable Placement/CUB Lvl 1, Sec.1-6,
+- Electrical/ LV Cable Placement/CUB Lvl 1M, Sec 1-4
+- Electrical/ LV Cable Placement/CUB Lvl 2, Sec 4
+- Electrical/ LV Cable Torqueing/ CUB L1 Sec 022
+- Electrical/ LV Cable Torqueing/ CUB L2 Sec 4
+- Electrical/ LV Cable Torquing/ CUB
+- Electrical/ LV Cable Torquing/ CUB L1 Sec 1
+- Electrical/ LV Cable Torquing/ CUB L1 Sec 1, 21
+- Electrical/ LV Cable Torquing/ CUB L1 Sec 21
+- Electrical/ LV Cable Torquing/ CUB L1 Sec 22
+- Electrical/ LV Cable Torquing/ CUB L1 Sec 23
+- Electrical/ LV Cable Torquing/ CUB L2 Sec 24
+- Electrical/ LV Cable Torquing/ CUB L2 Sec 4, 23. 2
+- Electrical/ LV Cable Torquing/ CUB L2 Sec 4,24,25
+- Electrical/ LV Cable Tray/ CUB L1M, Sec 4, 24
+- Electrical/ LV Cable/ CUB L1
+- Electrical/ LV Cable/ CUB L1 S 24
+- Electrical/ LV Cable/ CUB L1 SEC 21
+- Electrical/ LV Cable/ CUB L1 SEC 23
+- Electrical/ LV Cable/ CUB L1 Sec 1
+- Electrical/ LV Cable/ CUB L1 Sec 3
+- Electrical/ LV Cable/ CUB L1, SEC 23, 24
+- Electrical/ LV Cable/ CUB L1, Sec 23
+- Electrical/ LV Cable/ CUB L2 Sec 1
+- Electrical/ LV Cable/ CUB L2 Sec 23
+- Electrical/ LV Cable/ CUB L2 Sec 24
+- Electrical/ LV Cable/ CUB L2 Sec 4
+- Electrical/ LV Cable/ CUB L2, Sec 4
+- Electrical/ LV Cable/ CUB LEV2 SECT 24
+- Electrical/ LV Cable/ CUB Level 1, Sec 2
+- Electrical/ LV Cable/ CUB Lvl 1 Sec 1,2
+- Electrical/ LV Cable/ CUB Lvl 1 Sec 22
+- Electrical/ LV Cable/ CUB Lvl 1 Sec 23
+- Electrical/ LV Cable/ CUB Lvl 1 Sec 23, 24
+- Electrical/ LV Cable/ CUB Lvl 1 Sec 24
+- Electrical/ LV Cable/ CUB Lvl 1 Sec 3, 24
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 03,23
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 04
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 09
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 1
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 1, 21
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 1,21
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 2
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 2, 21
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 21
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 21, 22, 23
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 21,22
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 22
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 22, 23
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 22,23
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 23
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 24
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 25
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 3
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 3, 23
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 4
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 4, 25
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 4,25
+- Electrical/ LV Cable/ CUB Lvl 1, Sec 9
+- Electrical/ LV Cable/ CUB Lvl 1, Sec. 1,2
+- Electrical/ LV Cable/ CUB Lvl 1, Sec.1
+- Electrical/ LV Cable/ CUB Lvl 1, Sec.1,21
+- Electrical/ LV Cable/ CUB Lvl 1, Sec.21
+- Electrical/ LV Cable/ CUB Lvl 1, Sec.22
+- Electrical/ LV Cable/ CUB Lvl 1, Sec.23,24
+- Electrical/ LV Cable/ CUB Lvl 1,2 , Sec 4,24,25
+- Electrical/ LV Cable/ CUB Lvl 1,2, Sec 23
+- Electrical/ LV Cable/ CUB Lvl 1,2, Sec 4,24
+- Electrical/ LV Cable/ CUB Lvl 1M, 2, Sec 1,21
+- Electrical/ LV Cable/ CUB Lvl 1M, Sec 3-6;23-26
+- Electrical/ LV Cable/ CUB Lvl 2 Sec 24
+- Electrical/ LV Cable/ CUB Lvl 2 Sec 4
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 01
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 04
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 1
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 22
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 23
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 23, 24
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 24
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 24,25
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 4
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 4, 24
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 4, 24,25
+- Electrical/ LV Cable/ CUB Lvl 2, Sec 4,25
+- Electrical/ LV Cable/ CUB Lvl 2, Sec. 4
+- Electrical/ LV Cable/ CUB Lvl 2, Sec.24
+- Electrical/ LV Cable/ CUB Lvl 2, Sec.4
+- Electrical/ LV Cable/ CUB level 1 sec 1
+- Electrical/ LV Cable/ CUB level 1 sec 23
+- Electrical/ LV Cable/ CUB level 1 sec 24
+- Electrical/ LV Cable/ CUB level 2 sec 24
+- Electrical/ LV Cable/ Placement/ CUB L1
+- Electrical/ LV Cable/CUB Lvl 2, Sec 4
+- Electrical/ LV Cables/ Lift Station
+- Electrical/ LV Switchgear/ CUB L2 Sec 25
+- Electrical/ Lighting, LV Cable, Conduit/ CUB L2
+- Electrical/ Lighting, LV Cable/ CUB L1
+- Electrical/ Lighting, LV Cable/ CUB Lvl 1,2, Sec 2
+- Electrical/ Lighting, LV Cable/ CUB Lvl 1,2, Sec 9
+- Electrical/ Lighting/ CUB Lvl 1 Sec 22, 23
+- Electrical/ Lighting/ CUB Lvl 1 Sec 24
+- Electrical/ Lighting/ CUB Lvl 1,1M, 2, Sec 27
+- Electrical/ Lighting/ CUB Lvl 2, Sec 1
+- Electrical/ Lighting/ CUB Lvl 2, Sec 4,24,25
+- Electrical/ MV Cable / CUB L2
+- Electrical/ MV Cable / CUB L2 Sec
+- Electrical/ MV Cable / CUB L2 Sec 24
+- Electrical/ MV Cable / CUB L2 Sec 4, 24
+- Electrical/ MV Cable Placement/ CUB L1 Sec. 21, 22
+- Electrical/ MV Cable Placement/ CUB L2
+- Electrical/ MV Cable Placement/ CUB L2 Sec 24
+- Electrical/ MV Cable Placement/ CUB L2 Sec 4, 24
+- Electrical/ MV Cable Torquing/ CUB L2
+- Electrical/ MV Cable Torquing/ CUB L2 Sec 04
+- Electrical/ MV Cable Torquing/ CUB L2 Sec 04, 24
+- Electrical/ MV Cable Torquing/ CUB L2 Sec 24
+- Electrical/ MV Cable Tray/ CUB L1
+- Electrical/ MV Cable placement/ CUB L2 Sec 04
+- Electrical/ MV Cable/ CUB L1
+- Electrical/ MV Cable/ CUB L2 Sec 4, 24
+- Electrical/ MV Cable/ CUB Lvl 1, Sec 21
+- Electrical/ MV Cable/ CUB Lvl 1, Sec 22
+- Electrical/ MV Cable/ CUB Lvl 1, Sec 22,23
+- Electrical/ MV Cable/ CUB Lvl 2, Sec 4
+- Electrical/ MV Cable/ CUB Lvl 2, Sec 4, 24
+- Electrical/ MV Cable/ CUB Lvl 2, Sec04
+- Electrical/ OH Raceway/ CUB L1
+- Electrical/ PANEL/ CUB level 1 sec 23
+- Electrical/ PANELBOARD/ CUB Lvl 1, Sec 3
+- Electrical/ PANELBOARD/ CUB level 1 sec 2
+- Electrical/ PANELBOARD/ CUB level 1 sec 22
+- Electrical/ PANELBOARDS/ CUB Lvl 1, Sec 23
+- Electrical/ PANELBOARDS/ CUB Lvl 1, Sec 3
+- Electrical/ PANELBOARDS/ CUB Lvl 1M, Sec 21
+- Electrical/ Panel Placement/ CUB L1
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 2
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 21
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 22
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 22, 23
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 23
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 24
+- Electrical/ RACEWAY/ CUB Lvl 1 Sec 24, 23
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 02, 01
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 1
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 1, 2
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 1, 21, 22
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 1,2
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 2
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 21
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 21, 22
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 21, 22, 23
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 21,22,23
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 22
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 22, 23
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 22,23
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 23
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 23,24
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 24
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 3
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 4
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec 4, 24,25
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec.1,2
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec.1,21
+- Electrical/ RACEWAY/ CUB Lvl 1, Sec.23
+- Electrical/ RACEWAY/ CUB Lvl 2 Sec 4, 24
+- Electrical/ RACEWAY/ CUB Lvl 2, Sec 1
+- Electrical/ RACEWAY/ CUB Lvl 2, Sec 22
+- Electrical/ RACEWAY/ CUB Lvl 2, Sec 23
+- Electrical/ RACEWAY/ CUB Lvl 2, Sec 24
+- Electrical/ RACEWAY/ CUB Lvl 2, Sec 4
+- Electrical/ RACEWAY/ CUB Lvl 2, Sec 4,24,25
+- Electrical/ RACEWAY/ CUB level 1
+- Electrical/ RACEWAY/ CUB level 1 IO Room
+- Electrical/ RACEWAY/ CUB level 1 sec 1
+- Electrical/ RACEWAY/ CUB level 1 sec 1, 2
+- Electrical/ RACEWAY/ CUB level 1 sec 2
+- Electrical/ RACEWAY/ CUB level 1 sec 21
+- Electrical/ RACEWAY/ CUB level 1 sec 21, 22
+- Electrical/ RACEWAY/ CUB level 1 sec 22
+- Electrical/ RACEWAY/ CUB level 1 sec 22, 23
+- Electrical/ RACEWAY/ CUB level 1 sec 22,23
+- Electrical/ RACEWAY/ CUB level 1 sec 23
+- Electrical/ RACEWAY/ CUB level 1 sec 23, 22
+- Electrical/ RACEWAY/ CUB level 1 sec 23, 24
+- Electrical/ RACEWAY/ CUB level 1 sec 24
+- Electrical/ RACEWAY/ CUB level 1 sec 25
+- Electrical/ RACEWAY/ CUB level 1 sec 3
+- Electrical/ RACEWAY/ CUB level 1 sec 3, 23
+- Electrical/ RACEWAY/ CUB level 1 sec 4
+- Electrical/ RACEWAY/ CUB level 1, 2 sec 23
+- Electrical/ RACEWAY/ CUB level 2
+- Electrical/ RACEWAY/ CUB level 2 sec 04
+- Electrical/ RACEWAY/ CUB level 2 sec 1
+- Electrical/ RACEWAY/ CUB level 2 sec 23
+- Electrical/ RACEWAY/ CUB level 2 sec 24
+- Electrical/ RACEWAY/ CUB level 2 sec 25
+- Electrical/ RACEWAY/ CUB level 2 sec 4
+- Electrical/ RACEWAY/ CUB level 2 sec 4, 24
+- Electrical/ RACEWAY/ CUB level 2 sec 4, 24, 25
+- Electrical/ RACEWAY/ CUB level 2 sec 4,24,25
+- Electrical/ RACEWAY/ Lvl Mezz, Sec.21
+- Electrical/ RACEWAYS/ CUB Lvl 1, Sec 22
+- Electrical/ TRANSFORMER/ CUB Lvl 1, Sec 2
+- Electrical/ TRANSFORMER/ CUB Lvl 1, Sec.1
+- Electrical/ TRAY/ CUB Lvl 1M, Sec. 24, 05, 06
+- Electrical/ Transformer/ CUB level 1 sec 2
+- Electrical/ Transformer/ CUB level 1 sec 21
+- Electrical/ Transformer/ CUB level 1 sec 23
+- Electrical/ Transformer/ CUB level 1 sec 9
+- Electrical/ UPS INSTALL TORQUING/ CUB L2 Sec 25
+- Electrical/ Underfloor Bonding/ CUB L1 Sec 1
+- Electrical/ WIRING DEV RACEWAY/ CUB Lvl 1, Sec 24
+- Electrical/ cabletray/ CUB Lvl 1, Sec 23
+- Electrical/ heat trace/ South CUB IW pump station
+- Electrical/CABLETRAY/ CUB L1, Sec 24
+- Electrical/CABLETRAY/ CUB L1, Sec 4 & 24
+- Electrical/CABLETRAY/ CUB L1, Sec 5,6,24,25,26
+- Electrical/In-wall Rough In/OB1-L7-TR room
+- Electrical/Inwall Raceway/OB1-L1-L6-S12
+- Electrical/LV Cable Placement / CUB L1, Sec 24
+- Electrical/LV Cable Placement / CUB L2, Sec 01
+- Electrical/LV Cable Placement / CUB L2, Sec 24
+- Electrical/LV Cable Placement / CUB L2, Sec 4,24
+- Electrical/LV Cable Placement / CUB Lvl 2, Sec.24
+- Electrical/LV Cable Placement/CUB Lvl 1, Sec 22,23
+- Electrical/LV Cable Placement/CUB Lvl 1, Sec 3
+- Electrical/LV Cable Torquing/ CUB Lvl 2
+- Electrical/LV Cable/ CUB L, Sec 23
+- Electrical/LV Cable/ CUB L1 Sec 22
+- Electrical/LV Cable/ CUB L1, Sec 2
+- Electrical/LV Cable/ CUB L1, Sec 21,22
+- Electrical/LV Cable/ CUB L1, Sec 22
+- Electrical/LV Cable/ CUB L1, Sec 23
+- Electrical/LV Cable/ CUB L1, Sec 23,24
+- Electrical/LV Cable/ CUB L2, Sec 24
+- Electrical/LV Cable/OB1-L7-S2&12
+- Electrical/LV/Cables/Lift Station
+- Electrical/LVSub-1F13SC01/OB1-L1-S13
+- Electrical/LVSub-1F13SC02/OB1-L1-S13
+- Electrical/LVSub-1F13SC04/OB1-L1-S3
+- Electrical/LVSub-1F13SC05/OB1-L1-S3
+- Electrical/Lighting/ CUB L1, Sec 3
+- Electrical/MCC/NE CUB Lift Station
+- Electrical/MV Cable/FAB
+- Electrical/MV Cable/SITE
+- Electrical/Overhead Lighting/L2-S4
+- Electrical/UPS/OB1-L1-S3
+- Electrical/branch cable/L1-S3-E-Sec.Elec.Room
+- Elev 1 Lobby
+- Elevator #3 L-L.5/16-17 Under Level 4
+- Elevator #3 L-L.5/16-17 Underneath Level 4
+- Elevator 1
+- Elevator 1 Level U1
+- Elevator 1. Lvl.1,2,3,4, L3
+- Elevator 19
+- Elevator 3. Lvl.1 K18
+- Elevator Phone/CUB,L01,Elevator Rooms/TR CUB112410
+- Elevator Pit L1 (E14-E15 )
+- Elevator Room/Elevator Panel/CUB Elev.#1Mach.Rm.
+- Elevator Room/Elevator panel/GCS1 01 04 137
+- Elevator machinery Rm
+- Elevator phone/Elevator panel/Elevator machine roo
+- Embed TQ verification
+- Embed TQ verification A-D/21-22
+- Embed TQ verification A-D/21;D/19
+- Embed TQ verification D-E/21-22
+- Embed TQ verification E-F/22
+- Embed TQ verification E-F/23
+- Embed TQ verification H/17-18
+- Embed hole depth & cleanliness A-D/21-22
+- Embed hole depth & cleanliness D-E/21
+- Embed hole depth & cleanliness E-F/23
+- Embed hole depth & cleanliness F-23
+- Embed hole depth & cleanliness G/20
+- Embed hole depth & cleanliness H/17-18
+- Embed hole depth & cleanliness RFI-6701 A-D/21
+- Emergency Electric Room
+- Epoxy Hole CheckEpoxy Hole Check
+- Epoxy anchor bolts Hole Inspection Fab L2 Col H-32
+- Epoxy anchor bolts Hole Inspection Fab L2 Col J32-
+- Epoxy anchor bolts Hole Inspection Fab L2 Col J33
+- Equipment drain/ CUB K1-K2
+- Exhaust Air/ N/A / Level 2 Roof CL 1-24, A-K
+- Exhaust Air/ NA/ Level 2 Sector 23 Roof
+- Exhaust Air/ NA/ Level 2 Sector 24 I/O Rm.
+- Exhaust Air/Fan / Level 1 CL 18-29/ Level 2CL18-19
+- Exhaust Air/Fan / Level 2 Sector 1,22,23,24 Roof
+- Exhaust Air/NA/ Level 1
+- Exhaust Fans Rough- In Inspection
+- Exit sign Installation Level 3 Sec 61-64 A-C/4-23
+- Exterior sheathing
+- F1 A-C/25.3-28
+- F1 BUNKER RM 4,7,8,9,10,12
+- F1 Bunker Rms 4,7,8,9,10,12
+- F1 F.3-H.8/2-3
+- F2 E.3-F.8/14.3-18.6
+- F3 E22-E25
+- F3 E3-E4 & E13-E14
+- F3 E5-E10
+- F3 J3-J4
+- F3 J5-J10
+- F3 N3-N10
+- F3IO-M18IO Fiberoptic cable installation
+- FA
+- FA / GCS A Spec Gas Corridor
+- FA Duct Level 4 Truss
+- FA Future Taps
+- FA INSULATION GCS A ROOF Col.12-13
+- FA LAB 3rd Floor , column M6 East Side of FA Lab
+- FA MAIN IN LEVEL 4 TRUSS SPACE
+- FA TRUSS DUCT
+- FA/ GALV EXH/ SUE C/D 25-30
+- FA/EXH GALV DUCT/ SUE C/D 31-32
+- FA/OAC/SUE ROOF
+- FAB 1 AHU E/D 16.3 COLUMN 17.3
+- FAB 1 AHU E/D 6.3 THRU 7.3
+- FAB 1 AHU G 15
+- FAB 1 AHU J/H COLUMN 6.6
+- FAB 1 AHU J/K 16 THRU 17
+- FAB 1 AHU J/K 8.6 THRU 26.6
+- FAB 1 AHU SEC 21 - 22 J/K 3.3 THRU 14.6
+- FAB 1 AHU SEC 21, 41 G 3.6 THRU 7.6
+- FAB 1 AHU SEC 22 - 44 J/K 23.6 COLUMN 24.3
+- FAB 1 AHU SEC 22 L1 G 11.6
+- FAB 1 AHU SEC 22, 42 G 8.6 - 9.6
+- FAB 1 AHU SEC 23 G - H COLUMN 15.3
+- FAB 1 AHU SEC 41,42 E-F 7 THRU 9.3
+- FAB 1 AHU SEC 42 - 44 D-G 14 THRU 15.3, 24
+- FAB 1F C17
+- FAB 1F C32
+- FAB 1F F / 9~10
+- FAB 1F FSF SECTOR 21
+- FAB 1F FSF SECTOR 22
+- FAB 1F FSF SECTOR 23
+- FAB 1F FSF SECTOR 24
+- FAB 1F FSF SECTOR 41
+- FAB 1F FSF SECTOR 42
+- FAB 1F G~H / 14~16
+- FAB 1F G~J / 20~25
+- FAB 1F L17
+- FAB 1F L32
+- FAB 1F Wafer RM B~C / 25~29
+- FAB 1st Floor Column E-5
+- FAB 1st floor GL G.9/7.6
+- FAB 1st floor J/5
+- FAB 2F E-5,6
+- FAB 2F West Side Column J-13 Bring Harness
+- FAB 2nd Floor East Side 9,10,12,30 (pos 4 hours)
+- FAB 3 East Elec Room Column Line A-C
+- FAB 3 East Elec Room Column Line B
+- FAB 3 Floor EUV (26-32)
+- FAB 3F E / 9
+- FAB 3F E,G,J/4~6
+- FAB 3F E-G/4-9
+- FAB 3F E-G/9-18
+- FAB 3F E/ 10~17
+- FAB 3F E/ 18~25
+- FAB 3F E/ 25~32
+- FAB 3F E/ 3~9
+- FAB 3F E/ 9~10, J / 3~10
+- FAB 3F E/10~15 Above DCC Module
+- FAB 3F E/15~25 Above DCC Module
+- FAB 3F E/26-33 Above DCC Modul
+- FAB 3F E/29~30
+- FAB 3F Elec RM
+- FAB 3F E~G / 11~18
+- FAB 3F E~G / 12~15
+- FAB 3F E~G / 6~9
+- FAB 3F E~G / 8~11
+- FAB 3F E~G/18~21
+- FAB 3F E~G/21-26
+- FAB 3F E~G/26-33
+- FAB 3F E~G/26~32
+- FAB 3F E~G/28~30
+- FAB 3F E~G/3~9
+- FAB 3F E~G/6~9
+- FAB 3F E~G/9~11
+- FAB 3F E~H / 7~11
+- FAB 3F E~J / 3~7
+- FAB 3F E~J / 5~9
+- FAB 3F FA LAB L~N / 3~9
+- FAB 3F FIZ F~H / 2~3
+- FAB 3F G 18-21
+- FAB 3F G 21-24
+- FAB 3F G-E 18-20
+- FAB 3F G-E 18-21
+- FAB 3F G-E 20-22
+- FAB 3F G-E 21-26
+- FAB 3F G-E 22-24
+- FAB 3F G-J 18-21
+- FAB 3F G-J 21-24
+- FAB 3F G-J 22-24
+- FAB 3F G-J 24-26
+- FAB 3F G-J 26-28
+- FAB 3F G-J 28-30
+- FAB 3F G/24~33
+- FAB 3F G24-27
+- FAB 3F G27-30
+- FAB 3F G30-33
+- FAB 3F J / 3~11
+- FAB 3F J 18-21
+- FAB 3F J 21-24
+- FAB 3F J,E/4-5, 17-18, 32-33
+- FAB 3F J-G 30-33
+- FAB 3F J-G/12-17
+- FAB 3F J-G/17-25
+- FAB 3F J-G/4-12
+- FAB 3F J/ 10~15
+- FAB 3F J/ 15~21
+- FAB 3F J/ 21~27
+- FAB 3F J/12~17 Above DCC Module
+- FAB 3F J/7-11 Above DCC Module and Ceiling
+- FAB 3F J/7~11 Above DCC Modul and Ceiling
+- FAB 3F J24-30
+- FAB 3F J30-33
+- FAB 3F JG/12~17
+- FAB 3F JG/25-33 Above Ceiling
+- FAB 3F J~G / 15~18
+- FAB 3F J~G / 6~10
+- FAB 3F J~G / 9~11
+- FAB 3F J~G/22~26
+- FAB 3F J~G/26~30
+- FAB 3F J~G/30~33
+- FAB 3RD FLOOR EUV CRANE 4
+- FAB 3rd Floor 18 -21 G-J
+- FAB 4F (TRUSS) D - K / 19 - 28
+- FAB > FAB
+- FAB > FAB > +F2091:I2091Level1
+- FAB > FAB > Level1
+- FAB > SUE
+- FAB > SUE > Level1
+- FAB > SUW
+- FAB > SUW > Level1
+- FAB B3
+- FAB CDT RM, A6 IO RM
+- FAB COL 14 Rooftop
+- FAB COL A 20
+- FAB CSF East 15, 16, 17, 18, 19, 20, 21, 22, 23
+- FAB CSF East 16, 18, 19
+- FAB CSF East 20, 21, 23, 24
+- FAB CSF East 6, 7, 8, 9, 10, 11, 12, 13
+- FAB CSF East 6, 9, 11, 13
+- FAB CSF East G24~31
+- FAB CSF G24~33
+- FAB CSF Modules E-28.32,33
+- FAB CSF Modules J-20, E-19, Harness Req
+- FAB CSF S21 J LINE CABLE TRAY
+- FAB CSF S22 J LINE CABLE TRAY
+- FAB CSF S23 J LINE CABLE TRAY
+- FAB CSF S24 J LINE CABLE TRAY
+- FAB CSF S24,44 Crossover CABLE TRAY
+- FAB CSF S25 J LINE CABLE TRAY
+- FAB CSF S41 E LINE
+- FAB CSF S41 G LINE
+- FAB CSF S41 MODULE CABLE TRAY
+- FAB CSF S42 E LINE
+- FAB CSF S42 G LINE
+- FAB CSF S43 E LINE
+- FAB CSF S43 G LINE
+- FAB CSF S44 E LINE
+- FAB CSF S44 G LINE
+- FAB CSF S45 E LINE/SUE S65 TO IO
+- FAB CSF S45 G LINE
+- FAB CSF SECTOR 22,23,24,25_ CABLE TRAY
+- FAB CSF WEST ELEC RM COLUMN 4-15
+- FAB CSF West 12
+- FAB CSF West 17, 18
+- FAB CSF West 21 / East 14
+- FAB CSF West 8~14
+- FAB CSF West 9, 10, 11, 13
+- FAB CSF West10, 25, 26 / East 29, 32
+- FAB CSF West15, 16
+- FAB CSF(2F) West G15~20
+- FAB CSF(2F) West G21~26
+- FAB DATACENTER CRAC UNITS, A6 IO RM
+- FAB E~H / 3~7
+- FAB FIZ F3IOR CABLE TRAY
+- FAB FIZ L1 CD3 CABLE TRAY
+- FAB FIZ L3 WEST CABLE TRAY
+- FAB FSF G LINE S24 CABLE TRAY
+- FAB FSF G LINE S25 CABLE TRAY
+- FAB FSF G LINE S45 CABLE TRAY
+- FAB FSF G24 WATERFALL CABLE TRAY
+- FAB FSF J-11, E-14, E-7 Start at J-11 Bring Harnes
+- FAB FSF S24 IORM CABLE TRAY
+- FAB FSF S42
+- FAB FSF S44
+- FAB FSF S44 D LINE CABLE TRAY
+- FAB FSF S44 G LINE&FMS DROP CABLE TRAY
+- FAB FSF West J-17,18
+- FAB G13 IO ROOM TO FAB G24 IO ROOM FIBEROPTIC
+- FAB G13 IO ROOM TO FAB G26 IO ROOM FIBEROPTIC
+- FAB G13 IO ROOM TO FAB G8 IO ROOM FIBEROPTIC
+- FAB G26 IO ROOM TO FAB G24 IO ROOM FIBEROPTIC
+- FAB G26 IO ROOM TO FAB G8 IO ROOM FIBEROPTIC
+- FAB G26 IO ROOM TO FAB G9 LOCAL FIBEROPTIC
+- FAB IOR-1F1G26-DCC/CPU-1FFMS-1 TO 1F FSF LOCAL G24
+- FAB L1 AHU PIPING
+- FAB L1 COL D/E 11
+- FAB L1 COL E-D11
+- FAB L1 COL E/D 16.0
+- FAB L1 COL J-23
+- FAB L1 D/E 11
+- FAB L1 G-5, 9, 9.6, 10, 10.3, 11.6, 12.6, 14, 14.6
+- FAB L1 G13 IO ROOM TO FAB L2 F3 IO ROOM FIBEROPTIC
+- FAB L1 G13 IO ROOM TO FAB L4 M5 IO ROOM FIBEROPTIC
+- FAB L1 S22
+- FAB L1 S22,23
+- FAB L1 S23
+- FAB L1 S24,25
+- FAB L1 S41,42,43
+- FAB L1 S44,45
+- FAB L1, L, 32
+- FAB L17
+- FAB L2 Elec Rm, FAB L2 F3 IO Room
+- FAB L2 S21,22
+- FAB L2 S23,24
+- FAB L2 S25
+- FAB L2 S41,42
+- FAB L2 S45
+- FAB L3 COL E-23
+- FAB L3 COL E/D 13
+- FAB L3 COL E/D 16
+- FAB L3 COL E/D 29.0, 29.0
+- FAB L3 COL G 23
+- FAB L3 COL H5 J/K 1
+- FAB L3 COL J 24.0
+- FAB L3 COL J/K 30.0
+- FAB L3 COL J/K30.0
+- FAB L3 COL J31.0
+- FAB L3 COLUMN 25 E/D
+- FAB L3 COLUMN A 25.0
+- FAB L3 COLUMN A 256.0
+- FAB L3 COLUMN A 27
+- FAB L3 COLUMN A 28.0
+- FAB L3 DCC E10
+- FAB L3 DCC MODULE PIPING
+- FAB L3 E-16, 14
+- FAB L3 E/D 7
+- FAB L4 B5 IO ROOM TO FAB L1 G26 IO ROOM FIBEROPTIC
+- FAB L4 B5 IO ROOM TO FAB L2 F3 IO ROOM FIBEROPTIC
+- FAB LEVEL 02 COL.F 27/28
+- FAB LEVEL 2 COL.F 30-31
+- FAB LVL 1 col G 7-8
+- FAB LVL 3 -H30, F24
+- FAB LVL 3, F21,H24
+- FAB LVL 3, H9,H27,H33,F9
+- FAB Level 02-SECTOR 25
+- FAB Level 1 A5-B6
+- FAB Level 1 F.4/19 Column #41
+- FAB M18 IO ROOM TO FAB G24 IO ROOM FIBEROPTIC
+- FAB M18 IO ROOM TO FAB G8 IO ROOM FIBEROPTIC
+- FAB MCC RM. (SUW 1F CL 18)
+- FAB Main rack G3~23
+- FAB PH K20, C8
+- FAB PRO J LINE S21,23 CL4-5, 17-18 CABLE TRAY
+- FAB PRO S24 CABLE TRAY
+- FAB PRO S41 CABLE TRAY
+- FAB PRO S42 CABLE TRAY
+- FAB PRO S43 CABLE TRAY
+- FAB PRO S44 CABLE TRAY
+- FAB S21 G9 WATERFALL CABLE TRAY
+- FAB SECTOR 41
+- FAB SUE C25 S64 RISER CABLE TRAY
+- FAB SUE L1 C3-5 CABLE TRAY
+- FAB SUE L1 Col 14
+- FAB SUE L1 S64 CABLE TRAY
+- FAB SUE L3 S64,65 CABLE TRAY
+- FAB SUE L4 SECTOR 61
+- FAB SUE L4 SECTOR 62
+- FAB SUE RF S65 36" CABLE TRAY
+- FAB SUW L1 CL11-19
+- FAB SUW L1 CL19-20
+- FAB SUW L1 S1,2,3 CABLE TRAY
+- FAB SUW S04,S05 CABLE TRAY
+- FAB lvl 1 COL 19
+- FAB lvl1 COL 19
+- FAB(SUE) 4F Roof A~B / 11~11
+- FAB(SUE) 4F Roof A~B / 11~12
+- FAB(SUE) 4F Roof A~B / 11~13
+- FAB(SUE) 4F Roof A~B / 13
+- FAB(SUE) 4F Roof A~B / 14~19
+- FAB(SUE) 4F Roof A~B / 23~25
+- FAB(SUE) 4F Roof A~B/ 9
+- FAB(SUE) 4F Roof A~B/10~11
+- FAB(SUE) 4F Roof A~B/9~10
+- FAB(SUE) ROOF A-B 15~16
+- FAB(SUE) ROOF A-B 17
+- FAB(SUE) ROOF A-B 26
+- FAB(SUE) ROOF A~B / 14~15
+- FAB(SUE) ROOF A~B / 15~16
+- FAB(SUE) ROOF A~B / 17
+- FAB(SUE) ROOF A~B / 18~19
+- FAB(SUE) ROOF A~B / 19~20
+- FAB(SUE) ROOF A~B / 20~21
+- FAB(SUE) ROOF A~B / 20~25
+- FAB(SUE) ROOF A~B / 22
+- FAB(SUE) ROOF A~B / 23~24
+- FAB(SUE) ROOF A~B / 23~25
+- FAB(SUE) ROOF A~B / 24~25
+- FAB(SUE) ROOF A~B / 25
+- FAB(SUE) ROOF A~B / 26
+- FAB(SUE) ROOF A~B / 26~29
+- FAB(SUE) ROOF A~B / 27
+- FAB(SUE) ROOF A~B / 27~28
+- FAB(SUE) ROOF A~B / 28~29
+- FAB(SUE) ROOF A~B / 8
+- FAB(SUE) ROOF A~B / 9~13
+- FAB(SUE) ROOF A~B/ 15~16
+- FAB(SUE) ROOF A~B/ 17
+- FAB(SUE) ROOF A~B/ 27
+- FAB(SUE) ROOF E~F / 1
+- FAB(SUE) Roof A~B / 22
+- FAB, 4F B - D / 06 - 15
+- FAB, 4F C - D / 06 - 22
+- FAB, 4F C-D / 6 - 16
+- FAB, 4F&5F B - D / 06 - 15
+- FAB, 4F/5F B - D / 06 - 15
+- FAB, 4F/5F C - D / 08 - 23
+- FAB, 4F/5F C - D / 29 - 31
+- FAB, 5F C - D / 22 - 31
+- FAB-1 Polebases
+- FAB/DPI/Level 1 Sector 43
+- FAB/DPI/Level 1 Sector 44
+- FAB1 2F :: D-E,28-30
+- FAB1 2F :: D-E,30-33
+- FAB1 3F - A-C/24-29
+- FAB1 3F - B-C/30-31
+- FAB1 3F :: E-G, 26-30
+- FAB1 3F :: E-G,21-26
+- FAB1 3F :: E-G,30-33
+- FAB1 3F :: E-G/18-21
+- FAB1 3F :: G-J,21-24
+- FAB1 3F :: G-J,26-30
+- FAB1 Level 1, GL: A-F/1
+- FAB1 Level 2 B.5/17-18.5
+- FAB1 Level 3 SUE, GL: C/28 Elevator 19 South Wall
+- FAB1 Level 3, GL: C-D/4.8 N Face
+- FAB1 Level 4 SUW, GL: K-K.3/32 IT Security South Wall
+- FAB: L03-L04 K-L 6-7, 8-9
+- FCU / FCU-1F1403A / FAB1 Columns 30-32 B-C
+- FCU_1F1403A/B / COL 31_B-C - No Harness Rqd.
+- FCU_1G112/COL. 12-13 D-E
+- FCU_1G113/COL. 14-15 D-E
+- FCU_1G114/COL. 14-15 D-E
+- FCU_1G115/COL. 15-16 C-D
+- FCU_1G116/COL. 15-16 C-D
+- FCU_1G118/COL. 28-29 A-B 01A
+- FCU_1G212A/COL. 16-17 D-E
+- FCU_1G212B/COL. 16-17 D-E
+- FCU_1G213A/GCS B BLDG COL.35-36 D-E
+- FCU_1G213B/GCS B BLDG COL.35-36 D-E
+- FCU_1G214/COL. 35-36 D-E
+- FD
+- FE04D
+- FE05P
+- FE06D
+- FE08D
+- FE08P
+- FE09D
+- FE09P
+- FE11D
+- FE11P
+- FE11P and FW11D
+- FE12D
+- FE12P
+- FE13D
+- FE13P
+- FE14D
+- FE14P
+- FE15D Fw15D AD
+- FE16D
+- FE16P
+- FE17D
+- FE17D, FE17P, FE16D, FE16P
+- FE18D
+- FE20D
+- FE20D, FE20P, FE19D, FE19P, FE21P, FW21p
+- FE20P
+- FE21D
+- FE21P
+- FE24D
+- FE24P
+- FE25D
+- FE25P
+- FE26D
+- FE26P
+- FE28D
+- FE28P
+- FE29D
+- FE30D
+- FE32D
+- FIBER PULL / FAB 1F F1041 [G8] > FIZ 2F DC-1B
+- FIBER PULL / [D3] 1F BCR CUB 112106 > BSGS
+- FIBER PULL/OFF 2F BCR OF1201004 > FIZ 2F DC1A [M1]
+- FIRESTOPPING ELEC #3 MACH & TR ROOM
+- FIZ / MODULES / L3
+- FIZ 3-2 Column F-F.6 3rd Floor
+- FIZ L1 12" CABLE TRAY
+- FIZ L1 COL B3-C3
+- FIZ L1 Col A4-F2
+- FIZ L1, SUE L1 COLUMN A6-C10, SUE L2 D6, SUE L4 D6
+- FIZ L3 12" CABLE TRAY
+- FLOAT SWITCHES, LEVEL ROD, CONDUIT / LIFT STATION
+- FOC Cable Pull / Multiple Rooms / FAB 1F [G8]
+- FOC PULL (2 x 24C) / BSGS TO CUB 1F BCR1 [C4]
+- FOC PULL (G8) BCR F1041 > [M17] 4F FAB140301
+- FOC PULL / FAB 1F BCR1 > SUE 3F ELEC RM [B4]
+- FOC PULL / FAB 1F BCR1 > UPW PANEL (HOT DI) [G8]
+- FOC PULL / GCSA BCR > GCSB L02 #3MCC&I/O RM [D36]
+- FOC PULL / PARKING GARAGE TO AT&T MANHOLE
+- FOC PULL 288C / FIZ 2F DC-B to CUB 1F BCR 1 [D3]
+- FOC PULL : BCR-A1 > GCS1 01 09 235 (GCS B MCC RM)
+- FOC PULL : CUB BCR1, CUB BCR2 > CUB 1F IO RM1 [H5]
+- FOC PULL :CUB BCR1, CUB BCR2 >CUB 1F ELEC RM-1[B7]
+- FOC PULL FROM BCR CUB1M2107 TO CUB122401 (I/O RM)
+- FOC PULL SUP 2F W [M13] > SUP 3F E (B15)
+- FOC PULL SUP 2F W [M13] > SUP 3F E (B5)
+- FOC PULL [A43] BCR-B1 > GCS 01 13 252 (GCS B ELEC)
+- FOC PULL [G28] BCR F1044 > SUP 1F FAB110109 (L4)
+- FOC PULL [G28] BCR F1044 > SUP SCC-09
+- FOC PULL [G8] BCR F1041 > SUP 2F FAB120107 (L4)
+- FOC PULL [G8} BCR F1041 > F2043 (FAB HUB RM-3)
+- FOC PULL [G8} BCR F1041 > F2046 (FAB HUB RM-6)
+- FOC PULL: BCR F1041 > FAB130307 (ELEC RM BY M25)
+- FOC PULL: BCR F1044 [G28] > FAB120107 (FAB P1 TR)
+- FOC PULL: BCR F1044 [G28] > FAB136112(FAB P1 TR)
+- FOC PULL: BCR-B1 GCS1 01 09 231 > GCS1 1M I/O RM
+- FOC PULL: BCR-B1 to GCS1 1M 04 107 (GCS A MCC RM)
+- FOC PULL: BCR2 F1044 > SUW FAB110311 (IT RM)
+- FOC PULL: BCR2 F1044 > SUW FAB110313 (I/O RM)
+- FOC PULL: BCR2 F1044 > SUW FAB110314 (MCC RM)
+- FOC PULL: CUB BCR1 [D3]/BCR2 > CUB 112410
+- FOC PULL: CUB BCR1 and BCR2 > CUB112502 (UPW)
+- FOC PULL: CUB BCR1, BCR2 > CUB 1F CCR UT RM-2 [H4]
+- FOC PULL: FAB 1F BCR F1041 > 2F FAB126108 (P1 TR)
+- FOC PULL: FAB 1F BCR F1041 > FAB120307 (FAB P1 TR)
+- FOC PULL: FAB 1F BCR1 [G8] > FAB 1F I/O RM2
+- FOC PULL: FAB 1F BCR1, BCR2 > FAB 1F I/O RM [H26]
+- FOC PULL: FAB 1F BCR1, BCR2>FAB 1F IT RM[C4]
+- FOC PULL: FAB 1F BCR1[G8] > FAB 4F IO 140109
+- FOC PULL: FAB 1F F1044[G28] > FAB 116108, 116303
+- FOC PULL: FAB 2F W[M13] > FAB 3F W(M25)
+- FOC PULL: GCS 1F BCR1 [A43] > GCS 1F I/O, MCC, HUB
+- FOC PULL: GCS-A 1F BCR A1[A20]>GCS-B 1F ELEC RM
+- FOC PULL: GCS-A 1F BCR A1[A20]>GCS-B 1F IT RM-3
+- FOC PULL: GCS-B 1F BCR B1[A43] > GCS-B RF I/O, MCC
+- FOC PULL: GCS1 BCR-A1 > GCS B HUB RM-5)
+- FOC PULL: GCS1 BCR-B1 > GCS1 A HUB RM-7
+- FOC PULL: GCS1 BCR-B1 [A43] > GCS B HUB RM-6
+- FOC PULL: SUW 2F W[M13] > SUE 2F E(E2)
+- FOC PULL: [1F G28] BCR F1044 > FAB126502 (B27)
+- FOC PULL: [1F G8] BCR F1041 > FAB126502 (B27)
+- FOC PULL: [2F B27] FAB 2F (M13) > FAB 2F (B27)
+- FOC PULL: [A20] 1F BCR-A1 GCS1 > (A43) 1F BCR-B1
+- FOC PULL: [A43] BCR-B1 > GCS1 A I/O RM1
+- FOC PULL: [A43] BCR-B1 > GCS1 A MCC Rm1
+- FOC PULL: [A43] BCR-B1 > GCS1A 1M ELEC RM
+- FOC PULL: [A43] BCR-B11 > GCS1 A HUB Rm1
+- FOC PULL: [A43] BCR-B1> GCSB 254 (IT& SECURITY3)
+- FOC PULL: [B20] BCR-A1> GCS1 (GCS B HUB RM 6)
+- FOC PULL: [B8] GCS 1MF (B8) > GCS 1F ELEC RM (C61)
+- FOC PULL: [G28] BCR F1044 > 2F F2042 (HUB RM2)
+- FOC PULL: [G28] BCR F1044 > 2F F2043 (HUB RM3)
+- FOC PULL: [G28] BCR F1044 > 2F F2044 (HUB RM4)
+- FOC PULL: [G28] BCR F1044 > F2041 (FAB HUB RM-1)
+- FOC PULL: [G28] BCR F1044 > F2045 (FAB HUB RM-5)
+- FOC PULL: [G28] BCR F1044 > FAB126108 (FAB P1 TR)
+- FOC PULL: [G28] BCR F1044 > FAB136302
+- FOC PULL: [G28] BCR F1044 > FAB136302 (B15)
+- FOC PULL: [G28] BCR F1044 > FAB136302 (B21)
+- FOC PULL: [G28] BCR F1044 >FAB136302 (B9)
+- FOC PULL: [G8 ]FAB BCR F1041 > F2045 (HUB RM-5)
+- FOC PULL: [G8B] BCR F1041 > FAB F2041 (HUB RM-1)
+- FOC PULL: [G8] BCR F1041 > FAB F2042 (HUB RM-2)
+- FOC PULL: [G8] BCR1 > F110109 (IT/SECURITY1 TR)
+- FOC PULL: [G8] BCR1/BCR2 > FAB 1F UPW (SUE) B2
+- FOC PULL: [G8] FAB 1F BCR F1041 > FAB 1F SCC-09
+- FOC Pull / CUB BCR's to 1F FT CCR [E3]
+- FOC Pull from Substations to Office - OTDR Review
+- FOC Pull: FAB BCR2 [G28] to FAB 3F Elec Rm by M25
+- FOC Pull: FAB1041 [G8]>FAB116315 IT/Security20 TR
+- FOC Pull: GCS1A BCR1 to GCS1B I/O Rm 238
+- FOC(SM) BCR-A1(A-20) to GCS1 I/O Room(D14) & MCC
+- FOC(SM) from CUB112106 to CUB122301(I/O RM)
+- FOC: BCR CUB1M2107 > CUB122405 (TR)
+- FOC: BCR-A1 GCS1 173(A20) > GCS1 138(C14), 135(C15
+- FOC: CUB 1F BCR > CUB 2F I/O RM & 1F MCC RM [C4]
+- FOC: ENCLOSURE BOX & (2) CONDUITS / CUB 1F / [C4]
+- FOC: FAB BCR 1044 to FAB120401 (Elec Rm by M13)
+- FOC: FAB BCR 1044 to FAB120401 (Elec Rm by M22)
+- FOC: FAB BCR 1044 to FAB120401 (Elec Rm by M26)
+- FOC: FAB BCR1044 (G28) > FAB120401 (Elec Rm by M8)
+- FOC: FROM: BCR CUB1M2107 TO: CUB122301 (I/O RM)
+- FOC: GCS-A, L01M, MCC&I/O RM [E15] TO L01 BCR
+- FOC: SIEMENS 2C / SUW 2F / SECTOR 2, 3, & 4 [M14]
+- FOUNDATION DRAIN W FAB
+- FRESH AIR/ A-H UNIT TIE IN/ SUE 3F- A/ (17-22)
+- FRESH AIR/ A-H UNIT TIE IN/SUE 3F- A/ 14-16
+- FRESH AIR/ A-H UNIT TIE IN/SUE 3F- A/ 9-14
+- FRESH AIR/ DCC RACKS/3F 03-04
+- FRESH AIR/ DCC RACKS/3F 13-17
+- FRESH AIR/ DCC RACKS/3F 18-25
+- FRESH AIR/ DCC RACKS/3F 25-29
+- FRESH AIR/ DCC RACKS/3F 29-30
+- FRESH AIR/ DCC RACKS/3F 30-32
+- FRESH AIR/ DCC RACKS/3F 5-13
+- FRESH AIR/ GALV DUCT/4F TRUSS D19-27 EAST
+- FRESH AIR/ GALV DUCT/4F TRUSS K19-27 WEST
+- FRESH AIR/ HVAC DUCT RISER/ 1-5F C-13/C14
+- FRESH AIR/ HVAC DUCT RISER/ SUE A21-24
+- FRESH AIR/ HVAC DUCT/ 3F C-9
+- FRESH AIR/ HVAC DUCT/ 5F
+- FRESH AIR/ HVAC DUCT/SUE/ COL 3A-3F
+- FS-WW/FAB1 LV1 Col M20
+- FSF
+- FSF Cable Tray
+- FSF FAB INITIAL PANEL CAN INSPECTION
+- FSF FAB INITIAL PANEL INTERIOR INSPECTION
+- FSF FIZ Initial Panel Can Inspection
+- FSF HEADER/ SUE 4F C15-C29
+- FSF HUB RM Cable Tray Drops
+- FSF HUB Room raceway
+- FSF I/O RM cable tray
+- FSF I/O Room
+- FSF LGT
+- FSF LGT Cable Tray
+- FSF LGT Raceway & Boxes Sector 63
+- FSF LGT cable Tray
+- FSF MODULAR
+- FSF PANELS
+- FSF PANELS CAN INITIAL SETTING
+- FSF Paint Electrical Module
+- FSF Raceway
+- FSF Raceway for WD
+- FSF S21 12" J LINE CABLE TRAY
+- FSF S22 J LINE CABLE TRAY & CROSSOVER J-G
+- FSF S23 J LINE CABLE TRAY
+- FSF S24 J LINE CABLE TRAY
+- FSF S41 E LINE CABLE TRAY
+- FSF S42 E LINE CABLE TRAY
+- FSF S43 E LINE CABLE TRAY
+- FSF S44 E LINE CABLE TRAY
+- FSF S45 E LINE CABLE TRAY
+- FSF SUE Cable Tray
+- FSF SUE GROUND TERMINAL BOXS
+- FSF SUE Initial Panel Can Inspection
+- FSF SUE LGT
+- FSF SUE LGT Cable Tray
+- FSF SUW Cable Tray
+- FSF SUW GROUND TERMINAL BOXS
+- FSF SUW Initial Panel Can Inspection
+- FSF T.S Bolts
+- FSF WIRING DEVICE
+- FSF Wiring Device
+- FSF, G-J, 15-18
+- FSFDC/Hydro-Vis/F26
+- FTP CABLE PULL / FIZ 2F / SECTOR 41&61 [B3]
+- FTP CABLE PULL/SUW 3F SECTOR 4,5
+- FTP Cable Pull - VCB & ECB [SB_MB] / SUW 2F [M26]
+- FTP Cable Pull / CUB 1F MCC RM-1 [D17]
+- FTP Cable Pull / CUB 2F / Electrical Room [H27]
+- FTP Cable Pull / CUB 2F, Sector 04&24 [H28]
+- FTP Cable Pull / GCS-A, L01M & L3 ELEC & MCC [C15]
+- FTP Cable Pull / SUE 2F SECTOR 65 [C25]
+- FTP Cable Pull / SUE 3F / Sector 63 [B20]
+- FTP Cable Pull / SUE 3F Sector 62~64 [B5]
+- FTP Cable Pull [LV] / SUE 2F / Elect. Rm [C-25]
+- FTP Cable Pull [MCC] / 3F
+- FTP Cable Pull [MCC] / SUE 2F Sector 64 / [C25]
+- FTP Cable Pull [SAMA] / SUE 3F Sector 63 / [B20]
+- FTP Cable Pull [UPS] / SUE 2F Sector 64 / [C25]
+- FTP Pull [SB/MB], LV Panels, SUE-L3 A-C 5-13
+- FTP from VCB & ECB to Local RIO Panels
+- FW09D
+- FW09P
+- FW10D
+- FW11D
+- FW11P
+- FW14D
+- FW17D
+- FW18P
+- FW19P
+- FW20P
+- FW23P
+- FW24D
+- FW26P
+- FW27D
+- FW27D, FW27D, FW29P, and FW30P
+- FW27P
+- FW28P
+- FW29D
+- FW29P
+- FW30P
+- FWL-10 - Lat STA 15+61.39
+- FWL-10 - Lat STA 15+61.39 Pressure Test
+- Fab 1
+- Fab CSF module CW09~13, CW20~31
+- Fab Hub Room Raceway
+- Fab Level 02 CL H-G ROW 8
+- Fab Level 2 , Col. H25 Bolt Torque Inspection
+- Fab Level 2 CL G-L 32-33
+- Fab Lvl 2, Hub Room #1
+- Fab Lvl 2, Hub Room #1 G-8
+- Fab Lvl 2, Hub Room #2
+- Fab Lvl 2, Hub Room #3
+- Fab Lvl 2, Hub Room #4
+- Fab Lvl 2, Hub Room #5
+- Fab Lvl 2, Hub Room #5 G-23
+- Fab Lvl 2, Hub Room #6
+- Fab lvl1 Col N17
+- Fab suw gtb
+- Fab1 3F L-N/30-33
+- Fab1 Level 2 G-line to SUW
+- Fab1, Level 2, Col. J30 - D25
+- Fiber Cable Pull CUB,L1,C-D,3-4 to L2,A-B,24-25
+- Fiber Cable Pull from BCR B to I/O & MCC Rooms
+- Fiber Cable Pull from BCR to Electrical Room
+- Fiber Optic Conduit / L1M, Sector 03
+- Fillet Welds J/14-15;G/8;K/16;H/17-18;D-F/17-21
+- Fire Alarm Conduit
+- Fire Alarm Devices
+- Fire Alarm VESDA
+- Fire Alarm VESDA, Slurry Room Mezzanine
+- Fire Alarm Wiring
+- Fire Alarm-3
+- Fire Alarm-3 (C-D 2-3)
+- Fire Alarm/Raceway/L2-L6-S2&12
+- Fire Alarm/Raceway/L2-S2
+- Fire Alarm/Raceway/West Central Stair
+- Fire Pump Piping & Anti-Vortex Assembly ide IWT-1
+- Fire Pump Room
+- Fire Riser/ IT room
+- Fire alarm/ Conduit / CUB
+- Firestop/ K1-K2, H4
+- Firestop/Specgas/C2-C3, C3-4, B-C 6-7
+- Firestopping/1-1/4" conduit/FAB Lvl1s64 Duct Shaft
+- Fiz 3-2 Column F.6-H 3rd Floor
+- Foundation Drain W FAB1
+- Framing inspection Level 1 H-J/3
+- Fresh Air Duct
+- Fresh Air Duct Headers
+- Fresh Air Duct and Exhaust Duct
+- Fresh air / FAB 4F (TRUSS) D - K / 19 - 28
+- Friction Clamps Visual - NCR 0138
+- G.3-H.8/30.3-32
+- G1, G2, F1, F2
+- G10-G19
+- G11-G12 Waterfalls Level 2 Ceiling
+- GALV DUCT/ FA/AIRLOCK/SUE/COL C/D 30-33
+- GALV DUCT/ FA/AIRLOCK/SUE/COL C/D 4-6
+- GALV DUCT/ FA/AIRLOCKS/SUE/COL C/D 15-18
+- GALV DUCT/AO/SUE/COL A19-25/ HARNESS REQUIRED
+- GALV DUCT/AO/SUE/COL C5-A8/ HARNESS REQUIRED
+- GALV DUCT/EXH AIR/SUE COL C6-12/ HARNESS REQUIRED
+- GBI waffle yard
+- GC MEZZ B COL.30-34 ROW D
+- GCS 101/ Firestopping / Stair 1: Flight 1 level
+- GCS > Bldg A
+- GCS > Bldg A > Level 1
+- GCS > Bldg A > Level 1 > GCS1 01 02 101-FLAMMABLE-1
+- GCS > Bldg A > Level 1 > GCS1 01 02 103-TOXIC/FLAMMABLE-1
+- GCS > Bldg A > Level 1 > GCS1 01 02 105-CORROSIVE&INERT STORAGE&PUMP&SCRUBBER
+- GCS > Bldg A > Level 1 > GCS1 01 02 150-CORRIDOR-1
+- GCS > Bldg A > Level 1 > GCS1 01 03 106-CORROSIVE/OXIDIZER
+- GCS > Bldg A > Level 1 > GCS1 01 03 107-INERT-1 RM.
+- GCS > Bldg A > Level 1 > GCS1 01 03 140-INERT BSGS-2
+- GCS > Bldg A > Level 1 > GCS1 01 04 109-CCR
+- GCS > Bldg A > Level 1 > GCS1 01 04 123-ALKALI ACQC
+- GCS > Bldg A > Level 1 > GCS1 01 04 129-ALKALI
+- GCS > Bldg A > Level 1 > GCS1 01 04 137-#2 ELEV.MACH RM
+- GCS > Bldg A > Level 1 > GCS1 01 04 170-#1 TOILET(W)
+- GCS > Bldg A > Level 1 > GCS1-01 ST5-STAIR 5
+- GCS > Bldg A > Level 1M
+- GCS > Bldg A > Level 1M > GCS1 1M 03 106-HVAC MACH RM
+- GCS > Bldg A > Level 1M > GCS1 1M 04 107-MCC RM.
+- GCS > Bldg A > Level 1M > GCS1 1M 04 110-CORRIDOR
+- GCS > Bldg A > Level 1M > GCS1 1M 06 157-HALL-2
+- GCS > Bldg A > Level 2
+- GCS > Bldg B
+- GCS > Bldg B > Level 1
+- GCS > Bldg B > Level 1 > GCS1 01 07 200-SOLVENT-1 RM. (NONE PSM AREA)
+- GCS > Bldg B > Level 1 > GCS1 01 08 203-SOLVENT-2 (PSM AREA)
+- GCS > Bldg B > Level 1 > GCS1 01 08 210-CORRIDOR
+- GCS > Bldg B > Level 1 > GCS1 01 08 226-#3 HALL
+- GCS > Bldg B > Level 1 > GCS1 01 08 260-SOLVENT.PANEL RM
+- GCS > Bldg B > Level 1 > GCS1 01 09 228-ACID
+- GCS > Bldg B > Level 1 > GCS1 01 11 244-H2O2
+- GCS > Bldg B > Level 1 > GCS1 01 11 261-CENTRAL LAB
+- GCS > Bldg B > Level 1 > GCS1 01 12 247-WASTEWATER RM
+- GCS > Bldg B > Level 1 > GCS1 01 13 251-CUSO4
+- GCS > Bldg B > Level 1 > GCS1-01 ST3-STAIR-3
+- GCS > Bldg B > Level 1M
+- GCS > Bldg B > Level 1M > GCS1-1M ST3-STAIR-3
+- GCS > Bldg B > Level 2
+- GCS A
+- GCS A & B Bollard Pour
+- GCS A & B Column Paint Inspect (D27, A32, E40, D42
+- GCS A & GCS B
+- GCS A - Sump Pit CRC Inspect: PIT-1G113K - A26, PI
+- GCS A - Sump Pit CRC Inspection: PIT-1G113A - C18,
+- GCS A / L1M Electrical Room
+- GCS A 1M ELEC RM, BSGS, SUBSTATION
+- GCS A 1M MECHANICAL RM, D15 IOR
+- GCS A 3F Roof D~E / 5~12
+- GCS A 3F Roof D~E / 5~6
+- GCS A 3F Roof D~E / 5~9
+- GCS A 3F Roof D~E / 8~9
+- GCS A 3F Roof D~E / 9~10
+- GCS A A18, D26
+- GCS A A19
+- GCS A A19, GCS B
+- GCS A A19, GCS B A36
+- GCS A B24-C27
+- GCS A B28
+- GCS A BLD CL D 11 (GROUND LEVEL)
+- GCS A BLDG (CL. 17-19) C-D
+- GCS A BLDG (CL. 19-21 D-E)
+- GCS A BLDG (CL. 19-21) D-E
+- GCS A BLDG (CL. 21-24 ) C-D
+- GCS A BLDG (CL. 21-24) D-E
+- GCS A BLDG (CL. 21-26 D-E)
+- GCS A BLDG (CL. 24-26) C-D
+- GCS A BLDG (CL. 24-28) D-E
+- GCS A BLDG (CL. 25-27) C-D
+- GCS A BLDG (CL. 25-29 B-C)
+- GCS A BLDG (CL. 25-29) D-E
+- GCS A BLDG (CL. 26-27) C-D
+- GCS A BLDG (CL. 26-29 A-B) GCS B BLDG (CL 58-61 A)
+- GCS A BLDG (CL. 27-29) B-D
+- GCS A BLDG (CL. 27-29) C-D
+- GCS A BLDG (CL. 36-38 A-E)
+- GCS A BLDG ALKALI (CL. 24-26) C-D
+- GCS A BLDG ALKALI CL (21-24 A-B)
+- GCS A BLDG CL 21-23 C-D
+- GCS A BLDG CL A 10-11
+- GCS A BLDG CL A 11-12
+- GCS A BLDG CL A 12-13
+- GCS A BLDG CL A 13-14
+- GCS A BLDG CL A 14-15
+- GCS A BLDG CL A 5-6 MEZZANINE FLOOR BATTERY RM
+- GCS A BLDG CL A 6-7 MEZZANINE FLOOR BATTERY RM
+- GCS A BLDG CL A 8-9
+- GCS A BLDG CL A 9-10
+- GCS A BLDG CL E 5-6
+- GCS A BLDG CL E 6-7
+- GCS A BLDG MECHANICAL ROOM (MEZZ DECK) CL 10-11 ED
+- GCS A BLDG Mechanical room (MEZZ DECK)
+- GCS A BLDG Mechanical room (MEZZ DECK) CL 10-11 ED
+- GCS A BLDG Mechanical room CL 10-11 D-E
+- GCS A BLDG OAC Drain Room CL D11
+- GCS A BLDG OAC ROOFTOP
+- GCS A Bathroom sanitary and vent
+- GCS A C06
+- GCS A C19
+- GCS A C19-21
+- GCS A C19-D21
+- GCS A C25-27
+- GCS A C25-D27
+- GCS A CABLE L01M SECTOR 04
+- GCS A CCR
+- GCS A CCR, Inert Rms
+- GCS A CRC Equipment Pads A18 Post-Install Inspect
+- GCS A CRC Equipment Pads B26 Post-Install Inspect
+- GCS A CRC Equipment Pads B7 Post-Install Inspect
+- GCS A CRC Equipment Pads B8 Post-Install Inspect
+- GCS A CRC Equipment Pads B9,D26, E47, D48 & A53 In
+- GCS A Column Paint A-B24, D-E24 & A-E25 Inspect
+- GCS A Column Paint Inspect (A-B 26-28)
+- GCS A Column Paint Inspect (E26,E28 & E29)
+- GCS A Column Paint Inspection: E27, D26, D28, & C2
+- GCS A D12
+- GCS A D15 MCC IO ROOM D16
+- GCS A D20-21
+- GCS A D28
+- GCS A D~E / 27~29
+- GCS A Exterior Owner Punch A1-29 Completetion Insp
+- GCS A Exterior Owner Punch E1-29 & A-E1 Completion
+- GCS A Fire Caulking Inspect - Mini Wall at A17 (C
+- GCS A Fire Caulking Lvl Mezz A-D/27-29 Perimeter I
+- GCS A L1 BSGS FLAM RM IO ROOM D15
+- GCS A L1 D1-D2 FLAMMABLE BSGS ROOM, IO ROOM C16
+- GCS A L1 FLAM ROOM 2, 3, 4 IO ROOM C16
+- GCS A L1 MCC ROOM, IO ROOM D16
+- GCS A L1M D13-D15 MEZZ MCC ROOM, IO ROOM D15
+- GCS A LVSUB-1F13SGB01 Electrical Room 1, L1M
+- GCS A Penthouse #1 & Overbridge B Roof Punch List
+- GCS A Penthouse #2, #3, and #4 PVC Roof Inspect
+- GCS A Roof Architecture Owner Punch List
+- GCS A Roof D~E / 5~9
+- GCS A Roof D~E / 9~11
+- GCS A Roof IMP/ACM Penthouse & Duct house Owner Pu
+- GCS A Sector 3
+- GCS A Sector 3 Electrical Room
+- GCS A col 28 row A-B & C
+- GCS A hallway
+- GCS A, GCS B
+- GCS A, GCS1A, L01, Sector 4, 14D-E
+- GCS A, GCS1A, L01, Sector 4, 15D
+- GCS A, L01 &L01M, Sector 5, 20-21/A-D
+- GCS A, L01, A-C 21-24
+- GCS A, L01, SECTOR 4, C14
+- GCS A, L01, Sector 02, Col. 2-3
+- GCS A, L01, Sector 02, Col. 4-5
+- GCS A, L01, Sector 03, 9-10 B-C
+- GCS A, L01, Sector 03, Col. 10-12
+- GCS A, L01, Sector 03, Col. 7-8
+- GCS A, L01, Sector 04 Column B17
+- GCS A, L01, Sector 04, 12D
+- GCS A, L01, Sector 04, 14C
+- GCS A, L01, Sector 04, 16-17/B-C
+- GCS A, L01, Sector 04, C14 & C16
+- GCS A, L01, Sector 04, C15
+- GCS A, L01, Sector 04, C16
+- GCS A, L01, Sector 04, Col. 13-14
+- GCS A, L01, Sector 04, Col. 15-16
+- GCS A, L01, Sector 04, Column 16-17, B/C
+- GCS A, L01, Sector 04, Column B14-16
+- GCS A, L01, Sector 04, Column B17
+- GCS A, L01, Sector 04, E14-15
+- GCS A, L01, Sector 06, C29
+- GCS A, L01, Sector 10, C47
+- GCS A, L01, Sector 2, D-E11-12
+- GCS A, L01, Sector 4, A14-C14
+- GCS A, L01, Sector 4, B15
+- GCS A, L01, Sector 5,19-20/D-E
+- GCS A, L01, Sector 7, A-B, 29
+- GCS A, L01, Seector 4, A-C 14-17
+- GCS A, L01M Electrical Room, B14-15
+- GCS A, L01M, A8-9
+- GCS A, L01M, B09-10
+- GCS A, L01M, B10 & GCS A, L03, D16
+- GCS A, L01M, B10-11
+- GCS A, L01M, B10-11 & C12
+- GCS A, L01M, B10-12
+- GCS A, L01M, B14-15 & C12
+- GCS A, L01M, B5-6
+- GCS A, L01M, B8-10
+- GCS A, L01M, B9 & C12
+- GCS A, L01M, C12
+- GCS A, L01M, C12-15
+- GCS A, L01M, C13
+- GCS A, L01M, C7-8 & C12
+- GCS A, L01M, C8 & C12
+- GCS A, L01M, C9
+- GCS A, L01M, C9-12
+- GCS A, L01M, D5
+- GCS A, L01M, SECTOR 3, C13
+- GCS A, L01M, Sector 03, 8-9 D
+- GCS A, L01M, Sector 03, 9-10, D-E
+- GCS A, L01M, Sector 03, A7
+- GCS A, L01M, Sector 03, C12
+- GCS A, L01M, Sector 03, D-E/8-9
+- GCS A, L01M, Sector 04, C14
+- GCS A, L01M, Sector 3, 7D & 8D
+- GCS A, L01M, Sector 4, D13
+- GCS A, L1, A-10
+- GCS A, L1, C-15
+- GCS A, L1, Columns 2-4 A-C
+- GCS A, L1, E12
+- GCS A, L1, Room 133, C-15
+- GCS A, L1, Room 134, D-15
+- GCS A, L1, Sector 04, Columns 14-16 D
+- GCS A, L1, Sector 05, A20
+- GCS A, L1M Battery Rm, B7
+- GCS A, L1M Battery Room, B6
+- GCS A, L1M Eelctrical Room, B-10
+- GCS A, L1M Electrical Room, A-7
+- GCS A, L1M Electrical Room, A-8
+- GCS A, L1M Electrical Room, A-9
+- GCS A, L1M Electrical Room, A14
+- GCS A, L1M Electrical Room, A5
+- GCS A, L1M Electrical Room, A8
+- GCS A, L1M Electrical Room, B-10
+- GCS A, L1M Electrical Room, B-14
+- GCS A, L1M Electrical Room, B-9
+- GCS A, L1M Electrical Room, B10
+- GCS A, L1M Electrical Room, B11
+- GCS A, L1M Electrical Room, B12
+- GCS A, L1M Electrical Room, B14
+- GCS A, L1M Electrical Room, B9
+- GCS A, L1M Electrical Room, C-9
+- GCS A, L1M Electrical Room, C12
+- GCS A, L1M Electrical Room, C8
+- GCS A, L1M Electrical Room, C9
+- GCS A, L1M Electrical room, B9
+- GCS A, L1M Electrical room, C15
+- GCS A, L1M Elkectrical Room, A-10
+- GCS A, L1M, D-13
+- GCS A, L1M, Electrical Room, B11
+- GCS A, L1M, Room 133, C-15
+- GCS A, L1M, Sector 03, 7-8 A-B
+- GCS A, L1M, Sector 03, A-B 7-8
+- GCS A, L1M, Sector 04, C14-15
+- GCS A, L1M, Sector 04, Column B-C/13-15
+- GCS A, L3, A-8
+- GCS A, L3, D-16
+- GCS A, L3, D16
+- GCS A-103 / Firestopping / Column 14 x D-E
+- GCS A-B, L01M, Sector 03-Sector 09, 9-38
+- GCS A. L3, D16
+- GCS A/INITIAL SET/L01M, Sectors 02/03 A06-A10
+- GCS A19
+- GCS Access Flooring Central Lab A54 Final Inspect
+- GCS B 1F C36~39
+- GCS B 3rd Floor 37
+- GCS B A52-54
+- GCS B A53, D53
+- GCS B ACID (51-55 C-D)
+- GCS B B42 D47 D48
+- GCS B B42, D47, D48
+- GCS B BLD CL B57 Waste Water room
+- GCS B BLDG (CL. 36-37 A-C)
+- GCS B BLDG ACID RM (CL 46-50 D-E)
+- GCS B BLDG ACID RM (CL 49-51 D-E)
+- GCS B BLDG ACID RM (CL 51-55 C-D)
+- GCS B BLDG ACID RM (CL 51-55 D-E)
+- GCS B BLDG CHEM ROOM (CL 58-60 D-E)
+- GCS B BLDG CL C&D 57
+- GCS B BLDG CL D37
+- GCS B BLDG NW CL 62 LAYDOWN AREA
+- GCS B BLDG SOLVENT (CL 30-32 B-D)
+- GCS B BLDG SOLVENT (CL 30-32 C-D)
+- GCS B BLDG SOLVENT (CL 30-32 D-E)
+- GCS B BLDG SOLVENT (CL 32-34 D-E)
+- GCS B BLDG WASTE WATER 57B
+- GCS B BLDG WASTE WATER ROOM
+- GCS B BLDG WASTE WATER ROOM CL 57 B
+- GCS B BLDG Waste Water CL B57
+- GCS B C-D 52-53
+- GCS B C-D49
+- GCS B C33, A35
+- GCS B C33-A35
+- GCS B C36~37
+- GCS B C37
+- GCS B C37-38
+- GCS B C39
+- GCS B C40
+- GCS B C41
+- GCS B C49
+- GCS B C5
+- GCS B C52
+- GCS B C52-D53
+- GCS B CCR 38C
+- GCS B CCR, ABCDE39, A36, D36, D37, CD38
+- GCS B CRC Equipment Pads B42 & D53 Post-Install In
+- GCS B CRC Equipment Pads C40 Post-Install Inspect
+- GCS B Canopy lights 51-54
+- GCS B Column Paint B38, A40, C40, C42, B43, B44, &
+- GCS B Column Paint C-D32, C33-35 & E36 Inspect
+- GCS B Column Paint Column Paint Inspection A50-54
+- GCS B Column Paint E45-47, E50, E53, & E55 Inspect
+- GCS B Column Paint Inspect (C37,D38-39, C39, E39,
+- GCS B Column Paint Inspect (D31, B32, B52, B53).
+- GCS B Column Paint Inspection C34, B-C45, B-C46, &
+- GCS B C~D / 56~58, D~E / 52~58
+- GCS B D-E 58-59
+- GCS B D37 3rd Floor
+- GCS B D40
+- GCS B D47-49
+- GCS B D48-E59
+- GCS B D53-A53
+- GCS B D58-E59
+- GCS B Duct House #1-8 & Penthouse #3-4 PVC Roof In
+- GCS B Duct House #1-8 PVC Roof Inspect
+- GCS B D~E / 32~33
+- GCS B E47-49
+- GCS B Equipment Pads D33 & A35 Post-Install Inspec
+- GCS B Equipment Pads D52, D40 & C41 Post-Install I
+- GCS B Exterior Owner Punch A30-62 and A-E62 Comple
+- GCS B Exterior Owner Punch E30-62 & C-E 29-30 Comp
+- GCS B Fire Caulking A-E39 Inspect
+- GCS B L1 ACID ROOM CL39-47, IOR48
+- GCS B L1 ALKALI RM 17-29 IO ROOM B36
+- GCS B L1 IOR48 WASTE WATER ROOM.
+- GCS B L1 SECTOR 7/8 AND B36 IO ROOM
+- GCS B L1 SOLVENT RM IO ROOM B36
+- GCS B Roof IMP/ACM Penthouse & Duct house Owner Pu
+- GCS B Roof Owner Punch IMP/ACM Penthouse & Duct ho
+- GCS B, Cable Tray / L01, Sector 10, 11, 47-51 B-E
+- GCS B, Cable Tray / L01, Sector 10, 47-48 A-B
+- GCS B, Cable Tray / L01, Sector 11, 12, 51-58 C-D
+- GCS B, East Side of Building at Column 54
+- GCS B, L01, 42-45/C-E
+- GCS B, L01, D60
+- GCS B, L01, Sector 08, B37
+- GCS B, L01, Sector 08, D37
+- GCS B, L01, Sector 09, 43A
+- GCS B, L01, Sector 10 & 11, Columns 47-51 B-D
+- GCS B, L01, Sector 10, 47-48 C
+- GCS B, L01, Sector 11, 51-57/C-D
+- GCS B, L01, Sector 12, 58A-B
+- GCS B, L01, Sector 12, A58
+- GCS B, L01, Sector 12, B62
+- GCS B, L01, Sector 12, C60
+- GCS B, L01, Sector 12, C62
+- GCS B, L01, Sector 12, C62& B60
+- GCS B, L01, Sector 5-6, 21-27D
+- GCS B, L01,Sector 12, C62&B60
+- GCS B, L01M, Sector 03, B10
+- GCS B, L01M, Sector 13, E62
+- GCS B, L03, D17
+- GCS B, L1 Electrical Room B, C60
+- GCS B, L1 Electrical Room, D61
+- GCS B, L1, A17-21
+- GCS B, L1, A50-53
+- GCS B, L1, A60-D61
+- GCS B, L1, C39 & D37
+- GCS B, L1, C59
+- GCS B, L1, D37
+- GCS B, L1, D46-47, D-E47-49
+- GCS B, L1, E37
+- GCS B, L1, Sector 10, C47
+- GCS B, L1, Sector 10, C48
+- GCS B, L1, Sector 12, A60-D61
+- GCS BLD B COL. D28-E28
+- GCS BLD. A LEVEL 01 COL.25-28
+- GCS BLD. B LEVEL 01 COL.21-25
+- GCS BLDG. A ELEC ROOMS
+- GCS BLDG. A LEVEL 01M-SECTOR 03.1
+- GCS BLDG. A MECH ROOM
+- GCS BLDG. A MECH ROOM COL. 10
+- GCS BLDG. A MECH. ROOM COL. 13C-15C, 17C-23C
+- GCS BLDG. A MECH. ROOM COL.11C
+- GCS BLDG. A MEZZ DECK COL. 26
+- GCS BLDG. A MEZZDECK
+- GCS BLDG. A ROOF COL 5B-12B
+- GCS BLDG. A ROOF COL C9
+- GCS BLDG. A ROOF COL. 5B-12B
+- GCS BLDG. A ROOF COL.4
+- GCS BLDG. A ROOF COL.7
+- GCS BLDG. B ELEC ROOM COL 60.
+- GCS BLDG. MECH ROOM COL11C
+- GCS BLDG. MECH ROOM LCH
+- GCS BLDG. MECH ROOM NFW
+- GCS BLDG. MEZZ DECK C13-C21
+- GCS BLDG. MEZZ DECK C21-C24
+- GCS BLDG. MEZZ DECK C26
+- GCS Bldg. B Level 01 Col,39 Rows C-D
+- GCS Bldg. B Level o2 Row 36-37
+- GCS Bldg.B Col.39 Level 01
+- GCS Building A Level 01 Sector 02.4
+- GCS C2-C12
+- GCS CRC A32 Containment Pit Completion Inspect
+- GCS CRC B56 Containment Pit Completion Inspect
+- GCS CRC C29 Containment Pit Completion Inspect
+- GCS CRC C49 Containment Pit Completion Inspect
+- GCS CRC Central Lab A55 Completion Inspect
+- GCS CRC D-E 47-50 Post Install Inspect
+- GCS CRC Patches A3, A8, C24-27, B43, & D53 Complet
+- GCS CRC Patches Alkali Rm C-D 24-27 Completion Ins
+- GCS CRC Patches B42 C41 & C42 Completion Inspect
+- GCS CRC Patches B43 C44 & D52 Completion Inspect
+- GCS CRC Patches D35 A36 C49 D51 Completion Inspec
+- GCS CRC Patches Flammable Rm A-C 4-5 Final Inspect
+- GCS CRC Solvent Rm. B36 Completion Inspect
+- GCS CRC Sump Pit C-E 19, & E21 (PIT-1G113D, PIT-1G
+- GCS CRC Wastewater Sump Pit Completion Inspect
+- GCS Catwalk Repair C18&D18 Weld & Bolt Inspect
+- GCS Catwalk Repair C18-20 & D19-20 Weld & Bolt Ins
+- GCS Catwalk Repair C19,C20 & D20 Torque Inspect
+- GCS Catwalk Repair C21 & D21 Weld & Bolt Inspect
+- GCS Catwalk Repair C21-23 & D21-23 Torque Inspect
+- GCS Catwalk Repair C22 Grout-Bolt Install
+- GCS Catwalk Repair C22-23, C25, D22-23 & D26 Weld
+- GCS Catwalk Repair C23 Grout-Bolt Install
+- GCS Catwalk Repair C24 Grout-Bolt Install
+- GCS Catwalk Repair C24 Torque Inspect
+- GCS Catwalk Repair C24 Weld & Bolt Inspect
+- GCS Catwalk Repair C24-26 & D26 Torque Inspect
+- GCS Catwalk Repair C25 Grout-Bolt Install
+- GCS Catwalk Repair C26 Grout-Bolt Install
+- GCS Catwalk Repair C26 Weld & Bolt Inspect
+- GCS Catwalk Repair D18 & D19 Torque Inspect
+- GCS Catwalk Repair D21 Grout-Bolt Install
+- GCS Catwalk Repair D22 Grout-Bolt Install
+- GCS Catwalk Repair D23 Grout-Bolt Install
+- GCS Catwalk Repair D24 & D25 Torque Inspect
+- GCS Catwalk Repair D24 Grout-Bolt Install
+- GCS Catwalk Repair D25 Grout-Bolt Install
+- GCS Catwalk Repair D26 Grout-Bolt Install
+- GCS Central Lab A55 Paint Completion Inspect
+- GCS Column Paint A41-45, A47, B39, B41, & B42 Insp
+- GCS Column Paint B50, C49, E54, E56, & E
+- GCS Column Paint B50,B51,B54,B56,C52,C54,D52 & D53
+- GCS Column Paint B56, C56-57, C-E59, D54-57 & E58
+- GCS Column Paint D47,B49,D50 & C-E51
+- GCS Cylinder Storage Backfill Densities Lot 1of 3
+- GCS Cylinder Storage Backfill Densities Lot 2of3
+- GCS Duct Shaft #2 B17 Board Insulation Post Instal
+- GCS E/14-15
+- GCS Edge of Slab Firestopping A17 Inspect
+- GCS Elec Rm, C48,61 IO Room
+- GCS Exterior Bldg A A-E1 Punch
+- GCS Exterior Bldg A E1-15 Punch
+- GCS Exterior Bldg A E15-29 Punch
+- GCS Exterior Bldg A GL15-29 Punch
+- GCS Exterior Bldg B A-E62 Punch
+- GCS Exterior Bldg B A46-62 Punch
+- GCS Exterior Bldg B E30-46 Punch
+- GCS Exterior Bldg B E46-62 Punch
+- GCS Exterior Bldg B GL30-46 Punch
+- GCS Exterior Bldg. A & B Overbridge C-E 29-30 Pun
+- GCS Exterior Bldg. A Overbridge B A26-27 Punch
+- GCS Fire Caulking Lvl 1 A-E17 Wall Inspect
+- GCS Fire Caulking Lvl 1 Elev. #2 Hall, Storage, an
+- GCS Fire Caulking Lvl 1 Elev. #3 Hall, and Mach Rm
+- GCS Fire Caulking Lvl 1 Inert BSGS-2 D-E 13-14 Ins
+- GCS Fire Caulking Lvl 1Corridor 01 08 210 B-E 36 I
+- GCS Fire Caulking Lvl Mezz Stair #3 Vestibule & Te
+- GCS Fire Caulking Mezz Lvl Corridor, #2 Hall-1 & H
+- GCS Fire Caulking Stair #2 E16 Inspect
+- GCS Fire Caulking Stair #3 Inspect
+- GCS Fire Caulking Stair #4 Inspect
+- GCS Fire Caulking Stair #5 Inspect
+- GCS GAS CYLINDER STORAGE PAD
+- GCS Gas Cylinder Storage Final Structural Inspect
+- GCS Gas Storage SOG North & Middle Pour
+- GCS Gas Storage SOG North & Middle Pre-Pour Rebar
+- GCS Gas Storage SOG South Pour
+- GCS Gas Storage SOG South Pre-Pour Rebar Inspect
+- GCS Gas Storage Top of Pier A3-9 Inspect
+- GCS Gas Storage Void Form GL6-9 Inspect
+- GCS Gas Storage Void Form South GL3-5 Inspect
+- GCS Gas Storage Walls Seq1 Pour
+- GCS Gas Storage Walls Seq1 Pre-Pour Rebar Inspect
+- GCS Gas Storage Walls Seq2 Pour
+- GCS Gas Storage Walls Seq2A Pre-Pour Rebar Inspect
+- GCS Gas Storage Walls Seq2B Pre-Pour Rebar Inspect
+- GCS Gas Storage Walls Seq3 Pre-Pour Rebar Inspect
+- GCS Gas Storage Walls Seq3 Wall Pour
+- GCS Gas Storage Walls Seq4 Wall Pour
+- GCS Gyp Wall Lab-Analysis Rm A-B 54-56 Framing Ins
+- GCS Gyp Wall Stair #1 Soffit Ceiling Lvl2 GL5 Fram
+- GCS L1M MCC ROOM, D15 MEZZANINE IO ROOM
+- GCS L1M, A11-B14
+- GCS L2R ROOFTOP OAs
+- GCS L2R S2,3,4
+- GCS LEVEL 01 SECTOR 04.2 COL.C-D ROW 16-17
+- GCS Level 1, Col,39-40
+- GCS MEZZ A COL.A-R ROW 27-29
+- GCS MEZZ B COL.30-39 ROWS C-D
+- GCS MF C07
+- GCS MF C30 ~ C39
+- GCS MF C34
+- GCS Mezz B, Col 39-40 Row C&D, Level 1
+- GCS NG Trestle F
+- GCS OB-A COL.29-30 ROW D
+- GCS Penthouse #2, #3, and #4 PVC Roof Inspect
+- GCS SECTOR 2.3 LEVEL 01M
+- GCS Stair #1 #4
+- GCS Sump Pit CRC Inspection: PIT-1G114A - B30 & P
+- GCS Sump Pit CRC Inspection: PIT-1G114C - E30, PI
+- GCS Sump Pit CRC Inspection: PIT-1G115I (A45) PIT
+- GCS Trestle D
+- GCS Trestle E
+- GCS Trestle F
+- GCS a, L01M, B11 & C12
+- GCS inertia bases 0001
+- GCS inertia bases 0002
+- GCS-1F-PGV
+- GCS-A 101 / Firestopping / Column C-D x 5-11
+- GCS-A BLDG (CL 17-19 D-E)
+- GCS-A BLDG MEZZ DECK (MAIN PIPE RACK) CL C27-25
+- GCS-A BUILDING CL 18-19 D-E
+- GCS-A BUILDING MEZZ CL C13-15 E9-10
+- GCS-A CCR Rm ACT Grid Install
+- GCS-A CRC Equipment Pad Post-Install B7.5
+- GCS-A E/10
+- GCS-A Fire Caulking Lvl 1 A-C14 Inert BSGS-1 Rm/CC
+- GCS-A-NG
+- GCS-B 1F ELEC ROOM COLUMN 60
+- GCS-B 1F ELEC ROOM COLUMN 60 THIS IS FOR PAPERWORK
+- GCS-B D36 IO Room to BSGS LSS Room
+- GCS-B Equipment Pads B5 & B7 Post-Install Inspect
+- GCS-B SECTOR 12
+- GCS-B SECTOR 12 ELECTRICAL ROOM
+- GCS-GROUND LEVEL COL.39-44
+- GCS/ CONDUIT/CABLE/L01, Sector 04 Column B16
+- GCS1 A, L01, Sector 04, C14
+- GCS1 B, L01, Sector 10, A47-A48
+- GCS101/ Firestopping / Col 1-2 x C
+- GCS103, SECTOR 08, E36
+- GCS1A / AHs/GCS1A L01M Sector 04. A13-14
+- GCS1A / Braker Torque/, L01, SECTOR 04,
+- GCS1A / Conduit/GCS1A, L01, Sector 04, 15A
+- GCS1A / Initial Set/ Sector 02/03.L01M B07
+- GCS1A / Initial set/L01, Sector 04, Column B
+- GCS1A / Initial set/L01, Sector 08, Column B37
+- GCS1A / Rcpts./GCS1A L01 Sector 02. A03-C03
+- GCS1A / Rcpts./GCS1A L01 Sector 02. A04-C05
+- GCS1A /Conduit /L01 Sector 03, B10
+- GCS1A /Conduit/Cable /GCS1A L01 Sector 03, E12
+- GCS1A L01 Sector 04. 16C
+- GCS1A L01M Sector 02/03, B07
+- GCS1A L01M, Sector 03, 11-12C
+- GCS1A PNL/Conduit/Cable /L01 Sector 04. A14-C16
+- GCS1A PNL/Conduit/L01 Sector 04. C15
+- GCS1A Sector 04, D16
+- GCS1A, L01, SECTOR 03, 12D
+- GCS1A, L01, SECTOR 04, 14C
+- GCS1A, L01, SECTOR 04, D15
+- GCS1A, L01, SECTOR 6, 27-28B
+- GCS1A, L01, Sector 02, 4-5.2, A/C
+- GCS1A, L01, Sector 03, 10-11 A/C
+- GCS1A, L01, Sector 03, 11-12 D-E
+- GCS1A, L01, Sector 04, 14-15 D/E
+- GCS1A, L01, Sector 04, 14C
+- GCS1A, L01, Sector 04, 15-16D
+- GCS1A, L01, Sector 04, 15-17 A
+- GCS1A, L01, Sector 04, 15A
+- GCS1A, L01, Sector 04, 17-19 D-E
+- GCS1A, L01, Sector 05, 16-17A
+- GCS1A, L01, Sector 05, 20-21 E
+- GCS1A, L01, Sector 05, 21-22 E
+- GCS1A, L01, Sector 05, 21-24, A/C
+- GCS1A, L01, Sector 05/06, 21-26 C/D
+- GCS1A, L01, Sector 05/06, 24-26 A/C
+- GCS1A, L01, Sector 05/06, 24.5 - 27, A-E
+- GCS1A, L01, Sector 05/06, 24.5 - 28.5, A
+- GCS1A, L01, Sector 06, 25-26 D-E
+- GCS1A, L01, Sector 06, 25-26/D-E
+- GCS1A, L01, Sector 06, 26-29 D/E
+- GCS1A, L01, Sector 06, 28-29 A-B
+- GCS1A, L01, Sector 06, 28-29 B
+- GCS1A, L01, Sector 08, 36A
+- GCS1A, L01, Sector 2, B3
+- GCS1A, L01, Sector 2, B4
+- GCS1A, L01, Sector 2, B7
+- GCS1A, L01, Sector 3, 12D
+- GCS1A, L01, Sector 3, B11
+- GCS1A, L01, Sector 3, B13
+- GCS1A, L01, Sector 3, B9
+- GCS1A, L01, Sector 3, D13
+- GCS1A, L01, Sector 4, 14A-C
+- GCS1A, L01, Sector 4, 14C
+- GCS1A, L01, Sector 4, 14D
+- GCS1A, L01, Sector 4, 17
+- GCS1A, L01, Sector 4, A-C14
+- GCS1A, L01M SECTOR 04 . 15D
+- GCS1A, L01M, Sector 02, 7D & 5C
+- GCS1A, L01M, Sector 03, 7, D
+- GCS1A, L01M, Sector 03, 7A
+- GCS1A, L01M, Sector 03, 7D
+- GCS1A, L01M, Sector 04, 15C
+- GCS1A, L01M, Sector 3, 7D
+- GCS1A, L01M, Sector 4 & 5, 17-21C
+- GCS1A, L01M, Sector 4, 13D
+- GCS1A, L01M, Sector 4, 15C
+- GCS1A, L03, Sector 04, 16 D
+- GCS1A, L03, Sector 04, 16D
+- GCS1A, Sector 05, L01, 20 A
+- GCS1A, Sector 06, L01, 29 B
+- GCS1A, Sector 3, 10B & GCS1B, Sector 12, 61B
+- GCS1A, Sector 8, L03, 35D
+- GCS1A/ DS SWITCHES/L03, SECTOR 04, B14 & D16
+- GCS1A/ RECPTACLES/GCS1A L01 Sector 03, A13-C14
+- GCS1A/AH LV-CONDUIT CABLES/L01, Sector 12, 59.5A-E
+- GCS1A/Breaker Torque/ L01, Sector 03, 12D
+- GCS1A/Breaker Torque/GCS1A, L01, SECTOR 04, 14C
+- GCS1A/CABLE/GCS1A, L01, Sector 04, 15A
+- GCS1A/Cable Tray/GCS1A, L01, Sector 06, 25-26/A-B
+- GCS1A/Conduit/Cable/GCS1A Sector 04, D16
+- GCS1A/Receptacles/L01, Sector 02, Column A1-C2
+- GCS1B / Initial Set/ Sector 10, L01 A47-A48
+- GCS1B / LVSUB-1F13MBA06 / Electrical Room, L1
+- GCS1B L01, Sector 07, 31E
+- GCS1B, L01, 60B-C
+- GCS1B, L01, 60C
+- GCS1B, L01, SECTOR 06, 28-29A
+- GCS1B, L01, SECTOR 08, 36A
+- GCS1B, L01, SECTOR 08, 37A
+- GCS1B, L01, SECTOR 10, A47
+- GCS1B, L01, SECTOR 12, 60D
+- GCS1B, L01, SECTOR 12, A61
+- GCS1B, L01, SECTOR 12, D61
+- GCS1B, L01, SECTOR12, 59A
+- GCS1B, L01, Sector 07, 32, A
+- GCS1B, L01, Sector 08, 36 E
+- GCS1B, L01, Sector 08, 36A
+- GCS1B, L01, Sector 10, 45-47 C-E
+- GCS1B, L01, Sector 10, 47A
+- GCS1B, L01, Sector 10, 48 A/C
+- GCS1B, L01, Sector 11, 51-54 A
+- GCS1B, L01, Sector 12, 58A
+- GCS1B, L01, Sector 12, 60A-B
+- GCS1B, L01, Sector 12, 60B-C
+- GCS1B, L01, Sector 12, 61 D-E
+- GCS1B, L01, Sector 12, 61B-C
+- GCS1B, L01, Sector 12, A58
+- GCS1B, L01, Sector 12, B/D61
+- GCS1B, L01, Sector 12, B62
+- GCS1B, L01, Sector 8, B36
+- GCS1B, L01, Sector 9-10, 42-45 A-C
+- GCS1B, L01. SECTOR 12, 61A/B
+- GCS1B, L01M, SECTOR 10 48-49E
+- GCS1B, L01M, Sector 10/11, 49-51 A
+- GCS1B, L03, SECTOR 08 ,36D
+- GCS1B, L03, SECTOR 08, 35E
+- GCS1B, L03, Sector 08, 35D
+- GCS1B, L03, Sector 08, 36 D
+- GCS1B, L03, Sector 08, 36E
+- GCS1B, L03, Sector 08, D36
+- GCS1B, SECTOR 08, LO1, 34A
+- GCS1B, SECTOR 08, LO1, 36 A
+- GCS1B, Sector 09, L01,39-42
+- GCS1B, Sector 10, 47A
+- GCS1B, Sector 10, C 47
+- GCS1B, Sector 8, L03, 35D
+- GCS1B/ CONDUIT/GCS1B L01 Sector 12, A6
+- GCS1B/AH LV-CONDUIT CABLES/L01, Sector 12, 59.5A-E
+- GCS1B/CABLE/ GCS1B, L01, SECTOR 08, 36B
+- GCS1B/CABLE/ L01, Sector 08, B37
+- GCS1B/CABLE/ L01, Sector 10, A47-A48
+- GCS1B/CABLE/ L01, Sector 10, C47
+- GCS1B/CABLE/ L01, Sector 12, 58A
+- GCS1B/CABLE/ L01, Sector 12, A58
+- GCS1B/CABLE/L01, Sector 10, B47-B48
+- GCS1B/CONDUIT/ L01, Sector 12, B58
+- GCS1B/Conduit/ L01, Sector 08, B36-37
+- GCS1B/Conduit/ L01, Sector 08, Column B37
+- GCS1B/Conduit/ Sector 8, L03, 35D
+- GCS1B/Conduit/L01, Sector 08, Column B37
+- GCS1B/DISCONNECT/L01, Sector 12 A61
+- GCS1B/GTB-M1/GCS1B, Sector 10, 47B
+- GCS1B/INITIAL SET/ CONDUIT/L01, Sector 08, Column
+- GCS1B/INITIAL SET/ L01, Sector 12, A60
+- GCS1B/Initial Set/ L01, Sector 08, B36-37
+- GCS1B/LIGHTING/GCS1B, L01, Sector 10, 45-47 A-C
+- GCS1B/NITIAL SET/GCS1B L01 Sector 10, C 47
+- GCS1B/PNBD/ L01, Sector 10, A47
+- GCS1B/Raceway/ L01, Sector 09, C42
+- GCS1B/Raceway/ L01, Sector 09, D38
+- GCS1B/Raceway/ L03, Sector 08, D35/E36
+- GCS1B/SPD/ L01, Sector 04 D16
+- GCS1B/conduit/GCS1B, Sector 12, B58
+- GCSA 1FL
+- GCSA 1M Battery Room
+- GCSA 1M Main Electrical Room
+- GCSA L1 & L3, Sector 02,04, & 06
+- GCSA Roof
+- GCSA, L01, Sector 02/03, Col. A 3-14
+- GCSA, L01M, Sector 03, 9D
+- GCSA, L01M, Sector 04, Columns 14-15 D
+- GCSA, L03, SECTOR 04, B14 & D16
+- GCSA, L1M, 5-14 Shaft lights
+- GCSA, L1M, A-10
+- GCSA, L1M, D-5-14
+- GCSA-B, L01M, Columns B-E,9-38
+- GCSA/ RCPTs, PNLs/L01, Sector 04
+- GCSA/CONDUIT/ RCPTs, PNLs/CABLESL01, Sector 04
+- GCSA/DISCONNECT/L01, L01, sector 10 C47
+- GCSA/DISCONNECT/L01, Sector 08, A-B
+- GCSB 1FL 47-48 / A-C
+- GCSB DC Rectifier Temp Power
+- GCSB L01, Sector 11, 51-56.5 B-C
+- GCSB L01, Sector 12, C62
+- GCSB L01, Sector 9, 42A
+- GCSB L03, RACEWAY, 36E
+- GCSB, 1F E30-E32
+- GCSB, L01, Sector 10, A-B47
+- GCSB, L01, Sector 10, B47
+- GCSB, L01, Sector 10, C47
+- GCSB, L01, Sector 9, 42A
+- GCSB, L01M, Sector 08 D35-E36
+- GCSB, L1, D-E, 30-32
+- GCSB, lvl-01, CL 61C
+- GCSB/Initial Set PNLs/L01, Sector 10, A47-A48
+- GCSB/Initial Set Panel/L01, Sector 10, A47-A48
+- GCSB/Initial Set/L01, Sector 10, A47-A48
+- GCSB/Lineup Torque/L01, Sector 12, B61
+- GCSB/MV Cable/GCS1B L01 Sector 12 B/D61
+- GCSS B D52
+- GENERATOR ROOM, B-C/8-16
+- GL TBD
+- GN2 Main Fab1 Level 1
+- GRATING
+- GROUNDING , LVL 3 FAB H-12,15,18,21
+- GSA 1, L1 ,B-E 16-17
+- GSC / Conduit /L01, Sector 04
+- GSC /CONDUIT/CABLE/L01 SECTOR 04
+- GSC1A/DISCONNECT/L01 Sector 12 B59
+- GSS Parts Storage-1 (C-E 16-17)
+- Gen Flue/ N/A/ MCC Rm.
+- Gen Flue/ N/A/ MCC Rm. POC 512-461-5545.
+- Gen Tray only located L-N/25-27
+- General Piping/Steam/ K13-G17.5 NEED HARNESS
+- General Piping/Steam/ K7.5- K13 NEED HARNESS
+- Generator/ Muffler / Emergency Gen Rm.
+- Glazing Curtain Wall Reinstall LVL 3 Roof
+- Gravel Mod Yard
+- Gridline J-H/33
+- Groudning / L1M, Sector 04
+- Grounding / Cable / L1, Sector 03 & 04
+- Grounding / Cable / L1, Sector 4
+- Grounding / L1, Sector 04
+- Grounding / L1, Sector 08
+- H-K/60~61
+- H/G EXHAUST/ GALV DUCT RISERS/SUE D25 1L-4L
+- H/G EXHAUST/ HVAC DUCT/ FSF C21-24
+- H/G EXHAUST/ HVAC DUCT/ FSF C24-27
+- H/G EXHAUST/ HVAC DUCT/ FSF C27-30
+- H/G EXHAUST/ HVAC DUCT/ FSF C30-33
+- H/G EXHAUST/ HVAC DUCT/ SUE B25-28
+- H/G/ RISER ROUGH IN/ SUE C/D 31-32
+- H2SO4 (1L C-D 47)
+- HALL#1 (D-E 15-16)
+- HANDRAILS LADDERS STARIS
+- HCH (S) (R) LINES IN COL. 15A
+- HCH (S)(R) LINE CCR ROOM
+- HCH (S)(R) LINES COL. A 14-16
+- HCH COL.36D-37
+- HCH COL.36D-37D
+- HCH COL.9C-13C
+- HCH LINE COL. 5A-12A
+- HCH LINE COL. 5A-15A
+- HCH LINE COL. 5E-12C, ED LINE
+- HCH LINE COL. 6A-14A
+- HCH LINES IN COL. 5A-11A PLUS RISERS
+- HCH(S)(R)/LCH LINE WELDS
+- HCH-LCH/Level 1 Sector 44-45 Col. E26-32
+- HCH/CS/Lv.1 A01 N-K 1-8
+- HCH/CS/Lv1A25/45 Col. J-E 31-33/E24-33
+- HCH/LCH COL.27C
+- HCHR / GCS A BLDG SPEC GAS (CL 5-13 A-B)
+- HCHR/AH_1G1M15-A-G/SPEC GAS
+- HCHR/S AHU L1 G 15.0 BW ON RFI 7282
+- HCHR/S AHU L1 J/K 3.0,9.6,14.3,20.0 BW
+- HCHR/S AHU L1 J/K 9.6, 14.3 PIPE BW
+- HCHR/S AHU L1 PIPE WELDS E 19 G 15
+- HCHR/S DCC L3 CJP E 22.0
+- HCHR/S DCC L3 CJP ON D/E 16.0
+- HCHR/S DCC L3 E 21.0 CJP
+- HCHR/S DCC L3 E 23.0 CJP
+- HCHR/S DCC L3 E/D 24.1 THRU 25.0 GW ON BOLT HOLES
+- HCHR/S DCC L3 E/D 7.0 FW ON MODULE LEGS
+- HCHR/S DCC L3 PIPE RACK E/D 16.0
+- HCHR/S LP-HP BLEEDERS AHU/ DCC
+- HCHS / GCS A BLDG SPEC GAS (CL 5-13 A-B)
+- HCHS AHU L1 RFI 6772 J/K 10.0
+- HCHS(R) / IA / DCC / L3
+- HCHS/AH_1G1M15A-G/SPEC GAS
+- HCHW/CS/ L1S21Col. K, 1-3
+- HCHW/CS/ L1S41 F-G 1
+- HCHW/CS/ L1S41 F-G 2
+- HCH_LCH/ Level 2 Sector 25 Col. J31-J33
+- HEAT GEN DUCT
+- HEX_1G1M11A/MECH. ROOM
+- HEX_1G1M11B/MECH. ROOM
+- HEX_1G1M12/MECH. ROOM
+- HEX_1G1M13A/MECH. ROOM
+- HEX_1G1M13B/MECH. ROOM
+- HEX_1G1M13C/MECH. ROOM
+- HG
+- HG EXH/ HVAC DUCT/ SUE C/D 31-32
+- HG EXH/ HVAC DUCT/ SUE C/D 6-7
+- HGEX
+- HGEX/VOC
+- HP-WI-A-CIP-GCS-663 GCS Canopy Pier Cap A18-20 Pre
+- HP-WI-A-FPC-GCS-78-GCS A Fire Caulking Inspection
+- HP-WI-A-LINER-CUB-10-CUB IW-2 XR-5 Liner South Sea
+- HSS & pipe slides/guides/stoppers painted welds C-
+- HT PIPE/HYDRO PRE-WALK/A24 BATHROOM
+- HUB ROOM GROUNDING/FAB LVL 2 , G19,G28 HUB ROOMS
+- HVAC , need harness
+- HVAC / EHP / GCS A-C/14-16 Level01
+- HVAC / EHP, PAC / GCS A A-B/15-17 Roof
+- HVAC / EHP, PAC / GCS A Roof A-B/15-17
+- HVAC / EHP, PAC / GCS A-B/15-17 Level 2(Roof)
+- HVAC / EHP, PAC / GCS B ROOF B-C/30-31
+- HVAC / EHP, PAC / GCS B ROOF B-C/38-39
+- HVAC / EHP, PAC / GCS B-C/38-39 Roof
+- HVAC / EHP, PAC/ GCS B-C/30-31 Level 2(Roof)
+- HVAC / EHP, PAC/ GCS B-C/38-39 Level 2(Roof)
+- HVAC / EHP/ GCS A Roof A-B/25-26
+- HVAC / EHP/ GCS A Roof A-B/8-9
+- HVAC / EHP/ GCS A-B/25-26 Level 2(Roof)
+- HVAC / EHP/ GCS A-B/25-26 Roof
+- HVAC / EHP/ GCS A-B/8-9 Roof
+- HVAC / EHP/ GCS A-C/8-9 Level 2(Roof)
+- HVAC / EHP/ GCS A-FAB Bridge Level 01M
+- HVAC / EHP/ GCS A-FAB Bridge Level 1M
+- HVAC / EHP/ GCS B B-C/30-31Roof
+- HVAC / OA_1G211 A~C / OAC ROOF AREA
+- HVAC / OA_1G212 A~C / OAC ROOF AREA
+- HVAC / OA_1G213 A~D / OAC ROOF AREA
+- HVAC /OA_1G212A-B/ GCS A OAC ROOF AREA
+- HVAC DUCT/ EXHAUST RISERS/SUE A8-12
+- HVAC DUCT/ H/G EXHAUST LATERALS/ D12-14
+- HVAC DUCT/ H/G EXHAUST LATERALS/ D15-17
+- HVAC DUCT/ H/G EXHAUST LATERALS/ D18-20
+- HVAC DUCT/ H/G EXHAUST LATERALS/ FSF D9
+- HVAC DUCT/ RISER/SUE D1-3
+- HVAC DUCT/ RISER/SUE D16/L2
+- HVAC H/G EXH RISERS/ SUE/ C26-C27
+- HVAC Supports/CHW Pipe SS/OB1-L2-L3-S3
+- HVAC-Ductwork-OB1-L2-S1,2,3,12,&13
+- HVAC/ CHW Pipe/ OB1-L1-S1
+- HVAC/ CHW Pipe/ OB1-L4-S1
+- HVAC/ CHW Pipe/ OB1-L5-Sector 1
+- HVAC/ CHW Pipe/ OB1-L6-Sector 1
+- HVAC/ CHW Pipe/ OB1-L7-Sector 2
+- HVAC/ Duct Risers/ OB1 L5-L7 S1-2
+- HVAC/ Duct Risers/OB1-L1-L7-S1
+- HVAC/ Duct Risers/OB1-L4-5-S12
+- HVAC/ Duct Risers/OB1-L4-5-S6
+- HVAC/ Duct Risers/OB1-L4-6-S2
+- HVAC/ Duct Risers/OB1-L6-L7-S1-2
+- HVAC/ Duct Risers/OB1-L6-S1
+- HVAC/ Duct Risers/OB1-L6-S1-3
+- HVAC/ Duct Risers/OB1-L6-S2-S12
+- HVAC/ Duct Risers/OB1-L7-S1-11
+- HVAC/ Duct Risers/OB1-L7-S2
+- HVAC/ Duct Risers/OB1-L7-S2-Penthouse
+- HVAC/ Ductwork /OB1-L3-S3
+- HVAC/ HHW Pipe/ OB1-L7-Sector 1
+- HVAC/ HHW Pipe/ OB1-L7-Sector 3
+- HVAC/AHU/SUE-1F-Sector 61
+- HVAC/AH_1G1M14A/CL 5-13 A-B
+- HVAC/AH_1G1M14A/CL.5-13 A
+- HVAC/Air Handling Unit/OB1-L7-S3
+- HVAC/Air Handling Units/OB1-L7-Sector 2
+- HVAC/CHW Pipe Supports/OB1-L2-L6-S3
+- HVAC/CHW Pipe/OB1-L3-S1
+- HVAC/CHW Pipe/OB1-L7-S1
+- HVAC/CHW Pipe/OB1-L7-S3
+- HVAC/CHW Pipe/OB1-L8-S1
+- HVAC/CHW/HHW Pipe Beam Clamp/OB1-L7-S1, 2, 3, & 11
+- HVAC/CL. 14-16 A-B
+- HVAC/CRAC/FAB-2F-Sector 21
+- HVAC/CRAC/SUW-1F-Sector 1
+- HVAC/CW Pipe/OB1-L1-S1
+- HVAC/Condensate Line/OB1-L1- S3
+- HVAC/Condensate Line/OB1-L7- S2
+- HVAC/Condensate Pipe/OB1-L4-All Sectors
+- HVAC/Condensate Pump/ L6-S12 NCR-0388
+- HVAC/Duct Detector Location Mockup/OB1-L1-S12
+- HVAC/Duct Detector Location Mockup/OB1-L7-S02
+- HVAC/Duct Detector/L3-S12
+- HVAC/Duct Detectors/OB1-L2-S2&12
+- HVAC/Duct Detectors/OB1-L3-S03
+- HVAC/Duct Detectors/OB1-L3-S1
+- HVAC/Duct Detectors/OB1-L3-S2
+- HVAC/Duct Leakage/OB1-L1-L7 - S1
+- HVAC/Duct Leakage/OB1-L2-L7-S1
+- HVAC/Duct Leakage/OB1-L6-L7-S1
+- HVAC/Duct Leakage/OB1-L6-L7-S1-2-12
+- HVAC/Duct Leakage/OB1-L6-L7-S2
+- HVAC/Duct Leakage/OB1-L7-S1
+- HVAC/Duct Leakage/OB1-L7-S1-11
+- HVAC/Duct Leakage/OB1-L7-S2
+- HVAC/Duct Risers/OB1-L5-L7-S1&2
+- HVAC/Ductwork-L3-All Sectors
+- HVAC/Ductwork/OB1 - L3 - S1,2,3,11,12
+- HVAC/Ductwork/OB1-L1-S1,2,3,12,&13
+- HVAC/Ductwork/OB1-L2-S1,2,3,12
+- HVAC/Ductwork/OB1-L3-S1,3
+- HVAC/FCU_1G111/COL 7-8 B-C
+- HVAC/FCU_1G1110/COL 28-29 A-B
+- HVAC/FCU_1G1111/COL 36-37 B-C
+- HVAC/FCU_1G1112/COL 36-37 A-B
+- HVAC/FCU_1G1113/COL 36-37 A-B
+- HVAC/FCU_1G1114/COL 36-37 A-B
+- HVAC/FCU_1G1115/CL 36-38 A-E
+- HVAC/FCU_1G1115/COL 36-37 A-B
+- HVAC/FCU_1G1115/COL 36-38 A-D
+- HVAC/FCU_1G1116/COL 47-48 B-C
+- HVAC/FCU_1G1117/COL. 47-48 B-C
+- HVAC/FCU_1G1118/COL. 47-48 B-C
+- HVAC/FCU_1G1119/COL. 47-48 A-B
+- HVAC/FCU_1G1120/COL. 47-48 A-B
+- HVAC/FCU_1G1121/COL 58-59 A-B
+- HVAC/FCU_1G1122/COL 58-59 A-B
+- HVAC/FCU_1G1123/COL 59-60 A-B
+- HVAC/FCU_1G117/COL 15-16 C-D
+- HVAC/FCU_1G119/COL. 28-29 A-B
+- HVAC/FCU_1G1M11/COL 14-15 D-E
+- HVAC/FCU_1G1M12/COL 13-14 D-E
+- HVAC/FCU_1G211/COL 14-15 D-E
+- HVAC/FCUs & VRFs
+- HVAC/FSD Frames/OB1- L5-Sectors 1,2,3
+- HVAC/FSD Frames/OB1- L6-Sectors 1,2,3
+- HVAC/FSD Frames/OB1-L3-Sectors2,12
+- HVAC/Fire Smoke Damper Framing/OB1-L2-S2
+- HVAC/Fire/Smoke Damper Framing/OB1-L4-NChase
+- HVAC/Grease Duct Risers/OB1-L1-L7-S01
+- HVAC/Grease Duct Risers/OB1-L5-L7-S01
+- HVAC/HHW Pipe/OB1-L7-S3
+- HVAC/HW Pump/OB1-L7
+- HVAC/HW Pump/OB1-L7-S2
+- HVAC/Instrument Air/OB1 L7-S2
+- HVAC/Insulation & Labels/OB1-L2-S3-Bridge Lobby
+- HVAC/LCHW Pipe Riser/OB1-L2-L6 - S3
+- HVAC/Labeling, Insulation Overhead/ L3-S1-11-12
+- HVAC/Labeling, Insulation Overhead/ OB1 L3-All S
+- HVAC/Labeling, Insulation Overhead/ OB1 L4-S2
+- HVAC/OA_1G211A/OAC ROOF
+- HVAC/OA_1G213B~C/OAC ROOF AREA
+- HVAC/OA_1G213D/OAC ROOF
+- HVAC/ORP_1G111B/CL.31-33 C-E
+- HVAC/Refrigerant Line/OB1 - L2-L7 -Sector 11-12
+- HVAC/Refrigerant Line/OB1 - L7-Sector 1
+- HVAC/Refrigerant Pipe/OB1 L2-Roof S12-13
+- HVAC/Refrigerant Pipe/OB1 L6-Roof S-12
+- HVAC/Refrigerant Pipe/OB1 L6-Roof S12
+- HVAC/Refrigerant Pipe/OB1 L7-Roof S1
+- HVAC/Refrigerant Pipe/OB1 L7-S1
+- HVAC/VAVs & FPUS/OB1-L1- All Sectors
+- HVAC/VAVs & FPUS/OB1-L2-S02,03,12,&13
+- HVAC/VAVs & FPUs/OB1-L3-S02 & 12
+- HVAC/plenum Diffuser/OB1-L2-S12
+- HW Cable Pull [UPS] / SUE 2F Sector 64 / [C25]
+- HW TERMINATION & FTP CABLE PULL / CUB 2F [H26]
+- HW TERMINATION / FAB 2F SECTOR 5
+- HW TERMINATION / GCS-B / SECTOR 12 [E61]
+- HW TERMINATION [UPS] / FIZ 2F/SECTOR 41 & 61 [C3]
+- HW Term. (UPS) / GCS-A, L01M / [C16]
+- HW Term. VCB (CONTINUITY/TORQUE) / GCS-B, [C60]
+- HW Termination / GCS-B / Sector 12 [E61]
+- HW Termination / SUE 3F [SCMC] / Sector 62 [B15]
+- HW Termination [SC/MC]/ SUW 3F / SECTOR 04 [K24]
+- Hallway
+- Hangers
+- Hangers / Bolt Torque / GCS-A, Mezzanine
+- Hangers/L1 S3 Near Column M21
+- Harness Require
+- Harness Required
+- Hole depth and cleanliness inspection C-K/4-23
+- Homerun FA Conduit
+- Hub Drains/Visual Inspection,Lv7 GL-2
+- Hub Room #4 2nd Floor FAB
+- Hub Room #6 2nf Floor FAB
+- I&C - NG Flow Meter - L1 S1
+- I&C / VAVs, FPUs & FCUs / L3 S01
+- I&C / VAVs, FPUs & FCUs / L3 S03
+- I&C /AHU /Level 7-S5
+- I&C-IA/Conduit,Cabling Termination, Label/OB1-L7
+- I&C/AH0719/Level 7
+- I&C/AH718/Level 07
+- I&C/AHU706/Level 7
+- I&C/AHU707/Level 7-S1
+- I&C/AHU708/Level 7-S2
+- I&C/AHU709/Level 7
+- I&C/Cable Tray Level 01 Sector 06
+- I&C/Cable Tray/ Level 7 Sector 01
+- I&C/Cable Tray/ OB1 - L7 - S4
+- I&C/Cable Tray/Level 7 Sector 01
+- I&C/Cable Tray/OB1-L1-S01
+- I&C/Cable Tray/OB1-L7
+- I&C/Cable Tray/OB1-L7-S01
+- I&C/Cable Tray/OB1-L7-S03
+- I&C/Cable Tray/OB1-L7-S03&07
+- I&C/Cable Tray/OB1-L7-S03, 06, & 07
+- I&C/Cable Tray/OB1-L7-S06
+- I&C/Conduit,Cablin, Termination, Label/OB1-L7-S2
+- I&C/Conduit,Cabling Termination, Label/OB1-L1-S1
+- I&C/Conduit,Cabling Termination, Label/OB1-L7-S2
+- I&C/Conduit,Cabling Termination, Label/OB1-L7-S4
+- I&C/Conduit,Cabling,Termination, Label/OB1-L7-S2&6
+- I&C/Conduit,Cabling,Termination, Label/OB1-L7-S3&7
+- I&C/Conduit,Cabling,Termination, Level/OB1-L7S3
+- I&C/Control Valves/Level 7 AHU 712,713,714,704,705
+- I&C/Control Valves/OB1-L7-S3&7
+- I&C/EF & DEF/Level 7
+- I&C/East Pit/L1S04
+- I&C/FCUs/Level 01
+- I&C/Finn Tube Heaters/L1
+- I&C/Flow Meters/Level 1 S01
+- I&C/Main Electrical Room/Level 1 Sector 04
+- I&C/Overfill Cable tray/Level 07 Sector 03 & 7
+- I&C/Temp Sensors/I/O Rms&Secondry Elec Lvl 1,3,5,7
+- I&C/VAV-FPU Controller/OB1-L2-S02
+- I&C/VAV-FPU Controller/OB1-L2-S07
+- I&C/VAV-FPU Controller/OB1-L2-S1
+- I&C/VAV-FPU Controller/OB1-L2-S3
+- I&C/VAV-FPU Controller/OB1-L2-S4
+- I&C/VAVs & FPUs/Level 7
+- I&C/VAVs,FPUs & FCUs/Level 03 S04
+- I&C/VAVs,FPUs & FCUs/Level 03 S05
+- I&C/VAVs,FPUs & FCUs/Level 03 S06
+- I&C/VAVs,FPUs & FCUs/Level 03 S07
+- I&C/VAVs-FPUs Controllers/Level 01 Sector 05,06,08
+- I&C/VAVs-FPUs Controllers/Lvl 01 Sector01,03, & 08
+- I&C/Weather Station/ L7 S03
+- I&C/West Pit Controllers/Level 01 S01&S02
+- I/O RM D-E 14-15
+- I/O RM-1 (A-B 16-17)
+- I/O RM.-2 (C-D 16-17)
+- IA A1K SUE A1 to A25
+- IA FIZ A1, IA SUE L1, B8 & B10
+- IA SUE L1 Col A4-A24
+- IA/CUB1/LVL1/A,B,C,D,F21
+- IA/FIZ L1 Column A1-A4
+- IA/L1/A1-A25
+- IA/Pre-Walk/CUB1-LVL1-H8
+- IFRM Substrate Inspection, L2, Ceiling M/3-3.3
+- IW PUMPING STATION
+- IW SYSTEM GCS BLDG A MEZZ DECK
+- IW-2 Liner East Wall Seam & Termination Bar Inspec
+- IW-DI/PRE-WALK/A21-23,C21-23
+- IW/24"/HYDRO PREWALK/MECH PIPE COMP/H14-H37
+- IW/HYDRO TEST/A20-H16
+- IW/NCR-0594 CLOSURE/CUB1/LVL1/H19
+- IW/PRE WALK FOR HYDRO/CUB/LVI/K12-14
+- IWL-02 STA: 11+58.19 to 19+45.78 Pressure Test
+- IWW2 (AKWW) / GCS A BLDG ALKALI (CL 17-19 D-E)
+- IWW2 (AKWW) / GCS A BLDG ALKALI (CL 21-26 A-B)
+- IWW2 (AKWW) / GCS A BLDG ALKALI (CL 23-26 A-B)
+- IWW2 (AKWW) / GCS A BLDG ALKALI (CL 23-26 B-C)
+- IWW2 (AKWW) / GCS A BLDG ALKALI (CL 26-28 A-B)
+- IWW2 (AWW)
+- IWW2 (AWW) / GCS B BLDG ACID ROOM (CL 45-47 B-C)
+- IWW2 (AWW) / GCS B BLDG CHEM ROOM (CL 44-47 B-D)
+- IWW2 / Duct Drains / Trestle-A
+- IWW2 / Heat Gen / GCS-B Roof
+- IWW2 / Safety Shower Drains / GCS-B Roof
+- IWW2(AKWW) / GCS A BLDG ALKALI (CL 26-29 A-B)
+- IWW2(AKWW)/PIT_1G113C/17-19 D-E
+- IWW2(AKWW)/PIT_1G113I/ ALKALI (CL 21-24 C-D)
+- IWW2(AKWW)/PIT_1G113K/ALKALI
+- IWW2(AKWW)/PIT_1G113L/ALKALI
+- IWW2(AKWW)/PIT_1G113M/ALKALI
+- IWW2(AWW) / GCS B BLDG ACID (CL 43-45 A-B)
+- IWW2(AWW) / GCS B BLDG ACID (CL 45-47 A-B)
+- IWW2(AWW) / GCS B BLDG ACID (CL 55-58 C-D)
+- IWW2(AWW) / PIT_1G117A / ACID
+- IWW2(AWW)/LIFTSTN_1G115G/44-47 B-C
+- IWW2(AWW)/LIFTSTN_1G115I/45-47 A-B
+- IWW2(AWW)/LIFTSTN_1G115J/45-47 B-C
+- IWW2(AWW)/LIFTSTN_1G115J/GCS B, ACID
+- IWW2(AWW)/LIFTSTN_1G118A/GCS B, CHEM ROOM
+- IWW2(AWW)/LIFTSTN_1G118B/GCS B, CHEM ROOM
+- IWW2(AWW)/LIFTSTN_G115L/GCS B, ACID (CL 49-51 D-E)
+- IWW2(AWW)/PIT_1G1117B/ACID
+- IWW2(AWW)/PIT_1G115H/ACID
+- IWW2(AWW)/PIT_1G115H/ACID (CL 43-45 A-B)
+- IWW2(AWW)/PIT_1G115M/ACID
+- IWW2(P) CS LINES/CUB1/LVL1/C18
+- IWW2(P)/CS LINES/C23
+- IWW2(P)/CUB/LV1
+- IWW2(P)/FAB Lv1 M15
+- IWW2(P)/FAB1 LV1 M15
+- IWW2(P)/FAB1 Lv1 M14-15
+- IWW2(P)/FAB1 Lv1 SUW Col M17
+- IWW2(P)/Fab1 Lv1 Col L14/N14
+- IWW2(P)/Fab1 Lv1 L13
+- IWW2(P)/Fab1 Lv1 L13-17
+- IWW2(P)/Fab1 Lv1 M17 to Fab1 Lv2 M33
+- IWW2(P)/HANGER SUPPORTS-COUPLINGS/CUB1-LVL1-C4-F19
+- IWW2(P)/WELDS/LVL1 C23
+- IWW2/Firestopping/OB1 Lv5 Col A10~A1
+- IWW2/IWW2P_1G111B/57 B
+- IWW2/IWW2T_1F111, IWW2P_1F111/Fab1 SUW Lv1 Col M15
+- IWW2/IWW2T_1F111/FAB1 SUW LV1 COL M15
+- IWW2/IWW2T_1G111A/WASTEWATER
+- IWW2/IWW2T_1G111B/SOLVENT
+- IWW2/IWW2T_1G11B/WASTEWATER ROOM
+- IWW2/Office Building Lv5 to Fab1 Col J3
+- IWW2/Office Building to Fab1 Col J3
+- IWW2/PIT_1G111A/B/COL. 17-21 A-B
+- IWW2/PIT_1G113D/COL. 18-19 D-E
+- IWW2/PIT_1G113Q/CL 27-29 C-D
+- IWW2/PUMP/CUB A~D,18~21 Boiler RM
+- Industrial Water Line - 03
+- Industrial Water Line 03 Pressure Test
+- Industrial Water Line 06 Pressure Test
+- Inert Rm, Hallway
+- Inert rm
+- Inert-2 (C 9-12)
+- Infinity Laydown Yard
+- Instrument & Controls / CEF VFDS / L7 S01 & S06
+- Instrument & Controls / SPT's / L1-3, 5 & 6
+- Instrument & Controls/SPT 703,704,705,713, & 714
+- Instrument Air, SUW FAB Level 1 Col. K-20
+- Insulation/NCR-0352/OB1-L1,2,3,& 6
+- Intermediate Stair Landing L3.5 J-K/23
+- J - 4-19
+- J-20
+- J-33 Column
+- J/29-33,H/29-33,G/29-33,F/29-33,E/29-33
+- J1
+- J1, J2, H1, H2, G1, G2
+- J23, J30, E29
+- K.4-K.9/11.3-11.7 Ceiling
+- L 2 S 4 M.5/22.5-25 Cntrl term on VCBs
+- L 2 S41 E.2-F.2/3 PNL install - LTE SGA02A
+- L 2 Sec 3 M.3-M.4/19.2-20.4 Gear install
+- L 2, S 2, M.5-N/10.5-12.5 controls termination
+- L 2-4, S 64, B-D/25-26 GEN Tray
+- L 23-26
+- L 3 S 61, B.2-B.3/5.9-6.2 SWGR Raceways
+- L-11
+- L-16
+- L-23
+- L-23 + girder
+- L-30
+- L-4
+- L-M/33, K/25-32, N/30-33
+- L/4 (under Level 3A)
+- L01, Sector 07, Columns 30-32 A-E
+- L01, Sector 08, Column B37
+- L01, Sector 10, A47-A48
+- L01, Sector 10, B47-B48
+- L01, Sector 12, B61
+- L01, Sector 12, C62
+- L01M, SECTOR 04, C14
+- L1 (A 31)
+- L1 (A-B 16.5-20.5)
+- L1 (A-C 37-40)
+- L1 (B-D 16.5)
+- L1 (B-D 24.5-25.5)
+- L1 (C 14-15)
+- L1 (C 15-16)
+- L1 (C 9-14)
+- L1 (C-E 37-40)
+- L1 (C-F 27)
+- L1 (D-F 23~26)
+- L1 (E-G 35-37)
+- L1 (E-G 37-40)
+- L1 (F 61)
+- L1 (F-G 23-27)
+- L1 (G 27-32)
+- L1 (G 32-37)
+- L1 (K 45.5)
+- L1 (K 52.5)
+- L1 (K 60)
+- L1 - Sector 2/Jbox
+- L1 A-B, 30-32 Solvent 1-200 rm
+- L1 A-B, 32-34 Vestibule 201 & Solvent-ACQC 202 RM
+- L1 A-B, 34-36 Solvent-ACQC 202 RM
+- L1 A-B, 58 Elec. Panel Rm-6 248
+- L1 A-B, 58.5 TGMS-5 RM 249
+- L1 A-B, 59, HUB RM-6
+- L1 A-C 25-26
+- L1 A-C 26-27
+- L1 A-C 27-28
+- L1 A-C 28-29
+- L1 A-C, 1-2 Flammable 100 RM
+- L1 A-C, 3.5-5,Toxic/Flammable-1 RM
+- L1 A-C, 5.5-6.5 Flammable Storage & Pump & Scrubber
+- L1 A21 Alkali Vestibule 176
+- L1 A46-A47
+- L1 A60-D60 Electrical 252 rm
+- L1 A62-C62 Electrical 252 RM
+- L1 A9-A10 Vestibule 152 & Vestibule 153
+- L1 ALKALI-ACQC (A 17)
+- L1 B-C 28-29
+- L1 B-C, 29, Vestibule 1A Rm 181
+- L1 B-C, 32-34 Solvent 2- RM 203
+- L1 B-C, 34-36 Solvent 2- RM
+- L1 C-29 + Girder
+- L1 C-29+Girder
+- L1 C-D 56-58
+- L1 C-D, 1-5
+- L1 C-D, 30-32 Solvent 1-200 rm
+- L1 C48-C50
+- L1 C51-C53
+- L1 C54-C56
+- L1 COL D/E 16.0
+- L1 COL E/D 24-3
+- L1 COL E/D 3
+- L1 COL G / 5
+- L1 COL G /5 - 14
+- L1 COL G 23
+- L1 COL G 5
+- L1 COL J-23
+- L1 COL J/K 7.0
+- L1 COL J/K 9
+- L1 COL J/K 9-24
+- L1 COL J/K7.0
+- L1 D-E 56-58
+- L1 D-E, 14-15 Elev. Mach RM 137
+- L1 D-E, 30-32 Solvent 1-200 rm
+- L1 D-E, 32-34 Solvent 2- RM
+- L1 D-E, 34-36 Solvent 2- RM
+- L1 E14 Storage RM 140
+- L1 Entry Canopy
+- L1 Fire Pump Rm (G-K 18-19)
+- L1 Fire Riser Rm-1 (A-B 23.5-24)
+- L1 H-K 18-19 (FIRE PUMP RM.)
+- L1 Inert-2 (C-D 9)
+- L1 J-K 3 (STORAGE RM)
+- L1 K 11-12
+- L1 K 13-14
+- L1 K 15-16
+- L1 K 17-18
+- L1 K 19-20
+- L1 K 21-22
+- L1 K 25-26
+- L1 K 29-30
+- L1 K 3-4
+- L1 K 31-32
+- L1 K 5-6
+- L1 K 7-8
+- L1 K 9-10
+- L1 K-L 12-13
+- L1 K-L 13-14
+- L1 K-L 14-15
+- L1 K-L 15-16
+- L1 K-L 16-17
+- L1 K-L 19-20
+- L1 K-L 20-21
+- L1 K-L 21-22
+- L1 K-L 22-23
+- L1 K-L 23-24
+- L1 K-L 24-25
+- L1 K-L 25-26
+- L1 K-L 26-27
+- L1 K-L 27-28
+- L1 K-L 28-29
+- L1 K-L 29-30
+- L1 K-L 3-4
+- L1 K-L 30-31
+- L1 K-L 31-32
+- L1 K-L 32-33
+- L1 K-L 6-7
+- L1 K-L 7-8
+- L1 K-L 8-9
+- L1 K-L 9-10
+- L1 L-N 1-3
+- L1 Nomura Platform (A-C 37-40)
+- L1 Nomura Platform (C-E 37-40)
+- L1 S02 WinWin Room Raising Floor
+- L1 S1
+- L1 S1 Exterior west entry vestibule
+- L1 S1 L/5-7 GTB installation and raceways
+- L1 S1 Loading Dock
+- L1 S1 Secondary Electric Room
+- L1 S1 Women's restroom
+- L1 S1 and 11
+- L1 S1 and S12E Secondary Electric Room
+- L1 S1, 2, 3
+- L1 S1, 2, and 3
+- L1 S1, 3, and 12
+- L1 S11
+- L1 S12
+- L1 S12 E Secondary Electric Room
+- L1 S12 Fire Command Center
+- L1 S12 LSS Control Room & Corridor
+- L1 S12 W Secondary Electric Room
+- L1 S12 W Secondary Electric Room, FCC, and TR Room
+- L1 S12 W Secondary Electric Room, FCC.
+- L1 S12 West and East TR Room
+- L1 S12 Win Win Storage Room
+- L1 S12E
+- L1 S12E Secondary Electric Room
+- L1 S12W Corridor
+- L1 S12W Secondary Electric Room
+- L1 S13
+- L1 S2
+- L1 S2 AV Closet
+- L1 S2 Conference - OF1101016
+- L1 S2 IO Room
+- L1 S2 Lobby Elevator Entry
+- L1 S2 Lobby Stair
+- L1 S2 Win Win Room
+- L1 S2 and 3
+- L1 S22
+- L1 S3
+- L1 S3 Exterior east entry vestibule
+- L1 S3 Main Electric Room
+- L1 S3 Secondary Electric Room
+- L1 S3 and S12W Secondary Electric Room
+- L1 S3, 13, and 2
+- L1 Secondary Electric Rooms
+- L1 Security Service Center
+- L1 Win Win Room
+- L1 and 2 escalator
+- L1, 2, 3, and 7
+- L1, L1M, Sector 12
+- L1, S3-4, A.5-B.8/3.9-5 Comm Cable Tray
+- L1, Sector 02
+- L1, Sector 03
+- L1, Sector 03, 04, Columns 10-14/A-C, 12-14/C-E
+- L1, Sector 04
+- L1, Sector 04, Columns A-C/14-16
+- L1, Sector 05
+- L1, Sector 08
+- L1, Sector 08, Column D37
+- L1, Sector 08, Column E37
+- L1, Sector 09
+- L1, Sector 10, 47A
+- L1- E.3-F.8 3.3-4
+- L1- G.3-H.8 3.3-4
+- L1-2 S21 G.5-J/2 PVC RA + j-box install
+- L1-2 S41 D-G/2-3 PVD RA and J-box install
+- L1-2 S61-65 B/2-29 PVC Raceways + J-box
+- L1-3 S1-3 L-M/3-32 PVC Raceways + J-box
+- L1-3 S1-5 M/3-29 PVC Raceways + J-box install
+- L1-3 S2 L/12-14 Riser PVC raceways & Junction box
+- L1-3 S2 L/8-11Riser PVC raceways & Junction boxes
+- L1-3 S2-5 L-M/14-33 PVC Raceways + J-box install
+- L1-3 S3-5 L/16-30 PVC Raceways + J-box install
+- L1-3 S41-61 C-G/2-3 PVC Raceways + J-Box install
+- L1-3 S61-62 B/2-10 Grounding risers
+- L1-3 S61-65 B-C/4-32 PVC Raceways + J-box
+- L1-3 S62-65 C/10-30 PVC Raceways + J-box install
+- L1-3 Secondary Electric Rooms
+- L1-3.5 S61 C.6/1/-5.5 Lighting Raceways
+- L1-3.5 S61 C.6/1/-5.5 Lighting Raceways Stairwell
+- L1-3.5 S62 C.5/12.3-13 Lighting Raceways
+- L1-3.5 S63 C.6/1/-18.7 Lighting Raceways
+- L1-5
+- L1-6
+- L1-7 NW Service Elevator Vestibule
+- L1-E.3-F.8 30-30.6
+- L1-E.3-F.8 31-31.3
+- L1-L3 E16 Stair 2
+- L18 Security IT Room 2nd Flr FAB
+- L18 Security Room 2nd Floor
+- L1M, Sector 02
+- L1M, Sector 02 03
+- L1M, Sector 06
+- L1M, Sector 09
+- L2
+- L2 - West Lobby Wall
+- L2 -3 K-L/18 Stairwell Lighting Raceways
+- L2 A-B 24.5-25
+- L2 AHU Rm (J-K 2.5~4)
+- L2 B-C 24-26
+- L2 Corridor
+- L2 E.3-E.8 27-27.6
+- L2 E.3-E.8 28-28.6
+- L2 E.3-E.8 30-30.6
+- L2 E.3-E.8 31-31.6
+- L2 E.3-F 26-27
+- L2 E.3-F 27-28
+- L2 E.3-F 28-29
+- L2 E.3-F 29-30
+- L2 E.3-F 30-31
+- L2 E.3-F 31.6-32
+- L2 E.3-F 32.6-33
+- L2 E.3-F.8 26-26.6
+- L2 E.3-F.8 27-27.6
+- L2 E.3-F.8 28-28.6
+- L2 E.3-F.8 29-29.6
+- L2 E.3-F.8 30-30.6
+- L2 E.3-F.8 31-31.6
+- L2 E.3-F.8 32-32.6
+- L2 E.3-F.8 32.6-33
+- L2 ELEC.#2 (K 23)
+- L2 F-F.8 26-26.6
+- L2 F-F.8 27-27.6
+- L2 F-F.8 30-31
+- L2 F-F.8 31-31.6
+- L2 F-F.8 31.6-32
+- L2 F-F.8 32.6-33
+- L2 G 31.6-33
+- L2 G.3-H.8 32-33
+- L2 IO Room
+- L2 Janitor closets
+- L2 LV CT Risers @ K.8/24.8, not OH tray w/OF
+- L2 OF1202001
+- L2 S 1,2,4,5 L.5-7/ 8-8, 26-27 bus bar torqe
+- L2 S 1-2 Bus Bar Torquing
+- L2 S 41 F.5/1.4-1.6 Cable Routing
+- L2 S 41 F.6/1.6-1.8 LIB Torque, Voltage, Resistanc
+- L2 S 64 Col B25.7-B26.1
+- L2 S 64-65 A-C/25.6-29.6 Ground Torquing - DTR
+- L2 S 64-65 Col A-C 25.5-31 Raceways - eFMCS
+- L2 S 65 C/29.7 Panel installation
+- L2 S 65 Col B28.8-B29.2
+- L2 S1
+- L2 S1 K-L/4-4.5 grounding
+- L2 S1 L-L.5/5-5.5 REU/RDU/TPU/TGU install
+- L2 S1 L.2-L.3/5.5-7.9 Torque bus + ground bars
+- L2 S1 L.4-L.5/5.5-5.7 Raceways
+- L2 S1 L/6.2 GTB Raceways
+- L2 S1 L/6.2 GTB installation
+- L2 S1 L/6.3 GTB Torquing
+- L2 S1 M.5/5.4-7.8 Raceways - 120V & eFMCs
+- L2 S1 M.7-M.8/4.9-5.6 Term, Meg, OHM, + Torque
+- L2 S1 M/5-8 XO torquing
+- L2 S1 M/6 HRG torquing
+- L2 S1 M/8.9 panel installation 4DG-1F11MGA02-B03
+- L2 S1 Secondary Electric Room
+- L2 S1 West of A15
+- L2 S1 and 12W Secondary Electric Room
+- L2 S1 and 2
+- L2 S1 and 3
+- L2 S1 and S2
+- L2 S1, 12E and 12W Secondary Electric Room
+- L2 S1, 2, 3, 11, and 12
+- L2 S1, 3, and 12
+- L2 S1,21 N/6, G-M/1-3 temporary power to crac unit
+- L2 S1,21 N/6, G-N/3 CRAC temp power_
+- L2 S1,4,5 M/5.5-6.5, M/26-27.5 bus bar torquing
+- L2 S1-2 5/5.5-13.6 Bus Bar Torquing - MA11
+- L2 S1-2 Bus Bar Torquing
+- L2 S1-2 Cable Tray M.7/5.5-8.5 L.9/7-8.5 L.2-M/14
+- L2 S1-2 Col N/6, 14.5, 16 AHU DSC install/raceway
+- L2 S1-2 L-N/4-14 Megging 120v SWTG XFMR Fans
+- L2 S1-2 L-N/4-14 raceways
+- L2 S1-2 L.2-M.7/4.1-13.6 Fiber Routing
+- L2 S1-2 L/5 L/8-10 Raceway - REU/RDU/RDP
+- L2 S1-2 M L-M/4-14 DTR cable routing
+- L2 S1-2 M-L/6-10 raceway tray
+- L2 S1-2 M.2-M.7/5-10 Lighting + Raceways
+- L2 S1-2 N/7-11 Raceways - CT to DSC to AHU Motor
+- L2 S1-3 L-N/3.7-15.5 Raceway GTB to HRG
+- L2 S1-3 N/6-16, M/9-10 LV cable routing MCC to AHU
+- L2 S1/2 L-N/4-14 Raceways - 120v DTR/LTR
+- L2 S1/2 L/6-10 PNL Install - REU
+- L2 S1/2 M/4, L5, M/9 bus bar torque
+- L2 S1/2 N/7.5-9/12.8-13.7
+- L2 S1/3 L/6.5 & 20.5 Panel install - RDU/RDG
+- L2 S1/4 M.3/5.7-6.1 L.7/26.5-269 RACEWAY/TRAY
+- L2 S12
+- L2 S12 E Secondary Electric Room
+- L2 S12 and 13
+- L2 S12 user trial room
+- L2 S12E Secondary Electric Room
+- L2 S12W Secondary Electric Room
+- L2 S13
+- L2 S13, 12, and 3
+- L2 S2
+- L2 S2 IO Room
+- L2 S2 IT Storage
+- L2 S2 K-L/9.3-9.6 LV Cable Tray
+- L2 S2 L-N/13-14 MV/LV cable trays
+- L2 S2 L.1-M.3/8.1-13.7 LTR Raceway
+- L2 S2 L.3-L.8/9.5-10.3 LV Cable Tray + Raceways
+- L2 S2 L/6 GTB torquing
+- L2 S2 L/8,15 GTB Raceway & Torquing
+- L2 S2 M-N/27.5-30 Battery Racks & Disconnects
+- L2 S2 M.1-M.5/14.2-14.9 30 Amp disconnect raceway
+- L2 S2 M.4/11.5-11.8 Rectifier battery rack
+- L2 S2 M.5/12 Torquing, Termination, Meg. Ohm
+- L2 S2 M.6-M.7/8.1-8.9 Cable Routing
+- L2 S2 M.6-M.7/8.1-8.9 Term, Meg, OHM + Torque
+- L2 S2 M.7-M.8/4.9-5.5 Bus + Ground torquing
+- L2 S2 M/8-10 panelboards
+- L2 S2 M/9-10 MCC feeder raceway
+- L2 S2 M/9-10 MCC raceways
+- L2 S2 M/9.2-9.8 Bus + Ground bar torquing
+- L2 S2 MV/LV cable trays L-N/13-14
+- L2 S2 Simax Raised Floor
+- L2 S2 and 13
+- L2 S2-3 L-L/12.6-15.8 LV Cable Tray
+- L2 S2-3 L/15 Torquing - GTB (E) & HRG
+- L2 S2-3 M-N/14-16.5 Raceways - LIB/DSC to PNL gutt
+- L2 S2-3 M-N/14.16.5 LIB Cabinet Install
+- L2 S2-3 M.2-M.6/14.2-16.4 Battery Disconnect
+- L2 S2-4 L.7-M.3/11.9-29.4 UPS Raceway
+- L2 S2-5 K-L/12.6-16,25-29 LV Cable Tray
+- L2 S2/3 L-M/ 15-17 MV/LV Cable Tray
+- L2 S2/4 L9-22 Nonprocess PNL install RDP/LTG
+- L2 S2/4 N/7-11/13/22-23 AHU disconnects Install
+- L2 S3
+- L2 S3 GTB Raceways
+- L2 S3 K-L/18.2-18.6
+- L2 S3 L/21 GTB raceways, install inspection linked
+- L2 S3 M-N/14.5-16.5 Cable Tray - LIB RM
+- L2 S3 Secondary Electric Room
+- L2 S3 and L1 S12E and W TR Rooms
+- L2 S3, M.1-M.5/16.6-17.4 Raceways Disconnects
+- L2 S3-4 19.5-22.2 Bus Bar Torquing
+- L2 S3-4 19.5-22.5 Bus Bar Torquing
+- L2 S3-4 K-L/19-20,24-25 LV Cable Tray Risers
+- L2 S3-4 L.3-L.9/20.4-21.2 UPS Raceways
+- L2 S3-4 L.4-L.7/19.3-24.7 Switchgear Install
+- L2 S3-4 L.4-M.4/20.1-24.7 Raceways
+- L2 S3-5 L.2-M.3/19.6-30 ACB MB/SB install
+- L2 S3-5 L.2-M.3/19.6-30 Fiber Raceways
+- L2 S3-5 L.2-M.4/19.3-30.3 LTR Raceways
+- L2 S3-5 L.2-M.4/19.3-30.3 LTR install
+- L2 S3-5 L.4-L.7/19.6-30.2 Raceways
+- L2 S3-5 L.5-M.3/19.3-30.3 Raceways
+- L2 S3/4 M/19-25.5 Lighting
+- L2 S3/4/5 HRG Raceways
+- L2 S4 L-N/25-27 Gen Tray
+- L2 S4 L/21 GTB torquing
+- L2 S4 L21-22 LV tray
+- L2 S4 M.1/23.1-23.8 Torque Ground + Bus bars
+- L2 S4 M.6/22.5-25 VCB terminations Torquing
+- L2 S4 M.7/22.5-25 VCB bus bar torquing
+- L2 S4 M/24 gear insall
+- L2 S4 m/23 swtg control raceways
+- L2 S4-5 L-N/20-30 LV Lineup Install
+- L2 S4-5 L.4-M.3/21.1-30.3 LV Gear Install
+- L2 S4-5 L.4-M.3/21.1-30.3 Switchgear install
+- L2 S4-5 M27, M23 bus bar torquing
+- L2 S4/5 M.3/22.5-24, L.5/19.5-20.5 bus bar torque
+- L2 S41 D.6-F.4/1.3-2.7 Torquing bus and Ground bar
+- L2 S41 E.1-E.2/2 Cable Routing
+- L2 S41 E.1-E.2/2 Term, Meg, OHM, and Torque
+- L2 S41 E.1-E.2/2.7-3 Comm Tray inspection
+- L2 S41 E.1-E.8/2.6-2.7 Cable Routing
+- L2 S41 E.1-E.8/2.6-2.7 term meg OHM torque - UPS
+- L2 S41 E.1-E.8/2.9-3 Transformer Raceways
+- L2 S41 E.1-F.4/2.4-2.6 Grounding and Raceways
+- L2 S41 E.2-F.2/Col 3- Raceways
+- L2 S41 E.3/3 Transformer install + raceway
+- L2 S41 E.5-E.8/1.3-2.7 CAT-6 Raceways
+- L2 S41 E.5-F.9/1.2-2.7 cable routing for LIB
+- L2 S41 E.6-E.7/1.6-1.7 MCG install + Raceway
+- L2 S41 E.6-F.1/1.7-3 Grounding and Raceways
+- L2 S41 E.6-F.9/1.2-2.7 Cable Routing
+- L2 S41 E.6/1.7 MCC Raceway inspection
+- L2 S41 F-F.2/1 Term, Ohms, Megging DTRs, UPSs
+- L2 S41 F.2/1.2-1.3 Cable Tray + Raceways
+- L2 S41 F.4/2.7 Comm Tray
+- L2 S41 F.5/1.2-1.5 TPU/RDU + TR Raceways
+- L2 S41 F.5/1.3 Raceway inspection
+- L2 S41 F.6-F.7/1.6-1.8 LIB Torque, Voltage, Resist
+- L2 S41 F.6-F.9/1.2 LIB TMOT
+- L2 S41 F.6-F.9/1.5-1.9 TMOT - DSC to LIB Cabinet
+- L2 S41 F.6-F.9/2.3-2.5 30A DSC to Batt - TMOT
+- L2 S41 F.6-F.9/2.3-2.5 TMOT - DLO on LIB
+- L2 S41 F.6/1.2-1.4 LIB Torque, Voltage, Resistance
+- L2 S41 F.6/1.2-1.4 Raceways - DSC to J-Box
+- L2 S41 F.6/1.6-1.8 LIB Torque, Voltage, Resistance
+- L2 S41 F.7-1.8/1.4-2.4 discon. install + Raceway
+- L2 S41 F.8-F.9/2.6-2.7 installation and raceways
+- L2 S41 F.8/1.2-1.3 LIB Torque, Voltage, Resistance
+- L2 S41 G/2.7 disconnect install and raceways
+- L2 S41 and 61 A-F.5/1-3 Raceways - Receptacle
+- L2 S41-61 1.1-2.7/A.1-F.9 AHU control box - TMOT
+- L2 S41-61 1.1-3/A.1-F.9 Cable Routing
+- L2 S41-61 A-G/1-3 Panel instal
+- L2 S41-61 A-G/1.2-2.6 AH Raceway inspection
+- L2 S41-61 A-G/1.2-2.6 AHU DISC - TMOT
+- L2 S41-61 A-G/1.2-2.6 LV Cable Routing
+- L2 S41-61 A.3-E.95/1.4-1.6 GTB - HRG torquing
+- L2 S41-61 A.3-E.95/1.4-1.6 Raceways
+- L2 S41-61 A.4-E.7/1.8-3 MCC/MCG GR Torque
+- L2 S41-61 A.4-E.7/1.8-3 Torquing + Term line
+- L2 S41-61 C.2-F.9/2.5-3 Cable routing
+- L2 S41-61 C.2-F.9/2.5-3 TMOT - MCC to FCU DISC
+- L2 S41-61 Col B.2-F.8 / 1-2
+- L2 S5 M-N/27.5-30 Raceway & Box
+- L2 S5 M-N/31-33 Comm Tray
+- L2 S5 M.2-M.7/27.7-28.5 LIB install
+- L2 S5 M.3-M.4/27.2 Rectifier Raceways
+- L2 S5 M.3-M.4/27.2 Term, megg, OHM, Torquing
+- L2 S5 M/27 PNL Install - RDU 14/15B-J
+- L2 S61 3.5-4/C-D Raised floor grounding
+- L2 S61 6.5-7.5/A.3-B.7 Access Level1 scaffold A13
+- L2 S61 A.3-C.3-C.2. MCC install + Raceways
+- L2 S61 A.5-B.5/2.5 bus and ground bar torquing
+- L2 S61 A.6-B.1/2.6-2.7 Term. Meg. OHM + Torque
+- L2 S61 A.6-C.6/3 MCC Bus _ GRD Bar Torque
+- L2 S61 A.7-B.2/1.5-2.3 Rectifier Torquing - Feeder
+- L2 S61 A.7/2-3 Ground jumpers
+- L2 S61 A.7/2-3 Torquing surge protector grounds
+- L2 S61 B.4-C.9/1.6 Torque bus + ground bars
+- L2 S61 B.7-C.3/1.9-2.1 Term, Meg, OHM, + Torque
+- L2 S61 B.7-C.3/1.9-2.1 VFD/CDP/4DP/4DG TMOT
+- L2 S61 B.8-D/2.6-3.9 Comm Tray
+- L2 S61 B.8/2-3 Raceway for ground
+- L2 S61 C.1-C.6/2.95-3 MCC/MCG install and Raceways
+- L2 S61 C.1/2 Raceways
+- L2 S61 C.2/2 Cable Routing
+- L2 S61 C.2/2 Panelboard Raceways
+- L2 S61, A.6-B.1/2.6-2.7 cable route SGA01/MA03
+- L2 S61-64 A-A.7/2.6-26 SBB to MCC/MCE TMOT
+- L2 S62 12.9-14/B-C
+- L2 S63 18-2-18.6/B.5-C Raised Floor Bonding
+- L2 S64 26.8/C-D LV Riser Duct Shaft
+- L2 S64 A.2-B/25 Panelboard install
+- L2 S64 A.3-B.3/25.1 MCC/MCG Raceways
+- L2 S64 A.4-A.5/25.5-26.6 Raceways for DTR + ACU
+- L2 S64 A.4-A.8/25.1 bus and ground bar torquing
+- L2 S64 A.7-A.8/25.2-26.4 Bus + ground bar torque
+- L2 S64 B.3-B.4/25.2-26.7 Bus + Ground Bar Torquing
+- L2 S64 B.3-B.4/25.6-26.3 Cable Routing - DTR MA13
+- L2 S64 B.3/26.3-26.5 Raceways - SBUMA13 3"
+- L2 S64-65 A-A.2/25.6-32.6 AHU disconnect install
+- L2 S64-65 A-C/25.5-31.6 LTR grounding Torque
+- L2 S64-65 A.2-B.3/25.1-29.6 MCC/MCC/SGG/SBG cable
+- L2 S64-65 A.3-A.7/25.2-28.3 Bus+Ground bar torque
+- L2 S64-65 A.3-B.7/25.5-32 Rectifier raceways
+- L2 S64-65 A.3-B.7/25.5-32 TMOT rectifier loads
+- L2 S64-65 A.3-B.7/25.5-32 Torquing
+- L2 S64-65 A.3-B.8/25.3-31.6 HRG to GTB - Torquing
+- L2 S64-65 A.3-B.8/25.3-31.6 Raceways
+- L2 S64-65 B.2-B.3/26.9-27.6 Raceway inspection
+- L2 S64-65 B.3-B.6/25.5-28 Raceways
+- L2 S64-65 D/25.9-29.1 install and raceways
+- L2 S65 A-B.9/27.6-27.8
+- L2 S65 A-C 29-30.1-Cable Routing
+- L2 S65 A.1-A.2/ 32.7-PNLBRD Install
+- L2 S65 A.3-A.8/30.4-32.9 Lighting
+- L2 S65 A.3-A.8/32.7-34 cable route +TMOT to 1ST JB
+- L2 S65 A.3-C/27-34 Lighting
+- L2 S65 A.4-A.5/27.5-28.4 Bus + Ground Bar Torque
+- L2 S65 A.4-A.6/30.4-32.6 Raceways - LIB DSC 1200A
+- L2 S65 A.5-B.3/29.4-32.8 Cable Tray
+- L2 S65 A.6-A.6/27.2-28.7 Bus + ground bar torque
+- L2 S65 A.6-A.7/29.4-29.8
+- L2 S65 A.7-C/28.9-30.1 Raceways
+- L2 S65 A.8-A.9/27.6-28.3 Cable Routing
+- L2 S65 A.9/30.6 Panelboard install
+- L2 S65 A/28 Fiber Raceways
+- L2 S65 A/28 Patch Panel install
+- L2 S65 B-B.1/30.6-31.7 Panel and VFD install
+- L2 S65 B.2-B.3/31.7-32.1 Rectifier Raceways
+- L2 S65 B.2/32 Rectifier install
+- L2 S65 B.3-B.5/27.5-29.7 Bus + Ground bar torque
+- L2 S65 B.3-B.6/27.3-29.6 DTR - ACU Cable Route
+- L2 S65 B.3/32 Rectifier Raceways
+- L2 S65 B.5-B.6/30.1-30.9Torquing bus + Ground bars
+- L2 S65 B.6-B.7/31.2-31.3 - Panelboard
+- L2 S65 B.6-B.7/31.3 Transformer install
+- L2 S65 B.7-B.8/25.3-26.6 bus + ground torque
+- L2 S65 B.7/31.3 panel installation
+- L2 S65 B/27.5-27.8 Raceway - MGA03
+- L2 S65 B/28.7-29.3 Raceways - PNL
+- L2 S65 C-D/28.7/30.2/31.4 LV CT & Riser
+- L2 S65 C.3/29.5 LV Cable Tray Risers
+- L2 S65 C29.9 Transformer Raceways
+- L2, S 41, F/3 Torquing of ground lugs E & E1
+- L2, S2, L.5/11-14 Torquing Bus Bars
+- L2-3 S1 K-L/3-3.5 LV Cable Tray
+- L2-3 S41-61 B.3-E.6/2-6.2 Cable routing - SBB/LTP
+- L2-3 S61 A-C/ 3-4 Comm Tray
+- L2-3 S62-63 C-D-13-18 Card Reader Rough-In
+- L2-3 S63-65 A.3-B.7/17.5-31.5 Torquing
+- L2-3 S63-65 A.3-B.9/17.6-31.4 Torquing + S-Cone
+- L2-4 S2-4 K-K.7/10.2-23.8 Light Fixture Stairwell
+- L2-6 NE Service Vestibule
+- L2S2 - L6S1
+- L2vel 4 SUE A/22.8-25
+- L3
+- L3 (D-E, 15-16) #2 Hall Rm 100
+- L3 (E 36) #3 MCC RM 202
+- L3 12E Electric Room
+- L3 Atriums
+- L3 B23-B25.5 Shaft 5
+- L3 B31-B34 Shaft #5
+- L3 C37-C39 Shaft #6
+- L3 C42-C44 Shaft #7A
+- L3 C44.5-C46 Shaft #7B
+- L3 C47-C48 Shaft #8
+- L3 C49.5-C51.5 Duct Shaft #9
+- L3 C6.5-C9 Shaft 1A 104 RM
+- L3 COL 30 E/D
+- L3 COL A 27.0
+- L3 COL A 28
+- L3 COL D/E 21.0
+- L3 COL D/E 25.0
+- L3 COL D/E 27.0
+- L3 COL D/E 28, 29
+- L3 COL D/E 30.0
+- L3 COL D/E20.0
+- L3 COL E 14
+- L3 COL E/D 12
+- L3 COL E/D 13
+- L3 COL E/D 16, 14
+- L3 COL E/D 20.0
+- L3 COL E/D 24
+- L3 COL H5/ J/K 1.0
+- L3 COL J 21.0
+- L3 COL J 24.0
+- L3 COL J 31.0
+- L3 COL J/K 22
+- L3 COL J/K 24
+- L3 COL J/K 25, 26, 27, 28
+- L3 COL J/K 7.0
+- L3 COL J20.0
+- L3 D 36 IO RM
+- L3 D36-D37 #3 HALL RM 200
+- L3 E.3-F 26-27
+- L3 E.3-F 27-28
+- L3 E.3-F 28-29
+- L3 E.3-F 29-30
+- L3 E.3-F 30-31
+- L3 E.3-F 31-32
+- L3 E.3-F 32-33
+- L3 E.3-F.8 32-33
+- L3 E14 Storage Rm 109
+- L3 F-F.8 30-31
+- L3 F-F.8 31-32
+- L3 F-F.8 32-33
+- L3 F.8-G 26-27
+- L3 F.8-G 27-28
+- L3 F.8-G 28-29
+- L3 F.8-G 29-30
+- L3 F.8-G 30-31
+- L3 F.8-G 31-32
+- L3 F.8-G 32-33
+- L3 G.3-H.8 32-33
+- L3 IO Room
+- L3 J/K COL-7
+- L3 L-17
+- L3 S 62-63 A.7-B.7/12.6-18.9 Raceway - HRG
+- L3 S 64 C22-C25 Panel Raceways
+- L3 S01 & 02
+- L3 S1
+- L3 S1 L.7-M.6/2-3 Raised floor bonding
+- L3 S1 Secondary Electric Room
+- L3 S1 and 11 West Atrium
+- L3 S1 and 3 Women's Restrooms
+- L3 S1, 3, and 12
+- L3 S1-2 L-M.5/9-14 Raised floor bonding
+- L3 S1-2 L-M/6-10 GTB install for raised floor
+- L3 S1-2 L.2-M.3,M.5/1-2.6,5-9 Raised floor bonding
+- L3 S1-2 L.2-M.4/7.9-9 Lighting raceways, boxes
+- L3 S1-21 G-M.4/1-3 Grounding
+- L3 S1-5 K-M/4-33 Card readers
+- L3 S1-5 K-M/5-33 Security card readers
+- L3 S1/3 K/4, K/18 Raised floor bonding
+- L3 S11
+- L3 S12
+- L3 S12 Central Restroom
+- L3 S12 TR Room
+- L3 S12 and 13
+- L3 S12E Secondary Electric Room
+- L3 S12W Secondary Electric Room
+- L3 S13
+- L3 S2
+- L3 S2 IO Room
+- L3 S2 K.8/13 Comm Tray
+- L3 S2 L-M.5/12-14 Raised floor bonding
+- L3 S2 L-M.6/8-9,11-12 LV and Comm tray
+- L3 S2 L.2-M.7/9.5-12 Lighting raceways
+- L3 S2 VIP Lounge Area
+- L3 S2 and 12.
+- L3 S2 and 3
+- L3 S2, 11 and 12
+- L3 S2, 11, 13
+- L3 S2-3 L-N/13-16 Underfloor lighting
+- L3 S3
+- L3 S3 B.2-B.3/19.3-20.7 Bus + GRND bar torquing
+- L3 S3 K.8-L.2/19.1-19.2 Cable Tray
+- L3 S3 L.2-L.3/20.6-20.7 LTR Nipple Insp
+- L3 S3 L/21 EGC installation and raceways
+- L3 S3 L21 GTB/EGC Torque
+- L3 S3 M.6-M.6/19.7-20.3 Cable Tray and Raceways
+- L3 S3 M.6-M.7/19.3-20.7 Bus Bar torquing
+- L3 S3 M.6-M.7/21.9-23.8 Bus and Ground Bar Torque
+- L3 S3 Secondary Electric Room
+- L3 S3 and 2
+- L3 S3,4 L.5/20.5-23.8 LV gear install - C03-05
+- L3 S3,4 M.3-.6 /19.3-26.6 Fiber Raceways
+- L3 S3,4,5 L.5-M.3/19.6-29 Fiber Raceways
+- L3 S3-4 K.5-L.2/19.6-21.9 LV and Comm Tray
+- L3 S3-4 L.7-L.9/20.9-24.3 Raceways - Ext Control
+- L3 S3-4 L/20.8-21.8 Non process panel install
+- L3 S3-4 L/22.5-25.5 Non-process panel install
+- L3 S3-4 M/20.9-21.8 MCC Installation
+- L3 S3-4 M/20.9-21.8 MCC bus bar torquing
+- L3 S3-4-5 L-N/19.7-28.8 Fiber Routing
+- L3 S3-4-5 M.2-M.6/20.3-29.5 eFMCS raceways
+- L3 S3-5 L-M.6/19.3-29.3 120V raceways
+- L3 S3-5 L-M.6/19.3-29.3 HRG raceways
+- L3 S3-5 L.2-M.7/19.4-29.2 Stress cones + torque
+- L3 S3-5 L.5-M.4/20-28.4 GEN On raceways
+- L3 S3-5 L.5-M.5/19.3-29.3 HRG grounding torque
+- L3 S4 B.5-B.7/21.9-25 Torquing bus bars
+- L3 S4 L 24.9 GTB install and raceways
+- L3 S4 L-L.3/25.5 Comm Tray Risers
+- L3 S4 L-M.6/21-25.8 MV Substation Tray
+- L3 S4 L.5-L.6/22.1 Cable Tray Raceways
+- L3 S4 L.5-L.6/22.1 support inspection
+- L3 S4 L.7-M.3 21.3-25.2 Comm Tray - LIB
+- L3 S4 L.8/21-24.3 Bus Bar torquing
+- L3 S4 L/24.5 GTB E1 torquing
+- L3 S4 L/24.8 GTB Torquing Ground Lugs
+- L3 S4 L/24.9 Torquing ground lugs on GTB (E)
+- L3 S4 L/25.7 LV tray
+- L3 S4 M.2/23-24 Bus Bar torquing
+- L3 S4 M.2/24-24.2 1F11MC19 external controls
+- L3 S4 M.3/23.3-24 1F11MC19 PVC grounding raceways
+- L3 S4 M.3/23.3-24.2 DTR/LTR Grounding torquing
+- L3 S4 M.3/23.8-24.2 Raceway
+- L3 S4 M.4-M.8/22.5-29 VCB MV cable routing
+- L3 S4 M.5-5.6/21.1-21.2 Rectifier install
+- L3 S4 M.5/21 Rectifier battery rack install
+- L3 S4 M.5/21-26.8 Cable Tray - VCB
+- L3 S4 M.5/25.3-26.8 Bus Bar torquing
+- L3 S4 M.5/322.5-25 VCB external controls
+- L3 S4 M.6/21.2 Rectifier Panelboard Installation
+- L3 S4 M.6/21.2 Rectifier Raceways
+- L3 S4 M.6/25.3-26.7 Bus Bar torquing
+- L3 S4 N.7-L.3/25.5 Comm tray
+- L3 S4, K.9-L.2/21.4 Comm Tray Risers
+- L3 S4, M.6/24.8 SWGR Raceway
+- L3 S4,5 L.5-M/21-29 Arc sensor raceways
+- L3 S4-5 K.2-L/24-25,27-29 LV Cable Tray Risers
+- L3 S4-5 L.4-L.5/26-29.4 Bus+Ground bar Torque
+- L3 S4-5 L.4-L.8/21.1-29.2 Switchgear Raceways
+- L3 S41 F/2-3 Raised floor grounding
+- L3 S41-61 G-A/1.3-2.5 Lighting + Raceways
+- L3 S5 L-K/29-30 Cable tray Risers
+- L3 S5 L-M.7/30-33 Raised floor bonding
+- L3 S5 L-M.7/31-32 Underfloor lighting and raceways
+- L3 S5 L.5 /27.5-28.3 UPS Raceway
+- L3 S5 M-N/27 LIB Cabinet Install
+- L3 S5, L.2-L.8 /27-29.2 LV Cable Tray
+- L3 S5, L.2-L.8/27-29.6, Comm Tray
+- L3 S61 3.5-4/C-D raised floor grounding
+- L3 S61 5-8/ A-C LTR - XO bonding neutral torque
+- L3 S61 A-C/5-8 Ground Torquing
+- L3 S61 A-C/5-8 Raceways - LTR 120 V
+- L3 S61 A.5/4.5-6.5 Termination Torquing
+- L3 S61 A.7-B.9/5.2-8 Torquing terminations
+- L3 S61 B-B.5/6.5-8 Torquing bus bars
+- L3 S61 B-C/2 Panelboard install
+- L3 S61 B-C/2 Raceways
+- L3 S61 B-C/5-8 Raceway - eFMCs controls
+- L3 S61 B-C/5-8 Raceways - HGR to GTB
+- L3 S61 B.2-B.3/7.6 Switchgear Raceways
+- L3 S61 B.3-C.5/2-3.1 LV Cable Tray
+- L3 S61 B.9-D/3.6-3.8 Comm
+- L3 S61 B.95/7.9-7.95 GTB raceway
+- L3 S61 C3-C5 LV Tray
+- L3 S61, A.7/3.6 Raceways BATT DISCONN
+- L3 S61-62 A-B/8.5-9.5 Raceway inspection controls
+- L3 S61-62 A.7-A.8/7.9-8.6 Cable Route
+- L3 S61-62 A.7-A.8/7.9-8.6 LV Cable Routing-DTR 14
+- L3 S61-62 B.3-C/5.2-8.2 TMOT - RDP + LTR's
+- L3 S61-63 2-18/C-F Raceways - Security Doors
+- L3 S61-64 B.95/7.9-21.5 GTB Torquing ground lugs
+- L3 S61-65 C4-C33 card readers raceway and boxes
+- L3 S61B-C/2 transformer install
+- L3 S62 A.3-A.8/10-12.4 LIB installation
+- L3 S62 A.3-A.9/10.2-12.2 dry contacts
+- L3 S62 A.7-A.9/12.7-14.2 Bus + ground bar torque
+- L3 S62 A.7-A.9/12.7-14.2 Bus and Ground bar torque
+- L3 S62 B.2-B.3/11.6-12.2 Cable Routing
+- L3 S62 B.2-B.3/11.6-12.2 Raceways
+- L3 S62 B.2-B.3/14.8-14.9 - DTR Raceways
+- L3 S62 B.2-B.3/8.9-9.1 LV Cable Route
+- L3 S62 B.4-B.6/10.8-11.2 Cable Routing
+- L3 S62 B.5-B.6/12.7-13.4 UPS Raceway
+- L3 S62 B.5-B.7/10.5-11.3 Raceways
+- L3 S62 B.6-B.7/13.7-14.3 TMOT - ACU/DTR SC07A/B
+- L3 S62 B.7-B.9/10.6-11.4 Bus and ground bar torque
+- L3 S62 B.7-B.9/8.3-9.05 Bus and ground bar torque
+- L3 S62 B.7/B.8/11.6-12.5 bus + ground bar torque
+- L3 S62 B/10.3 Raceway - RDU SA01/MA06
+- L3 S62 B/13.2-13.8 bus and ground bar torquing
+- L3 S62 B/20-21 Raceway - MCC branch only
+- L3 S62 B/9-10.5 Raceway - dry contact
+- L3 S62 B10 Panel Raceways
+- L3 S62 B10 Panel install
+- L3 S62 B13 MCC raceways 2"
+- L3 S62 B13 MCG-1F12MGA01-B04,05,06 Raceway inspect
+- L3 S62 B13 MCG-1F12MGA01-B04,05,06 install
+- L3 S62 C/8 Raceways - LTU & LTP
+- L3 S62 C/9.2-9.5 Panelboard install
+- L3 S62 C/9.3-9.4 Transformer install
+- L3 S62 C8 Panel raceways branch circuits
+- L3 S62 Raceways for Air Handler discon.
+- L3 S62-63 A-C/8.5-20.5 Raceways
+- L3 S62-63 B.3-B.6/13.7-18.7 Raceways
+- L3 S62-63 C-D/14.8, 20.8 LV Risers
+- L3 S62-64 A.3-A.5/12.7-22.6 Fiber Raceways
+- L3 S62/63 B.5/14, B.5/18.5 Cable Routing DTR toACU
+- L3 S62/64 C/8-9/23 Raceway - Grounding
+- L3 S62/64 C8-9/23 transformer raceways
+- L3 S63 18.2-18.6/B.5-C RAISED Floor Grounding
+- L3 S63 A.3-A.4/16.1-16.2 Raceways
+- L3 S63 A.3-A.6/14.8-17 Torquing XO
+- L3 S63 A.5/15.5 Rectifier Term, Meg. OHM, Torque
+- L3 S63 A.7/19.3 Term meg OHM Torquing - Rectifier
+- L3 S63 B.2-B.3/14.9-15.5 bus + ground bar torque
+- L3 S63 B.2-B.3/15.6-16.2 UPS Raceways
+- L3 S63 B.2-B.3/18.9-19.8 UPS Raceway
+- L3 S63 B.2-B.3/19.8-20.8 Ground and bus bar torqe
+- L3 S63 B.5/15.5-17.5 torquing bus and ground bars
+- L3 S63 B/14.3-15.6 torquing ground and bus bars
+- L3 S63 B15-B21 Lighting Install
+- L3 S63 B18/19 Raceway SBG-1F12SGA02-A
+- L3 S63 B18/19 SBG-1F12SGA02-A
+- L3 S63 B20-B21 MCC Cabinet Anchoring
+- L3 S63 C-D/15.7 LV cable tray - 3 tiers
+- L3 S63 C-D/20.8 LV Risers
+- L3 S63, 64 B21, B24 HRG to GTB raceways
+- L3 S63-64 17-24/A-C Raceways
+- L3 S63-64 A-C/18-24 Torquing - GTB & HRG
+- L3 S63-64 A.1-A.2/15-22.9 Comm Tray
+- L3 S63-64 A.3-C/15.7-23.8 TMOT-120V
+- L3 S63-64 AHU Disc Raceway
+- L3 S64 A-B/23-24 Raceway - Dry Contact
+- L3 S64 A-B/24-29 Raised floor bonding
+- L3 S64 A-C/28-2 Grounding straps - 12" & 36"
+- L3 S64 B-C/22-24 Raceway - eFMCs controls
+- L3 S64 B-C/24-29 Raised floor bonding
+- L3 S64 B/23.2-23.3 Panelboard Install
+- L3 S64 B/23.2-23.3 Panelboard Raceways
+- L3 S64 C-D/22.7 LV cable tray - 3 tier
+- L3 S64 C-D/23.6-23.8 LV Cable Tray Risers
+- L3 S64 C-D/23.7 LV cable tray - 3 tier
+- L3 S65 A-B/ 30-33 LV/COMM tray
+- L3 S65 A-C/29-33 Raised Floor Bonding
+- L3 S65 A.3-A.5/29-30.2 LV Cable Tray
+- L3 S65 C.3/29.5 LV Cable Tray Risers
+- L3-6 NE Service Vestibule
+- L3.5-4 S62 C.5/12.2-12.3 Raceway Stairwell
+- L3/4 S5 L-K/29-30 Cable tray Risers
+- L4 IO and TR Rooms
+- L4 IT Security Room 1st Floor FAB
+- L4 S1
+- L4 S1 K-M/4-6 Comm Tray
+- L4 S1 K.1-L/2.5-2.8 LV Cable Tray
+- L4 S1 K.1-M/4.2-4.8 Receptacle
+- L4 S1 K.6/L/7.8 DS Area CT Riser & Run
+- L4 S1 L.1-L.4/6.8-7.8 LV Cable Tray
+- L4 S1 L.1/3-4.4 LV Cable Tray
+- L4 S1 L.2-L.3/6.5-7 LV Cable Tray
+- L4 S1 L.5/1 & M/3.7 NG line & GTB - GND Torquing
+- L4 S1 L.5/1-M/3.7 NG gas line ground to GTB
+- L4 S1 M-N/4-5 5 LV transformers Install
+- L4 S1 M.1/3-4 MCC-1F11-SC13-B01/B02 MCC Install
+- L4 S1 M.2-N/4.5-4.8 Cable Tray
+- L4 S1 M.6/4.5 Raceways
+- L4 S1 M.6/4.5 Raceways - TR to GTB
+- L4 S1 M.8/4.5-4.6 Comm tray
+- L4 S1 M/3.8-3.9 GTB install
+- L4 S1 M/8/4.6 GTB installation
+- L4 S1 N/4.6 Term. Meg. OHM and Torque - RDG
+- L4 S1 k-l/4 Com Tray to Security and Fire
+- L4 S1, M.7-4.5 Comm tray
+- L4 S1,5 K/4-4.5/32-32.6
+- L4 S12E
+- L4 S12W
+- L4 S2 8.7-13 lv/com tray
+- L4 S2 IO Room
+- L4 S2 L.2/7-8.6 LV/Comm Cable Tray
+- L4 S2-3 14-19/L2 low voltage cable tray
+- L4 S3 K-K.5/18-19 lighting & exit sign rough in
+- L4 S3 L/19-21 LV Cable Tray
+- L4 S4 L.2/21-24 LV/Comm tray
+- L4 S4/5 L.2/24-26, N/31 LV/Com tray
+- L4 S4/5 L.2/26-28 LV and comm tray
+- L4 S5 K-K.5/30.2-31 com tray
+- L4 S5 K.5-L/32-32.5 com tray
+- L4 S5 L.5-M/31-32.4 LV Cable Tray
+- L4 S5 L.5-N/31-32.9 LV Cable Tray
+- L4 S5 L.6-M.9/31.32.8 Comm Tray
+- L4 S5 M.5/31.5-31.8 M.5/31.5-31.8 MCC install
+- L4 S5 N/31 LV Tray
+- L4 S61 3.5-4.4/A5 RACEWAYS VFD
+- L4 S61 3.5-4/C-D Raised pedestal grounding
+- L4 S61 4.5-5/A.2 Comm Tray 12"
+- L4 S61 A.2-B.3/4.5-5.1 Term. Meg. OHM. Torque Rout
+- L4 S61 A.2-B.7/3.8-11.3 Term. Meg. OHM. Torque
+- L4 S61 A.2/3.5-3.8 4EG/VFD SGA01 - TMOT
+- L4 S61 A.2/3.5-3.8 cable routing
+- L4 S61 A.3-A.9/4-4.2 panel raceway - 4DG/4DP
+- L4 S61 A.3/3.6-4.3 Raceway - VFD
+- L4 S61 A.3/3.6-4.4 VFD installation
+- L4 S61 A.5/3.6-4.4
+- L4 S61 A.6-A.8/4.4 Raceway inspection
+- L4 S61 A.6/4.1 VFD Raceways
+- L4 S61 A.6/4.1 VFD installation
+- L4 S61 A.7-A.9/3.6-4.3 Term, Torque
+- L4 S61 A.7-B.4/4.4 Panel + Transformer install
+- L4 S61 A.9-B.3/4.3 LV Cable Tray
+- L4 S61 B-B.1/5 GTB install
+- L4 S61 B.1-B.2/3.7-3.9 Raceways
+- L4 S61 B.2/5.1 Cable Routing
+- L4 S61 B.2/5.1 Term, Megg, OHM, and Torque
+- L4 S61 B.3/3.6 GTB Raceway
+- L4 S61 B.3/3.6 GTB Raceways
+- L4 S61 B.3/3.6 GTB installation
+- L4 S61 B.5/7.5 OAC RACEWAY AND GUTTER
+- L4 S61, A,6-B.3/3.8-3.9 LV CT
+- L4 S61, A.2-B.7/3.8-11.3 LV Cable Route
+- L4 S61, B.2-B.3/3.6-3.7 Raceways on MCC Feeds
+- L4 S61-62 A-B.5/3.5-12 LV Cable Routing
+- L4 S61-62 A-B.5/3.5-12 Term, meg, OHM and Torque
+- L4 S61-62 A.1-B.2/4.2-4.3 Cable Routing
+- L4 S61-62 A.1-B.7/4.3-10.9 Term. Meg. OHM. Torque
+- L4 S61-62 A.1/4.2-4.3
+- L4 S61-62 A.1/4.2-4.3 Cable Routing
+- L4 S61-62 A.2-B.5/3.6-10.8 Term/Meg/OHM/Torq
+- L4 S61-62 A.2-B.5/3.6-10.8 Term/Meg/OHM/Torque
+- L4 S61B3/3.8-4.3 VFD INSTALL AND RACEWAY
+- L4 S63 15-17/A.7-B.3 LV Cable Tray - OAC Units
+- L4 S63 21.7/C.2 Comm tray in DS
+- L4 S63 B/15-16.3 Raceways - OAC to Disconnect
+- L4 S64-65 21.7-30.9/A.5-B.9 12" Comm tray
+- L4 S65 29.5-31/A.5-C LV Cable Tray
+- L4 S65 31-33/A-B COMM TRAY
+- L4 S65 31.2-32.2/B.7 COMM TRAY
+- L4 S65 32-32.3/B.1-D COMM TRAY
+- L4 S65 A-A.5/31-33 LV Cable Tray
+- L4 S65 A.6/31.1-31.2 GTB install and raceways
+- L4 S65 A.6/31.1-31.2 GTB torque
+- L4 S65 C.2/29.5
+- L4 Secondary Electric Rooms
+- L4 Security Room 3rd Floor FAB
+- L4-6 S2 passenger elevator vestibules
+- L5 IO Room
+- L5 S1
+- L5 S1, 3, and 12E TR Room
+- L5 S12 E Secondary Electric Room
+- L5 S12 W Secondary Electric Room
+- L5 S12E
+- L5 S12W
+- L5 S12W TR Room
+- L5 S3
+- L6 S1
+- L6 S1 Secondary Electric Room
+- L6 S12 E Secondary Electric Room
+- L6 S12 W Secondary Electric Room
+- L6 S12E
+- L6 S12W
+- L6 S2 IO Room
+- L6 S3
+- L6 S3 Secondary Electric Room
+- L7
+- L7 OF1702006
+- L7 S1
+- L7 S1 Secondary Electric Room
+- L7 S1 Stairwell
+- L7 S12 E Secondary Electric Room
+- L7 S12 E and L7 S3 Secondary Electric Room
+- L7 S12E Electric Room
+- L7 S12E Secondary Electric Room
+- L7 S12W Secondary Electric Room
+- L7 S2 East and West IO Rooms
+- L7 S2 TR Room
+- L7 S2 W Secondary Electric Room and L7 Weather Sta
+- L7 S2W Electric Room
+- L7 S3 Secondary Electric Room
+- L7 S3 Stairwell
+- L7 S3 and 12W
+- L7 S3, 2, and 12
+- L7 Secondary Electric Rooms
+- LCH LINE MEZZ DECK
+- LCH(S), LCH(R) PIPING FAB LEVEL 4 COLUMN B25
+- LCH(S/R) Mezzanine & Roof Area
+- LCH-HCH/CS/Lv.2 A44-45 Col. E 24-33
+- LCH-MHW-HCH/CS/Lv. 1 A05 Col. L-N 31
+- LCH/CS/ Level 2 Sector 1 and 21 Column N-G 1-3
+- LCH/CS/ Lv.2 A01/21 Col. N-G 1-3
+- LCH/CS/Lv. 1-2 A21 Col. G3
+- LCH/CS/Lv1A25/45 Col. J-E 31-33/E24-33
+- LCH/PIPING/SUE L1 Eduardo Landino-1-713-384-1603
+- LCH/SHOES/SUE L1 Eduardo Landino-1-713-384-1603
+- LCHR - LVL1 - C-D10-K5
+- LCHR - LVL2 - C: C4-C9
+- LCHR 32", 18", 16" FIELD WELDS, CUB 1, 1M E06-E10
+- LCHR, 20" DROP WELDS AND 32" WELDS, CUB E04-E07
+- LCHS 18" AND 10" FIELD WELDS
+- LCHs/r Trestle to Chiller/Pumps
+- LEAK TEST RD/ERD C35
+- LEVEL 1 B-C/3-4
+- LEVEL 1 BUNKER ROOM 1 AND 2
+- LEVEL 1 BUNKER ROOM 1, 2 INTERIOR
+- LEVEL 1 C-D/27
+- LEVEL 1 C/13-14
+- LEVEL 1 C/16-17
+- LEVEL 1 C/17
+- LEVEL 1 C/3
+- LEVEL 1 D/3-3.5
+- LEVEL 1 G-H/1
+- LEVEL 1 H.8/6.8-7
+- LEVEL 1 N-P/23-29 PILASTER BACKFILL
+- LEVEL 1 N.5/23-29
+- LEVEL 1, B-C/3-4
+- LEVEL 1,2,3, B-C/16-17
+- LEVEL 1-3 Stair 50
+- LEVEL 1-4 K-L 34 COLUMN LINE Stair #5
+- LEVEL 1-4 L/1
+- LEVEL 2 A-F/1
+- LEVEL 2 A/25-28
+- LEVEL 2 CEILING D-E/3
+- LEVEL 2 D/18-21
+- LEVEL 2 H.3-H.3/ 33 EXTERIOR
+- LEVEL 2 L.3/1
+- LEVEL 2 L/10
+- LEVEL 2 L/12
+- LEVEL 2 M.5/30 PEN# 15&16
+- LEVEL 2 M.5/30 PEN#14
+- LEVEL 2 M.5/30 PEN#17&18
+- LEVEL 2 M.5/30 PEN#19
+- LEVEL 2 M/28-30
+- LEVEL 2 M/30 PEN# 20
+- LEVEL 2 M/30 PEN# 22
+- LEVEL 2 M/30 PEN# 23
+- LEVEL 2 M/30 PEN# 29
+- LEVEL 2 M/30 PEN# 30
+- LEVEL 2 M/30 PEN#21
+- LEVEL 2 M/30 PEN#25, 26, 27 & 30
+- LEVEL 2 N/30 PEN# 13
+- LEVEL 2 N/30 PEN#10
+- LEVEL 2 N/30 PEN#11
+- LEVEL 2 N/30 PEN#12
+- LEVEL 2 N/31 PEN#4, 5, 6
+- LEVEL 2 N/31 PEN#7, 8
+- LEVEL 2 SUE C/32-33
+- LEVEL 2 SUW DUCT SHAFT
+- LEVEL 2 SUW N/12-13
+- LEVEL 2&3 C/31
+- LEVEL 3 A-B/33
+- LEVEL 3 C-D/28
+- LEVEL 3 C/29
+- LEVEL 3 D/3
+- LEVEL 3 DE28-28.5
+- LEVEL 3 E/4-8
+- LEVEL 3 F-F.5/1
+- LEVEL 3 F.2/33
+- LEVEL 3 G/22
+- LEVEL 3 J-K/1
+- LEVEL 3 K-K.8/5 SOUTH FACE
+- LEVEL 3 L/16-17 ELEV. 3
+- LEVEL 3 L/17
+- LEVEL 3 L/19
+- LEVEL 3 L/33
+- LEVEL 3 SUE A-B/10 N FACE
+- LEVEL 3 SUE A-B/33 EXTERIOR
+- LEVEL 3 SUE A/14-15
+- LEVEL 3 SUE A/16-17
+- LEVEL 3 SUE A/4-14
+- LEVEL 3 SUE DUCT SHAFT
+- LEVEL 3 SUE K/34-35
+- LEVEL 3 SUE N/3-5
+- LEVEL 3 SUW DUCT SHAFT
+- LEVEL 3 SUW K.8/10.2-11
+- LEVEL 3-4 A-C
+- LEVEL 3-4 A-C/3-4
+- LEVEL 4 / C:31
+- LEVEL 4 A/25.5-29
+- LEVEL 4 A/9.6-10.9
+- LEVEL 4 C/19
+- LEVEL 4 C/31
+- LEVEL 4 C/32
+- LEVEL 4 E-J/15-15.25
+- LEVEL 4 E.5-F/33 EXTERIOR
+- LEVEL 4 ELEVATOR 1
+- LEVEL 4 J/3 -19
+- LEVEL 4 K/29-30
+- LEVEL 4 K/32
+- LEVEL 4 L.3-M.5/5
+- LEVEL 4 L/2.6 COLUMN
+- LEVEL 4 L/21
+- LEVEL 4 M/3.3-3.9
+- LEVEL 4 N/13-14
+- LEVEL 4 N/17.8-19
+- LEVEL 4 N/20-21
+- LEVEL 4 N/23-26
+- LEVEL 4 SUE A/5-9
+- LEVEL 4 SUE A/9-13.5
+- LEVEL 4 SUE DUCT SHAFT
+- LEVEL 4 SUW K-L/17.8 N FACE
+- LEVEL 4 SUW K-L/5
+- LEVEL 4 SUW N/14
+- LEVEL 4 SUW N/19-20
+- LEVEL 4 SUW STAIR 3 WEST WALL
+- LEVEL 4 TRUSS SPACE
+- LEVEL 4 TRUSS SPACE - (512) 810-7217
+- LEVEL 4 TRUSS SPACE, SUE/SUW RISERS.
+- LEVEL 4-6 C/25-27
+- LEVEL 4C, A-B 3-4
+- LEVEL 4C, A-B/3-4
+- LEVEL 5 FIZ ROOF
+- LEVEL 6 A-D/33
+- LEVEL 6 C-31 /Meet at lift on Level 4 C/31
+- LEVEL 6 C/13
+- LEVEL 6 C/14-20
+- LEVEL 6 C/20
+- LEVEL 6 C/5
+- LEVEL 6 C/5 NCR-0152
+- LEVEL 6 C/6
+- LEVEL 6 D/14-18
+- LEVEL 6 L/21
+- LEVEL 6 L/23
+- LEVEL 6 L/26
+- LEVEL 6 L/27.5
+- LEVEL 6 M-N/2.8
+- LEVEL 6, C/31
+- LEVEL1 & 2 / L-L.5 / 16-17
+- LEVLE 1 FAB H.3-H.5/33 EXTERIOR
+- LEVLE 1 FIRE ALRAM ROOM 18
+- LEVLE 1 STAIR 5 EAST WALL
+- LEVLE 3 FIZ F-F.6/1
+- LEVLE 3 G-G.5 SOFFIT
+- LEVLE 3 G.5-H/1 SOFFIT
+- LEVLE 3 SUE A/8-10
+- LEVLE 3 SUW N/30-31 E FACE
+- LEVLE 4 F-G/33
+- LEVLE 4 SUE A/19-22
+- LEVLE 4 SUE C/3 COLUMN
+- LEVLE 4 SUW N/19-20
+- LEVLE 6 SUW J-K/3-5
+- LEvel 3 H.8/33
+- LIGHT FIXTURES/FAB LVL 2, G.3~8,8~12
+- LIGHTIING FIXTURES/FAB LVL 2, H.8~J,9~29
+- LIGHTIING FIXTURES/FAB LVL 2,( J~K,4~8),(J~K,8~10)
+- LIGHTING BASKET TRAY/FAB LVL 2, CL G.3~H.8, 19-25
+- LIGHTING BASKET TRAY/FAB LVL 2, F.8-G@15-25,E-G@8-
+- LIGHTING BASKET TRAY/FAB LVL 2, G.3~H.8,8~12
+- LIGHTING BASKET TRAY/FAB LVL 2, G.3~H.8/12~15, G.3
+- LIGHTING BASKET TRAY/FAB LVL 2, G.3~J,3~5. (MEZZ)
+- LIGHTING BASKET TRAY/FAB LVL 2, G.3~J,5~8 (MEZZ)
+- LIGHTING BASKET TRAY/FAB LVL 2, G3-F8 THROUGH G15-
+- LIGHTING BASKET TRAY/FAB LVL 2, H.8~J,9~29
+- LIGHTING BASKET TRAY/FAB LVL 2,( J~K,4~8),(J~K,8~1
+- LIGHTING BASKET TRAY/MODULE LIGHTING COLUMN E~F.8,
+- LIGHTING FIXTURES/FAB LVL 2, CL G.3~H.8, 19-25
+- LIGHTING FIXTURES/FAB LVL 2, F.8-G@15-25,E-G@8-8.6
+- LIGHTING FIXTURES/FAB LVL 2, G.3~H.8/12~15, G.3~H.
+- LIGHTING FIXTURES/FAB LVL 2, G.3~J,3~5. (MEZZ)
+- LIGHTING FIXTURES/FAB LVL 2, G.3~J,5~8 (MEZZ)
+- LIGHTING FIXTURES/FAB LVL 2, G3-F8 THROUGH G15-F8
+- LIGHTING FIXTURES/MODULE LIGHTING COLUMN E~F.8,3-1
+- LPA - Verify fabrication rework prior to install
+- LPA / Rough-In Inspection / Level-1 Fab1
+- LPA A1K(AP) SUE A14 to Trestle
+- LPA SUPPORTS
+- LPA, SUE L1 Columns A14-B10
+- LPA/CUB/LV1/H5-H13
+- LPA/CUB/LV2/HARNESS REQUIREED
+- LPA/CUB1/LV1
+- LPA/L07/LV1/H13
+- LPA/NCR 0217 CLOSEOUT/ LV1 / H13
+- LPA/TRESTLE M-K13/LV1
+- LPCW and NW lines on the Mezz deck BLDG B
+- LSS-CCR
+- LSS-CCR RM (D-E 8-9)
+- LSS-CCR Support Rm
+- LTPCWS/R 6 ' Cross Fab Fab1 - CSF - Col.D25 - D31
+- LU1 S1, 2, and 3
+- LU1 S12
+- LV 1 A-C/33, LV 3 C-D/30; 30.5 , D/30.5-32, C/30.5-32, B.8/24-25.2
+- LV 1 E-F.8/33, LV 2 E-G/33, LV 3 E-G/33
+- LV 2&3 J.3-F.8/33; LV 1-3 F-J/33
+- LV 7 NE (A2-A5 / -1 to -5) DensDeck
+- LV 7 NE (A2-A5 / -1 to -5) Insulation
+- LV 7 NE (A2-A5 / -1 to -5) PVC
+- LV 7 NE Vapor Barrier
+- LV CONDUITS/ SUW 3F SECTOR 5
+- LV Cable Torque and Term- Panel REU-1F13SGA02C-A01
+- LV Conduits [SA_MA] / SUW 2F / Elec. Rm. [M5]
+- LVL 1 (A8 - A9 / -3) Media Wall Frame
+- LVL 1 (A9-A13 / -1 to -2) Ceiling Grid Frame
+- LVL 1 A5-A9/-1 to -2 Ceiling Grid Frame
+- LVL 1 Cafe Soffit East to West Blueskin waterproof
+- LVL 1 Cafe Soffit South to North Blueskin waterpro
+- LVL 1 Cafe Soffit composite metal panels
+- LVL 1 Canopy Blueskin
+- LVL 1 Canopy Entrance Bolt Connections
+- LVL 1 Canopy Entrance Frame Inspection
+- LVL 1 Canopy Entrance Moment Welds
+- LVL 1 Canopy Frame Inspection
+- LVL 1 Canopy Sheathing Screw Inspection
+- LVL 1 Canopy Z-girts
+- LVL 1 East Corridor Mock Up Floor Tile
+- LVL 1 East Facade (A-1 / -2 to -6) Blueskin
+- LVL 1 East Pit Concrete Final
+- LVL 1 Entry Canopy Sheating Screw Inspection
+- LVL 1 Entry Canopy Soffit Sheathing Screw
+- LVL 1 Escalator Drywall Screw Inspection
+- LVL 1 FARS Room (A-1/-6) Firecaulk
+- LVL 1 LSS Control Room Screw Inspection
+- LVL 1 LSS Room Drywall Screw Inspection
+- LVL 1 Loading Dock (A18/-2) Stairs Railings Welds
+- LVL 1 Loading Lock Proof Rolling
+- LVL 1 Lobby Curb Rebar
+- LVL 1 Lobby Media Wall Frame
+- LVL 1 Lobby Media Wall Steel Support
+- LVL 1 Lobby Staircase Hand Rail Post Welds
+- LVL 1 Lobby Topping Slab Rebar
+- LVL 1 Machine Room Drywall Screws Inspection
+- LVL 1 Main Electric Room (Battery Room) FireCaulk
+- LVL 1 Main Electric Room Firecaulk Trays/Penetrati
+- LVL 1 NE Frame Inspection
+- LVL 1 NE Soffit Ceiling Fire Caulk Penetrations
+- LVL 1 NE Soffit Drywall Screws (HARNESS REQUIRED)
+- LVL 1 NE Soffit Fire Caulk Penetrations
+- LVL 1 NE Soffit NCR Water Mitigation Repair
+- LVL 1 NW Ceiling Soffit Firecaulk Penetrations
+- LVL 1 NW Restroom Ceiling Grid Frame
+- LVL 1 NW Restroom Ceiling Screw Inspection
+- LVL 1 NW Vestibule Drywall Screw Inspection
+- LVL 1 North Chase Wall Firecaulk
+- LVL 1 Pedestrian Bridge Blueskin waterproofing
+- LVL 1 Pedestrian Bridge Z Girts
+- LVL 1 S03 Fire Caulk Penetrations NCR - 0216
+- LVL 1 S3 Firecaulk Penetrations
+- LVL 1 S3/12/13 Firecaulk Penetrations / Trays
+- LVL 1 Sector 01 / 02 Ceiling Grid Frame
+- LVL 1 Sector 01 / 03 Ceiling Grid Frame
+- LVL 1 Sector 01 / 12 Screw Inspection
+- LVL 1 Sector 01 Ceiling Grid Frame Inspection
+- LVL 1 Sector 01/02/03 Drywall Screws / Frame Inspe
+- LVL 1 Sector 03/13Firecaulk Penetrations / Trays
+- LVL 1 Sector 12Ceiling Grid Frame Inspection
+- LVL 1 South Canopy Entrance Bolt Down Metal Post
+- LVL 1 West Cafe Soffit Z Girts
+- LVL 1 West Cafe Soffit Z Grits
+- LVL 1 West Cafe Stairs Mesh
+- LVL 1 West Cafe Stairs Mesh Frame Welds
+- LVL 1 West Entrance Vestibule Blueskin
+- LVL 1 West Loading Dock Slab Rebar
+- LVL 1 West Loading Dock Staircase Rebar
+- LVL 1 West Pit Concrete Final
+- LVL 1 West Soffit Metal Panels
+- LVL 1 West Vesitubule Z-girts
+- LVL 1-2 NW Gas Lines Firecaulk
+- LVL 1-3 East Central Stairs
+- LVL 1-4 NW Stair Tower Blueskin
+- LVL 1-5.5 NE Stairs Screw inspection
+- LVL 1-6 NW Stairs Frame Inspection
+- LVL 1-6 West Central Stairs Screw Inspection
+- LVL 1-6 West and East Central Stairs Screw Inspect
+- LVL 1-7 NW & NE Elevator Vestibule
+- LVL 1U East Pit Surface Prep
+- LVL 1U West Pit Surface Prep for patch repair
+- LVL 2 & 4 (A7-A6/-9) Firecaulk
+- LVL 2 (A15/-1) Frame Inspection
+- LVL 2 (A5-A6/-2) Ceiling Grid Frame
+- LVL 2 Atriums Hand Railing Post Welds
+- LVL 2 FAB G.5-G.8/33 Interior (bottom half only)
+- LVL 2 Firecaulk Penetrations
+- LVL 2 Frame / Screw Inspection
+- LVL 2 Grease Duct Drywall Screw Inspection
+- LVL 2 Grease Duct Drywall Screw Inspection (A17/-3
+- LVL 2 Grease Duct West Wall
+- LVL 2 Grease Duct West Wall Drywall Screws
+- LVL 2 NE Corridor Ceiling Grid Frame
+- LVL 2 NE Restrooms Hard Ceiling Screw Inspection
+- LVL 2 NW & East Central Restroom Ceiling Screw
+- LVL 2 North Chase Screw Inspection
+- LVL 2 North Woon Door (A6 / -3) Furdown Frame
+- LVL 2 North Woon Door Drywall Screw Inspection
+- LVL 2 North Woon Door Screw Inspection
+- LVL 2 Pedestrain Bridge Blueskin
+- LVL 2 Pedestrian Bridge Final Inspectio
+- LVL 2 Pedestrian Bridge Screw Inspection
+- LVL 2 Pedestrian Bridge Soffit Blueskin
+- LVL 2 Prayer Room Finishes
+- LVL 2 S1 & S2 Firecaulk Penetrations
+- LVL 2 S1 Grease Duct Shaft Firecaulk
+- LVL 2 S13 Firecaulk Penetrations / Trays
+- LVL 2 S13 Raising Floor
+- LVL 2 S2 / 03 / 13 Raising Floor
+- LVL 2 S2 Firecaulk Penetrations
+- LVL 2 Sector 01
+- LVL 2 Sector 01 Drywall Screw
+- LVL 2 Sector 01,02,03 Ceiling Grid Frame
+- LVL 2 Sector 01/02/11 Hard Lid Screw Inspection
+- LVL 2 Sector 01Ceiling Grid Frame
+- LVL 2 Sector 02 / 12 Drywalls Screws
+- LVL 2 Sector 02 Ceiling Grid Frame
+- LVL 2 Sector 03 Ceiling Drywall Screw
+- LVL 2 Sector 03 Topping Slab Rebar
+- LVL 2 Sector 12 Firecaulk at Penetrations
+- LVL 2 Sectors 01/02/12
+- LVL 2 West Central Restroom Ceiling Grid Frame
+- LVL 2 West Central Restroom Screw Inspect
+- LVL 2 Woon Door Frame Furdown East Central Elevato
+- LVL 2 Woon Door Furdown (A6/-3) Screw Inspection
+- LVL 2 Woon Door Track Support
+- LVL 2-5 North Chase YATES Screws Drywall
+- LVL 2-5 North Chase YATES opening Frame
+- LVL 2/3 stairway 1,2,4 card reader rough in
+- LVL 3 (A2 & A15 / -1) Hard Ceiling Screw Inspectio
+- LVL 3 (A2/-1)(A15/-1) Restrooms Ceiling Grid
+- LVL 3 (A3-A4 /-1) (A8.5-A9 /-1) Ceiling Frame
+- LVL 3 A2-A5 / -2 to -3 Ceiling Grid Frame
+- LVL 3 A6-A7/ -4 Screw Inspection
+- LVL 3 Ceiling Frame Inspection
+- LVL 3 Ceiling Grid Frame
+- LVL 3 D16-17
+- LVL 3 D18-D20; K22-K23
+- LVL 3 D25-D28
+- LVL 3 Grease Duct Shaft Firecaulk Penetrations
+- LVL 3 J31-J32
+- LVL 3 K11-13; K30-K32
+- LVL 3 K11-K13;K30-K32
+- LVL 3 K18-K22; K23-K28
+- LVL 3 K28-K30, D-28-D29(1)
+- LVL 3 K28-K30, D28-D29(1)
+- LVL 3 K3-K4
+- LVL 3 K9-11
+- LVL 3 North Chase Screw Inspection
+- LVL 3 Restrooms Ceiling Grid Frame
+- LVL 3 Roof
+- LVL 3 S1 /11 Raising Floor
+- LVL 3 S1 Raising Floor
+- LVL 3 S1/11 Raised Floor
+- LVL 3 S11 Raising Floor
+- LVL 3 S12 Raised Floor
+- LVL 3 S2
+- LVL 3 S2 VIP Lounge Entrance FAB Drywall Screws
+- LVL 3 S2/11 Raising Floor
+- LVL 3 S3 Raised Access Floor
+- LVL 3 S3/12 Raised Floor
+- LVL 3 S3/13 Raised Access Floor
+- LVL 3 Screw Inspection
+- LVL 3 Sector 01 Frame Inspection
+- LVL 3 Sector 01 Grease Duct Drywall Screw / Frame
+- LVL 3 Sector 02 / 03 Firecaulk Penetrations
+- LVL 3 Sector 02 / 12 Ceiling Screw Inspection
+- LVL 3 Sector 02/12 Ceiling Screw Inspection
+- LVL 3 Sector 03 & 13 Ceiling Grid Frame
+- LVL 3 Sector 03/ 13/12
+- LVL 3 Sector 03/12 Firecaulk Penetrations
+- LVL 3 Sector 11 Ceiling Grid Frame
+- LVL 3 Sector 11 Firecaulk Penetrations
+- LVL 3 Sector 12 Firecaulk Penetrations
+- LVL 3 Sector 12 Woon Door Track Support
+- LVL 3 Sectors 01,02,11,12 Ceiling Grid Frame
+- LVL 3 Smock Entrance Ceiling Screws
+- LVL 3 Smock Entrance Turnstiles Floor Penetrations
+- LVL 3 Smock Entrance and VIP LoungeHardlid Screw I
+- LVL 3 Underfloor Trays Fireproof
+- LVL 3 VIP Lounge Firecaulk Penetrations
+- LVL 3 W & E Central Restrooms Hard Ceiling Screw
+- LVL 3 West Atrium
+- LVL 3 Woon Door Drywall Screw Inspection
+- LVL 3-5 NW Stairs Frame
+- LVL 3-5 NW Stairs Screw
+- LVL 3-5.5 East Central Stairs Screw inspection
+- LVL 3-6 Sector 01 Grease Duct
+- LVL 3-6 Sector 01 Grease Duct Drywall Screw / Fram
+- LVL 3-6 Sector 01 Grease Duct Drywall Screw/Frame
+- LVL 3SEC 61 A-C/3-8 Fiber nipples BLACK CLOUD ONLY
+- LVL 4 & 5 Shafts Frames inspection
+- LVL 4 & 6 Drywalls Screws & Frame Inspection
+- LVL 4 Atriums Structural Steel
+- LVL 4 Framing/Screw Inspection
+- LVL 4 J/3-5
+- LVL 4 NW Tower Facade Blueskin
+- LVL 4 North Chase Frame Inspection
+- LVL 4 Screw Inspection
+- LVL 4-6 Grease Duct Shaft Firecaulk Penetrations
+- LVL 4-6 Sector 01 Grease DuctDrywall Screw / Frame
+- LVL 4-6 Water Fountain Screw Inspection
+- LVL 5 (A3/-1)(A6/-1) Drywall Screws
+- LVL 5 East Atrium Hand Railing Post Welds
+- LVL 5 Framing/Screw Inspection
+- LVL 5 North Chase Frame
+- LVL 5 Screw / Frame Inspection
+- LVL 5 Screw Inspection
+- LVL 5-6 Sector 01 Grease Duct Frame inspection
+- LVL 6 (A7-A6/-9) Firecaulk
+- LVL 6 Central West Staircase Frame Inspection
+- LVL 6 Drywall Screw Inspection
+- LVL 6 East Atrium Railing Post Welds
+- LVL 6 East Central Stairs Frame Inspection
+- LVL 6 East Central Stairs Screw Inspection
+- LVL 6 Frame Inspection
+- LVL 6 Framing/Screw Inspection
+- LVL 6 North Chase Frame Inspection
+- LVL 6 North Chase Screw Inspection
+- LVL 6 Screw inspection
+- LVL 6 Sector 03 Screw Inspection
+- LVL 6 Sector 12 Frame / Drywall Screw Inspection
+- LVL 6 West Atrium Railing Post Welds
+- LVL 6 West AtriumHand Railing Post Welds (Harness
+- LVL 6-7R NW Staircase Frame Inspection
+- LVL 6/8 NW Tower Blueskin
+- LVL 7 (A7-A6 / -9) Frame inspection
+- LVL 7 (A7-A6 / -9) Sheathing Screw Inspection
+- LVL 7 A6-A10 / -1 PVC
+- LVL 7 Central Penthouse East side Blueskin
+- LVL 7 Central Penthouse Shafts Screw Inspection
+- LVL 7 Central Penthouse Staircase Platform Welds
+- LVL 7 DensDeck
+- LVL 7 ISO
+- LVL 7 Insulation
+- LVL 7 Isulation
+- LVL 7 NE Pull Test Vapor Barrier
+- LVL 7 NE Vapor Barrier
+- LVL 7 NW DensDeck
+- LVL 7 NW ISO
+- LVL 7 NW PVC
+- LVL 7 NW Penthouse Entrace Staircase Platform Weld
+- LVL 7 NW Secondary Electric Room Cementitious Spra
+- LVL 7 North Chase Curbs Counter Flashing
+- LVL 7 PVC
+- LVL 7 Roof (A-1-A0/-3)(A10-A12/-3) Densdeck
+- LVL 7 Roof (A6-A10 / -1) Densdeck
+- LVL 7 Roof (A6-A10 / -1) ISO
+- LVL 7 Roof (A6-A10 / -1) Vapor Barrier
+- LVL 7 Roof Columns Insulation
+- LVL 7 Roof ISO
+- LVL 7 Roof Vapor Barrier
+- LVL 7 South Parapet Coping Cap
+- LVL 7 Vapor Barrier
+- LVL 7 Vapor Barrier Pull Test
+- LVL 8 NE Penthouse Cementitious Spray
+- LVL 8 NW Machine Room Cementitious Spray
+- LVL 8 NW Penthouse Scuppers
+- LVL 8 North Chase Parapet PVC
+- LVL LVL 1 Canopy Frame Inspection
+- LVL2-3 Elevators (A6/-5 , A11/-5 , A0/-2 , A17/-2)
+- LVL3 (A7-A6/-9) Firecaulk
+- LVL3 S2
+- LVL3 S63-64 A-A.5/19-22.6 Torque multi-day
+- LVL4 & 5 (A5 & A12 / -7) Frame Inspection
+- LVL6 (A12/ -3 to -4) (A2/-1) Drywall Screws
+- LVL6-7R NE Stairs Frame Inspection
+- LVL6-8 NW Stairs Screw Inspection
+- LVL7 Frame Inspection
+- LVL7 Stairs East Central Penthouse
+- Laydown Area NCR-0134
+- Laydown Yard
+- Leave 1 c/6, 7, 9, 10
+- Lev 1 / Lev 2 Elevator 19 Girder
+- Lev 1 1-F & 1-G
+- Lev 1 10-16.6 G.3-H.8
+- Lev 1 11 - F.2
+- Lev 1 11- F.2
+- Lev 1 11-F.2
+- Lev 1 11-F.2, 11.3-F
+- Lev 1 11.3-F
+- Lev 1 14-15.6 E.3-F.8
+- Lev 1 17-17.6 G.3-H.8
+- Lev 1 18-22.6 G.3-H.8
+- Lev 1 2-G, 1-H, 1-J
+- Lev 1 2-H & 2-J
+- Lev 1 2-H , 2-J
+- Lev 1 2-K to 2-H
+- Lev 1 23-23.6 G.3-H.8
+- Lev 1 24-28.6 G.3-H.8
+- Lev 1 26.6-H, 26.6-H.3, 26-H.5
+- Lev 1 3-3.6 E.3-F.8
+- Lev 1 3-F.2 to 3-G.8
+- Lev 1 3-H to 3-J
+- Lev 1 32-32.6 E.3-F.8
+- Lev 1 8-9.6 G.3-H.8
+- Lev 1 E.3-F.8 13-13.6, 16-16.6, 21-21.6
+- Lev 1 E.3-F.8 17-20.6
+- Lev 1 E.3-F.8 22-25.6
+- Lev 1 E.3-F.8 26-28.6
+- Lev 1 E.3-F.8 29-31.6
+- Lev 1 E.3-F.8 3-3.6
+- Lev 1 E.3-F.8 4-4.6
+- Lev 1 E.3-F.8 5-5.6
+- Lev 1 E.3-F.8 6-6.6
+- Lev 1 E.3-F.8 7-7.6
+- Lev 1 E.3-F.8 8-8.6
+- Lev 1 E.3-F.8 9-12.6
+- Lev 1 F-3
+- Lev 1 Final 25-C + girder
+- Lev 1 Fizz Room F-2
+- Lev 1 G 16-32.6
+- Lev 1 G 3-15.6
+- Lev 1 G.3-H.8 15-16.6
+- Lev 1 G.3-H.8 3-7.6
+- Lev 1 G.4 5.3-5.6 Frame
+- Lev 1 GL 1 A-F (Clean Space Gap Between Fab & offi
+- Lev 1 H.8 5-5.3 Frame
+- Lev 1 H.8 7.3 - 7.6 Frame
+- Lev 1 J-2 H-2
+- Lev 1 K-17.5 Penetration Framing
+- Lev 1 K-24 Penetration Frame
+- Lev 1 K-7 Penetration Framing
+- Lev 1 K-8 Penetration Framing
+- Lev 1 L-17.5 Penetration Framing
+- Lev 1 L-19.3 Penetration Framing
+- Lev 1 L-20 Penetration Framing
+- Lev 1 L-27.6 Penetration Framing
+- Lev 1 L-4 Penetration Frame
+- Lev 1 L-8.5 Penetration Frame
+- Lev 1 L-9.7 Penetration Frame
+- Lev 1 L-N 1-3
+- Lev 1 L-N from 1-3
+- Lev 1 M-27 M-28 Framing
+- Lev 1 North Pit 27.5 L-M 1st layer South Side dryw
+- Lev 1 North Pit L-M 27.5 Framing
+- Lev 1 North Pit L-M 28 drywall South side
+- Lev 1 North Pit L.5-27 to L.5-27.5 1st Layer East
+- Lev 1 North Pit L.5/27 to L.5/27.5 Framing
+- Lev 1 North Pit L.5/27 to L.5/27.5 West Side
+- Lev 1 North Pit M-27.5 to N-27.5(under Deck)+ M-27
+- Lev 1 North Pit N-25 to door North wall
+- Lev 1 North Pit N-25.5 to Door (partial) Framing
+- Lev 1 North Pit N-25.5 to door North wall
+- Lev 1 North Pit N-26 to Door (partial) Framing / 1
+- Lev 1 North Pit N-26 to door North wall
+- Lev 1 North Pit N-27 to door South wall
+- Lev 1 North Pit Walls M-25 to N-25 + Under Deck
+- Lev 1 North Pit Walls M-26 to N-26 + Under Deck
+- Lev 1 North Pit Walls M-27.5 to N-27 / M-28.5 to
+- Lev 1 Primer / Filler 25-C + girder
+- Lev 2 C-27 to C-28 + girder partial
+- Lev 2 Sec 2, L.4-L.8/11.9-12.5 Gear installation
+- Lev 2 Sec 41 E.1-E.4/1.7-1.8 Term, Ohm, Meg, Torqu
+- Lev 2 Sec 61 A-B.5/1-1.5 Torquing MV Lineup 3/0
+- Lev 2 Sec 61 B.5-D/1.6-1.8 SWGR installation
+- Lev 2 Sec 64-65 A.4-B.5/26.4-30.3 UPS install
+- Lev 3 C-27 to C-28 + Girder + Column ( partial)
+- Lev 3 C-28 to C-29 Gider
+- Lev 3 C-32
+- Lev 3 D-24.9 Penetration Frame
+- Lev 3 E-21 / E-26
+- Lev 3 E-24, E-25, E-23, E-22
+- Lev 3 E-4, E-33
+- Lev 3 E-5 / J-20,21,22,28
+- Lev 3 E-6
+- Lev 3 E-7
+- Lev 3 J- 27, 29, 30,31,32
+- Lev 3 J-20
+- Lev 3 Surface Prep E-4, E-5, E-23, J-20, J-21J-22
+- Lev E-33
+- Leval 2 K-L/1
+- Leve 2 Sector 2 M/9.5-10 Gear install
+- Leve 2 Sector 2 N/8-9 Gear installation
+- Leve 3 L-L.5/32 elevator 5
+- Level /3 K/22.6-23
+- Level 1 & 2 C-D/12-13 Stairs
+- Level 1 & 2 C-D/18-19 (Stairs)
+- Level 1 & 2 C/32
+- Level 1 & 2( Elevator 3) L-L.5/16-17
+- Level 1 & 3 ceiling K-L/11-12
+- Level 1 & 3 ceiling, K-L/11-12
+- Level 1 & 4 C/3
+- Level 1 &2 C-D/12-14
+- Level 1 (F/22,22.3) Both sides
+- Level 1 (G/1-H/1)
+- Level 1 (Mock up) C to F, 1-3
+- Level 1 - C-D/25-33
+- Level 1 - C-D/3-12
+- Level 1 - K-L/19-33
+- Level 1 - K-L/3-6
+- Level 1 - K-L/7-19 & C-D/13-25
+- Level 1 /C-D/25-26
+- Level 1 1/F-H
+- Level 1 2 &3 L.5-M/3-4 Elevator 1
+- Level 1 23-27 Canopy
+- Level 1 23-27 W Canopy
+- Level 1 23-27 West Canopy
+- Level 1 A 29-30
+- Level 1 A, B, C, E, J, L, M, N/33
+- Level 1 A,N/1
+- Level 1 A-A.5/21-21.6 Restroom Pit Curbs
+- Level 1 A-AB/31-33
+- Level 1 A-B /31 & 32
+- Level 1 A-B/ 32-31
+- Level 1 A-B/1
+- Level 1 A-B/13 Hallway Interior N,S Wall
+- Level 1 A-B/17-18 Bollards
+- Level 1 A-B/21
+- Level 1 A-B/29, C-D/18-19, H/23; 7
+- Level 1 A-B/30-32; E-E.5/23-26 Delamination
+- Level 1 A-B/31 & 32
+- Level 1 A-B/31 & 32 FAB146109CFAB1146507BFAB146105AFAB140508AFAB140101A
+- Level 1 A-B/31 Column
+- Level 1 A-B/31,32 COLUMN
+- Level 1 A-B/31-32
+- Level 1 A-B/32-31
+- Level 1 A-B/32.5 Pedestal
+- Level 1 A-B/5
+- Level 1 A-B/5 S Face
+- Level 1 A-C/1
+- Level 1 A-C/13 Hallway 21 exterior
+- Level 1 A-C/13 hallway 21 north and south interior wallsoutside
+- Level 1 A-C/13 pass way 21 inside
+- Level 1 A-C/19 Control joint
+- Level 1 A-C/21
+- Level 1 A-C/21 Confined space
+- Level 1 A-C/25
+- Level 1 A-C/25 (North face)
+- Level 1 A-C/25 N Face
+- Level 1 A-C/25 N, S Face
+- Level 1 A-C/25.5 Clean Room
+- Level 1 A-C/29 north and south face
+- Level 1 A-C/32-33 Bollards
+- Level 1 A-C/32.8
+- Level 1 A-C/33(2nd ,3rd layer); D-F.4(1st-3rd layer); F.4-G/33(1st layer); G.5-J/33(1st-3rd layer)
+- Level 1 A-C/4-5 Bollards
+- Level 1 A-D/1
+- Level 1 A-D/32
+- Level 1 A-D/32.5 N&S Face
+- Level 1 A-D/32.8 N Face Bottom Rip
+- Level 1 A-D/32.8 S Face
+- Level 1 A-D/4.8
+- Level 1 A-D/4.8 N Face
+- Level 1 A-D/4.8 N Face Bottom Rip
+- Level 1 A-D4.8
+- Level 1 A-F/1
+- Level 1 A-H/1, 3
+- Level 1 A.3/27.6, 28, 28.5
+- Level 1 A.5/1
+- Level 1 A/1
+- Level 1 A/1 #43 anchor bolts
+- Level 1 A/1 #45
+- Level 1 A/1 #45 anchor bolts
+- Level 1 A/1 North face
+- Level 1 A/1-17 NCR-0189
+- Level 1 A/1-4
+- Level 1 A/1-5
+- Level 1 A/1-5, Level 1 M/9, Level 4 SUW L/19
+- Level 1 A/1-5; Level 4 SUW L/19
+- Level 1 A/1-9
+- Level 1 A/13
+- Level 1 A/13 N,S
+- Level 1 A/13 N,S Face
+- Level 1 A/14-15
+- Level 1 A/15
+- Level 1 A/16-18 Awnings
+- Level 1 A/16-18.5; Level L&M/17
+- Level 1 A/16-19 NCR-0189
+- Level 1 A/17
+- Level 1 A/17 Canopy
+- Level 1 A/17 N,S
+- Level 1 A/17 N,S Face
+- Level 1 A/18
+- Level 1 A/18 N,S
+- Level 1 A/18 N,S Face
+- Level 1 A/18-19
+- Level 1 A/18.8
+- Level 1 A/18.8 Doorway
+- Level 1 A/19
+- Level 1 A/19 Awning
+- Level 1 A/19 Doorway
+- Level 1 A/19-20
+- Level 1 A/19.5 Awning
+- Level 1 A/2
+- Level 1 A/20 & 21
+- Level 1 A/20,30
+- Level 1 A/20-21
+- Level 1 A/20-21 (Fire Riser RM4 interior walls)
+- Level 1 A/20-21 Fire Riser RM4 interior walls
+- Level 1 A/21 N Face
+- Level 1 A/21 N,S Face
+- Level 1 A/21 North and South
+- Level 1 A/21 North and South Face
+- Level 1 A/21 North and South face
+- Level 1 A/22
+- Level 1 A/22-24 NCR-0189
+- Level 1 A/25
+- Level 1 A/25 North and South
+- Level 1 A/25 south
+- Level 1 A/25 south face
+- Level 1 A/25 vertical column
+- Level 1 A/25, 27.8, 28.2, 28.4
+- Level 1 A/25, A/24.9 and A/25.3
+- Level 1 A/25-26
+- Level 1 A/25-28
+- Level 1 A/25.2
+- Level 1 A/26, 27, 28
+- Level 1 A/26,27,27.3,29.3
+- Level 1 A/26,27,27.6,28,29,29.3
+- Level 1 A/27-28
+- Level 1 A/27-30, Level 4E D/32-33
+- Level 1 A/27-31
+- Level 1 A/27-31; Level 1 Stair 1
+- Level 1 A/27-33
+- Level 1 A/27.7-8
+- Level 1 A/27.8
+- Level 1 A/27.9 North face
+- Level 1 A/28 Doorway
+- Level 1 A/28-29
+- Level 1 A/28-32 East Canopy
+- Level 1 A/28-33 East Canopy
+- Level 1 A/28.1-28.3 South face
+- Level 1 A/28.2
+- Level 1 A/28.4
+- Level 1 A/28.4 Doorway
+- Level 1 A/28.4 door
+- Level 1 A/28.4 doorway
+- Level 1 A/28.5, 30.5
+- Level 1 A/28.8-29
+- Level 1 A/28.9-29
+- Level 1 A/28.9-30
+- Level 1 A/28.9.29
+- Level 1 A/29-30
+- Level 1 A/29-32
+- Level 1 A/29.1-29-4
+- Level 1 A/29.1-29.4
+- Level 1 A/29.1-29.4 North face
+- Level 1 A/29.2 (door acces)
+- Level 1 A/29.2 (door access)
+- Level 1 A/29.2 N Face
+- Level 1 A/3 Stair 45
+- Level 1 A/30
+- Level 1 A/30 Column
+- Level 1 A/30 column
+- Level 1 A/30-33 Canopy
+- Level 1 A/30-34
+- Level 1 A/30.1-30.2
+- Level 1 A/30.2
+- Level 1 A/30.2 column
+- Level 1 A/30.7-31
+- Level 1 A/30.7-31 meter
+- Level 1 A/30.7-32
+- Level 1 A/30.8-32
+- Level 1 A/31
+- Level 1 A/31 (by the slurry room)
+- Level 1 A/31 Manufacturing Storage Room
+- Level 1 A/31-32
+- Level 1 A/31-32 NCR-0189
+- Level 1 A/31-32 meter
+- Level 1 A/31-33 East canopy
+- Level 1 A/31.8 NE
+- Level 1 A/32
+- Level 1 A/32-32.1 N,S Face Column
+- Level 1 A/32-33, 17-18; N/4-5
+- Level 1 A/32.2
+- Level 1 A/33
+- Level 1 A/33 Column
+- Level 1 A/33 NE
+- Level 1 A/37.7-32
+- Level 1 A/4
+- Level 1 A/4 Column concrete N,S
+- Level 1 A/4 N,S Face
+- Level 1 A/4 North and South
+- Level 1 A/4 Stair 45
+- Level 1 A/4-5 Canopy
+- Level 1 A/4-A/5 Canopy
+- Level 1 A/5
+- Level 1 A/5 Canopy
+- Level 1 A/5 Door Fab116105e
+- Level 1 A/5 S Face
+- Level 1 A/5 S Side
+- Level 1 A/5 door Fab116105e
+- Level 1 A/5 door fab116105e
+- Level 1 A/5, 5.3 & 6.5 doorways
+- Level 1 A/5,6,13,20,30
+- Level 1 A/5,6,13,30
+- Level 1 A/5-12,
+- Level 1 A/5-7.5 SE
+- Level 1 A/5; 5.3 & 6.5
+- Level 1 A/6
+- Level 1 A/6 IO Room 1
+- Level 1 A/6 N Face
+- Level 1 A/7
+- Level 1 A/7-8
+- Level 1 A/7-8 Anchor bolt repair & BUCK HOIST Level 1 N/17
+- Level 1 A/7; Level 3 B/4,17; C/17,32.5; D/17
+- Level 1 A/7; Level 3 B/4,17; C/17,32.5; L/17
+- Level 1 A/8.5-10.5
+- Level 1 A/9-10
+- Level 1 A/9-13
+- Level 1 A21 N,S Face
+- Level 1 A22-24 NCR-0189
+- Level 1 A25-28
+- Level 1 AA-A-28/30
+- Level 1 AA-A.5/14-16
+- Level 1 AA-AB/16-16.5 Dock Leveler Slab
+- Level 1 AA-AB/17-17.5 Dock Ramp
+- Level 1 AA-AB/31, AB/32.5
+- Level 1 AA-AB/31-31.5 Dock Leveler Slab
+- Level 1 AA-AB/32-32.5 Dock Ramp
+- Level 1 AA-AB/32-32.5 Dock Ramp, A/27.5-28 Dock Ra
+- Level 1 AA-AB/32-32.5 Dock Ramp, A/27.5-28 Dock Ramp, AA-AB/17-17.5 Dock Ramp
+- Level 1 AA-AB/32-32.5 Loading Dock Ramp
+- Level 1 AA.5/28.5-31 Loading dock Footing
+- Level 1 AA/17-18, 32-33; N/4-5
+- Level 1 AA/27.5-28 Dock Ramp
+- Level 1 AA/27.5-29
+- Level 1 AA/28.5-31 Loading dock Footing
+- Level 1 AB/32.5
+- Level 1 AB/32.5 Pedestal
+- Level 1 Anchorbolts A/1, N/1
+- Level 1 B-B.2/4
+- Level 1 B-B.2/4, B.2/3-4
+- Level 1 B-B.3/3-4
+- Level 1 B-B.3/3.2-4 Elevator 22
+- Level 1 B-B.3/3.2-4 Mechanical Room 22
+- Level 1 B-B.3/32
+- Level 1 B-B/3-4
+- Level 1 B-C/13 Hallway 21 Interior
+- Level 1 B-C/13 Inside hallway
+- Level 1 B-C/13 inaside hallway
+- Level 1 B-C/25 (South face )
+- Level 1 B-C/25 (South face)
+- Level 1 B-C/25 S Face
+- Level 1 B-C/3 Elevator pit 22
+- Level 1 B-C/3 N Face
+- Level 1 B-C/3 mechanical room
+- Level 1 B-C/3-4 ELV 22
+- Level 1 B-C/32
+- Level 1 B-C/32 Elevator 18
+- Level 1 B-C/32 elevator 18
+- Level 1 B-C/4.5 Bollards
+- Level 1 B-C/5
+- Level 1 B-C/5 N Face
+- Level 1 B-C/5 North face
+- Level 1 B-C/5 S Face Bottom Rip
+- Level 1 B-C/5 W Face
+- Level 1 B-C32 Elevator 18
+- Level 1 B-C5
+- Level 1 B-D/3-5, D/18, D/32, C-D/29, K-N/3-5, J-L/17
+- Level 1 B-D/4.8
+- Level 1 B-D/4.8 S Face
+- Level 1 B-D4.8
+- Level 1 B.2/4
+- Level 1 B.5-C/16-17 Elevator 20
+- Level 1 B.5-C/18-18.8
+- Level 1 B.5-C/18-19
+- Level 1 B.5-C/18-19 IT&FA Rooms
+- Level 1 B.5-C/31.5.32 S,W Face
+- Level 1 B.5-D/27-33
+- Level 1 B.5-D/28-33 NCR-0254
+- Level 1 B.5/31.3-32 Elevator 18 Interior E Wall
+- Level 1 B.5/31.3-32 Elevator 18 east wall interior
+- Level 1 B.6-C/3
+- Level 1 B.6-C/3 N&S Face
+- Level 1 B.6-C/3 S Face
+- Level 1 B.6/28.8-29.4
+- Level 1 B.6/28.8-29.4 E Wall
+- Level 1 B.6/28.8-29.4 E,W Side
+- Level 1 B.6/28.8-29.4 Top & Bottom
+- Level 1 B.6/28.8-29.4 W Face
+- Level 1 B.6/28.8-29.4 West face
+- Level 1 B.6/28.8-29.4 top and bottom
+- Level 1 B.6/28.8-29.4 west face
+- Level 1 B.6/32
+- Level 1 B.8-C/3
+- Level 1 B.8-D/27-28 Ceiling
+- Level 1 B/1 Handrail
+- Level 1 B/17-19; F/17-19
+- Level 1 B/3-4
+- Level 1 B/31-32 & B-B.8/31
+- Level 1 B/32 Elevator 19\ Wall
+- Level 1 B/32 Goalpost
+- Level 1 B/32 North face Elevator #18
+- Level 1 B/33 Elevator Pit 18
+- Level 1 B/4-7
+- Level 1 B/4.3 E Face
+- Level 1 B/5,13,30
+- Level 1 Bathroom Pit A-A.5/21-22
+- Level 1 Bathroom Pit Curbs N/11
+- Level 1 Bathroom Pit Curbs N/11-12
+- Level 1 Bunker Room 07 Interior
+- Level 1 Bunker Room 1 Interior
+- Level 1 Bunker Room 1 Interior. H/15
+- Level 1 Bunker Room 1, 2 Interior
+- Level 1 Bunker Room 1, 2 Interior Only
+- Level 1 Bunker Room 10 Interior
+- Level 1 Bunker Room 11 Interior
+- Level 1 Bunker Room 14 Interior
+- Level 1 Bunker Room 14 Interior, f/23
+- Level 1 Bunker Room 2 Interior
+- Level 1 Bunker Room 2 Interior. H/15
+- Level 1 Bunker Room 3 Interior, j/19/20
+- Level 1 Bunker Room 8 Interior
+- Level 1 Bunker Room 9 Interior
+- Level 1 C (,21,22N,25,29,30,32)
+- Level 1 C (11,12,14,17,18,19,20)
+- Level 1 C (13,15,16,22S,23,24,26,27,28,31)
+- Level 1 C-/24.8
+- Level 1 C-C.2/18-18.8
+- Level 1 C-C.3.18.3 South face
+- Level 1 C-C.3/18.3 South face
+- Level 1 C-C.3/24.8-25
+- Level 1 C-C.6/19 North face
+- Level 1 C-C.6/19 South face
+- Level 1 C-C.6/19 south face
+- Level 1 C-C.6/31-32 Elevator Mech Room
+- Level 1 C-C.6/32
+- Level 1 C-C.6/32 Mech Room 18 N Face
+- Level 1 C-C.6/32.3 MCC ROOM 18
+- Level 1 C-C.7/16.1-17 mechanical room 20
+- Level 1 C-C.8/31.1-32 mechanical room 18
+- Level 1 C-C.8/31.3
+- Level 1 C-D 24.8-25
+- Level 1 C-D/11-12
+- Level 1 C-D/12-13
+- Level 1 C-D/13-17
+- Level 1 C-D/13.3-17
+- Level 1 C-D/16-17
+- Level 1 C-D/17
+- Level 1 C-D/17 mechanical room
+- Level 1 C-D/17.8 S Face
+- Level 1 C-D/17.8 South Face
+- Level 1 C-D/17.8 south face
+- Level 1 C-D/18-19
+- Level 1 C-D/19-22
+- Level 1 C-D/21-27
+- Level 1 C-D/22-25
+- Level 1 C-D/24-25 Interior N,S
+- Level 1 C-D/24-25 vestibule Interior N,S face
+- Level 1 C-D/24.8 Duct shaft vestibule
+- Level 1 C-D/24.8-25
+- Level 1 C-D/25
+- Level 1 C-D/25 (North and south face)
+- Level 1 C-D/25 North an South face
+- Level 1 C-D/25 North and South face
+- Level 1 C-D/25-26 Stair 19
+- Level 1 C-D/26-27
+- Level 1 C-D/27
+- Level 1 C-D/27 N Face
+- Level 1 C-D/27, D/26-27
+- Level 1 C-D/28-29 Elevator 19 Pit
+- Level 1 C-D/29
+- Level 1 C-D/29 & Pit
+- Level 1 C-D/3
+- Level 1 C-D/3 North Face
+- Level 1 C-D/3 South Face
+- Level 1 C-D/3 south wall
+- Level 1 C-D/3-4, 5-6
+- Level 1 C-D/3-8
+- Level 1 C-D/3.5 fire alarm all way around
+- Level 1 C-D/3.5-4 IT/Security Room 22
+- Level 1 C-D/30
+- Level 1 C-D/30 N Face
+- Level 1 C-D/30 North face
+- Level 1 C-D/30 S Face
+- Level 1 C-D/30-30.6 Ceiling
+- Level 1 C-D/30.6-32
+- Level 1 C-D/32
+- Level 1 C-D/32 mechanical room
+- Level 1 C-D/32.6
+- Level 1 C-D/33-34 Staircase 18 (Fendolite)
+- Level 1 C-D/34-35 Curbs Stair 18
+- Level 1 C-D/34-35 Stair 18 Curbs
+- Level 1 C-D/34-35 TOPPING SLAB Stair 18
+- Level 1 C-D/34-35 Topping
+- Level 1 C-D/4 IT/room 22 all way around
+- Level 1 C-D/5 Ramp
+- Level 1 C-D/6-11 Ceiling
+- Level 1 C-D/6-12
+- Level 1 C-D/8-10
+- Level 1 C-D/8-15
+- Level 1 C-D16-17
+- Level 1 C-D30
+- Level 1 C-D32
+- Level 1 C-E.9/1
+- Level 1 C-E/33 N/E Corner Stair 18
+- Level 1 C-F/1
+- Level 1 C-F/1-3
+- Level 1 C-H/1
+- Level 1 C.2-C.6/17 S Face
+- Level 1 C.2/5 FAB116117A
+- Level 1 C.5/18.8-19 West face
+- Level 1 C.5/19 North face
+- Level 1 C.5/8.5, 14.5, 22.5, 26.5; K.5/7.5, 14.5, 20.5, 26.5, 30.5
+- Level 1 C.6/16.5-17 E Face
+- Level 1 C.6/18.8-19 East and west face
+- Level 1 C.6/18.8-19 east face & West Face
+- Level 1 C/10-11
+- Level 1 C/11(N,S),12 (N,S),14 (N,S),17 (N),18 (N,E
+- Level 1 C/11,12,14,16,17,18,19,20
+- Level 1 C/11,12,14,17,18,19,20
+- Level 1 C/11,12,14,17,18,19,20,21,22,25,29,30,32
+- Level 1 C/11-14
+- Level 1 C/11-14, 17-19 (W), 20-27
+- Level 1 C/12-13 W Face
+- Level 1 C/12-13, 15-16
+- Level 1 C/12-13.3
+- Level 1 C/12-14
+- Level 1 C/13-15
+- Level 1 C/13.2-14
+- Level 1 C/13.2-14 W Face
+- Level 1 C/13.2-15
+- Level 1 C/14-15
+- Level 1 C/14-15 Westface
+- Level 1 C/15 (S), 16 (N,S)
+- Level 1 C/15 IO Room 2
+- Level 1 C/15(SW),16(NS,W)
+- Level 1 C/15,16
+- Level 1 C/15-16
+- Level 1 C/15-16, 23-25
+- Level 1 C/15-17, 20-21
+- Level 1 C/16
+- Level 1 C/16-17
+- Level 1 C/16-17 Mech Room Interior N&W Wall & Ceiling
+- Level 1 C/16-17 Mech Room Interior N&W Wall &Ceiling
+- Level 1 C/16-17 electric room
+- Level 1 C/16-17 mechanical room
+- Level 1 C/16-17 mechanical room 20
+- Level 1 C/16.1-16.3
+- Level 1 C/16.1-17 mechanical room 20
+- Level 1 C/16.5-17 mechanical room 20
+- Level 1 C/17
+- Level 1 C/17 Elevator 20
+- Level 1 C/17 Elevator 20 Pit
+- Level 1 C/17 Goalpost
+- Level 1 C/17 elevator 20 NCR-0373
+- Level 1 C/17-17.8
+- Level 1 C/17-17.8 E,W Face
+- Level 1 C/17-17.8 W,E Face
+- Level 1 C/17-18
+- Level 1 C/17-18 (NE)
+- Level 1 C/17-18 fire alarm room 18
+- Level 1 C/17.5, C/4.5, L/17.5; Level 2 C/4.5, L/4.
+- Level 1 C/17.5, C/4.5, L/17.5; Level 2 C/4.5, L/4.5, M.5/14, M.5/27.5 Goalposts
+- Level 1 C/18
+- Level 1 C/18 (NE)
+- Level 1 C/18 IO Room
+- Level 1 C/18-18.2
+- Level 1 C/18-19
+- Level 1 C/18-20 stairs
+- Level 1 C/18.5
+- Level 1 C/19 (W), 21 (NS), 22 (NS)
+- Level 1 C/19-20
+- Level 1 C/19-23
+- Level 1 C/20-21
+- Level 1 C/20-21 EAST side
+- Level 1 C/20-22
+- Level 1 C/20-23
+- Level 1 C/20-24
+- Level 1 C/20-25
+- Level 1 C/21 (N,S),22 (N,S),29 (N,W),30(S,W),32(N)
+- Level 1 C/21,22 (N),25,29,30,32
+- Level 1 C/21,22, 29,30,32
+- Level 1 C/21-23
+- Level 1 C/21-27
+- Level 1 C/23-24
+- Level 1 C/23-25
+- Level 1 C/24-25
+- Level 1 C/25-26
+- Level 1 C/25-27; D-C/27 Clean Room
+- Level 1 C/25-27; D-C/27 clean room
+- Level 1 C/26-27
+- Level 1 C/27-28
+- Level 1 C/28
+- Level 1 C/28.4-29
+- Level 1 C/28.5
+- Level 1 C/28.8-29
+- Level 1 C/29
+- Level 1 C/29 Elevator 19 (MACHINE ROOM)
+- Level 1 C/29 North and South face
+- Level 1 C/29-30
+- Level 1 C/29.5
+- Level 1 C/3
+- Level 1 C/3 N Side W Face
+- Level 1 C/3 Stair #44
+- Level 1 C/3 Stair 44
+- Level 1 C/3,13,15,22 (S),23,24,26,27,31; E/3
+- Level 1 C/3,13,15,23,24,26,27,31
+- Level 1 C/3,13,15,23,24,26,27,31 & E/3
+- Level 1 C/3-4 duct shaft around the room
+- Level 1 C/3-8
+- Level 1 C/3-8 NCR-0256
+- Level 1 C/30
+- Level 1 C/30.4-31, 31.8-32
+- Level 1 C/30.6-31.4
+- Level 1 C/30.6-31.4 W Face
+- Level 1 C/30.8-31
+- Level 1 C/31-31.2
+- Level 1 C/31-32
+- Level 1 C/31-32 Ceiling Mechanical room
+- Level 1 C/31-32 Elevator 18 Internal N Face
+- Level 1 C/31-32 Mechanical room
+- Level 1 C/31-32 ceiling
+- Level 1 C/31-32 mechanical room
+- Level 1 C/31-32 mechanical room 18
+- Level 1 C/31.1-32 mechanical room 18
+- Level 1 C/32
+- Level 1 C/32 Elevator 18
+- Level 1 C/32 Elevator#18
+- Level 1 C/32 Goalpost
+- Level 1 C/32 Goalpost - Raised Header
+- Level 1 C/32 goalpost
+- Level 1 C/32-32.8
+- Level 1 C/32-32.8 E,W Face
+- Level 1 C/32.2-32.8
+- Level 1 C/4
+- Level 1 C/4 Elevator 22
+- Level 1 C/4 Goalpost
+- Level 1 C/4,5
+- Level 1 C/4,5,15,16
+- Level 1 C/4-10
+- Level 1 C/4-4.8
+- Level 1 C/4-4.8 E,W Face
+- Level 1 C/4-7
+- Level 1 C/4.4-4.8
+- Level 1 C/4.4-4.8 E,W Face
+- Level 1 C/415
+- Level 1 C/415 IO Room
+- Level 1 C/5-15
+- Level 1 C/5-6
+- Level 1 C/5.2 FAB North and south f.
+- Level 1 C/5.2 FAB north and South face
+- Level 1 C/5.2 N Wall
+- Level 1 C/5.2 N,S
+- Level 1 C/5.5 FAB North and S0uth face
+- Level 1 C/5.5 FAB North and south f.
+- Level 1 C/5.5 FAB116109A
+- Level 1 C/5.5 N,S Wall
+- Level 1 C/6(NS,W)7(NS,W), 9(NS,W),10(NS,W)
+- Level 1 C/6(NSW)7(NSW), 9(NSW),10(NSW)
+- Level 1 C/6, 7, 8, 10
+- Level 1 C/6, 7, 9, 10
+- Level 1 C/6,7,9,10
+- Level 1 C/6-10
+- Level 1 C/6-12
+- Level 1 C/6-12 Westface
+- Level 1 C/8-15
+- Level 1 C/8-15 NCR-0255
+- Level 1 C/9-10, 11-14
+- Level 1 C/9-16
+- Level 1 C12-13, 15-16
+- Level 1 C16-17 mechanical room
+- Level 1 C16-17 mechanical room 20
+- Level 1 C17 17.8
+- Level 1 C20-22 west face
+- Level 1 C26-27
+- Level 1 C28.8-29
+- Level 1 C4-4.8
+- Level 1 C4-7
+- Level 1 C5-6
+- Level 1 CL 1-2,C-D
+- Level 1 Canopy Entrance Skidmore Testing
+- Level 1 Ceiling A-C/24
+- Level 1 Ceiling B-C/3.5
+- Level 1 Ceiling B.5-C/31 Elevator 18
+- Level 1 Ceiling B.5-C/31-31.6
+- Level 1 Ceiling B.5-C/31-31.6 Elevator 18
+- Level 1 Ceiling B.5-C/31.3 Elevator 18
+- Level 1 Ceiling B.8-D/27-28
+- Level 1 Ceiling Beams M-N/30-31
+- Level 1 Ceiling C-D 17-18 & D/ 19-25
+- Level 1 Ceiling C-D 17-18 & D/ 20-25
+- Level 1 Ceiling C-D/ 5-6
+- Level 1 Ceiling C-D/10-11
+- Level 1 Ceiling C-D/13-14
+- Level 1 Ceiling C-D/17-18
+- Level 1 Ceiling C-D/25-26
+- Level 1 Ceiling C-D/28-30
+- Level 1 Ceiling C-D/28-30.5
+- Level 1 Ceiling C-D/28.5-30
+- Level 1 Ceiling C-D/3-5
+- Level 1 Ceiling C-D/30-30.6
+- Level 1 Ceiling C-D/30.5-33
+- Level 1 Ceiling C-D/5-6
+- Level 1 Ceiling C-D/6-8
+- Level 1 Ceiling D 7-12
+- Level 1 Ceiling D/12-17
+- Level 1 Ceiling D/12-19
+- Level 1 Ceiling D/26-27; C-D/28.5-30
+- Level 1 Ceiling D/30-32; C-D/32-33
+- Level 1 Ceiling D/30.5-32 & C-D/32-33
+- Level 1 Ceiling D/6-12
+- Level 1 Ceiling Elevator 22 Mechanical Room
+- Level 1 Ceiling J-K/19-22
+- Level 1 Ceiling K-L/10-12
+- Level 1 Ceiling K-L/17-18
+- Level 1 Ceiling K-L/22-24, K/24-27 west side
+- Level 1 Ceiling K-L/22-24; K/24-27 West side only
+- Level 1 Ceiling K-L/23-24
+- Level 1 Ceiling K-L/3-6
+- Level 1 Ceiling K-L/32-32.9
+- Level 1 Ceiling K-L/32-33
+- Level 1 Ceiling K/15-22
+- Level 1 Ceiling K/16-17, 19-22; K-L 17-18, 29-30
+- Level 1 Ceiling K/22-23, 24-26, 31-32 westside of
+- Level 1 Ceiling K/22-23, 24-26, 31-32 westside of the beam
+- Level 1 Ceiling K/26-31
+- Level 1 Ceiling K/27-32; K-L /32-33
+- Level 1 Ceiling K/27-32; K-L/32-33
+- Level 1 Ceiling K/6-7 W Side
+- Level 1 Ceiling K/7-16
+- Level 1 Ceiling L-L.5/31.3 Elevator 5
+- Level 1 Ceiling L-N/19
+- Level 1 Ceiling, B.8-D/ 27-28
+- Level 1 Ceiling, C-D/ 17-18
+- Level 1 Ceiling, C-D/ 3-5
+- Level 1 Ceiling, C-D/17-18
+- Level 1 Ceiling, D East Side of the beam/ 6-12
+- Level 1 Ceiling, D-line/6-12
+- Level 1 Ceiling, D/ 12-19
+- Level 1 Ceiling, D/19-25; 26-27 East Side of the b
+- Level 1 Ceiling, D/19-25; 26-27 East Side of the beam
+- Level 1 Ceiling, K-L/ 17-18
+- Level 1 Ceiling, K-L/29-30
+- Level 1 Ceiling, K-L/3-6
+- Level 1 Ceiling, K-line (west side ) 6-7
+- Level 1 Ceiling, K/ 15-18 & 19-22
+- Level 1 Ceiling, K/ 15-22
+- Level 1 Ceiling, K/ 15-22WestSide of beam NCR-0194
+- Level 1 Ceiling, K/ 6-15
+- Level 1 Ceiling, K/ 7-15
+- Level 1 Ceiling, K/6-15
+- Level 1 Celing A-C/24 north side only access on le
+- Level 1 Celing A-C/24 north side only access on level 3
+- Level 1 Control Joint A-C/19
+- Level 1 Control Joint A-C/9
+- Level 1 Control Joint G.9-H.3/25
+- Level 1 Control Joint G/10-13, 25/G-H
+- Level 1 Control Joint G/10-13, 25/G-J
+- Level 1 Control Joint G/10-13, G-J/25
+- Level 1 Control Joint G/13-13.3, G.8-H.3/25
+- Level 1 Control Joint G/13-17
+- Level 1 Control Joint G/20-27
+- Level 1 Control Joint G/21-26.3
+- Level 1 Control Joint G/27-33 Connected to NCR-0188
+- Level 1 Control Joint G/27-33; Level 1 Pad C-D/27-28
+- Level 1 Control Joint G/3-10
+- Level 1 Control Joint G/3-6
+- Level 1 Control Joint G/6-10
+- Level 1 Control Joint G/6-10, 16.6-17, 18-18.5
+- Level 1 Control Joints E-G/19, 25
+- Level 1 Control Joints E-G/19,25
+- Level 1 Control Joints E-G/19,25; Level 4 FIZ F.6,F.2,F/1
+- Level 1 Control joint A-C/9
+- Level 1 Control joint G/17-21
+- Level 1 Control joint G/17-27
+- Level 1 Control joint G/17-27; G-J/25
+- Level 1 Curb A/24-25
+- Level 1 Curb F.5-G.5/33
+- Level 1 Curb H-H.5/33
+- Level 1 Curb H.5-J/33
+- Level 1 Curb H.5-J/33; Level 2 J/3
+- Level 1 Curb J-H.3/33
+- Level 1 Curb K-L/34-35
+- Level 1 Curbs C/6, 12, 26
+- Level 1 Curbs C/6,12,26
+- Level 1 Curbs L.5-M.5/33
+- Level 1 Curbs L/6,10,24
+- Level 1 Curbs N/3.5
+- Level 1 Curbs and Ramps C/12,14,16,26; L/6,12,17
+- Level 1 D-C/16 electric room
+- Level 1 D-C/3
+- Level 1 D-E/3
+- Level 1 D-F/1
+- Level 1 D-F/3
+- Level 1 D-H/3
+- Level 1 D/10-12
+- Level 1 D/12-13
+- Level 1 D/12.1-13
+- Level 1 D/13-13.1
+- Level 1 D/13-13.2 East face
+- Level 1 D/13-16
+- Level 1 D/13-17
+- Level 1 D/13.1-14
+- Level 1 D/13.2 E Face
+- Level 1 D/15-16
+- Level 1 D/17-18
+- Level 1 D/17.8-18
+- Level 1 D/18, D/32, C-D/29, K-N/3-5, J-L/17
+- Level 1 D/18-20
+- Level 1 D/18-23
+- Level 1 D/18-24
+- Level 1 D/18-25
+- Level 1 D/18-28,31-33 Steel columns
+- Level 1 D/19-23
+- Level 1 D/20-23
+- Level 1 D/22-23
+- Level 1 D/23-25
+- Level 1 D/23.2-24
+- Level 1 D/24-25
+- Level 1 D/25-26
+- Level 1 D/25-28
+- Level 1 D/26-27
+- Level 1 D/26-28
+- Level 1 D/26-29
+- Level 1 D/26-31
+- Level 1 D/27-28
+- Level 1 D/27-28 E Face
+- Level 1 D/27-32
+- Level 1 D/27-D29
+- Level 1 D/28-29
+- Level 1 D/28.4-29
+- Level 1 D/29-30
+- Level 1 D/29-32
+- Level 1 D/29-33
+- Level 1 D/29.4 S Face
+- Level 1 D/3-3.5
+- Level 1 D/3-4
+- Level 1 D/3-4.5
+- Level 1 D/3.5-4
+- Level 1 D/3.6-4 IT Security room 22 north wall
+- Level 1 D/3.6-4 IT Security room 22 north wall, north face
+- Level 1 D/3.6-4 IT Security room 22 north wall, south face
+- Level 1 D/3.6-4 IT Security room 22 west wall
+- Level 1 D/3.6-4 IT Security room 22 west wall east face
+- Level 1 D/3.6-4 north face
+- Level 1 D/32 Goalpost
+- Level 1 D/32-33
+- Level 1 D/32.2-33
+- Level 1 D/4-5
+- Level 1 D/4-5 E Face
+- Level 1 D/4-7
+- Level 1 D/4.5
+- Level 1 D/5
+- Level 1 D/5 Goalpost
+- Level 1 D/5,17,32; K/4,17,32; M/9,11; B/32; C/32
+- Level 1 D/5-6
+- Level 1 D/5-6-7
+- Level 1 D/6-12
+- Level 1 D/6-7
+- Level 1 D/7-10
+- Level 1 D/7-12
+- Level 1 D/7-13
+- Level 1 D/7-9
+- Level 1 D/7.8-18
+- Level 1 D/9-12
+- Level 1 D12-13
+- Level 1 D17-18
+- Level 1 D22-23
+- Level 1 D32-33
+- Level 1 D5-6-7
+- Level 1 D7-9
+- Level 1 Delamination E-G/25-32
+- Level 1 Delamination G.5-H.5/4-11
+- Level 1 Delamination G.6-H.4/19-32
+- Level 1 Delamination J-H.5/17-33; J-G/33; N/32-33
+- Level 1 Delamination J-H/11-14
+- Level 1 Delamination J-H/4-11; J-H/14-17; N-L/21-23
+- Level 1 Delamination Patching E/15-23
+- Level 1 Delamination Patching G/18-33, G-E/33, L-N/32-33, M/31,33
+- Level 1 Dock Leveler slab P/5
+- Level 1 Dock Ramp AA-AB/17-17.5
+- Level 1 E, J/3-18
+- Level 1 E,J/10-15
+- Level 1 E,J/3-18
+- Level 1 E,J10-15
+- Level 1 E-/14-18
+- Level 1 E-F/32-33, E-E.3/26-33
+- Level 1 E-F/5-10
+- Level 1 E-G/10-25 Delamination
+- Level 1 E-G/15-19
+- Level 1 E-G/15-21
+- Level 1 E-G/19-23
+- Level 1 E-G/21-24
+- Level 1 E-G/25
+- Level 1 E-G/33
+- Level 1 E-G/33 exterior
+- Level 1 E-G/33.2-33
+- Level 1 E-G/4-10; E/10-13
+- Level 1 E-G/8-15
+- Level 1 E-G/9-15
+- Level 1 E-H/3
+- Level 1 E-H/33
+- Level 1 E-J/14-18
+- Level 1 E-J/18-20
+- Level 1 E-J/25-28
+- Level 1 E-J/3-11
+- Level 1 E-J/33
+- Level 1 E.1-F/1
+- Level 1 E.10-F/1
+- Level 1 E.3-E.5/33
+- Level 1 E.3-F.8/23-26
+- Level 1 E.3-F.8/3-17.6
+- Level 1 E.3-F.8/7, E.3-F.8 /9, G.3-H.2/15, H.3-H.9/15
+- Level 1 E.3-F/33
+- Level 1 E.3-G.8/7-7.3
+- Level 1 E.3-H.8/13-19
+- Level 1 E.3-H.8/19-21
+- Level 1 E.3-H.8/21-24
+- Level 1 E.3-H.8/24-33
+- Level 1 E.3-H.8/26.3-33
+- Level 1 E.3-H.8/3-7
+- Level 1 E.3-H.8/7-7.6
+- Level 1 E.3-H.8/7.6
+- Level 1 E.3-H.8/8-13
+- Level 1 E.3/25 & F.4/19
+- Level 1 E.3/25 , F.6/25 , F.4/19
+- Level 1 E.3/25, F.6/25, F.4/19
+- Level 1 E.3/25.0
+- Level 1 E.5, E.8/7.6
+- Level 1 E.5,E.8,F/7.6
+- Level 1 E.8-F/1 N Face
+- Level 1 E.8-F/1.4 (Pedestrian Walkway)
+- Level 1 E.9-F/1 N Face
+- Level 1 E/12-24
+- Level 1 E/17.3 & H/9.9 NCR-0103
+- Level 1 E/17.3, H.5/9.3
+- Level 1 E/17.3, H/9.9
+- Level 1 E/25-33
+- Level 1 E/25-33 & E.3-H.8/24-33
+- Level 1 E/3-11
+- Level 1 E/3-5
+- Level 1 E/4
+- Level 1 E/5
+- Level 1 E/8 Topping
+- Level 1 E/9
+- Level 1 East Side wall. L 23-31
+- Level 1 East Side wall. L 28-31
+- Level 1 East Side wall. L23-31
+- Level 1 East Side wall. L28-31
+- Level 1 Elev 22 interior walls & west exterior wall
+- Level 1 Elev.MECH.RM 22 B.2/3-4; B-B.2/4
+- Level 1 Elev.Mech.RM 22 B/3-4
+- Level 1 Elevator #1 west wall, west face
+- Level 1 Elevator #18
+- Level 1 Elevator #18 Pit
+- Level 1 Elevator #20
+- Level 1 Elevator #20 NCR-0373
+- Level 1 Elevator #22 Exterior wall
+- Level 1 Elevator #22 Interior Wall
+- Level 1 Elevator #3
+- Level 1 Elevator #3 NCR-0371
+- Level 1 Elevator 1
+- Level 1 Elevator 1 Interior S&W Wall
+- Level 1 Elevator 1 M/3-4
+- Level 1 Elevator 1 Topping Slab
+- Level 1 Elevator 1 West wall
+- Level 1 Elevator 18
+- Level 1 Elevator 18 (Interior)
+- Level 1 Elevator 18 B-32
+- Level 1 Elevator 18 B.5-C/31.3-32
+- Level 1 Elevator 18 B/32
+- Level 1 Elevator 18 NCR-0372
+- Level 1 Elevator 18 S Face
+- Level 1 Elevator 18 S Wall
+- Level 1 Elevator 18 Topping B.5-C/31.3-32
+- Level 1 Elevator 19
+- Level 1 Elevator 19 C/29 Pit Topping
+- Level 1 Elevator 19 N,W Wall
+- Level 1 Elevator 19 Pit Topping
+- Level 1 Elevator 19 Topping Slab
+- Level 1 Elevator 19 Wall B/32
+- Level 1 Elevator 1A
+- Level 1 Elevator 1A Interior S Wall
+- Level 1 Elevator 1A K-L/4-5 / east column only
+- Level 1 Elevator 1A L-M/3
+- Level 1 Elevator 1A L1-L/3.5,L.5/3.5
+- Level 1 Elevator 1B
+- Level 1 Elevator 1B M/3
+- Level 1 Elevator 1B Sump Pit M.5/3
+- Level 1 Elevator 1B Topping Slab at M/3
+- Level 1 Elevator 2 Blockouts
+- Level 1 Elevator 2 NCR-0374
+- Level 1 Elevator 2 Steel Column Blockouts
+- Level 1 Elevator 20
+- Level 1 Elevator 20 (CONFINED SPACE)
+- Level 1 Elevator 20 B.5-C/16.3-17
+- Level 1 Elevator 20 Topping B.5-C/16.3-17
+- Level 1 Elevator 22
+- Level 1 Elevator 22 B.5-C/3-4
+- Level 1 Elevator 22 Mechanical Room
+- Level 1 Elevator 22 Topping B.5-C/3-4
+- Level 1 Elevator 3
+- Level 1 Elevator 3 Interior N Face
+- Level 1 Elevator 3 Interior N Wall
+- Level 1 Elevator 3 Topping L-L.5/16-17
+- Level 1 Elevator 3 east wall
+- Level 1 Elevator 5
+- Level 1 Elevator 5 L/31-32
+- Level 1 Elevator 5 Second Topping Slab L-L.5/31-32
+- Level 1 Elevator 5 Topping L-L.5/31-32
+- Level 1 Elevator 5 Topping L-L.5/31.2-32
+- Level 1 Elevator 5, L-L.5/31-32
+- Level 1 Elevator 9 Topping L-L.5/16-17
+- Level 1 Elevator 9 Topping slab L-L.5/16-17
+- Level 1 Elevator Landing K-L/11.4-11.8
+- Level 1 Elevator Landing/K-L/11.4-11.8
+- Level 1 Elevator Mech Room West Wall
+- Level 1 Elevator Topping 18 B.5-C/31.3-32
+- Level 1 F,G/18-19 Delamination Repair
+- Level 1 F-F.4/1
+- Level 1 F-F.4/33 Line
+- Level 1 F-F.8/33 Line
+- Level 1 F-G/33 Interior Wall
+- Level 1 F-H/1
+- Level 1 F-H/1; Level 1 D-H/3
+- Level 1 F-H1
+- Level 1 F-L/1
+- Level 1 F.1-F.4/3
+- Level 1 F.1-F.4/3 South Face
+- Level 1 F.2, F.4/7.6
+- Level 1 F.2,F.4,F.6/7.6
+- Level 1 F.2,F.4/7.6
+- Level 1 F.2-H/3
+- Level 1 F.3-H/3
+- Level 1 F.4/19 Column #41
+- Level 1 F.5/1.7-2.3 E&W face
+- Level 1 F.6/25
+- Level 1 F.6/30.6, F.6/19, F.8/18, E.3/17.6, G.8/5.6
+- Level 1 F.6/7.6
+- Level 1 F.8-G/33 & K.3/30-31
+- Level 1 F.8-G/33 (Exterior)
+- Level 1 F.8/7.6
+- Level 1 F/1
+- Level 1 F/1 Stair 42
+- Level 1 F/1 Stair 42, M.5/19 Stair 26, M.5/25 Stair 30;
+- Level 1 F/1 Stair 42, M.5/19 Stair 26, M.5/25 Stair 30; level 2 M/3 Stair 48; Level 4 L/3 Stair 79
+- Level 1 F/1-1.4
+- Level 1 F/1-1.5 Ceiling
+- Level 1 F/1-2
+- Level 1 F/10
+- Level 1 F/2 Stair 32
+- Level 1 F/2-3
+- Level 1 F/22
+- Level 1 F/22 (NS)
+- Level 1 F/22, 22.3
+- Level 1 F/22,22.3 Both sides
+- Level 1 F/23 Bunker Room 14 Interior
+- Level 1 F/3
+- Level 1 F/3 Column Pocket
+- Level 1 F/33 south face
+- Level 1 F/7.6
+- Level 1 F/9
+- Level 1 F1, Stair 42 N, E,& W walls
+- Level 1 F3 Column repair
+- Level 1 FAB A-B/33 Exterior
+- Level 1 FAB B16-C16
+- Level 1 FAB D-D.8/33 Exterior
+- Level 1 FAB D-E/33
+- Level 1 FAB D-E/33 Exterior
+- Level 1 FAB D-E/33 Exterior (exclude bottom corner
+- Level 1 FAB D-E/33 Exterior (exclude bottom corner on E/33)
+- Level 1 FAB D-E/33 Exterior transition w Lvl 2
+- Level 1 FAB E-E.3/33 Exterior
+- Level 1 FAB E-F.8/33 Interior
+- Level 1 FAB E-F/33 Interior
+- Level 1 FAB E-F/33 Interior (6° screws exclude bottom corner of F33)
+- Level 1 FAB E-G/33 Interior
+- Level 1 FAB E.9-F/1
+- Level 1 FAB E.9-F/1 N Face
+- Level 1 FAB E/9 Bunker Room 11 Interior
+- Level 1 FAB F-G/33 (6” OC Screws)
+- Level 1 FAB F.8-G/33
+- Level 1 FAB F.8-G/33 Exterior
+- Level 1 FAB F.8-G/33 Interior
+- Level 1 FAB F/1 Stair 42 Interior - North, East & West Walls
+- Level 1 FAB F/1.5-2 OAC MCC Room
+- Level 1 FAB F/2-3 OAC MCC Room (under steel beam)
+- Level 1 FAB F/23.5 Bunker 14 (Only Bottom)
+- Level 1 FAB G-G.3/33 Exterior
+- Level 1 FAB G-H/33 Exterior
+- Level 1 FAB G-H/33 Interior (Exclude Opening)
+- Level 1 FAB G-H/33 Interior (Exclude Openings / bottom half up to 9')
+- Level 1 FAB G-H/33.3
+- Level 1 FAB G.3-G.5/33
+- Level 1 FAB H-J/33 Exterior (Rescrew 6 OC)
+- Level 1 FAB H-J/33 Interior (Exclude openings)
+- Level 1 FAB H.3-H.8/33 Exterior
+- Level 1 FAB H.8-J/33 Exterior
+- Level 1 FAB H.8/5 PCS Monitoring RM W Wall
+- Level 1 FAB H.8/5 PCS Monitoring RM W Wall E Face
+- Level 1 FAB H.8/6.5
+- Level 1 FAB H.8/6.5 Slurry Stock RM W Wall
+- Level 1 FAB H.8/6.5 Slurry Stock RM W Wall E Face
+- Level 1 FAB J-K/33 Exterior
+- Level 1 FAB J-K/33 Exterior (Exclude bottom right
+- Level 1 FAB J-K/33 Exterior (Exclude bottom right corner J/33)
+- Level 1 FAB J-K/33 Exterior (exclude bottom right
+- Level 1 FAB J-K/33 Exterior (exclude bottom right corner of J33)
+- Level 1 FAB J/19 Bunker 3
+- Level 1 FAB M/18 Basement
+- Level 1 FAB Trench Slopes G-J/6-7; G-J/29-33
+- Level 1 FIZ A1 stair #43
+- Level 1 FIZ Bunker 4-5
+- Level 1 FIZ Bunker 5
+- Level 1 FIZ Bunker Room 2
+- Level 1 FIZ F/1 Stair #42 Interior
+- Level 1 FIZ F/1 Stair 42 Interior
+- Level 1 FIZ F/1.6-2 ( Only opening )
+- Level 1 FIZ F/1.6-2 (Only Opening)
+- Level 1 FIZ F/2-3
+- Level 1 FIZ F/2-3 ( Above Beam)
+- Level 1 FIZ F/2-3 (Above Beam)
+- Level 1 FIZ F/2-3 Infill Frame
+- Level 1 FIZ F/2-3 Top of Beam
+- Level 1 FIZ G-L/1
+- Level 1 FIZ Stair 42 W Wall W Face
+- Level 1 Fiz A1 stair #43
+- Level 1 G, H, H.3, H.8/14.6 Exterior
+- Level 1 G, H, H.3/14.6 Exterior
+- Level 1 G-G.2/33 Exterior
+- Level 1 G-G.3/33 (Exterior)
+- Level 1 G-H.5/1
+- Level 1 G-H.8/1
+- Level 1 G-H/1
+- Level 1 G-H/12-18
+- Level 1 G-H/15.2 (Bunker rm 2)
+- Level 1 G-H/21.2-21.6 (Bunker rm 4)
+- Level 1 G-H/24.6 (Bunker rm 5)
+- Level 1 G-J.8/10-15
+- Level 1 G-J/11-18
+- Level 1 G-J/12-16
+- Level 1 G-J/13-18
+- Level 1 G-J/14-19
+- Level 1 G-J/15-19
+- Level 1 G-J/16-20
+- Level 1 G-J/16-21
+- Level 1 G-J/18-21
+- Level 1 G-J/18-22
+- Level 1 G-J/19-24
+- Level 1 G-J/19-25
+- Level 1 G-J/20-23
+- Level 1 G-J/20-25
+- Level 1 G-J/21-27
+- Level 1 G-J/24-29
+- Level 1 G-J/3-4
+- Level 1 G-J/33 Interior
+- Level 1 G-J/4-5
+- Level 1 G-J/4-6
+- Level 1 G-J/5-6
+- Level 1 G-J/6-14
+- Level 1 G-L/1
+- Level 1 G.1-G.3/33
+- Level 1 G.1-G.333
+- Level 1 G.2-G.9/1
+- Level 1 G.2-H/1
+- Level 1 G.3-G.5/33 (Exterior)
+- Level 1 G.3-G.5/33 Exterior
+- Level 1 G.5, G.8, H, H.3, H.5, H.8/14.6
+- Level 1 G.5, H, H.3, H.8/14.6 Exterior
+- Level 1 G.5, H, H.3,H.8/14.6 Exterior
+- Level 1 G.5-H.3/33 (Exterior)
+- Level 1 G.5-H.5/11-19 Delamination
+- Level 1 G.5/5-7 Goalpost
+- Level 1 G.5/5.5 & G.5/6.7 Goalpost
+- Level 1 G.5/5.5,6.7 Goalpost
+- Level 1 G.5/5.6,7; Level 3 L/30
+- Level 1 G.6-H.8/7-7.3
+- Level 1 G.8-H
+- Level 1 G.8-H/33
+- Level 1 G/1-H/1
+- Level 1 G/13.2-13.6 (I/O rm 2) South Wall
+- Level 1 G/16,18,30
+- Level 1 G/18,19,23,25,30,31
+- Level 1 G/18,25
+- Level 1 G/24,25,29; B/14,15,17,22
+- Level 1 G/24.4-24.6 (I/O rm 3)
+- Level 1 G/27-33
+- Level 1 G/3-6 Control Joint
+- Level 1 G/33 south face
+- Level 1 G/6-10 Control Joint
+- Level 1 G/8, H.8/7
+- Level 1 GL 33
+- Level 1 GL33
+- Level 1 Gas purifier room
+- Level 1 Goalpost D/17
+- Level 1 Goalpost D/32
+- Level 1 Goalpost K/32
+- Level 1 Goalpost K/4 & K/17
+- Level 1 H-H.3/3
+- Level 1 H-H.75/3
+- Level 1 H-J/3
+- Level 1 H-L/1
+- Level 1 H-M/1
+- Level 1 H-M/3
+- Level 1 H-N/1
+- Level 1 H.4/9
+- Level 1 H.5-H.8/1
+- Level 1 H.5-L/1
+- Level 1 H.8-J/1
+- Level 1 H.8-K/33 Exterior
+- Level 1 H.8-L/1
+- Level 1 H.8-L/1 Column & Soffit (Top & Bottom)
+- Level 1 H.8/14.6
+- Level 1 H.8/23.6
+- Level 1 H.8/23.6, 24, 24.3, 24.6, 25.6
+- Level 1 H.8/23.6, 24, 24.3, 24.6, 25.6 Interior
+- Level 1 H.8/23.6,24,24.3,24.6,25.6 Interior
+- Level 1 H.8/24
+- Level 1 H.8/24 Goalpost
+- Level 1 H.8/24, 24.3 ,24.6, 25.6 Exterior
+- Level 1 H.8/24, 24.3, 24.6, 25.6 Exterior
+- Level 1 H.8/24.3, 24.6, 25.6 Exterior
+- Level 1 H.8/33
+- Level 1 H.8/5,6,7.6,24; K.5/32.5; Level 1 SUW L/18-20
+- Level 1 H.8/5-6
+- Level 1 H.8/5-6 Goalposts
+- Level 1 H.8/5-6, 7-8
+- Level 1 H.8/5-7, 23.8; G.5/5-7 & Level 3 L/30 (6 locations)
+- Level 1 H.8/5-7, 23.8; G.5/5-7 & level 3 L/30 (6 locations)
+- Level 1 H.8/5-7, 23.8; G.5/5-7 (5 Locations)
+- Level 1 H.8/5-7, 23.8; G.5/5-7; H.8/7.5 & Level 3
+- Level 1 H.8/5-7, 23.8; G.5/5-7; Level 3 L/30 (6 locations)
+- Level 1 H.8/5-7, 23.8; G.5/5-7; level 3 L/30 (6 locations)
+- Level 1 H.8/5-7, G.5/5-7 & (6 locations)
+- Level 1 H.8/5-7; G.5/5-7 & (6 l
+- Level 1 H.8/5-7; G.5/5-7 (7 locations)
+- Level 1 H.8/6-7 Goalpost
+- Level 1 H.8/6.5 Goalpost
+- Level 1 H.8/6.7-7
+- Level 1 H.8/7-8 Goalposts
+- Level 1 H.8/7.5 & Level 3 L/30
+- Level 1 H/15 Bunker Room 1 Interior
+- Level 1 H/15 Bunker Room 11 Interior
+- Level 1 H/15 Bunker Room 2 Interior
+- Level 1 H/15.2-15.6 (Bunker rm 1)
+- Level 1 H/16
+- Level 1 H/19
+- Level 1 H/19 & J/20.7
+- Level 1 H/20-20.6 (Bunker rm 3)
+- Level 1 H/5
+- Level 1 H/5; F/9
+- Level 1 I.5-J/6.8-7
+- Level 1 I.5-J/6.8-7 WESTSIDE
+- Level 1 I/T Security1 FAB110109
+- Level 1 I/T security room 1 K-L/4.1
+- Level 1 I/T security room 1 L/3.5-4
+- Level 1 IT BEAMS E.5-E.8/25 Column #'s 26
+- Level 1 IT BEAMS E.5-E.8/25 Column #'s 26 and 27
+- Level 1 J-H.3/33 Curb
+- Level 1 J-J.2/33 Exterior
+- Level 1 J-K/17-33 AD Area
+- Level 1 J-K/17-33 Ceiling
+- Level 1 J-K/33 Exterior
+- Level 1 J-L/1
+- Level 1 J/10
+- Level 1 J/12-20
+- Level 1 J/19-20 Bunker # 3 Interior
+- Level 1 J/21-26
+- Level 1 J/25
+- Level 1 J/26-33
+- Level 1 J/27-33
+- Level 1 J/3 E Side
+- Level 1 J/3 East side
+- Level 1 J/3-7
+- Level 1 J/30
+- Level 1 J/5-33 Sump Pits
+- Level 1 J/6-33
+- Level 1 J/7
+- Level 1 J/8-14
+- Level 1 K & L/19
+- Level 1 K-L-34 Stairs #5
+- Level 1 K-L/1
+- Level 1 K-L/10
+- Level 1 K-L/11
+- Level 1 K-L/11-12
+- Level 1 K-L/11-12 Elevator 2
+- Level 1 K-L/11-12 Elevator 2 Pit
+- Level 1 K-L/11.4-11.8 Elevator Landing
+- Level 1 K-L/12-13
+- Level 1 K-L/15-21
+- Level 1 K-L/16-17
+- Level 1 K-L/16-17 Mech Room 3
+- Level 1 K-L/21-27
+- Level 1 K-L/23-28 Northpit Curbs
+- Level 1 K-L/27-33
+- Level 1 K-L/3
+- Level 1 K-L/3 Duct shaft
+- Level 1 K-L/3 North face
+- Level 1 K-L/3.3 duct shaft
+- Level 1 K-L/3.5 Ductshaft
+- Level 1 K-L/3.5 Fire Alarm
+- Level 1 K-L/3.5 fire alarm room
+- Level 1 K-L/34 Stairs #5
+- Level 1 K-L/34-35
+- Level 1 K-L/34-35 Curb
+- Level 1 K-L/4 IT/Security 1
+- Level 1 K-L/4.1 I/T room
+- Level 1 K-L/4.3
+- Level 1 K-L/4.3 N Face
+- Level 1 K-L/6
+- Level 1 K-L/9-15
+- Level 1 K-l/16-17 Mechanial Room #3
+- Level 1 K.3/32 Goalposts
+- Level 1 K.5/11.5-11.7
+- Level 1 K/10-10.2 E Face
+- Level 1 K/10-10.2 E Wall
+- Level 1 K/10-11
+- Level 1 K/10-11 E Face
+- Level 1 K/11-12
+- Level 1 K/11-12 WEST FACE NCR-0221
+- Level 1 K/11-13
+- Level 1 K/11.3-11.6 mech Room #2 east wall
+- Level 1 K/12-13
+- Level 1 K/12-14
+- Level 1 K/13-14
+- Level 1 K/13-15
+- Level 1 K/14-18
+- Level 1 K/15-16
+- Level 1 K/15-21
+- Level 1 K/16-17
+- Level 1 K/17-18
+- Level 1 K/18 Elevator 3
+- Level 1 K/18-25
+- Level 1 K/18-30
+- Level 1 K/19-21
+- Level 1 K/19-21.5
+- Level 1 K/19-25
+- Level 1 K/21-27
+- Level 1 K/21.5-22
+- Level 1 K/22.8-23
+- Level 1 K/22.8-23 W Face
+- Level 1 K/23 Stair #4
+- Level 1 K/23-25
+- Level 1 K/25-26
+- Level 1 K/25-30
+- Level 1 K/26-28
+- Level 1 K/27-33
+- Level 1 K/28-29
+- Level 1 K/29 Stair 50
+- Level 1 K/29-29.7
+- Level 1 K/29.7-30
+- Level 1 K/29.8-30 W Face
+- Level 1 K/29.8-31 (East Face)
+- Level 1 K/3-3.5
+- Level 1 K/3-4
+- Level 1 K/3-4 Ductshaft 116102
+- Level 1 K/3-4 duct shaft room
+- Level 1 K/3.5-3.7 fire alarm room
+- Level 1 K/3.5-4.1
+- Level 1 K/3.7-4.1 IT/security room
+- Level 1 K/30-31
+- Level 1 K/30-31 (West face)
+- Level 1 K/30-31 E Face
+- Level 1 K/30-31 E face
+- Level 1 K/30-31 Mechanical Room 5
+- Level 1 K/31-32 mechanical room 5
+- Level 1 K/31-33
+- Level 1 K/31-33 Both sides
+- Level 1 K/31.3-33
+- Level 1 K/32 Goalpost
+- Level 1 K/32 Goalposts
+- Level 1 K/32-33
+- Level 1 K/32.5
+- Level 1 K/4, 17 Goalpost
+- Level 1 K/4-4.2 E Face
+- Level 1 K/4-4.2 E Face/4.2-5 EAST FACE
+- Level 1 K/4-4.2, 4.8-5 E Face
+- Level 1 K/4-5 (East face)
+- Level 1 K/4.2-5
+- Level 1 K/4.3
+- Level 1 K/4.5,17.5; D/4.5,17.5,32.5
+- Level 1 K/4.8-5 E Face
+- Level 1 K/4.8-5 W Face
+- Level 1 K/5-6
+- Level 1 K/5-6 E face
+- Level 1 K/6-7
+- Level 1 K/6-7 E face
+- Level 1 K/7-10
+- Level 1 K/7-8
+- Level 1 K/8-10
+- Level 1 K/9-15
+- Level 1 K/9-16(Partial)
+- Level 1 K/9-16; L & M/9-10
+- Level 1 K/9-16; L,M,M.5/9-10
+- Level 1 K12-14
+- Level 1 K14-18
+- Level 1 K17-18
+- Level 1 K25-26
+- Level 1 K28-29
+- Level 1 K7-10
+- Level 1 K7-8
+- Level 1 K9-16; L9-10; M9-10; M.5 9-10
+- Level 1 KL/19
+- Level 1 L (21,22)
+- Level 1 L,N/20-29
+- Level 1 L-L.5 / 3-4 Elevator 1
+- Level 1 L-L.5 31-32 Elevator #5
+- Level 1 L-L.5/ 3-4 Elevator 1A
+- Level 1 L-L.5/18.5 S Wall N Face
+- Level 1 L-L.5/3-4 Elevator 1
+- Level 1 L-L.5/3-4 Elevator 1A
+- Level 1 L-L.5/31-31.5 Fire Alarm Room #5
+- Level 1 L-L.5/31-32 Elevator 5 East/West
+- Level 1 L-L.5/31.2 FA Room 5 N Wall
+- Level 1 L-L.5/31.2 Fire Alarm 5 N Wall 2'' Framing
+- Level 1 L-L.5/31.3
+- Level 1 L-L.5/31.3 Fire Room #5
+- Level 1 L-L.5/31.3 South face top
+- Level 1 L-L.5/31.3 south face top
+- Level 1 L-L.5/31.3-32 Elevator 5
+- Level 1 L-L.5/31.5 Elevator 5 South
+- Level 1 L-M/16-17 Elevator 3 N Wall bottom section
+- Level 1 L-M/16-18
+- Level 1 L-M/17.8
+- Level 1 L-M/18
+- Level 1 L-M/18-19
+- Level 1 L-M/18; L.5-M/19
+- Level 1 L-M/19
+- Level 1 L-M/23
+- Level 1 L-M/23 NORTH WALL
+- Level 1 L-M/23 S Face
+- Level 1 L-M/23 S Wall
+- Level 1 L-M/23 South Wall
+- Level 1 L-M/23 Southwall
+- Level 1 L-M/23-31
+- Level 1 L-M/23-31 Southwall
+- Level 1 L-M/28 Northpit Curb
+- Level 1 L-M/3
+- Level 1 L-M/3 Elevator 1
+- Level 1 L-M/3 North Face
+- Level 1 L-M/3.6 Elevator 1&1A
+- Level 1 L-M/31.3 Elevator 5 Interior S Wall
+- Level 1 L-M/32 Elevator 5
+- Level 1 L-M/32 elevator 5
+- Level 1 L-M/7.8, 19
+- Level 1 L-N 11.8
+- Level 1 L-N/1
+- Level 1 L-N/17 Waste Water
+- Level 1 L-N/17-18 Bollards
+- Level 1 L-N/17-19.4; L-M/25-25.2 & L-N/ceiling
+- Level 1 L-N/17.8
+- Level 1 L-N/2-4
+- Level 1 L-N/20
+- Level 1 L-N/31
+- Level 1 L-N/31 South Wall
+- Level 1 L-N/31-32; B/22-24
+- Level 1 L-N/32-33
+- Level 1 L-N/32-33 Bollards
+- Level 1 L.2-M/3.2
+- Level 1 L.3-L.6/3.3
+- Level 1 L.5-M.5/33 Curbs
+- Level 1 L.5-M/3-4 Elevator 1
+- Level 1 L.5/13 Pit Stair 24
+- Level 1 L.5/13 Stair 24
+- Level 1 L.5/13 Stair 24 S PIT
+- Level 1 L.5/26 Pit Stair 38
+- Level 1 L.5/26 Pit stair #38
+- Level 1 L.5/26 Pit stair 38
+- Level 1 L.5/27-28 Stair #37
+- Level 1 L.5/27-28 Stair 37
+- Level 1 L.5/4 Elevator 1
+- Level 1 L/11
+- Level 1 L/17
+- Level 1 L/17 Elevator Pit 3
+- Level 1 L/17 Goalpost
+- Level 1 L/17,20,23,29,31; N18
+- Level 1 L/17-17.3
+- Level 1 L/17-17.8
+- Level 1 L/17-18
+- Level 1 L/17.5
+- Level 1 L/17.5 Goalpost
+- Level 1 L/17.5-17.8
+- Level 1 L/18 Door Fab116105e
+- Level 1 L/18 IO Room 3
+- Level 1 L/18 IT/Security Room
+- Level 1 L/18 IT/Security room
+- Level 1 L/18 door Fab116105e
+- Level 1 L/18,21,22
+- Level 1 L/18-18.2 North Wall
+- Level 1 L/18-19
+- Level 1 L/18.5 FA Room
+- Level 1 L/18.5 North Wall
+- Level 1 L/18.5-18.6; L-L.5/18-18.5; L.5/18-18.3; L.5-1.8/18
+- Level 1 L/18.5-18.6; L-L.5/18-18.5; L.5/18-18.3; L.5-L.8/18
+- Level 1 L/18.8-19; L.5/18.3-18.5; L-L.5/18.5
+- Level 1 L/19
+- Level 1 L/19 Ramp
+- Level 1 L/19 Stair 49
+- Level 1 L/19 stair 49
+- Level 1 L/20,21,22
+- Level 1 L/21, 22
+- Level 1 L/21, 22 (N), 23 (W), 29 (E)
+- Level 1 L/21, 22 (N), 23 (W), 29 €
+- Level 1 L/21,22
+- Level 1 L/22,31 Ramps
+- Level 1 L/23,29
+- Level 1 L/23-24; L-M/23
+- Level 1 L/23-25,26-28 E Face
+- Level 1 L/23-26 West Wall
+- Level 1 L/23-28 E Wall
+- Level 1 L/23-30 S Face
+- Level 1 L/23-31
+- Level 1 L/23-31 South Wall
+- Level 1 L/23-31 Southwall
+- Level 1 L/24-26 West Wall
+- Level 1 L/25-26 E Wall
+- Level 1 L/26
+- Level 1 L/26-28
+- Level 1 L/26-28 West Wall
+- Level 1 L/28-30 N Face
+- Level 1 L/28-30 West Wall
+- Level 1 L/29 Stair 50
+- Level 1 L/3 (EW),4 (N), 5 (NW), 6 (NS), 7 (S)
+- Level 1 L/3 (S), 4 (N), 5 (NW), 6-10 (NS)
+- Level 1 L/3,4,18
+- Level 1 L/3,4,18,20
+- Level 1 L/3,4,5,6,7,8,9,10,11
+- Level 1 L/3-4
+- Level 1 L/3-4 Duct shaft
+- Level 1 L/3.5-4 I/T security room 1
+- Level 1 L/30-31
+- Level 1 L/30-31 West Wall
+- Level 1 L/31 Fire Alarm 5
+- Level 1 L/31 Fire Alarm Room #5
+- Level 1 L/31 Fire Alarm Room 5
+- Level 1 L/31-32 Fire Room #5
+- Level 1 L/31-32 mechanical room 5
+- Level 1 L/31.1-32 mechanical room 5
+- Level 1 L/32 goalpost
+- Level 1 L/33
+- Level 1 L/33 Stair 5
+- Level 1 L/4
+- Level 1 L/4 Elevator 1A E Wall
+- Level 1 L/4 Goalpost
+- Level 1 L/4.5 Goalpost
+- Level 1 L/4; N/5; N/18; L/23
+- Level 1 L/5 Stairs # 1
+- Level 1 L/5,6,7,8,9,10,11,17
+- Level 1 L/8,9,11
+- Level 1 L/8-11 (NS), 12 (W), 17 (N), 18 (W)
+- Level 1 L/9-10
+- Level 1 L24-26 West Wall
+- Level 1 L28-30 West Wall
+- Level 1 L33 East Side
+- Level 1 Loading Dock A-AB/14-17
+- Level 1 Loading Dock A-AB/16-18
+- Level 1 Loading Dock A-AB/27-29.5
+- Level 1 Loading Dock AA-AB/29-30.5
+- Level 1 Loading Dock AA-AB/30.5-32.5
+- Level 1 Loading Dock Footing AA.5/13.5-16;
+- Level 1 Loading Dock Footing AA.5/28.5-31
+- Level 1 Loading Dock Footing AA/13.5-16
+- Level 1 Loading Dock Footing AA/13.5-16; Level 1 L
+- Level 1 Loading Dock Footing AA/13.5-16; Level 1 Loading Dock Footing AA/28.5-31
+- Level 1 Loading Dock Footing AA/28.5-31
+- Level 1 Loading Dock Ramp AA-AB/17-18
+- Level 1 Loading Dock Ramp AA-AB/32-32.5
+- Level 1 Loading Dock Retaining Wall AA.5/28.5-31
+- Level 1 Loading Dock Retaining wall AA.5/13.5-16
+- Level 1 Loading Dock Retaining wall AA.5/28.5-31
+- Level 1 Loading Dock Retaining wall AA/13.5-16
+- Level 1 Loading Dock Retaining wall AA/13.5-16 & A
+- Level 1 Loading Dock Retaining wall AA/13.5-16 & AA.5/13.5-16
+- Level 1 Loading Dock Retaining wall AA/28.5-31
+- Level 1 Loading Dock Retaining wall AA/28.5-31; Le
+- Level 1 Loading Dock Retaining wall AA/28.5-31; Level 1 Loading dock Footing AA.5/13.5-16
+- Level 1 Loading Dock Retaining walls AA/13.5-16 &
+- Level 1 Loading Dock Retaining walls AA/13.5-16 & AA.5/13.5-16
+- Level 1 Loading Dock Retaining walls AA/13.5-16 &A
+- Level 1 Loading Dock Retaining walls AA/13.5-16 &AA.5/13.5-16
+- Level 1 Loading Dock Retaining walls AA/13.5-16 ad AA.5/13.5-16
+- Level 1 Loading Dock Retaining walls AA/13.5-16 and AA.5/13.5-16
+- Level 1 Loading Dock Retaining walls AA/28.5-31 ad
+- Level 1 Loading Dock Retaining walls AA/28.5-31 ad AA.5/28.5-31
+- Level 1 Loading dock Footing AA.5/28.5-31
+- Level 1 Loading dock Footing AA.5/28.5-31; Level 1
+- Level 1 Loading dock Footing AA.5/28.5-31; Level 1 Loading dock Footing AA/28.5-31
+- Level 1 Loading dock Footing AA/28.5-31
+- Level 1 M-L/12-13 South Pit Curbs
+- Level 1 M-M.4/21.3 H2 purifier room
+- Level 1 M-M.5/25.5 Stair #31
+- Level 1 M-M.5/25.5 Stair 31
+- Level 1 M-M.5/26 Stair #34
+- Level 1 M-M.5/26 Stair 34
+- Level 1 M-M.5/3-3.4
+- Level 1 M-M.5/3-3.5 ELV 1B
+- Level 1 M-N 9-10
+- Level 1 M-N/ Column 3
+- Level 1 M-N/1
+- Level 1 M-N/11-12
+- Level 1 M-N/11.5 Basement
+- Level 1 M-N/17-18 Bollards
+- Level 1 M-N/17-19 (Cafco 400)
+- Level 1 M-N/17.5 Bollards
+- Level 1 M-N/18 MCC Room Interior S Wall, N Side
+- Level 1 M-N/18-19 MCC Room Interior
+- Level 1 M-N/18-19 MCC Room N&S Wall
+- Level 1 M-N/18-19 MCC Room N,S,W Walls Framing / S,W Wall 1st Layer
+- Level 1 M-N/19
+- Level 1 M-N/23 N Face
+- Level 1 M-N/23 NORTH WALL
+- Level 1 M-N/23 North Face
+- Level 1 M-N/23 S Face
+- Level 1 M-N/23 S Wall
+- Level 1 M-N/23 South Wall
+- Level 1 M-N/23 Southwall
+- Level 1 M-N/3-3.3
+- Level 1 M-N/3-4
+- Level 1 M-N/3.5 Basement
+- Level 1 M-N/30-31
+- Level 1 M-N/30.4-31 Pit Ceiling
+- Level 1 M-N/33
+- Level 1 M-N/33-33.5 Interior
+- Level 1 M-N/4-5
+- Level 1 M-N/6-12
+- Level 1 M-N/9-12
+- Level 1 M-N23 S Wall
+- Level 1 M.5-N/13 Pit Stair 23
+- Level 1 M.5-N/19-20 South Pit
+- Level 1 M.5-N/21.3
+- Level 1 M.5-N/3-3.3
+- Level 1 M.5-N/3-3.5 Ceiling
+- Level 1 M.5/18 Stair 25
+- Level 1 M.5/19 PIT Stair #26
+- Level 1 M.5/19 Stair 26
+- Level 1 M.5/2.6 Stair #60
+- Level 1 M.5/2.6 Stair 60
+- Level 1 M.5/23 Pit Stair #27
+- Level 1 M.5/23 Pit stair #27
+- Level 1 M.5/23 Pit stair 27
+- Level 1 M.5/23 Stair 27
+- Level 1 M.5/23-25 Goalposts
+- Level 1 M.5/23-26
+- Level 1 M.5/23-29
+- Level 1 M.5/23-29 NCR-0277
+- Level 1 M.5/23.5-26 North Pit
+- Level 1 M.5/25 Goalpost
+- Level 1 M.5/25 N PIT Stair 39
+- Level 1 M.5/25 PIT Stair #30
+- Level 1 M.5/25 Stair 30
+- Level 1 M.5/25 Stair 30; level 2 M/3 Stair 48; Level 4 L/3 Stair 79
+- Level 1 M.5/25 Stair 39
+- Level 1 M.5/25-26.5 Goalposts
+- Level 1 M.5/25-28 5; Level 3 G/2 North & South; L/4.5; M/4.5
+- Level 1 M.5/26 PIT Stair #34
+- Level 1 M.5/26 Pit Stair 34
+- Level 1 M.5/27 N PIT Stair 35
+- Level 1 M.5/27 Pit Stair #39
+- Level 1 M.5/27 Pit Stair 39
+- Level 1 M.5/29 PIT Stair #40
+- Level 1 M.5/29 Pit Stair #40
+- Level 1 M.5/29 Pit Stair 40
+- Level 1 M.5/29 Stair 40
+- Level 1 M.5/3
+- Level 1 M.5/30.5 Stair 41
+- Level 1 M.7-N/32.7
+- Level 1 M/10,11; L/19
+- Level 1 M/10.2-10.8, 11.1-11.5
+- Level 1 M/11 Gas Purifier Room
+- Level 1 M/11 Purifier room
+- Level 1 M/12
+- Level 1 M/12-20
+- Level 1 M/18
+- Level 1 M/18 East north face
+- Level 1 M/18 East south face
+- Level 1 M/18 MCC Room South Wall
+- Level 1 M/18 MCC Room South Wall Exterior
+- Level 1 M/18 North face both sides
+- Level 1 M/18 South face both sides
+- Level 1 M/18 Stair #25
+- Level 1 M/18-19 East Wall
+- Level 1 M/19,32
+- Level 1 M/20-20.9
+- Level 1 M/20.9-21 H2 purifier room
+- Level 1 M/23 Stair #27
+- Level 1 M/23 Stair 27
+- Level 1 M/27 North Pit Stair 35
+- Level 1 M/3
+- Level 1 M/3 ; N/21
+- Level 1 M/3 Elevator 1B
+- Level 1 M/3 Elevator 1B Topping
+- Level 1 M/3 Elevator 1B Topping Slab
+- Level 1 M/3 south side
+- Level 1 M/3-3.8
+- Level 1 M/3-4 Elevator 1
+- Level 1 M/3.2-4
+- Level 1 M/30-31 Elevator Pit 5
+- Level 1 M/32; Level 2 B/20-22
+- Level 1 M/33 Buck Hoist
+- Level 1 M/3; N/21
+- Level 1 M/4
+- Level 1 M/4 Elevator 1
+- Level 1 M/4 Elevator 1 W Wall / S Wall N Face
+- Level 1 M/9
+- Level 1 M/9 Gas Purifier Room
+- Level 1 M/9 purifier room
+- Level 1 M/9, Gas Purifier Room
+- Level 1 M/9,10.6
+- Level 1 M/9-10
+- Level 1 M10.2-10.8, 11.1-11.5
+- Level 1 MCC Room C/31
+- Level 1 MCC Room M-N18-19 N,S,W Walls
+- Level 1 Mechanical Room 22
+- Level 1 Mechanical Room 3
+- Level 1 Mechanical Room 3 Ceiling
+- Level 1 Mechanical room 3
+- Level 1 N,M/23; L/29; A/32; A,B,C,M,N/33
+- Level 1 N-M/23
+- Level 1 N-M/23 Southwall
+- Level 1 N-P/17-18
+- Level 1 N-P/23-29
+- Level 1 N-P/5
+- Level 1 N.5/23-29 Canopy Foundations
+- Level 1 N.5/23-29 SUW Pedestals
+- Level 1 N/ 26-27
+- Level 1 N/1
+- Level 1 N/1-4
+- Level 1 N/10.9
+- Level 1 N/10.9 Doorway
+- Level 1 N/11 Fire Rise Restroom
+- Level 1 N/11 Toilet Room
+- Level 1 N/11.4, 11.6, 11.8 doorways
+- Level 1 N/11.4,11.6,& 11.8
+- Level 1 N/11.4; 11.6 & 11.8 Doorway
+- Level 1 N/12,13,14,15,17,19
+- Level 1 N/12,20,22 & L-M/12-20
+- Level 1 N/13.2
+- Level 1 N/13.2 Doorway
+- Level 1 N/17
+- Level 1 N/17 Buck Hoist
+- Level 1 N/17 W Side
+- Level 1 N/17-18
+- Level 1 N/17-18 West Awning
+- Level 1 N/17-18 West awning
+- Level 1 N/18
+- Level 1 N/18 Awning
+- Level 1 N/19
+- Level 1 N/19-21
+- Level 1 N/19-21 Awnings
+- Level 1 N/2-3
+- Level 1 N/22-23
+- Level 1 N/23 N Face
+- Level 1 N/23 S Wall
+- Level 1 N/23-24
+- Level 1 N/23-24 NCR 0189
+- Level 1 N/23-28
+- Level 1 N/23-29 W Canopy
+- Level 1 N/23-29 W Canopy Plate Washers & Bolts
+- Level 1 N/23-29 West Canopy
+- Level 1 N/23-29 West canopy
+- Level 1 N/24-25
+- Level 1 N/24-25 NCR-0189
+- Level 1 N/25-28 Goalposts
+- Level 1 N/25-33 NCR 0189
+- Level 1 N/26 & 29
+- Level 1 N/26, 29
+- Level 1 N/26,28
+- Level 1 N/26-27
+- Level 1 N/27-28 Goalpost
+- Level 1 N/27-N/28 Goalpost
+- Level 1 N/28 & 29
+- Level 1 N/28, 29 Canopy W Side
+- Level 1 N/28-29
+- Level 1 N/28-29 QOR-0186
+- Level 1 N/28-29 West Canopy
+- Level 1 N/28-29 West Canopy Moment Welds
+- Level 1 N/3
+- Level 1 N/3 & 4 Doorway
+- Level 1 N/3-4
+- Level 1 N/3-4 Bathroom Pit Curbs
+- Level 1 N/3-4 doorways
+- Level 1 N/3-6, A/5-12, Elevator 20 B.5-C/16.3-17
+- Level 1 N/30
+- Level 1 N/30 Pit Stair #41
+- Level 1 N/30 Pit Stair 41
+- Level 1 N/30.8
+- Level 1 N/30.8 Doorway
+- Level 1 N/31 Stair #41
+- Level 1 N/32 canopy
+- Level 1 N/32.8 wall steel
+- Level 1 N/32; H/6-7 Delamination
+- Level 1 N/33 Awning
+- Level 1 N/4
+- Level 1 N/4 door header raised
+- Level 1 N/4-5
+- Level 1 N/4-5 Canopy & N/5-6 wall steel leave out
+- Level 1 N/4.8 & 5
+- Level 1 N/4.8 & 5 Doorway
+- Level 1 N/4.8 doorway
+- Level 1 N/5 Canopy
+- Level 1 N/5 Doorway
+- Level 1 N/5 doorway
+- Level 1 N/5,18
+- Level 1 N/5-6
+- Level 1 North Pit Equipment Pads L-L.5/27-27.5
+- Level 1 North Pit Equipment Pads L-L.5/27-27.5; Level 1 South Pit Sump Pit Blockout L/15
+- Level 1 North Pit Stair 30 M.5/25
+- Level 1 North Pit Stair 38 L.5/27
+- Level 1 North Pit Stair 39 M.5/27.5
+- Level 1 North Pit Stair 39 M.5/27.5 & Level 3 ELV 19
+- Level 1 North Pit Topping Blockouts M.5/26-29
+- Level 1 North Side wall. L25-26
+- Level 1 North Side wall. M-N/23; M/23
+- Level 1 North Side wall. N-23
+- Level 1 North Side wall. N-M/23
+- Level 1 Northpit Curb L-M/28
+- Level 1 Northpit Curbs K-L/23-28
+- Level 1 Northpit Curbs K-L/23-28; Level 1 Northpit Topping Blockouts M.5/23-29; Level 1H Sump pit L/11.5
+- Level 1 Northpit Curbs L-M/23-28
+- Level 1 Northpit Mezzanine Topping M.5-N/21-29
+- Level 1 Northpit Topping Blockouts M.5/23-29
+- Level 1 Northpit Topping Blockouts M.5/23-29n
+- Level 1 Northpit Topping Blockouts M.5/26-29
+- Level 1 P, P.5/5-7.5 Retaining wall Foundation
+- Level 1 P,P.5/5-7.5 Retaining wall Foundation
+- Level 1 P-P.5/17-17.5 Loading Dock Leveler Slab
+- Level 1 P/5
+- Level 1 P/5 Dock Leveler slab
+- Level 1 Pad C-D/27-28
+- Level 1 Pedestal AA/32.5-33
+- Level 1 Pedestal AA/32.5-33, Level 1 AB/32.5
+- Level 1 Pit Ceiling M-N/30.4-31
+- Level 1 Pit L.5/17 Stair #33
+- Level 1 Pit M-M.5/25 Stair #31
+- Level 1 Pit M.5/23 stair #27
+- Level 1 Pit M.5/25 Stair 30, M.5/27 Stair 35 and M.5/27.5 Stair 39
+- Level 1 Pit M.5/25 Stair 30, M.5/27 Stair 35, M.5/
+- Level 1 Pit M.5/25 Stair 30, M.5/27 Stair 35, M.5/27.5 Stair 39
+- Level 1 Pit M.5/25 Stair 30; M.5/27 Stair 35; M.5/
+- Level 1 Pit M.5/25 Stair 30; M.5/27 Stair 35; M.5/27.5 Stair 39
+- Level 1 Pit M.5/26 Stair #34
+- Level 1 Pit M.5/27 Stair #35
+- Level 1 Pit M/18
+- Level 1 Pit M/18 Stair 36
+- Level 1 Pit M/18 Stair#36
+- Level 1 Pit Stair #26
+- Level 1 Pit Stair #39
+- Level 1 Pit Stair 39
+- Level 1 Pits M.5-N/23-29
+- Level 1 Ramp C-D/5
+- Level 1 Ramp C/16
+- Level 1 Ramp C/19
+- Level 1 Ramp C/19; Level 1 Topping J/8, J/22; Level 1 South Pit Curb L-N/18
+- Level 1 Ramp C/24, 26; L/24
+- Level 1 Ramp C/24, 26; L/24, 25
+- Level 1 Ramp C/24, C/26, L/24, L/25
+- Level 1 Ramp C/24.5, 26 & L/24
+- Level 1 Ramp C/26, L/24, L/25
+- Level 1 Ramp L/10
+- Level 1 Ramp L/10, 12
+- Level 1 Ramp L/17
+- Level 1 Ramp L/17; Elevator 1
+- Level 1 Ramp L/19
+- Level 1 Ramp L/29
+- Level 1 Ramp L/6
+- Level 1 Ramp L/6 & C/6
+- Level 1 Ramps C/19
+- Level 1 Ramps L/12, 17, 24; C/24, 26
+- Level 1 Ramps L/19, 31
+- Level 1 Ramps L/22,31
+- Level 1 Ramps L/29
+- Level 1 Ramps and Curbs C/12 & 13
+- Level 1 Ramps and Curbs C/12 &13
+- Level 1 Ramps and Curbs L/6,10,24
+- Level 1 Restroom Pit Curbs A-A.5/21-21.6
+- Level 1 Restroom Pit Curbs M.5-N/3.3-4; M.5-N/11-1.5
+- Level 1 Restroom Pit SOMD M.5-N/11-1.5
+- Level 1 Restroom Pit SOMD M.5-N/11-11.5
+- Level 1 Restroom Pit SOMD M.5-N/3.3-4
+- Level 1 Restroom pit Curbs A-A.5/21-21.6
+- Level 1 S/37.7-32
+- Level 1 SUE
+- Level 1 SUE & SUW NCR-0237
+- Level 1 SUE 21-22 A.1 Bathroom pit
+- Level 1 SUE A-A.5/21-22
+- Level 1 SUE A-A.5/9-11
+- Level 1 SUE A-AB/16-17.5 Dock 2 Slab
+- Level 1 SUE A-AB/16-17.5 Loading Dock 2
+- Level 1 SUE A-AB/28-30.5 Dock Slab
+- Level 1 SUE A-AB/30.5-32.5 Dock 3 Slab
+- Level 1 SUE A-B, B-C, D-E/33 Interior
+- Level 1 SUE A-B/20-22
+- Level 1 SUE A-B/21-22
+- Level 1 SUE A-B/33 Exterior
+- Level 1 SUE A-C/19
+- Level 1 SUE A-C/33 Interior (12" Screws)
+- Level 1 SUE A-C/7-33 Delamination
+- Level 1 SUE A.1/21-22 Bathroom pit
+- Level 1 SUE A/12
+- Level 1 SUE A/13-16
+- Level 1 SUE A/16 Loading Dock 3
+- Level 1 SUE A/20-21 Riser Room
+- Level 1 SUE A/20-22 Riser Room
+- Level 1 SUE A/20-22; C/29-30
+- Level 1 SUE A/21 Restroom (2 sections)
+- Level 1 SUE A/21 Restroom Ceiling (2 sections)
+- Level 1 SUE A/26 Loading Dock 3
+- Level 1 SUE A/5
+- Level 1 SUE AA-A/27-32
+- Level 1 SUE AA-A/31-32.8
+- Level 1 SUE AA/27-31
+- Level 1 SUE AA/27-31 line 28 excluded
+- Level 1 SUE AA/27.5-28 Dock Ramp
+- Level 1 SUE B-B.3/32 MCC ROOM
+- Level 1 SUE B-B.3/32 MCC Room
+- Level 1 SUE B-B.3/32 MCC Room S Face
+- Level 1 SUE B-B.8/28.8
+- Level 1 SUE B-C/30-32 Electrical Room
+- Level 1 SUE B.5-B.8/30.5 UPW MCC Room S Face (Door
+- Level 1 SUE B.5-B.8/30.5 UPW MCC Room S Face (Door Frame)
+- Level 1 SUE B.5-C/17 Elevator 20 Front
+- Level 1 SUE B.5-C/18-19
+- Level 1 SUE B.5/18-19; B.5-C/18.8
+- Level 1 SUE B.5/29 PR Room W Wall E Face
+- Level 1 SUE B.5/29-29.5 PR Room W Wall E Face
+- Level 1 SUE B.6-C/29.3 N Face
+- Level 1 SUE B.7-B.8/28.8
+- Level 1 SUE B/30-32; B-B.8 30; B.8-C/30.5; B.5-C/31.2; B.5/31.2-32
+- Level 1 SUE B/32 MCC ROOM
+- Level 1 SUE C-D/12-13 Stair 21 NCR 0267
+- Level 1 SUE C-D/17.8 S Face
+- Level 1 SUE C-D/18-19 Stair 20 NCR 0267
+- Level 1 SUE C-D/30.5 Ductshaft
+- Level 1 SUE C-D/30.6 Ductshaft
+- Level 1 SUE C-D/30.6 Ductshaft N face
+- Level 1 SUE C-D/32-32.7 S Face
+- Level 1 SUE C.2/13.2 Duct Shaft Vestibule N Wall,
+- Level 1 SUE C.2/13.2 Duct Shaft Vestibule N Wall, W Wall
+- Level 1 SUE C.2/13.2 Ductshaft vestibule Interior
+- Level 1 SUE C.2/13.2 Ductshaft vestibule Interior N,W Wall
+- Level 1 SUE C.2/13.2 N,W Wall ductshaft vestibule
+- Level 1 SUE C.3-C.6/32 Elevator Mech Room 18 N Fac
+- Level 1 SUE C.3-C.6/32 Elevator Mech Room 18 N Face
+- Level 1 SUE C.3-C.6/32 Elevator Mech Room 18 S Fac
+- Level 1 SUE C.3-C.6/32 Elevator Mech Room 18 S Face
+- Level 1 SUE C.8/28-28.5 Elevator 19 W wall
+- Level 1 SUE C/14-15 NCR 0724
+- Level 1 SUE C/18 Stair 20
+- Level 1 SUE C/18 Stair 20 E Wall
+- Level 1 SUE C/18 Stair 20 N, W, S WALLS
+- Level 1 SUE C/18-19
+- Level 1 SUE C/19-20 NCR 0724
+- Level 1 SUE C/25 Stair 19
+- Level 1 SUE C/25.4
+- Level 1 SUE C/25.4 FAB116412B
+- Level 1 SUE C/25.7 FAB 116412A
+- Level 1 SUE C/25.7 FAB116412A
+- Level 1 SUE C/28 Elevator 19 Front
+- Level 1 SUE C/28 Elevator 19 S Wall
+- Level 1 SUE C/28 Elevator 19 S Wall NCR-0229
+- Level 1 SUE C/28 Elevator 19 S Wall NCR-3066
+- Level 1 SUE C/28 Elevator 19 S wall
+- Level 1 SUE C/28 Elevator 19 S,W Walls
+- Level 1 SUE C/28 Elevator 19 W Wall
+- Level 1 SUE C/28-28.8 outside East Wall
+- Level 1 SUE C/28.5-28.8 Elevator Mech rm 19 E wall E face
+- Level 1 SUE C/28.5-28.8 Elevator Mech rm 19 E wall W face
+- Level 1 SUE C/29 PR air lock room (east wall west
+- Level 1 SUE C/29 PR air lock room (east wall west side)
+- Level 1 SUE C/29.2 PR Airlock N Wall N Face
+- Level 1 SUE C/30.8-31.2
+- Level 1 SUE C/31
+- Level 1 SUE C/31 MCC Room
+- Level 1 SUE C/33-34 Stair 18 Exterior
+- Level 1 SUE C/5 Stair 22
+- Level 1 SUE C/6-14
+- Level 1 SUE C/6.5,7.4,8.3,10.5,11.7,12.3 NCR 0724
+- Level 1 SUE D-E/33 Exterior
+- Level 1 SUE D/13 Stair 20 S Only (beam inside wall2wall)
+- Level 1 SUE D/13 Stair 21 E Wall
+- Level 1 SUE D/13 Stair 21 Interior N Wall NCR 0267 (from Cjs down would be 1st flr)
+- Level 1 SUE D/13 Stair 21 Interior N,S,E Walls
+- Level 1 SUE D/13 Stair 21 Interior S Wall
+- Level 1 SUE D/13 Stair 21 N Wall
+- Level 1 SUE D/13 Stair 21 N,S Wall (wall2wall upper beam area)
+- Level 1 SUE D/13-16 Bottom of Wall
+- Level 1 SUE D/18 Stair 20 Interior N,S,E Walls
+- Level 1 SUE D/18 Stair 20 N Wall
+- Level 1 SUE D/18 Stair 20 N,S Wall (wall2wall upper beam area)
+- Level 1 SUE D/18 Stair 20 S Only (beam inside wall2wall)
+- Level 1 SUE D/18 Stair 20 S Wall
+- Level 1 SUE D/18 Stair 20 W Wall Interior
+- Level 1 SUE D/18 Stair 21 Interior N Wall NCR 0267 (from Cjs down would be 1st flr)
+- Level 1 SUE D/18 stairs 20 (N,S,E) walls
+- Level 1 SUE D/28.8-29 W Wall E Face (PR air lock v
+- Level 1 SUE D/28.8-29 W Wall E Face (PR air lock vestibule)
+- Level 1 SUE D/33-34 Stair 18 Exterior
+- Level 1 SUE D/4-D/5
+- Level 1 SUE D/5 stair #22
+- Level 1 SUE D/5 stair 22
+- Level 1 SUE Dock 2 Slab A-AB/16-17.5
+- Level 1 SUE Fire Alarm Room 18
+- Level 1 SUE LVL1 31.2-line B.5-C
+- Level 1 SUE Stair 18 E Wall
+- Level 1 SUE Stair 18 W Wall Exterior
+- Level 1 SUE Stair 19
+- Level 1 SUE Stair 19 NORTH AND EAST WALL
+- Level 1 SUE Stair 20 Exterior S ,N wall
+- Level 1 SUE Stair 20 Interior E Wall
+- Level 1 SUE Stair 21 C-D/12-13
+- Level 1 SUE Stair 21 W Wall Interior
+- Level 1 SUE Stair 21 W Wall NCR 0267 (inside reduc
+- Level 1 SUE Stair 21 W Wall NCR 0267 (inside reduce space wall2wall Beam)
+- Level 1 SUE Stair 22 Exterior
+- Level 1 SUE Stairs 18 Exterior N Wall
+- Level 1 SUE Stairs 18 Exterior W Wall
+- Level 1 SUE Stairs 18 West Wall Exterior
+- Level 1 SUE Stairs 20 All Wall
+- Level 1 SUE Stairs 20 Interior E Wall
+- Level 1 SUE Stairs 21
+- Level 1 SUE Stairs 21 N,S,W Wall
+- Level 1 SUE crane mats 10-12
+- Level 1 SUW
+- Level 1 SUW C/30 MCC Room N Wall S Face
+- Level 1 SUW Dock N-Q/4-5.5
+- Level 1 SUW Dock Retaining walls P/15.5-17, P.5/15
+- Level 1 SUW Dock Retaining walls P/15.5-17, P.5/15.5-17
+- Level 1 SUW Elevator 1A E Wall W Side
+- Level 1 SUW Elevator 1A W Wall E Side
+- Level 1 SUW Elevator 1B E Wall
+- Level 1 SUW Elevator Mech Room #2 interior (West N
+- Level 1 SUW Elevator Mech Room #2 interior (West North and South Wall)
+- Level 1 SUW Elevator Mech Room 2 exterior
+- Level 1 SUW Elevator Mech Room 2 interior (West North and South Wall)
+- Level 1 SUW Elevator Mech room #2 exterior
+- Level 1 SUW GL 5
+- Level 1 SUW H-L/1 Soffit
+- Level 1 SUW H.8-L/1 Column/Soffit (Top&Bottom)
+- Level 1 SUW J-K/33 Exterior
+- Level 1 SUW J/18 Stair 3 W Wall NCR 0268 (inside reduce space wall2wall Beam)
+- Level 1 SUW K-K.3/17 Duct shaft vestibule # 3 both faces
+- Level 1 SUW K-K.3/17 FAB110206B ductshaft vestibule
+- Level 1 SUW K-K.8/22.7 Duct Shaft Vestibule 4 N Face
+- Level 1 SUW K-K.8/22.7 Duct Shaft Vestibule 4 S Face
+- Level 1 SUW K-K.8/22.7 Duct shaft vestibule # 4 N Face
+- Level 1 SUW K-L/18-19 Stair 3 NCR 0268
+- Level 1 SUW K-L/22.4-22.8 Duct shaft vestibule
+- Level 1 SUW K-L/5-6 stair 1 missing anchor bolts
+- Level 1 SUW K.3-L/16.4-17 Elevator mech rm
+- Level 1 SUW K.3-L/16.7 Elevator Mech. Room S Wall S Face
+- Level 1 SUW K.3/16.7-17 Elevator Mech. Room E Wall E Face
+- Level 1 SUW K.3/17 Airlock 3 (Door Opening)
+- Level 1 SUW K.3/32.5 (Corridor Goal Post)
+- Level 1 SUW K.3/32.5 E Face (Corridor Goal Post)
+- Level 1 SUW K.7-L/22.4 N Face Door Opening FAB110514A
+- Level 1 SUW K.7-L/22.4 N Face FAB 110514A Door Opening
+- Level 1 SUW K.7-L/22.6 N,S Face Door Opening FAB110514B
+- Level 1 SUW K.8-11.8-L/12 (door)
+- Level 1 SUW K.8-L/11.8 (door)
+- Level 1 SUW K.8-L/5.3 Vestibule # 1 Duct Shaft Wall S Face (FAB110112A)
+- Level 1 SUW K.8-L/5.5 Vestibule # 1 Duct Shaft Wall S Face (FAB110108A)
+- Level 1 SUW K.8/22.4-22.7 Duct Shaft Vestibule 4 E,W Face
+- Level 1 SUW K.8/22.4-22.7 Duct shaft vestibule # 4 W Face
+- Level 1 SUW K/10-10.2
+- Level 1 SUW K/10-10.2 E Face
+- Level 1 SUW K/10-11 E Face
+- Level 1 SUW K/10.2-11
+- Level 1 SUW K/10.2-11 E Face
+- Level 1 SUW K/11 Stair 2 Interior N Wall
+- Level 1 SUW K/11 Stair 2 Interior N,W Walls
+- Level 1 SUW K/11 Stair 2 Interior W Wall
+- Level 1 SUW K/11 Stair 2 N Wall N Face
+- Level 1 SUW K/11 Stair 2 S Wall
+- Level 1 SUW K/18 Stair 3 All Interior Walls
+- Level 1 SUW K/18 Stair 3 E Wall
+- Level 1 SUW K/18 Stair 3 Interior All Walls
+- Level 1 SUW K/18 Stair 3 Interior N,S,W Walls
+- Level 1 SUW K/18 Stair 3 N,S (upper area @beam)
+- Level 1 SUW K/18 Stair 3 S Wal
+- Level 1 SUW K/18 Stair 3 S Wall
+- Level 1 SUW K/18 Stair 3 W Wall NCR 0268 (inside r
+- Level 1 SUW K/18 Stair 3 W Wall NCR 0268 (inside reduce space wall2wall Beam)
+- Level 1 SUW K/33-34 Exterior
+- Level 1 SUW K/34-35 Stair 5
+- Level 1 SUW KL/5-6 stair 1 missing anchor bolts
+- Level 1 SUW L,N/12-16
+- Level 1 SUW L-L.3/3.3 W face Elevator mechanical room 1A FAB110102A
+- Level 1 SUW L-L.5/17 Elevator 3 N Face (exclude op
+- Level 1 SUW L-L.5/17 Elevator 3 N Face (exclude openings for electrical box)
+- Level 1 SUW L-L.5/17 Elevator 3 N Wall (Front)
+- Level 1 SUW L-M/12 N Face S Pit
+- Level 1 SUW L-M/12 NCR-0237
+- Level 1 SUW L-M/12 NCR-0273
+- Level 1 SUW L-M/12 S Pit N Face
+- Level 1 SUW L-M/20 S Pit
+- Level 1 SUW L-M/20 S Pit S Face
+- Level 1 SUW L-M/33 Interior
+- Level 1 SUW L-N/11.8 Gas Purifier Room N Wall
+- Level 1 SUW L-N/12
+- Level 1 SUW L-N/12 (Excluded temp opening)
+- Level 1 SUW L-N/12 (exclude NMB)
+- Level 1 SUW L-N/12 S Pit N Face
+- Level 1 SUW L-N/12 South Pit N Face
+- Level 1 SUW L-N/12 South Pit N Face (Exclude Temp Opening)
+- Level 1 SUW L-N/12-16
+- Level 1 SUW L-N/16-32
+- Level 1 SUW L-N/18 Underground Waste Water Tank Room N Wall
+- Level 1 SUW L-N/18 Underground Waste Water Tank ro
+- Level 1 SUW L-N/18 Underground Waste Water Tank room North side
+- Level 1 SUW L-N/18 underground waste water tank room (ph1)
+- Level 1 SUW L-N/19
+- Level 1 SUW L-N/20 S Pit S Face
+- Level 1 SUW L-N/26-30
+- Level 1 SUW L-N/33 Exit passageway
+- Level 1 SUW L-N/4.8 Exit Passageway 1 S Wall
+- Level 1 SUW L-N/4.8 Exit passage way 1 S Wall
+- Level 1 SUW L-N/4.8 Exit passageway 1 S Wall
+- Level 1 SUW L-N/5 & L/5-12 Gas Purifier Room Interior
+- Level 1 SUW L-N/5 Gas Purifier Room Interior
+- Level 1 SUW L.2-M/3.2 Elevator Mech RM 1A E,N,S Wa
+- Level 1 SUW L.2-M/3.2 Elevator Mech RM 1A E,N,S Wall
+- Level 1 SUW L.3-L.5/3.6 Elevator 1A front
+- Level 1 SUW L.3-L.5/3.6 Elevator Front 1A
+- Level 1 SUW L.3-M/3.3 N wall S face Elevator mechanical room 1
+- Level 1 SUW L.5-M/17 Elevator Hall 3
+- Level 1 SUW L.5-M/17 N Face
+- Level 1 SUW L.5-M/32 SGC Storage
+- Level 1 SUW L.5-N/17 Elev Hall
+- Level 1 SUW L.5/3.2-3.5 Elevator 1 Interior
+- Level 1 SUW L.5/3.2-3.5 Elevator 1A Interior Wall
+- Level 1 SUW L/10-11 Gas Purifier Room
+- Level 1 SUW L/11 Stair 2
+- Level 1 SUW L/11 Stair 2 N face Walls (Extrior)
+- Level 1 SUW L/11 Stair 2 N,S Upper Beam
+- Level 1 SUW L/11 Stair 2 N,S Walls
+- Level 1 SUW L/11 Stair 2 S Wall
+- Level 1 SUW L/11 Stair 2 S Wall NCR 0268
+- Level 1 SUW L/11 Stair 2 W Wall W Side (screws 6”)
+- Level 1 SUW L/11-12 Gas Purifier Room
+- Level 1 SUW L/12 Mech Room 2 W,S Face
+- Level 1 SUW L/17 Elevator 3 Front
+- Level 1 SUW L/17 Elevator Mech Room 3 FAB110303A N Face
+- Level 1 SUW L/18 Ductshaft Vestibule 3 (FAB110310A)
+- Level 1 SUW L/18 Ductshaft Vestibule 3 N Face (FAB110310A)
+- Level 1 SUW L/18 Stair 3
+- Level 1 SUW L/18 Stair 3 Exterior N,S,E Face
+- Level 1 SUW L/18 Stair 3 Exterior N,S,W Wall
+- Level 1 SUW L/18 Stair 3 N,S,E,W Wall
+- Level 1 SUW L/18 Stair 3 N,S,W Wall
+- Level 1 SUW L/18-19 E Face Duct shaft vestibule NCR 0730
+- Level 1 SUW L/19-20 Duct Shaft
+- Level 1 SUW L/19-20 Duct Shaft Room
+- Level 1 SUW L/19-20 Duct Shaft room
+- Level 1 SUW L/19-20 E Face Duct Shaft Room
+- Level 1 SUW L/22-22.8 GCS Training RM W Face
+- Level 1 SUW L/23 Stair 4 N wall N face & W wall W
+- Level 1 SUW L/23 Stair 4 N wall N face & W wall W face
+- Level 1 SUW L/23 Stair 4 N,S,W Walls
+- Level 1 SUW L/23 Stair 4 N,W Walls
+- Level 1 SUW L/23.3, 23.5 Duct shaft (Door Openings
+- Level 1 SUW L/23.3, 23.5 Duct shaft (Door Openings)
+- Level 1 SUW L/29 Stairs 50 Exterior N,S,E Wall
+- Level 1 SUW L/30 FA Room 5 Ceiling
+- Level 1 SUW L/30-31
+- Level 1 SUW L/31 East, South wall exterior
+- Level 1 SUW L/31 East, South wall interior
+- Level 1 SUW L/31 FA Room 5 Ceiling
+- Level 1 SUW L/33-34 Stair 5 Exterior
+- Level 1 SUW L/4 Elevator 1 E Wall W Face
+- Level 1 SUW L/4 Elevator 1-1A
+- Level 1 SUW L/4 Elevator 1A E Wall W Face
+- Level 1 SUW L/4.5 Goalspost W Face
+- Level 1 SUW L/5-12 Gas Purifier Room Interior
+- Level 1 SUW L/5-12 Gas Purifier Room Interior (Exc
+- Level 1 SUW L/5-12 Gas Purifier Room Interior (Exclude Columns)
+- Level 1 SUW L/5-6 E Face ductshaft vestibule
+- Level 1 SUW L/6-13
+- Level 1 SUW L/6-7 Ductshaft
+- Level 1 SUW L/7-10 NCR 0730
+- Level 1 SUW L/7-8; 8-9 E Face (Exclude MEP)
+- Level 1 SUW L/9-10 E Face (Exclude MEP)
+- Level 1 SUW L11.2-L12 Elevator Mechanical Room 2 e
+- Level 1 SUW L11.2-L12 Elevator Mechanical Room 2 exterior
+- Level 1 SUW L11.2-L12 Elevator Mechanical Room 2 i
+- Level 1 SUW L11.2-L12 Elevator Mechanical Room 2 interior N, S, W walls (excluding east wall)
+- Level 1 SUW M-M.5/4 Elevator mechanical room 1 FAB1101158 - S face
+- Level 1 SUW M-M.8/11-11.5 Restroom Ceiling
+- Level 1 SUW M-N/12 N Face
+- Level 1 SUW M-N/12 N Wall S Face
+- Level 1 SUW M-N/12 S Pit
+- Level 1 SUW M-N/17 Elev Hall 3
+- Level 1 SUW M-N/17 Elev. Hall 3 S Wall
+- Level 1 SUW M-N/17 Elevator 3 Hall N Face
+- Level 1 SUW M-N/17 Elevator Hall 3
+- Level 1 SUW M-N/17 North Face (top, bottom of wall & wall to wall)
+- Level 1 SUW M-N/18 S Face (Underground Waste Water
+- Level 1 SUW M-N/18 S Face (Underground Waste Water Tank Room)
+- Level 1 SUW M-N/20
+- Level 1 SUW M-N/20 S Pit S Face
+- Level 1 SUW M-N/20 South Pit
+- Level 1 SUW M-N/33 Exterior
+- Level 1 SUW M.2-N/33 Interior
+- Level 1 SUW M.3-M.8 Restroom S Wall
+- Level 1 SUW M.3-M.8/3.3 Restroom S Wall
+- Level 1 SUW M.4-M.8/3-3.7 Ceiling
+- Level 1 SUW M.4-M.8/3-3.7 Restroom Ceiling
+- Level 1 SUW M.4-M.8/3.4 S Wall (Above 9')
+- Level 1 SUW M.4/3.3-4 Restroom E Wall
+- Level 1 SUW M.4/3.4-3.8 E Wall (Above 9')
+- Level 1 SUW M.5-M.8/3-3.8 Restroom
+- Level 1 SUW M.5-M.8/3.3-3.8 Restroom Ceiling
+- Level 1 SUW M.5-N/3.3-3.8 Restroom partitions
+- Level 1 SUW M.5-N/3.8-4 Restroom Corridor S Wall N Face
+- Level 1 SUW M.5/3.3-4 Elev Mech Room 1 W Wall
+- Level 1 SUW M.5/3.3-4 Elevator Mech RM 1 E Wall
+- Level 1 SUW M.5/3.3-4 Elevator Mech RM 1 W Wall
+- Level 1 SUW M.5/3.7-4 Restroom Corridor E Wall W Face
+- Level 1 SUW M.6-N/19 MCC Room
+- Level 1 SUW M.6-N/19 MCC Room S Face
+- Level 1 SUW M.7-N/3 Duct Shaft Room S Wall
+- Level 1 SUW M.7/3-3.4 Duct Shaft Room W Wall
+- Level 1 SUW M.8-N/19 MCC RM N Face
+- Level 1 SUW M.8-N/19 MCC Room N Face
+- Level 1 SUW M/13-16
+- Level 1 SUW M/16
+- Level 1 SUW M/19
+- Level 1 SUW M/3 Elevator 1B E,W,N Wall
+- Level 1 SUW M/3 Elevator 1B N Wall
+- Level 1 SUW M/3 Elevator 1B N,E,W Wall
+- Level 1 SUW M/3 Elevator 1B W Wall
+- Level 1 SUW M/3 South Side
+- Level 1 SUW M/4, M/5, K/5, L/7, (E, w), M/32
+- Level 1 SUW M18
+- Level 1 SUW MCC Room C/30 North Wall South Face
+- Level 1 SUW N-N.6/11 Restroom (Ceiling)
+- Level 1 SUW N-N.6/11-11.5 Restrooms (Ceiling)
+- Level 1 SUW N-P/23-29
+- Level 1 SUW N-Q/4-5 Dock Slab
+- Level 1 SUW N/1-2
+- Level 1 SUW N/1-3 & Level 4 SUW L/18
+- Level 1 SUW N/1-N/2
+- Level 1 SUW N/11
+- Level 1 SUW N/11 Bathroom Pit
+- Level 1 SUW N/11 NCR-0238
+- Level 1 SUW N/11 Restroom
+- Level 1 SUW N/11-12
+- Level 1 SUW N/11-12 Bathroom Pit
+- Level 1 SUW N/13-14
+- Level 1 SUW N/17
+- Level 1 SUW N/17-18
+- Level 1 SUW N/25-30
+- Level 1 SUW N/29-33
+- Level 1 SUW N/3
+- Level 1 SUW N/3 Bathroom Pit
+- Level 1 SUW N/3 Restroom partitions NCR-0238
+- Level 1 SUW N/3-4
+- Level 1 SUW N/5
+- Level 1 SUW P, P.5/15.5-17 Dock Retaining walls
+- Level 1 SUW P,P.5/15.5-17 Dock Retaining wall Foot
+- Level 1 SUW P,P.5/15.5-17 Dock Retaining wall Footing
+- Level 1 SUW P,P.5/15.5-17 Dock Retaining walls
+- Level 1 SUW P,P.5/5-7.5 Dock 1 Retaining Wall
+- Level 1 SUW P,P.5/5-7.5 Dock 1 Retaining Walls
+- Level 1 SUW P.5/15.5-17 Dock Retaining wall Footin
+- Level 1 SUW P.5/15.5-17 Dock Retaining wall Footing
+- Level 1 SUW P/15.5-17 Dock Retaining wall Footing
+- Level 1 SUW South Pit SOMD N/19-19.6
+- Level 1 SUW Stair 1 Exterior
+- Level 1 SUW Stair 19 S Wall
+- Level 1 SUW Stair 3 Exterior N,W,S Wall
+- Level 1 SUW Stair 4 Exterior S Wall
+- Level 1 SUW Stair 4 South Face South side
+- Level 1 SUW Stair 5 Exterior (East Wall)
+- Level 1 SUW Stair 5 Exterior N Wall
+- Level 1 SUW Stair 5 N Wall
+- Level 1 SUW Stair 5 W Wall
+- Level 1 SUW Stair 50 Interior/Exterior N,S,E Wall
+- Level 1 SUW Stairs 18 Exterior N Wall
+- Level 1 SUW Stairs 3 All Wall
+- Level 1 SUW Stairs 3 All Walls
+- Level 1 SUW Stairs 5 Exterior N Wall
+- Level 1 SUW Stairs 5 Exterior W Wall
+- Level 1 SUW Stairs 5 N,W Wall
+- Level 1 Sector 1
+- Level 1 Sector 2 M.7-M.8/4.9-5.5 UPS Cable Route
+- Level 1 Sector 21 Column 3 Termination
+- Level 1 Sector 21 Column 3 Torquing
+- Level 1 Sector 3
+- Level 1 South & NorthPit Curbs M-L/12-13; K-L/23-
+- Level 1 South & NorthPit Curbs M-L/12-13; K-L/23-28; M.5/23-29; Sump pit L/11.5 & Level 4 FIZ Pad C/1.5
+- Level 1 South Pit Curb L-N/18
+- Level 1 South Pit Curbs M-L/12-13
+- Level 1 South Pit Curbs M-L/12-13; Level 1 Northpi
+- Level 1 South Pit Curbs M-L/12-13; Level 1 Northpit Curbs K-L/23-28; Level 4 FIZ Pad C/1.5; Level 1 Northpit Topping Blockouts M.5/23-29
+- Level 1 South Pit M.5-N/19-20
+- Level 1 South Pit M.5/19-19.5
+- Level 1 South Pit Mezzanine M.5-N/18-19.5
+- Level 1 South Pit Stair 26,33,36
+- Level 1 South Pit Sump Pit Blockout L/15
+- Level 1 South Side wall. N-23
+- Level 1 South pit L-L.5/19.5-20; M.5-N/12-12.5
+- Level 1 South pit Pad M/18
+- Level 1 South pit Topping L-L.5/19.5-20; M.5-N/12-12.5
+- Level 1 South pit curb L-N/18
+- Level 1 Stair # 22
+- Level 1 Stair #25 M/18
+- Level 1 Stair #4 K/23
+- Level 1 Stair #44 C/3
+- Level 1 Stair 1
+- Level 1 Stair 18 C-D/34-35
+- Level 1 Stair 18 Foundation
+- Level 1 Stair 18 Foundation C-D/34-35
+- Level 1 Stair 18 Parapet Exterior N,E,W Face
+- Level 1 Stair 18 Topping Slab
+- Level 1 Stair 18 Topping Slab C-D/34-35
+- Level 1 Stair 20
+- Level 1 Stair 20 C/18 E Wall
+- Level 1 Stair 20 D/18 Interior All Walls
+- Level 1 Stair 20 Exterior
+- Level 1 Stair 20 N,S,E,W
+- Level 1 Stair 21
+- Level 1 Stair 21 D/13 Interior N,W Wall
+- Level 1 Stair 21 Exterior E Face
+- Level 1 Stair 21 Exterior N,S,E Face
+- Level 1 Stair 21 N,S,E Face Exterior Wall
+- Level 1 Stair 21 S,E,W & N Face
+- Level 1 Stair 21 S,E,W Face
+- Level 1 Stair 21 S,E,W, N Face
+- Level 1 Stair 32, 42
+- Level 1 Stair 33 Foundation K-L/34-35
+- Level 1 Stair 37,38; Level 4 SUW Stair R18
+- Level 1 Stair 43 & Stair 45
+- Level 1 Stair 43, 44, 45; Level 2 Stair 51,53
+- Level 1 Stair 5
+- Level 1 Stair 5 Foundation Backfill K-L/34-35
+- Level 1 Stair 5 Foundation K-L/34-35
+- Level 1 Stair 5 W Wall
+- Level 1 Stair 50 at K/29
+- Level 1 Stairs 19,20,21,22& PIT 18 C/32
+- Level 1 Sump Pits E/5-31; H.7/7; G.6/6.3
+- Level 1 Sump pits G/5.5-31, G.5/29.5, 33
+- Level 1 Sump pits G/5.5-31, G.5/29.5, G.5/33
+- Level 1 Topping E/8
+- Level 1 Topping J/8, 22
+- Level 1 Topping J/8, J/22
+- Level 1 Topping Slab K-L/34-35
+- Level 1 Trench Leaveouts L-N/28.5-30.5; M.5/27, M.5/26
+- Level 1 WEST 23-27 Canopy
+- Level 1 West Canopy 23-27 Line Moment Welds
+- Level 1 ceiling C-G/3
+- Level 1 control joint G/13-17
+- Level 1 control joint G/3-6
+- Level 1 elevator #2 landing K-L/11.4-11.8
+- Level 1 elevator 18 south wall
+- Level 1 elevator 22 (CONFINED SPACE)
+- Level 1 elevator 5 L/31-32
+- Level 1 elevator landing K-L/11.4-11.8
+- Level 1 k/29.8-31( East Face)
+- Level 1 pit Ceiling M-N / 30.4-31
+- Level 1 pit Ceiling M-N/30.4-31
+- Level 1 to Level 4 Stair 18 Pans C-D/34-35
+- Level 1 to Level 4 Stair 2
+- Level 1 to Level 4 Stair 4 K-L/23-24
+- Level 1 topping slab N13
+- Level 1&2 Stairs K-L/18-19
+- Level 1&2&3 L-L.5/16-17 Elevator 3
+- Level 1(F/22,22.3) Both sides
+- Level 1, 2, & 3 L-L.5/ 31-32 Elevator
+- Level 1, 2, 3 Elevator 20
+- Level 1, 3 Elevator 3
+- Level 1, E-J
+- Level 1, L-L.5/31-32 Elevator #5
+- Level 1, M-M.5/3-3.3 Elevator 1B
+- Level 1, SUW L-N 17
+- Level 1, SUW M-N 12-13
+- Level 1, SUW M-N/13-14
+- Level 1,2 B.5-C/16.5-17 Elevator 20
+- Level 1,2 Elevator 19
+- Level 1,2&3 B.2-B.5/3.6-4 E Elevator 22
+- Level 1,2&3 C-C.6/3.6-4 Elevator 22
+- Level 1,2&3 K-L/10-11 Stair 2
+- Level 1,2&3 L-L.5/16-17 Elevator 3
+- Level 1,2,3 Ceiling L-M/3-4 Elevator 1
+- Level 1,2,3 Elevator 1A
+- Level 1,2,3 FAB J-K/33 Exterior
+- Level 1,2,3,4 K-L/5-6 Stair 1
+- Level 1,2,3,5,6 H-J/33
+- Level 1,2,3.5 Stair 19
+- Level 1,3 M/3
+- Level 1,E.25-G/33
+- Level 1- 3 Stair 3 K/18
+- Level 1- 4 C-D/33-34 Stair 18
+- Level 1- 4 C-D/5-6 Stair 22
+- Level 1- 4 C-D5-6 Stair 22
+- Level 1- 4 SUW Stairs 5 E Wall Exterior
+- Level 1- 4 SUW Stairs 5 W Wall Exterior
+- Level 1- 4 Stair 2; & Level 4E D/30
+- Level 1- 4 Stair 3 K-L/18-19
+- Level 1-1.5 Stair 4
+- Level 1-1.5 Stair 4/K-L/23-24
+- Level 1-2 A/18-19 Leave Out
+- Level 1-2 A/18-19 leave out, Canopy & LV 3-4 A/19-20
+- Level 1-2 A/19-20
+- Level 1-2 B.7-C/16.5-17 Elevator 20
+- Level 1-2 C,D/18-19 Stairs 20
+- Level 1-2 C-D/18-19 (Stairs)
+- Level 1-2 C-D/18-19 Stair 20
+- Level 1-2 C-D/29 ELEVATOR 19
+- Level 1-2 C-D/29 Elevator 19
+- Level 1-2 C-D/5-6 Stair 22
+- Level 1-2 Elevator 1B
+- Level 1-2 FAB H.8-J/33 Exterior
+- Level 1-2 G.5-H.3/33 Exterior
+- Level 1-2 H-J/33
+- Level 1-2 K-L/10-12; Level 3 K-L/10-11 Stairs 2
+- Level 1-2 K-L/11-12
+- Level 1-2 K-L/11-12 Elevator #2 / Platform
+- Level 1-2 L/17-18
+- Level 1-2 N/30-31; Level 1-3 N/31-32; Connections
+- Level 1-2 N/30-31; Level 1-3 N/31-32; Connections below the top of Trestle & Walkbridge
+- Level 1-2 N/31-32
+- Level 1-2 SUW N/30-32
+- Level 1-2 Stair 21
+- Level 1-2-3 C-D/28-29 Elevator 19
+- Level 1-2.5 K/11
+- Level 1-2L/17-18
+- Level 1-3 ( Elevator 3) L-L.5/16-17
+- Level 1-3 A & N/1
+- Level 1-3 B-C/16-17
+- Level 1-3 C-D/28-28.5 Ceiling
+- Level 1-3 C-D/28-28.5 Ceiling Elevator 19
+- Level 1-3 C-D/28-28.5 Elevator 19
+- Level 1-3 C-D/28-28.5 Elevator 19 Ceiling
+- Level 1-3 C/32 Elevator 18
+- Level 1-3 C/32 elevator 18
+- Level 1-3 Ceiling C-D/28-28.5 Elevator #19
+- Level 1-3 Ceiling C-D/28-28.5 Elevator 19
+- Level 1-3 Ceiling K-L / 11-12
+- Level 1-3 Elevator 1
+- Level 1-3 Elevator 20
+- Level 1-3 Elevator 22 B-C/3-4
+- Level 1-3 F-G/33
+- Level 1-3 FAB E/33 Exterior
+- Level 1-3 K-L/11-12 Ceiling
+- Level 1-3 K-L/18-19 Stairs 3
+- Level 1-3 K-L/29 Stair 50
+- Level 1-3 K-L/29,30 COLUMN Stair 50
+- Level 1-3 K-L/29,30 Stair 50
+- Level 1-3 K-L/29-30 Stair 50
+- Level 1-3 K/23 Stair #4
+- Level 1-3 L-K/29-30 Stair 50
+- Level 1-3 L-M/31-32 Elevator 5
+- Level 1-3 L/17-18
+- Level 1-3 N/1
+- Level 1-3 N/30-32 Connections below the top of Tre
+- Level 1-3 N/30-32 Connections below the top of Trestle & Walkbridge
+- Level 1-3 N/30-32; Connections below the top of Trestle & Walkbridge
+- Level 1-3 N1
+- Level 1-3 SUW L/17 Elevator Front
+- Level 1-3 SUW Stair 4 K/23
+- Level 1-3 Sector 1-4 K-M/2-23 PVC Raceways + J-Box
+- Level 1-3 Sector 3 A-A.5/18-19 Lighting Raceway
+- Level 1-3 Stair 2
+- Level 1-3 Stair 2 K/11
+- Level 1-3 Stair 20
+- Level 1-3 Stair 21
+- Level 1-3 Stair 50
+- Level 1-3 ceiling K-L/11-12
+- Level 1-3 stair 4004 -K-L/23-24
+- Level 1-3 stair 4004 KL/23-24
+- Level 1-3( Elevator 3) L-L.5/16-17
+- Level 1-3( Elevator 4) L-L.5/16-17
+- Level 1-3, Elevator 22 B-C/3-4
+- Level 1-3.5 Sector 1 K.5/5-5.7 Lighting
+- Level 1-4 A/1
+- Level 1-4 A/1 Angle Clip Welds
+- Level 1-4 A/1 column anchor bolts.
+- Level 1-4 A/1-2
+- Level 1-4 A/16-18
+- Level 1-4 A/19 Expansion Joint Welds
+- Level 1-4 A/2-3
+- Level 1-4 A/20.2-21& A/19-21
+- Level 1-4 A/20.2-21, UT Column Splices A/19-21
+- Level 1-4 A/20.2-A/21
+- Level 1-4 A/20.5-21
+- Level 1-4 A/21-24
+- Level 1-4 A/25-26
+- Level 1-4 A/26-27
+- Level 1-4 A/27-30
+- Level 1-4 A/27-A/30
+- Level 1-4 A/30-33
+- Level 1-4 A/4-6
+- Level 1-4 A/6-7
+- Level 1-4 A/7-8
+- Level 1-4 A/8-8.8
+- Level 1-4 A/8-9
+- Level 1-4 A/8.6-10.6
+- Level 1-4 A/8.7-10.1
+- Level 1-4 A16-18
+- Level 1-4 B-C/3-4 Elevator 22
+- Level 1-4 C-D/12-13 (Stairs)
+- Level 1-4 C-D/12-13 Stair 21
+- Level 1-4 C-D/33-34
+- Level 1-4 C-D/33-34 Staircase 18
+- Level 1-4 C-D/34
+- Level 1-4 C-D/34-35 Stair Structure #18
+- Level 1-4 C-D/34-35 Stair Structure 18
+- Level 1-4 C-D/34-35 Stair Tower #18
+- Level 1-4 C-D/34-35 Stair Tower 18
+- Level 1-4 C/32 Elevator 18
+- Level 1-4 C/32 Elevator 18 Exclude Level 3
+- Level 1-4 C/4 Elevator 22
+- Level 1-4 Ceiling, K-L/11.4-11.8
+- Level 1-4 Elevator Shaft/K-L/11.4-11.8
+- Level 1-4 F-G/33
+- Level 1-4 J-K/33-34 Stair 18
+- Level 1-4 J-K/33-34 Staircase #5
+- Level 1-4 J-K/33-34 Staircase 5
+- Level 1-4 K-L/11 Stair 2
+- Level 1-4 K-L/11.4-11.8 Elevator Shaft
+- Level 1-4 K-L/18-19 (Stairs)
+- Level 1-4 K-L/18-19 Stair 3
+- Level 1-4 K-L/23-24 COLUMN Stair 4
+- Level 1-4 K-L/23-24 COLUMN Stair 4 Steps exlcuded
+- Level 1-4 K-L/33 Stair 5
+- Level 1-4 K-L/34-35 Stair Tower #5 Structure
+- Level 1-4 K-L/34-35 stair tower #5 Structure
+- Level 1-4 L-K/10-11 Stair 2 Columns
+- Level 1-4 L-K/18-19 Stair 3 Columns
+- Level 1-4 L-L.5 Elevator #1A
+- Level 1-4 L-L.5/3-4 Elevator #1A
+- Level 1-4 L-M/17 Elevator 3
+- Level 1-4 L/1
+- Level 1-4 L/3 Elevator 1
+- Level 1-4 L/32 Elevator 5
+- Level 1-4 M-L/31-32
+- Level 1-4 N/1
+- Level 1-4 N/1 Exterior
+- Level 1-4 N/1 anchor bolts
+- Level 1-4 N/1 anchor bolts.
+- Level 1-4 N/17-18
+- Level 1-4 N/18-19
+- Level 1-4 N/19
+- Level 1-4 N/19 Expansion Joint Welds
+- Level 1-4 N/19-20
+- Level 1-4 N/19-N/20
+- Level 1-4 N/19.1
+- Level 1-4 N/20-21
+- Level 1-4 N/21-23
+- Level 1-4 N/21-24
+- Level 1-4 N/23-24
+- Level 1-4 N/25-28 Goalposts
+- Level 1-4 N/28-30
+- Level 1-4 N/28-N/30
+- Level 1-4 N/29.6-30; Level 3-4 N/30-31; Level 3-6
+- Level 1-4 N/29.6-30; Level 3-4 N/30-31; Level 3-6 N/31-32 connections above the trestle.
+- Level 1-4 N/29.6-N/30; Level 3-4 N/30-N/31 ; Level 3-6 N/31-N/32 connections above the trestle.
+- Level 1-4 N/3-4
+- Level 1-4 N/30-31 Exterior
+- Level 1-4 Pans C-D/34-35 Stair 18
+- Level 1-4 SUE A/1
+- Level 1-4 SUE A/1-2
+- Level 1-4 SUE A/1-3; Level 1-6 SUE A/3-5
+- Level 1-4 SUE A/1-4
+- Level 1-4 SUE A/13-16
+- Level 1-4 SUE A/16-18
+- Level 1-4 SUE A/18-19
+- Level 1-4 SUE A/18-A/19
+- Level 1-4 SUE A/2-3
+- Level 1-4 SUE A/2-A/3
+- Level 1-4 SUE A/20.5-23.5
+- Level 1-4 SUE A/21-23
+- Level 1-4 SUE A/21-28.5
+- Level 1-4 SUE A/27-31
+- Level 1-4 SUE A/3-4
+- Level 1-4 SUE A/7-8
+- Level 1-4 SUE C-D/35 Stair 18 Exterior N Wall
+- Level 1-4 SUE C-D/35 Stair 18 N Wall (Exterior)
+- Level 1-4 SUE C/33-35 Stair 18 E Wall (Exterior)
+- Level 1-4 SUE C/33-35 Stair 18 Exterior E Wall
+- Level 1-4 SUE D/33-35 Stair 18 Exterior W Wall
+- Level 1-4 SUE Stair 18 Exterior W Wall
+- Level 1-4 SUE Stair 18 W wall
+- Level 1-4 SUW N/1-2
+- Level 1-4 SUW N/1-3
+- Level 1-4 SUW N/1-N/3
+- Level 1-4 SUW N/13-14
+- Level 1-4 SUW N/13-17
+- Level 1-4 SUW N/17-18
+- Level 1-4 SUW N/19-20
+- Level 1-4 SUW N/2-4
+- Level 1-4 SUW N/21-24
+- Level 1-4 SUW N/24-26
+- Level 1-4 SUW N/24-27.5
+- Level 1-4 SUW N/6-9
+- Level 1-4 SUW Stair 5 Exterior E Wall
+- Level 1-4 SUW Stair 5 Exterior W Wall
+- Level 1-4 Stair #5
+- Level 1-4 Stair #5 Structure
+- Level 1-4 Stair 2
+- Level 1-4 Stair 2 K-L/10-11
+- Level 1-4 Stair 2 K-L/11
+- Level 1-4 Stair 20
+- Level 1-4 Stair 21
+- Level 1-4 Stair 3
+- Level 1-4 Stair 3 K-L/18-19
+- Level 1-4 Stair 4 K-L/23-24
+- Level 1-4 Stair 4003 J-K/18
+- Level 1-4 Stair 4003 JK/18
+- Level 1-4 Stair 5 Pans
+- Level 1-4 Stair Structure #18
+- Level 1-4 Stair Structure 18
+- Level 1-4 Stair Tower #5
+- Level 1-4 Stairs 1,2,3,4,19,20,22
+- Level 1-4, 33-34 / Stair #5
+- Level 1-4, 6 / L.5-M/3-4 Elevator #1
+- Level 1-4A K-L/11-12
+- Level 1-6 A/3-4
+- Level 1-6 A/33
+- Level 1-6 C-D 33
+- Level 1-6 L.5-M/3-4 ELV 1
+- Level 1-6 N/33
+- Level 1-6 SUE A/4-5
+- Level 1-6 SUE A/4-A/5
+- Level 1-6 SUW N/32-33
+- Level 1. M-N 9-10
+- Level 1A C/3
+- Level 1A C/3 top side anchors only (north side )
+- Level 1A M.5/3 Elevator 1B
+- Level 1B-C/32 Elevator #18
+- Level 1C C/3
+- Level 1H Elevator 2 SOMD
+- Level 1H Elevator 2 SOMD - K-L/11-12
+- Level 1H Elevator 2 Topping L-K/12-13
+- Level 1H L-K12-13 Elevator 2 Topping slab
+- Level 1H SOMD K-L/11.5-12 Elevator 2; Level 2 Bloc
+- Level 1H SOMD K-L/11.5-12 Elevator 2; Level 2 Blockouts K-L/11-12 Elevator 2
+- Level 1H Sump Pit L/11.5
+- Level 1H Sump pit L/11.5
+- Level 1North Side wall. N-23
+- Level 1U & 1A C/4
+- Level 1U0 L-N/17-19.4, L-M/25-25.2 & Level 1 L-M/19 (Basement)
+- Level 1U0 M.5-N/13-14 (Basement)
+- Level 2
+- Level 2 & 3 & 4 L.5 / 3-4
+- Level 2 & 3 F.4-F.8/7
+- Level 2 & 3 L-L.5 /3-4 Elevator 1
+- Level 2 & 3 L.5 / 3-4
+- Level 2 & 3 SUE
+- Level 2 & 4
+- Level 2 (A/1)
+- Level 2 (L/1)
+- Level 2 (N/1)
+- Level 2 / L4 Security Room 1 Interior all walls
+- Level 2 21-23
+- Level 2 3 & 4 B.3-B.7/3-4 (Elevator 22)
+- Level 2 A-B/1
+- Level 2 A-B/33, Level 3 C/24-25.2
+- Level 2 A-C/25
+- Level 2 A-F.3/1
+- Level 2 A-F.4/1
+- Level 2 A-F.4/1 Column Bottom 4'
+- Level 2 A-F/1
+- Level 2 A-F/1 Column Bottom 4'
+- Level 2 A-F1
+- Level 2 A.5-F.4/1 Columns
+- Level 2 A.5-F.4/1 column
+- Level 2 A.5-F.4/1 vertical column
+- Level 2 A.5/1
+- Level 2 A.5/30 Goalpost
+- Level 2 A.5/30.5 & L.5/32
+- Level 2 A.5/30.5 Goalpost
+- Level 2 A/1
+- Level 2 A/1-3
+- Level 2 A/1-3, 25-33
+- Level 2 A/25-27
+- Level 2 A/25-28
+- Level 2 A/25-32
+- Level 2 A/25-33
+- Level 2 A/28-32
+- Level 2 A/30.5
+- Level 2 A/31-32
+- Level 2 A/32-33
+- Level 2 B-B.5/17-18
+- Level 2 B-B.5/3
+- Level 2 B-B.5/3 (Door Electrical Room Inside)
+- Level 2 B-B.5/3 Door Inside Electrical room
+- Level 2 B-B.5/3 Electrical Room Door
+- Level 2 B-B.5/32
+- Level 2 B-B.5/32.3 N Face
+- Level 2 B-B.5/32.5
+- Level 2 B-B.5/4.8-5 FA Room 22 E Wall
+- Level 2 B-C/31-32 Elevator 18
+- Level 2 B-C/31.3-32 Elevator 18
+- Level 2 B-C/31.5
+- Level 2 B-C/32 Elevator 18
+- Level 2 B-C/5
+- Level 2 B-C31.3-32 Elevator 18
+- Level 2 B-E/1
+- Level 2 B.5-C/17-18
+- Level 2 B.5-C/18-18.5 Exterior Wall
+- Level 2 B.5-C/18-18.5 Interior Wall
+- Level 2 B.5-C/18.5
+- Level 2 B.5-C/18.5 South Wall North Face
+- Level 2 B.5-C/18.8 ( Exterior Walls)
+- Level 2 B.5-C/31.5 Inside Electrical Room
+- Level 2 B.5-F.4/1
+- Level 2 B.5/16.3-17 East face
+- Level 2 B.5/16.3-17 east face
+- Level 2 B.5/17-18.5
+- Level 2 B.5/18-18.5
+- Level 2 B.518-18.5
+- Level 2 B.7/3-3.3
+- Level 2 B.8-D/27-28
+- Level 2 B/18.5-18.8 FA 20
+- Level 2 B/3 Goalpost
+- Level 2 B/3, M/4.5, D/28, C/32.5, D/32.5; Level 3
+- Level 2 B/3, M/4.5, D/28, C/32.5, D/32.5; Level 3 K.5/32.5
+- Level 2 B/5 Fire Alarm Room 22
+- Level 2 B17-B18
+- Level 2 B17-B18.5
+- Level 2 B17-B18.8
+- Level 2 Battery Room 1 M-N/14; M/14-16.5; Exterior
+- Level 2 Battery Room 3 M/27.5-28 Interior
+- Level 2 Battery Room 3 M/28-30 Interior
+- Level 2 C (25,26,33)
+- Level 2 C&D/17 Goalpost
+- Level 2 C(W Face)-C.3(E Face)/25.3(N Face)-26 (S Face) Ceiling
+- Level 2 C,L/4.5; L,L.5/17.5; M.5/14,27.5; Level 1
+- Level 2 C,L/4.5; L,L.5/17.5; M.5/14,27.5; Level 1 C/4.5,17.5; L/17.5
+- Level 2 C-C.2/18
+- Level 2 C-C.3/25.3-26 Ceiling (C-Line East Side)
+- Level 2 C-C.3/25.3-26 Ceiling (C-Line west Side, C.3 East side, 26 South face, 25.3 north)
+- Level 2 C-D SUE/22
+- Level 2 C-D/10-12
+- Level 2 C-D/10-12, 13-17
+- Level 2 C-D/13.3-17
+- Level 2 C-D/13.3-18
+- Level 2 C-D/17-17.2
+- Level 2 C-D/17.2
+- Level 2 C-D/17.2-17.5
+- Level 2 C-D/17.2-17.5 Airlock 20
+- Level 2 C-D/17.5
+- Level 2 C-D/18
+- Level 2 C-D/18 Ceiling
+- Level 2 C-D/20-25
+- Level 2 C-D/23-24
+- Level 2 C-D/25
+- Level 2 C-D/25-26 Stair 19 Ceiling
+- Level 2 C-D/25.3-27
+- Level 2 C-D/26-27
+- Level 2 C-D/27
+- Level 2 C-D/27 South Face
+- Level 2 C-D/27-28
+- Level 2 C-D/28
+- Level 2 C-D/28-30
+- Level 2 C-D/29-30, 31-33
+- Level 2 C-D/3-4
+- Level 2 C-D/3-4 Duct Shaft
+- Level 2 C-D/3.4-4 IT/Security 22
+- Level 2 C-D/3.5-4 IT Room 22
+- Level 2 C-D/3.5-4 IT/Security Room 20
+- Level 2 C-D/30-31 PR Lifter Room
+- Level 2 C-D/30-31 PR Lifter Room East and We
+- Level 2 C-D/30-31 PR Lifter Room East and West
+- Level 2 C-D/30-31 PR Lifter Room North and South
+- Level 2 C-D/30.5
+- Level 2 C-D/32.7 Airlock 18 N Wall S Face
+- Level 2 C-D/4-10
+- Level 2 C.2-D/18
+- Level 2 C.2-D/25.3-26 Ceiling (INSIDE PERIMETER)
+- Level 2 C.2-D/25.3-26 Ceiling (Inside perimeter)
+- Level 2 C.5/30-31
+- Level 2 C/1
+- Level 2 C/10-12
+- Level 2 C/11-15 (N,S), 16 (S), 17 (W), 18 (E)
+- Level 2 C/11-15 (N,S), 16 (S), 17 (W), 18 (S)
+- Level 2 C/12,13,14,15,21,22
+- Level 2 C/12,13,16,17
+- Level 2 C/12,13,16,17,18
+- Level 2 C/12-13
+- Level 2 C/13, 15, 16, 21 (N), 22 (N)
+- Level 2 C/13-13.5
+- Level 2 C/13.2-14, 15-17
+- Level 2 C/13.3-16
+- Level 2 C/14,21,22
+- Level 2 C/15
+- Level 2 C/16.5-17 mechanical room 20
+- Level 2 C/17
+- Level 2 C/17 & D/17 Goalpost
+- Level 2 C/17-18
+- Level 2 C/17.2-17.5
+- Level 2 C/18-18.5 IT Room 20
+- Level 2 C/18-19
+- Level 2 C/18-19; L-M/32-33
+- Level 2 C/19
+- Level 2 C/20
+- Level 2 C/20 (N)
+- Level 2 C/20-21.5
+- Level 2 C/20-25
+- Level 2 C/21,23
+- Level 2 C/21-23
+- Level 2 C/21-24
+- Level 2 C/22,23,25,26,27,28
+- Level 2 C/22-25
+- Level 2 C/23,21
+- Level 2 C/24-25
+- Level 2 C/25,26,,33
+- Level 2 C/25,26,30,31,33
+- Level 2 C/25,26,33
+- Level 2 C/25-27 Electrical Room
+- Level 2 C/26 (S)
+- Level 2 C/26,27,28
+- Level 2 C/26-28
+- Level 2 C/27
+- Level 2 C/29
+- Level 2 C/29,30
+- Level 2 C/29-30
+- Level 2 C/29.2-30.2
+- Level 2 C/3, 4
+- Level 2 C/3-4
+- Level 2 C/3-5
+- Level 2 C/3-6, 8-9, 10-15, 16-18, 23-28
+- Level 2 C/30
+- Level 2 C/30,31
+- Level 2 C/30.5
+- Level 2 C/30.7-31
+- Level 2 C/31
+- Level 2 C/31-32
+- Level 2 C/31-32 Exterior Wall of Elevator #18
+- Level 2 C/31.3-32 W Wall
+- Level 2 C/32
+- Level 2 C/32 Elevator 18
+- Level 2 C/32 Goalpost
+- Level 2 C/4
+- Level 2 C/4 Goalpost
+- Level 2 C/4,13,18,25,29; L/23
+- Level 2 C/4,13,18,25,29; L/23 airlocks
+- Level 2 C/4-5 West Wall
+- Level 2 C/5 (N), 6-9 (N,S)
+- Level 2 C/5 (N, S), 6-9 (N,S)
+- Level 2 C/5 (N,S), 6-9 (N,S)
+- Level 2 C/5,6,7,8,9,11
+- Level 2 C/5,6,8,9,11,14,21,22,23
+- Level 2 C/5,6,8,9,11,14,21,22,23 (S)
+- Level 2 C/5-6
+- Level 2 C/5-9, 12
+- Level 2 C/5-9,12
+- Level 2 C/6
+- Level 2 C/6-12
+- Level 2 C/6-8
+- Level 2 C/6-9, 10-12, 13-13.2
+- Level 2 C/7
+- Level 2 C32 Elevator 18
+- Level 2 Ceiling 4C C-D/ 32-33
+- Level 2 Ceiling B.7-C/27-28
+- Level 2 Ceiling C-D/13-14 & 17-18
+- Level 2 Ceiling C-D/17-18
+- Level 2 Ceiling C-D/26-27
+- Level 2 Ceiling C-D/27-27.9&30-30.7
+- Level 2 Ceiling C-D/27-28&30-30.6
+- Level 2 Ceiling C-D/27-29 & D/29-30
+- Level 2 Ceiling C-D/27-29; D/29-30
+- Level 2 Ceiling C-D/28-30
+- Level 2 Ceiling C-D/31-33
+- Level 2 Ceiling C-D/4-5
+- Level 2 Ceiling C-D/6-12
+- Level 2 Ceiling C/23-24
+- Level 2 Ceiling C/24-27, 28-30, 30.7-31 East side
+- Level 2 Ceiling C/24-31 East side
+- Level 2 Ceiling C/25-26, 28-29, 30.7-31
+- Level 2 Ceiling C/27-28, 30-30.7
+- Level 2 Ceiling C/31-32 Westside only
+- Level 2 Ceiling D East side only/3-6, 13-17
+- Level 2 Ceiling D, east side only 23-33
+- Level 2 Ceiling D-E/ 10-12.5
+- Level 2 Ceiling D-E/ 10-13.5
+- Level 2 Ceiling D-E/ 10-13.7
+- Level 2 Ceiling D-E/ 28-32
+- Level 2 Ceiling D-E/ 4-5
+- Level 2 Ceiling D-E/10-12.5
+- Level 2 Ceiling D-E/10-13.5
+- Level 2 Ceiling D-E/17-23
+- Level 2 Ceiling D-E/23-25
+- Level 2 Ceiling D-E/25-28
+- Level 2 Ceiling D-E/28-32
+- Level 2 Ceiling D-E/3
+- Level 2 Ceiling D-E/4-5
+- Level 2 Ceiling D-E/6-10
+- Level 2 Ceiling D-line West side/ 3-6
+- Level 2 Ceiling D-line/ 4-6
+- Level 2 Ceiling D/12-22 West side
+- Level 2 Ceiling D/20-23
+- Level 2 Ceiling D/20-23 (east side only)
+- Level 2 Ceiling D/20-25; C-D/25
+- Level 2 Ceiling D/3-6 West side
+- Level 2 Ceiling D/31-32 Eastside only
+- Level 2 Ceiling D/4-6
+- Level 2 Ceiling D/5-12
+- Level 2 Ceiling J-K/ 10-17
+- Level 2 Ceiling J-K/ 4-10
+- Level 2 Ceiling J-K/10-17
+- Level 2 Ceiling J-K/11-17
+- Level 2 Ceiling J-K/17-20
+- Level 2 Ceiling J-K/20-27
+- Level 2 Ceiling J-K/20-30
+- Level 2 Ceiling J-K/27-30
+- Level 2 Ceiling J-K/3
+- Level 2 Ceiling J-K/3-6
+- Level 2 Ceiling J-K/30-31.8
+- Level 2 Ceiling J-K/30-32
+- Level 2 Ceiling J-K/30-33
+- Level 2 Ceiling J-K/32-33
+- Level 2 Ceiling J-K/6-10
+- Level 2 Ceiling K Eastside only/ 11-32
+- Level 2 Ceiling K-L/ 11.5-12 & K (Wesst side) 12-13
+- Level 2 Ceiling K-L/ 29-30, 30-32 K-LINE WESTSIDE
+- Level 2 Ceiling K-L/ 29-30, 30-32 K-LINE WESTSIDE & 32.2-33
+- Level 2 Ceiling K-L/ 32-33
+- Level 2 Ceiling K-L/10-11.5
+- Level 2 Ceiling K-L/11.5-12; K/12-13 West side
+- Level 2 Ceiling K-L/13-16.5
+- Level 2 Ceiling K-L/16-17
+- Level 2 Ceiling K-L/16.5-18 ,K/!9-22 & K-L 22-22.7
+- Level 2 Ceiling K-L/16.5-18 ,K/19-22 & K-L 22-22.7
+- Level 2 Ceiling K-L/22-23
+- Level 2 Ceiling K-L/22.7-23; K/24-29; K-L/29-30
+- Level 2 Ceiling K-L/24-29
+- Level 2 Ceiling K-L/3-3.4
+- Level 2 Ceiling K-L/3.3-5
+- Level 2 Ceiling K-L/32-33
+- Level 2 Ceiling K.3-K.9/11.3-11.7
+- Level 2 Ceiling K/ 24-33 East side only
+- Level 2 Ceiling K/11-24 East side
+- Level 2 Ceiling K/11-32 Eastside only
+- Level 2 Ceiling K/13-16 WESTSIDE AND K-L16-19/K/19
+- Level 2 Ceiling K/13-16 WESTSIDE AND K-L16-19/K/19-22WEST SIDE
+- Level 2 Ceiling K/13-16.5
+- Level 2 Ceiling K/13-17 WESTSIDE AND K-L16-19/K/19-22WEST SIDE
+- Level 2 Ceiling K/19-23 WestSide of Beam
+- Level 2 Ceiling K/24-29 West side only
+- Level 2 Ceiling K/24-33 East side only
+- Level 2 Ceiling K/29-32 & K-L/32.2-33
+- Level 2 Ceiling K/3-12
+- Level 2 Ceiling K/6-10
+- Level 2 Ceiling L/10-11.5 West side only
+- Level 2 Ceiling L/10-11.5 West side only Access on 3rd floor
+- Level 2 Ceiling L/10-11.5; L-M/14
+- Level 2 Ceiling L/10-11.5; L-N/14
+- Level 2 Ceiling M/3-3.3
+- Level 2 Ceiling Stair 19
+- Level 2 Ceiling, C-D/ 31-33
+- Level 2 Ceiling, C-D/ 4-5
+- Level 2 Ceiling, C-D/17-18
+- Level 2 Ceiling, D-E/ 28-32
+- Level 2 Ceiling, D-E/32-33
+- Level 2 Ceiling, J-K/ 17-20
+- Level 2 Ceiling, J-K/ 20-30
+- Level 2 Ceiling, J-K/ 30-33
+- Level 2 Ceiling, K WestSide of beam/ 19-23
+- Level 2 Ceiling, K-K.3 / 11.3-11.7
+- Level 2 Ceiling, K-K.3/11.3-11.7
+- Level 2 Ceiling, K-L/ 3.5-5
+- Level 2 Ceiling, K-L/22.7-23; K/24-29; K-L/29-30
+- Level 2 Ceiling, M-M.3/3-3.5
+- Level 2 Ceiling, M/3-3.3
+- Level 2 Column G.3-M/3
+- Level 2 D Line 6-12
+- Level 2 D-C/32 elevator 18
+- Level 2 D-C32 elevator 18
+- Level 2 D-E/32-33 Ceiling
+- Level 2 D-G/3-5.4
+- Level 2 D-line East Side 3-5 10-17
+- Level 2 D/1,3.5,4,4.8,5,12,12.2,13,13.2,17,17.2,17.8,18,25,27,28,29,30,31
+- Level 2 D/1,3.5,4,4.8,5,12,12.2,13,13.2,17,17.2...
+- Level 2 D/1,3.5,4,4.8,5,12.2,13,17.2,17.8,18,25,27
+- Level 2 D/10-11
+- Level 2 D/10-12
+- Level 2 D/10.8-12
+- Level 2 D/11-12
+- Level 2 D/12-12.2
+- Level 2 D/12-12.2 Interior
+- Level 2 D/12-13
+- Level 2 D/12.2-13
+- Level 2 D/12.2-14
+- Level 2 D/13-14
+- Level 2 D/14-16
+- Level 2 D/14-17, 21-22.5
+- Level 2 D/14-17.2
+- Level 2 D/16-23, 28-29
+- Level 2 D/17-17.2, 18-21
+- Level 2 D/17-18
+- Level 2 D/17-24
+- Level 2 D/17.2-18
+- Level 2 D/18
+- Level 2 D/18-21
+- Level 2 D/18-22.5
+- Level 2 D/19-22.5
+- Level 2 D/19-23
+- Level 2 D/21-22.5
+- Level 2 D/22.5-23
+- Level 2 D/23-25
+- Level 2 D/23-26, 26-27, 29-30, 31-32
+- Level 2 D/24-25
+- Level 2 D/25-27
+- Level 2 D/25-27.7
+- Level 2 D/25-30
+- Level 2 D/27-27.7, 28-28.8
+- Level 2 D/27.8-28
+- Level 2 D/28 Goalpost
+- Level 2 D/28-29
+- Level 2 D/28-30
+- Level 2 D/28.8-30
+- Level 2 D/3-23, 29-30
+- Level 2 D/3-4
+- Level 2 D/3-5, 10-17
+- Level 2 D/3.4-4
+- Level 2 D/3.5,4,4.8,5,12.2,13,13.2
+- Level 2 D/30-30.6
+- Level 2 D/30-31 Interior Wall (Electrical Room)
+- Level 2 D/30.6-32
+- Level 2 D/32
+- Level 2 D/32 Goalpost
+- Level 2 D/4 Goalpost
+- Level 2 D/4 goalpost
+- Level 2 D/4,4.8,5,12,13,13.2,17,17.8,18,25,28,29,3
+- Level 2 D/4,4.8,5,12,13,13.2,17,18,25,28,29,30,31
+- Level 2 D/4-5 East Face of Wall
+- Level 2 D/4.2-4.6
+- Level 2 D/4.5; Level 3 A.5/23
+- Level 2 D/5-10
+- Level 2 D/5-6
+- Level 2 D/5-9
+- Level 2 D/6-10
+- Level 2 D/6-12
+- Level 2 D/6-7
+- Level 2 D/7-11
+- Level 2 D/8.7-9.7
+- Level 2 D13-14
+- Level 2 D17.2-18
+- Level 2 D28-30
+- Level 2 D30.6-32
+- Level 2 D32
+- Level 2 Data Entry i4
+- Level 2 Duct Shaft Room 22
+- Level 2 E,G,H/19; Level 3 E/19
+- Level 2 E-F/1
+- Level 2 E-G/33
+- Level 2 E-G/33 (Exterior)
+- Level 2 E-J/33
+- Level 2 E.3/21 and F.8/21.3
+- Level 2 E.3/21, H.3/27.6, G.5/21
+- Level 2 E.3/24-25.6
+- Level 2 E.5, E.8/33 Column interior
+- Level 2 E/14-18
+- Level 2 E/14-32
+- Level 2 E/19-24
+- Level 2 E/25-32
+- Level 2 E/3
+- Level 2 E/9-10
+- Level 2 ELEC. RM. FAB (West)7/M
+- Level 2 ELEC. RM. FAB 120401 (West)7/M
+- Level 2 ELEC. RM. FAB 120401(West) 26/L.5
+- Level 2 ELEC. RM. FAB 120401(West) 27/L.5
+- Level 2 ELEC. RM. FAB 120401(West) 5/M
+- Level 2 ELV 19 C/18 N & W wall
+- Level 2 ELV 19 C/28 N & W wall
+- Level 2 ELV 19 C/28 N & W wall (Access from level 1)
+- Level 2 ELevator 5 W Wall
+- Level 2 Elevator # 1 (West Wall and South wall)
+- Level 2 Elevator #3
+- Level 2 Elevator 18
+- Level 2 Elevator 18 B.5-C/31-32
+- Level 2 Elevator 18 Exterior S&E Wall
+- Level 2 Elevator 18 Exterior W
+- Level 2 Elevator 2 Blockouts K-L/11-12
+- Level 2 Elevator 20
+- Level 2 Elevator 22
+- Level 2 Elevator 22 All Walls
+- Level 2 Elevator 22 B.5/3-4
+- Level 2 Elevator 22 Interior Walls
+- Level 2 Elevator 22 West Wall
+- Level 2 Elevator 22 south wall north face
+- Level 2 Elevator 3
+- Level 2 Elevator 5
+- Level 2 Elevator 5 W Wall
+- Level 2 F-F.4/21.6-22
+- Level 2 F-F.8/1 Soffit
+- Level 2 F-G/3
+- Level 2 F.2-G/3
+- Level 2 F.5/1.7-2-3
+- Level 2 F.5/1.7-2.3
+- Level 2 F.5/1.7-2.3 E&W Face
+- Level 2 F.8- G/24-25.6
+- Level 2 F.8-G/33
+- Level 2 F.8-G/33 Exterior
+- Level 2 FA # 20 Interior Walls
+- Level 2 FAB A-B/33 Exterior
+- Level 2 FAB D-E/33
+- Level 2 FAB D-E/33 (bottom half only)
+- Level 2 FAB D-E/33 Exterior
+- Level 2 FAB D-E/33 Exterior transition w lvl 3
+- Level 2 FAB E-E.3/33
+- Level 2 FAB E-E.3/33 Exterior
+- Level 2 FAB E.3-F.6/33 Interior (above pipe rack)
+- Level 2 FAB E.3-F/33 (bottom half only)
+- Level 2 FAB E.3-F/33 Interior (Top of Wall)
+- Level 2 FAB E.3-H.8/33 Interior (Top of Wall)
+- Level 2 FAB E.4-F/33 Exterior
+- Level 2 FAB F-F.6/33 (bottom half only)
+- Level 2 FAB F-G/33 Exterior
+- Level 2 FAB F-H.8/33 Interior (Top of Wall)
+- Level 2 FAB G-G.3/33 Exterior
+- Level 2 FAB G-H/3
+- Level 2 FAB G.2/3 (Data Center)
+- Level 2 FAB G.3-G.5/33 (Exterior)
+- Level 2 FAB G.3-G.5/33 Exterior
+- Level 2 FAB G.3-G.5/33 Interior (bottom half only)
+- Level 2 FAB G.3-G.5/33 Interior (bottom half)
+- Level 2 FAB G.3-G.8/1.3 Data Center N,S (Top of the wall)
+- Level 2 FAB G.4-G.6/33 Interior (bottom half only)
+- Level 2 FAB G.5 (E),H (W) Data Center (Bottom Door Opening)
+- Level 2 FAB G.5 (E),H (W)/1.3 Data Center (Bottom
+- Level 2 FAB G.5 (E),H (W)/1.3 Data Center (Bottom of opening)
+- Level 2 FAB G.5 (E)/1.3 Data Center
+- Level 2 FAB G.5 (W),H (E) Data Center (Bottom Door Opening)
+- Level 2 FAB G.5 (W),H/1.3 (E) Data Center
+- Level 2 FAB G.5 (W)/1.3 Data Center
+- Level 2 FAB G.5(E)/1.3 Data Center
+- Level 2 FAB G.5(E)/1.3 Data Center (Excluded bottom door opening)
+- Level 2 FAB G.5(W)/1.3 Data Center
+- Level 2 FAB G.5(W)/1.3 Data Center (Excluded bottom door opening)
+- Level 2 FAB G.5, H/1.3 (E,W) Data Center
+- Level 2 FAB G.5, H/1.3(E,W) Data Center
+- Level 2 FAB G.5,G.8,H/1.3 Data Center
+- Level 2 FAB G.5,H/1.3 Data Center (Bottom of openi
+- Level 2 FAB G.5,H/1.3 Data Center (Bottom of opening)
+- Level 2 FAB G.5-G.8/33
+- Level 2 FAB G.5-G.8/33 (exterior)
+- Level 2 FAB G.5-G.8/33 Exterior
+- Level 2 FAB G.5/1.3 (E),H (W) Data Center (Bottom
+- Level 2 FAB G.5/1.3 (E),H (W) Data Center (Bottom Door Opening)
+- Level 2 FAB G.5/1.3 (E,W) Data Center
+- Level 2 FAB G.5/1.3 (W),H (E) Data Center (Bottom
+- Level 2 FAB G.5/1.3 (W),H (E) Data Center (Bottom Door Opening)
+- Level 2 FAB G.6-G.9/1.3 Data Center
+- Level 2 FAB G.6-H/33 Interior (bottom half only)
+- Level 2 FAB G.8 (N), H (W)/1.3
+- Level 2 FAB G.8 (S), H (E)/1.3
+- Level 2 FAB G.8 (S)/1.3 Data Center
+- Level 2 FAB G.8 (S)/1.3 Data Center (Bottom of the
+- Level 2 FAB G.8 (S)/1.3 Data Center (Bottom of the Wall)
+- Level 2 FAB G.8 (S)/1.3 Data Center (Top Half of W
+- Level 2 FAB G.8 (S)/1.3 Data Center (Top Half of Wall)
+- Level 2 FAB G.8-H.3/33
+- Level 2 FAB G.8-H.3/33 Exterior
+- Level 2 FAB G.8/33-H.3/33 Exterior
+- Level 2 FAB H-H.5/33 Interior (bottom half only)
+- Level 2 FAB H-J/3
+- Level 2 FAB H.3-H.8/33 Exterior
+- Level 2 FAB H.4/3
+- Level 2 FAB H.5-H.8/33 Interior (bottom half only)
+- Level 2 FAB H.7-H.8/3
+- Level 2 FAB H.8-J/33 Exterior
+- Level 2 FAB H.8-J/33 Interior (Top of Wall)
+- Level 2 FAB H/1.3 (E,W) Data Center
+- Level 2 FAB J-K/33
+- Level 2 FAB J-K/33 Exterior
+- Level 2 FAB J.9/3 (Data Center)
+- Level 2 FAB K/32-33
+- Level 2 FAB Slurry Room Interior E Wall
+- Level 2 FIZ A-G/1-3
+- Level 2 FIZ G/1
+- Level 2 FIZ G/3
+- Level 2 FIZ J/3 Blockout
+- Level 2 Fire Alarm 1 Exterior N Wall
+- Level 2 Fire Alarm 22 Interior N Wall
+- Level 2 Fire Alarm 5
+- Level 2 Fire Alarm 5 L/31-32
+- Level 2 Fire Alarm Room 1
+- Level 2 Fire Alarm room 20
+- Level 2 Fire alarm 5
+- Level 2 G-G.3/3 , C/5-6 Stair Case 22
+- Level 2 G-G.5, G.9-H/1
+- Level 2 G-G.5/1
+- Level 2 G-H/33
+- Level 2 G-J/3
+- Level 2 G.1-G.5/1
+- Level 2 G.2/3
+- Level 2 G.3-F.8/30.3-31
+- Level 2 G.3-G.5/1
+- Level 2 G.3-H.8/28-29
+- Level 2 G.3-H.8/29.3-30
+- Level 2 G.3-H.8/30.3-31.6
+- Level 2 G.3-H.8/31.3-31.6
+- Level 2 G.3-H.8/32-32.6
+- Level 2 G.3-H.8/32-33
+- Level 2 G.3-M/3 Columns
+- Level 2 G.3/32.3-32.6
+- Level 2 G.5 (E), H (W)/1.3 Data Center (bottom of
+- Level 2 G.5 (E), H (W)/1.3 Data Center (bottom of door opening)
+- Level 2 G.5 (W), H (E)/1.3 Data Center (bottom of
+- Level 2 G.5 (W), H (E)/1.3 Data Center (bottom of door opening)
+- Level 2 G.5, G.8; H/1.3
+- Level 2 G.5-H.1/1-1.5 Ceiling
+- Level 2 G.5/1 Stair 57
+- Level 2 G.8-H.3/33 Exterior
+- Level 2 G/1 Stair #90
+- Level 2 G/1 Stair 90
+- Level 2 G/13-16 Trench Drain
+- Level 2 G/26
+- Level 2 G/7
+- Level 2 Goalpost L/4.2-4.8
+- Level 2 Goalpost M/4.2-4.8
+- Level 2 Gridline 33/F.6-F.8
+- Level 2 Gridline 33/G-G.3
+- Level 2 Gridline 33/G-G.3 (19' AFF to Deck)
+- Level 2 Gridline H.8-Column Line 3-8
+- Level 2 Gridline H.8-Column Line 3-8 East Face
+- Level 2 H-H.3
+- Level 2 H-H.3/1
+- Level 2 H-H.8/27-30.6
+- Level 2 H-J/1
+- Level 2 H-K/1
+- Level 2 H.1-H.3/1
+- Level 2 H.3-H.8/1
+- Level 2 H.3/33 Exterior
+- Level 2 H.4/3 (Data Center)
+- Level 2 H.5/20, H.3/21.3 & H/22.3
+- Level 2 H.5/3
+- Level 2 H.7-H.8/3 (Data Center)
+- Level 2 H.8, J/3
+- Level 2 H.8-H.9/1
+- Level 2 H.8-J-M-N/1
+- Level 2 H.8-J/1
+- Level 2 H.8-J/3
+- Level 2 H.8-J/33
+- Level 2 H.8/3-8
+- Level 2 H/1 Stair #56
+- Level 2 H/1 Stair 56
+- Level 2 H/1 Stair 57
+- Level 2 H/2
+- Level 2 H/2,3
+- Level 2 H/3
+- Level 2 H/3 (by slurry room)
+- Level 2 H/3 (by the slurry room)
+- Level 2 H/33
+- Level 2 IT Room #20 Interior East side
+- Level 2 IT Room #20 Interior walls North, South & West wall
+- Level 2 IT Room 22
+- Level 2 IT Security Room 1 Interior
+- Level 2 IT Security Room 1 K-L/4
+- Level 2 IT room #20 Interior East side
+- Level 2 IT/ Security 22 C-D/3.5-4
+- Level 2 IT/Security Room 1 Exterior S Wall
+- Level 2 IT/Security Room 1 Interior
+- Level 2 J-K/1
+- Level 2 J-K/17-20
+- Level 2 J-K/3
+- Level 2 J-K/3 (Partial install)
+- Level 2 J-K/30-33
+- Level 2 J-K/33
+- Level 2 J-K/33 Exterior
+- Level 2 J-K/4-5 Slurry Room Stair
+- Level 2 J-L/25
+- Level 2 J-L/3 Column
+- Level 2 J-L/3 column
+- Level 2 J-L/4-4.5
+- Level 2 J.3-K/3
+- Level 2 J.9-K/3
+- Level 2 J/11-24
+- Level 2 J/29
+- Level 2 J/3
+- Level 2 J/3 Topping slab
+- Level 2 J/32
+- Level 2 J/4 Panstair
+- Level 2 J/4 Slurry Room Stair
+- Level 2 J/4 Slurry Room Stair & Level 1 Pit L.5/17 Stair 33
+- Level 2 J/4 Slurry Room Stair; Level 1 Pit L.5/17
+- Level 2 J/4 Slurry Room Stair; Level 1 Pit L.5/17 Stair 33
+- Level 2 J/4-5
+- Level 2 J/4-6
+- Level 2 J/4-8 Mezzanine
+- Level 2 J/9-10
+- Level 2 K & L/32 Goalpost
+- Level 2 K&L/32 Goalpost
+- Level 2 K,L/10
+- Level 2 K-K.5/22.8
+- Level 2 K-L/1
+- Level 2 K-L/10
+- Level 2 K-L/11 Elevator 2
+- Level 2 K-L/11 Elevator 2 (4 interior beams)
+- Level 2 K-L/11-12
+- Level 2 K-L/11-12 Ceiling
+- Level 2 K-L/11-12 Elevator 2
+- Level 2 K-L/11.5-11.7
+- Level 2 K-L/12
+- Level 2 K-L/12 Elevator 2B
+- Level 2 K-L/12-17
+- Level 2 K-L/16.2-17.2
+- Level 2 K-L/17.2
+- Level 2 K-L/18
+- Level 2 K-L/18, 19
+- Level 2 K-L/19.5-22.5
+- Level 2 K-L/22.8
+- Level 2 K-L/23-24 Clean Stair 4 S Wall
+- Level 2 K-L/24-29
+- Level 2 K-L/27-29
+- Level 2 K-L/29-30
+- Level 2 K-L/3-3.3
+- Level 2 K-L/30-32
+- Level 2 K-L/4 IT Security Room 1
+- Level 2 K-L/4-4.3 IT/Security Room 1
+- Level 2 K-L/4.8
+- Level 2 K-L/6
+- Level 2 K-L/6-10
+- Level 2 K-L1
+- Level 2 K-M/1
+- Level 2 K.2/11.3-11.7 Ceiling
+- Level 2 K.3-K.9/11.3-11.7 Ceilin
+- Level 2 K.3-K.9/11.3-11.7 Ceiling
+- Level 2 K.4-K.9/11.3-11.7 Ceiling
+- Level 2 K.5 -L/3
+- Level 2 K.5-L/1
+- Level 2 K.5-L/3
+- Level 2 K.8-L/1
+- Level 2 K.8-L/18
+- Level 2 K.8-L/18.8
+- Level 2 K.8/18-19
+- Level 2 K/10
+- Level 2 K/10 NCR-0223
+- Level 2 K/11-15
+- Level 2 K/11-28 Columns
+- Level 2 K/11.5-14
+- Level 2 K/12-15
+- Level 2 K/14-15, 16.5-17
+- Level 2 K/15-16.5
+- Level 2 K/15-16.5, 18-20, 21-22
+- Level 2 K/15-16.5,18-20, 21-22
+- Level 2 K/15-16.5,18-20,21-22
+- Level 2 K/15-18
+- Level 2 K/16-11.5
+- Level 2 K/16-18
+- Level 2 K/16-19, 24-27, 29-32
+- Level 2 K/16.5-17
+- Level 2 K/17 Goalpost
+- Level 2 K/17-18
+- Level 2 K/17-18 W Face
+- Level 2 K/17.2, 17.8
+- Level 2 K/17.2,17.8
+- Level 2 K/18-20
+- Level 2 K/18-22.8
+- Level 2 K/18-28
+- Level 2 K/18.8-19 W Face
+- Level 2 K/19-19.5, top two thirds
+- Level 2 K/19-20
+- Level 2 K/20-21
+- Level 2 K/20-22
+- Level 2 K/20-23.5 EAST SIDE
+- Level 2 K/20-28
+- Level 2 K/21-22
+- Level 2 K/21-22.5
+- Level 2 K/21-28
+- Level 2 K/22-22.7
+- Level 2 K/22.7-23
+- Level 2 K/22.8-18
+- Level 2 K/22.8-23
+- Level 2 K/22.8-23 (Interior)
+- Level 2 K/23-28
+- Level 2 K/28-23
+- Level 2 K/28-29.5
+- Level 2 K/29.5-32
+- Level 2 K/29.5-32.5
+- Level 2 K/29.8-32
+- Level 2 K/3
+- Level 2 K/3,3.2,17.2,17.8,18,22.8
+- Level 2 K/3-32
+- Level 2 K/3-4
+- Level 2 K/3-4,4-5; Level 3 A.5/10,12.5; F.4/2; B.5/29
+- Level 2 K/3-5
+- Level 2 K/3.2-4
+- Level 2 K/3.5 & 4.5 Goalposts
+- Level 2 K/3.5&4.5 Goalposts
+- Level 2 K/3.5, 17.5, 32.5; K & M/4.5; L & l.5/17.5
+- Level 2 K/3.5, 17.5, 32.5; K & M/4.5; L & l.5/17.5; M.5/19; L/32.5; D/4, 17.5, 28, 32.5; C/17.5 & 32.5; B/3
+- Level 2 K/3.5-4
+- Level 2 K/3.5-4 West Face Wall
+- Level 2 K/30-32
+- Level 2 K/31 Column
+- Level 2 K/32 & L/32 Goalpost
+- Level 2 K/32-33
+- Level 2 K/34-35 Exterior
+- Level 2 K/4
+- Level 2 K/4-4.8
+- Level 2 K/4.2-4.8
+- Level 2 K/4.2-4.8 West Face Wall
+- Level 2 K/4.2-4.8 west face
+- Level 2 K/4.8-5 Interior
+- Level 2 K/5-5.8
+- Level 2 K/5.8-8
+- Level 2 K/6
+- Level 2 K/6-10 Ceiling
+- Level 2 K/7-8
+- Level 2 K/8-10
+- Level 2 K/8-9
+- Level 2 K/9-10
+- Level 2 K15-18
+- Level 2 K18- 20
+- Level 2 K28-29.5
+- Level 2 K29.5-32.5
+- Level 2 L-3 Column
+- Level 2 L-K/4
+- Level 2 L-L.2/1
+- Level 2 L-L.5 3-4
+- Level 2 L-L.5 31-32 Elevator #5
+- Level 2 L-L.5/18.2
+- Level 2 L-L.5/3-4
+- Level 2 L-L.5/31-32 elevator 5 Exterior S&E
+- Level 2 L-L.5/31.3 Elevator 5 Exterior S Wall
+- Level 2 L-L.5/31.3-32 Elevator 5 S&E Wall
+- Level 2 L-L.5/31.3-32 Exterior
+- Level 2 L-M/18-19 Fire Alarm Room 3
+- Level 2 L-M/3-4 Elevator 1 Exterior
+- Level 2 L-M/31
+- Level 2 L-M/32 Elevator 5
+- Level 2 L-M/33
+- Level 2 L-N/3
+- Level 2 L-N/32-33; B-C/32
+- Level 2 L.2-M/1-1.3 Ceiling
+- Level 2 L.3/1
+- Level 2 L.3/3.2Ceiling& L.43.2Ceiling
+- Level 2 L.5-M/3
+- Level 2 L.5/16.2-17
+- Level 2 L.5/17 Goalpost
+- Level 2 L.5/30 Goalpost
+- Level 2 L.5/30.5 Goalpost
+- Level 2 L.5/30.5-31 Storage Room 5 North,south,west wall
+- Level 2 L.5/31.3-32 Elevator 5 W Wall
+- Level 2 L.5/32 Goalpost
+- Level 2 L.5/32, A.5/29.5; Level 1 B/32
+- Level 2 L.5/32, A.5/29.5; Level 1 B/32;Level 4 B.5/4.5
+- Level 2 L/1
+- Level 2 L/10
+- Level 2 L/10, 11
+- Level 2 L/10-11.3; 11.6-17
+- Level 2 L/10-12
+- Level 2 L/10-13
+- Level 2 L/11
+- Level 2 L/11 S Wall W Face
+- Level 2 L/11 South Wall West Face
+- Level 2 L/11-11.3 Vestibule 2
+- Level 2 L/12
+- Level 2 L/12 ELEVATOR #2
+- Level 2 L/12-16 (N,S); L/19,20 (N,S)
+- Level 2 L/14(NS),15(NS),16(S),19(NS),20(NS),22(NS)
+- Level 2 L/14(NS),15(NS),19(NS),20(NS),22(NS),23(N),24(NS),25(NS),26(NS),27(NS),28(NS),29(S),30(N)
+- Level 2 L/14(NS),15(NS),19(NS),20(NS),22(NS),23(N),24(NS),25(NS),26(NS),27(NS),28(NS),30(N)
+- Level 2 L/16
+- Level 2 L/16 (NE) & L31 (NW)
+- Level 2 L/16 (NE), 31 (NW)
+- Level 2 L/17
+- Level 2 L/17 Goalpost
+- Level 2 L/17-18
+- Level 2 L/18
+- Level 2 L/18 (S,W)
+- Level 2 L/18 (S,W) Apache cut out only
+- Level 2 L/18 IT/Security Room
+- Level 2 L/18 IT/Secutiry Room
+- Level 2 L/18-18.5 IT Security Room & Fire Alarm Room
+- Level 2 L/18-19 Stair #3
+- Level 2 L/18.8-19
+- Level 2 L/19
+- Level 2 L/19 (E)
+- Level 2 L/19 (S,E)
+- Level 2 L/19 (S,W)
+- Level 2 L/19 (W)
+- Level 2 L/19-22.5
+- Level 2 L/20,21,22,24,25
+- Level 2 L/22 (N),23 (N),24 (N,S)
+- Level 2 L/22.8-24
+- Level 2 L/23, 24, 31
+- Level 2 L/23-24
+- Level 2 L/23.2-23
+- Level 2 L/26,27,28,29
+- Level 2 L/29-30 Electrical Room Interior
+- Level 2 L/3,5,6,19
+- Level 2 L/3.5 Fire Alarm 1 Exterior N Wall
+- Level 2 L/30 Stair 50 Landing Column
+- Level 2 L/30.5-31 Storage Room 5 N,S,W Wall
+- Level 2 L/31 (N)
+- Level 2 L/32.3-32.8 Airlock 5 W Wall W Side
+- Level 2 L/4
+- Level 2 L/4 & Level 1 L/17 Goalpost
+- Level 2 L/4 & Level 1 L/17 Goalposts
+- Level 2 L/4 Goalpost
+- Level 2 L/4-5
+- Level 2 L/4-5.6
+- Level 2 L/4.2-4.8 Goalpost
+- Level 2 L/5 (N,E); L/6-11 (N,S)
+- Level 2 L/5 (N,E); L/6-9,(N,S) 11 (N,S)
+- Level 2 L/5, 7-20, 22-28, 30, 31
+- Level 2 L/5,6,19
+- Level 2 L/5-6
+- Level 2 L/6 (N),7 (N,S), 8 (N), 9-13 (N,S)
+- Level 2 L/6 (N),7 (N,S), 8 (S), 9 (N,S)
+- Level 2 L/6, 11 (S)
+- Level 2 L/6,10
+- Level 2 L/7,8,9
+- Level 2 L/7,8,9,10,11,12,13
+- Level 2 L30 Stair 50 Landing Column
+- Level 2 M-M.3/3-3.4 Ceiling
+- Level 2 M-M.3/3-3.4 Ceiling NCR-0278
+- Level 2 M-M.3/3-3.5 Ceiling
+- Level 2 M-M.5/3-3-4 Ceiling
+- Level 2 M-M.5/3-3.3 Ceiling
+- Level 2 M-M.5/3-3.4 Ceiling
+- Level 2 M-N/1
+- Level 2 M-N/1 Soffit
+- Level 2 M-N/14 & M/14-16.5 Exterior
+- Level 2 M-N/14-16.6 Battery Room 1 Exterior catch-up
+- Level 2 M-N/19
+- Level 2 M-N/19 TCO Room
+- Level 2 M-N/19; M/16.5-19
+- Level 2 M-N/27.5-28 Exterior
+- Level 2 M-N/30 Battery Room 3 N Wall
+- Level 2 M-N/30 Exterior N Wall catch-up
+- Level 2 M-N/30-31
+- Level 2 M-N/33
+- Level 2 M-N/9.3-10
+- Level 2 M-N/9.3-10 Clean Room
+- Level 2 M-N/9.3-10 Clean room
+- Level 2 M-N1
+- Level 2 M-N30 Battery Room 3 N Wall
+- Level 2 M.5/14 Goalpost
+- Level 2 M.5/19 Goalpost
+- Level 2 M.5/28 Goalpoat
+- Level 2 M.5/28 Goalpost
+- Level 2 M.5/30 PEN#14
+- Level 2 M.5/30 PEN#15,16
+- Level 2 M.5/30 PEN#17,18
+- Level 2 M.5/30 PEN#19
+- Level 2 M.5/30 Penetration support
+- Level 2 M.6-N/3.3 Ductshaft North Wall South Face
+- Level 2 M.8-N/3
+- Level 2 M/1 Stair #46
+- Level 2 M/14 (N,W)
+- Level 2 M/14 (S,E face)
+- Level 2 M/14-16.5 interior walls
+- Level 2 M/14-17
+- Level 2 M/14-17 Exterior
+- Level 2 M/14-18
+- Level 2 M/14-19, 29, 30
+- Level 2 M/15-19 (N,S)
+- Level 2 M/16 North face both sides
+- Level 2 M/16,19
+- Level 2 M/16.7-19
+- Level 2 M/17-19 exterior walls
+- Level 2 M/19 West & south both sides
+- Level 2 M/19 West & south face both sides
+- Level 2 M/27.5-28 Exterior
+- Level 2 M/27.5-30
+- Level 2 M/27.5-30 Battery Room
+- Level 2 M/28-30
+- Level 2 M/28-30 Exterior E Face catch-up
+- Level 2 M/28-30. 30(W,S)
+- Level 2 M/3
+- Level 2 M/3 Stair 48
+- Level 2 M/30 PEN#20
+- Level 2 M/30 PEN#21
+- Level 2 M/30 PEN#22
+- Level 2 M/30 PEN#23
+- Level 2 M/30 PEN#24,25,26,27,28
+- Level 2 M/30 PEN#25,26,27
+- Level 2 M/30 PEN#25,26,27 & 30
+- Level 2 M/30 PEN#29
+- Level 2 M/30 PEN#30
+- Level 2 M/31 PEN#1
+- Level 2 M/32-33
+- Level 2 M/4
+- Level 2 M/4 Goalpost
+- Level 2 M/4.2-4.8 Goalpost
+- Level 2 M/4Goalpost
+- Level 2 MEZ J3
+- Level 2 N,M,J,H,G/1 Columns
+- Level 2 N-M/3 Duct Shaft 1 S Wall
+- Level 2 N/1
+- Level 2 N/1-2
+- Level 2 N/1-2.2 , 3.5-7,10-11,12-17
+- Level 2 N/10-11,23-25
+- Level 2 N/11-11.8
+- Level 2 N/11-12
+- Level 2 N/11-12, 21-23
+- Level 2 N/11-12,21-23
+- Level 2 N/12-17
+- Level 2 N/21-22.3
+- Level 2 N/21-23
+- Level 2 N/23-26
+- Level 2 N/23.3-24
+- Level 2 N/3
+- Level 2 N/30 PEN#10
+- Level 2 N/30 PEN#11
+- Level 2 N/30 PEN#12
+- Level 2 N/30 PEN#13
+- Level 2 N/30 Stair 51
+- Level 2 N/30 Stair 53
+- Level 2 N/30-31 Stair 51, 53
+- Level 2 N/30-31 Stair 54
+- Level 2 N/30-32 Stair 51, 54, 55
+- Level 2 N/30-34 Stair 54
+- Level 2 N/31 PEN#2,3
+- Level 2 N/31 PEN#4,5,6
+- Level 2 N/31 PEN#7,8,9
+- Level 2 N/31 Stair 51
+- Level 2 N/31 Stair 53
+- Level 2 N/31 Stair 54
+- Level 2 N/31 Stair 55
+- Level 2 N/31-32
+- Level 2 N/31-32 Modifications
+- Level 2 N/31-33 Stair 53
+- Level 2 N/32 Stair 55
+- Level 2 N/5-6
+- Level 2 N/5-7
+- Level 2 N/7-10
+- Level 2 N/7.3-10
+- Level 2 PR Lifter room C-D/30-31
+- Level 2 Panstair at J/4
+- Level 2 Room 20
+- Level 2 SUE 18-19 C line
+- Level 2 SUE A 23-25
+- Level 2 SUE A-B/33 Exterior
+- Level 2 SUE A-C/25
+- Level 2 SUE A.6-A.8/30.5 Goalpost
+- Level 2 SUE A/1-3 NCR 0592
+- Level 2 SUE A/25-28 top angle NCR 0592
+- Level 2 SUE A/25-32
+- Level 2 SUE A/32-33
+- Level 2 SUE A/32-33 NCR-0558
+- Level 2 SUE A25-32
+- Level 2 SUE Air Lock 18 W Wall E Face
+- Level 2 SUE Air lock 18 S,E Wall
+- Level 2 SUE Air lock 20 W,N Wall
+- Level 2 SUE B-B.5/32-33 FA 18 S Wall N Face, W Wal
+- Level 2 SUE B-B.5/32-33 FA 18 S Wall N Face, W Wall E Face
+- Level 2 SUE B-B.5/32.8 FA 18 N Wall S side
+- Level 2 SUE B-B.5/32.8-33 FA Room 18 S,W Wall
+- Level 2 SUE B-B.5/33 Interior
+- Level 2 SUE B-C/18-19
+- Level 2 SUE B-C/3-4 Elevator 22
+- Level 2 SUE B-C/3-4 Elevator 22 EAST WALL
+- Level 2 SUE B-C/33 ( Loading Dock Opening)
+- Level 2 SUE B.3-B.5/32.3 (Door Frame)
+- Level 2 SUE B.3-B.8/3-3.3 Duct Shaft
+- Level 2 SUE B.5-C/17 Elevator 20 Front
+- Level 2 SUE B.5-C/17 Elevator Front
+- Level 2 SUE B.5/17-17.3
+- Level 2 SUE B.5/32.8-33 FA 18 W Wall W side
+- Level 2 SUE B.8-D/27-28
+- Level 2 SUE B/32 King Stud Door
+- Level 2 SUE B/4-5
+- Level 2 SUE B/4-5 (Exclude temp opening for Secai)
+- Level 2 SUE C-C.2/18 N Face
+- Level 2 SUE C-C.2/18.8 S Face
+- Level 2 SUE C-C.2/5.2
+- Level 2 SUE C-C.2/5.2 N Face
+- Level 2 SUE C-C.3/12.8 N,S Face (Above Door)
+- Level 2 SUE C-C.3/12.8 S Face (Above Door Opening Wall)
+- Level 2 SUE C-C.3/29.5 PR Lifter Room (wall with d
+- Level 2 SUE C-C.3/29.5 PR Lifter Room (wall with door opening)
+- Level 2 SUE C-C.3/29.5 PR Lifter Room N Face (wall
+- Level 2 SUE C-C.3/29.5 PR Lifter Room N Face (wall with door opening)
+- Level 2 SUE C-C.3/29.5 PR Lifter Room S Face (wall with door opening)
+- Level 2 SUE C-C.3/32
+- Level 2 SUE C-D/12 Stairs 21 Exterior E Wall
+- Level 2 SUE C-D/13.3
+- Level 2 SUE C-D/13.3 N face
+- Level 2 SUE C-D/17-17.8 Airlock 20 N, S, E Walls
+- Level 2 SUE C-D/17.8 Vestibule 20 S Wall, N Face
+- Level 2 SUE C-D/18-19 Stair 20
+- Level 2 SUE C-D/19-24
+- Level 2 SUE C-D/22
+- Level 2 SUE C-D/24-25
+- Level 2 SUE C-D/25
+- Level 2 SUE C-D/25 (North Face)
+- Level 2 SUE C-D/28.8 Duct Shaft Room S Wall
+- Level 2 SUE C-D/28.8-30 Duct Shaft E wall
+- Level 2 SUE C-D/28.8-30 Duct Shaft Room N,E Wall
+- Level 2 SUE C-D/28.8-30 Duct Shaft, W face & N face
+- Level 2 SUE C-D/28.8-30 Duct Shaft, W&N face
+- Level 2 SUE C-D/30-32
+- Level 2 SUE C-D/30.7
+- Level 2 SUE C-D/30.7 N Face
+- Level 2 SUE C-D/31-32
+- Level 2 SUE C-D/32.7 Air lock 18 North wall
+- Level 2 SUE C-D/32.7 Airlock 18 N Wall
+- Level 2 SUE C-D/32.7 Airlock 18 N Wall S Face
+- Level 2 SUE C-D/4.8
+- Level 2 SUE C-D/6-12
+- Level 2 SUE C-D/GL 6-12
+- Level 2 SUE C.2/11-12 Stairs 21 Exterior E Wall
+- Level 2 SUE C.3-D/12-13 Stairs 21 N Wall
+- Level 2 SUE C.3-D/12-13 Stairs 21 S,E Wall
+- Level 2 SUE C.3-D/20.8-30 Duct Shaft N,S,E Walls
+- Level 2 SUE C.3/32-32.3
+- Level 2 SUE C.5-D/17.2 S Face
+- Level 2 SUE C.9/18-18.8 Stair 20 W Wall
+- Level 2 SUE C/12-13
+- Level 2 SUE C/12.8 Vestibule 21 (Door opening)
+- Level 2 SUE C/12.8 Vestibule 21 N (Door opening)
+- Level 2 SUE C/12.8 Vestibule 21 S (Door opening)
+- Level 2 SUE C/13-13.3
+- Level 2 SUE C/13.2-14, 15-16
+- Level 2 SUE C/18 Stair 21 W Wall
+- Level 2 SUE C/18-19, Level 3 SUE C/26-27
+- Level 2 SUE C/19-20
+- Level 2 SUE C/21-21.5, 22-24
+- Level 2 SUE C/21-21.5;22--24
+- Level 2 SUE C/22-24.5
+- Level 2 SUE C/25-26 E Face
+- Level 2 SUE C/26-28
+- Level 2 SUE C/27-28
+- Level 2 SUE C/28 Elevator 19 N Wall
+- Level 2 SUE C/28 Elevator 19 N,W Wall
+- Level 2 SUE C/28 Elevator 19 N,W Wall NCR-0229
+- Level 2 SUE C/28 Elevator 19 S Wall
+- Level 2 SUE C/28 Elevator 19 W Wall
+- Level 2 SUE C/28 Elevator 19 W,N Wall NCR-0229
+- Level 2 SUE C/28.5-29
+- Level 2 SUE C/29-30
+- Level 2 SUE C/29-30 E Face
+- Level 2 SUE C/29-30 E face
+- Level 2 SUE C/30-31 (East Face)
+- Level 2 SUE C/30-31 EAST FACE
+- Level 2 SUE C/30.5
+- Level 2 SUE C/31-31.2 W,E face
+- Level 2 SUE C/32 Airlock 18 N Face S Wall
+- Level 2 SUE C/32 Airlock 18 S Wall
+- Level 2 SUE C/32-33
+- Level 2 SUE C/33-34 Stair 18 Exterior
+- Level 2 SUE C/4-5 E Face
+- Level 2 SUE C/5-6
+- Level 2 SUE C/6-7
+- Level 2 SUE C/6-7 (bottom half only)
+- Level 2 SUE C27-28 Framing
+- Level 2 SUE D-E/33 Exterior
+- Level 2 SUE D/12-12.2 E Face
+- Level 2 SUE D/13 Stair 21 Interior N Wall
+- Level 2 SUE D/13 Stair 21 Interior N Wall NCR 0267
+- Level 2 SUE D/13 Stair 21 Interior S,E Wall
+- Level 2 SUE D/13 Stair 21 N Wall
+- Level 2 SUE D/13 Stair 21 W Wall
+- Level 2 SUE D/17-17.2 E Face
+- Level 2 SUE D/18 Stair 20 Interior N Wall
+- Level 2 SUE D/18 Stair 20 Interior N Wall NCR 0267
+- Level 2 SUE D/18 Stair 20 Interior S Wall
+- Level 2 SUE D/18 Stair 20 N Wall Interior NCR-0267
+- Level 2 SUE D/18 Stair 20 S Interior Wall
+- Level 2 SUE D/18 Stair 20 S Wall
+- Level 2 SUE D/18 Stair 20 S Wall Interior NCR-0267
+- Level 2 SUE D/18 Stair 20 W Wall
+- Level 2 SUE D/27-28
+- Level 2 SUE D/27-28.8
+- Level 2 SUE D/27-28.8 (East Face)
+- Level 2 SUE D/27-28.8 E Face
+- Level 2 SUE D/32-33
+- Level 2 SUE D/32-33 W Face
+- Level 2 SUE D/32.2-32.5 Air Lock 18 W Wall E Face
+- Level 2 SUE Elevator 19
+- Level 2 SUE Elevator 22
+- Level 2 SUE N/12-13
+- Level 2 SUE PR Lifter Room
+- Level 2 SUE PR Lifter Room E,S Wall
+- Level 2 SUE PR Lifter Room S Wall
+- Level 2 SUE Stair #20 C/18-19
+- Level 2 SUE Stair 18 Exterior E,N Wall
+- Level 2 SUE Stair 20 C-D/18-19
+- Level 2 SUE Stair 20 S Face
+- Level 2 SUE Stair 21 Exterior S Wall
+- Level 2 SUE Stairs 20 E Wall Interior
+- Level 2 SUE Stairs 20 Interior E Wall
+- Level 2 SUE Stairs 20 N,E,W Interior
+- Level 2 SUE Stairs 20 W Wall
+- Level 2 SUE Stairs 21 Exterior S Wall S Face
+- Level 2 SUE Stairs 21 Exterior S Wall S face
+- Level 2 SUE Stairs 21 N,S,E,W Interior
+- Level 2 SUE Vestibule 3 N Wall (Exclude Openings)
+- Level 2 SUW Air Lock 5 Interior N,S Walls
+- Level 2 SUW Air Lock 5 South Wall South Face upper
+- Level 2 SUW Air Lock 5 South Wall South Face upper and lower
+- Level 2 SUW Air lock 5 Interior N,S Wall
+- Level 2 SUW Airlock 1 N,S Wall
+- Level 2 SUW Airlock 3 N Wall
+- Level 2 SUW Airlock 5 Interior E Wall (upper level
+- Level 2 SUW Airlock 5 Interior E Wall (upper level)
+- Level 2 SUW Airlock 5 N Wall N Face (upper level)
+- Level 2 SUW B/32
+- Level 2 SUW C/17.5, D/17.5, M/19, D/28
+- Level 2 SUW Elevator 1 E Wall (bottom half only)
+- Level 2 SUW Elevator 1 East wall exterior (bottom
+- Level 2 SUW Elevator 1 East wall exterior (bottom half only)
+- Level 2 SUW Elevator 1 Exterior W Wall
+- Level 2 SUW Elevator 1 S Wall
+- Level 2 SUW Elevator 1/1A
+- Level 2 SUW Elevator 1A Infill
+- Level 2 SUW Elevator 1A Interior S Wall
+- Level 2 SUW Elevator 1A W Wall E Face
+- Level 2 SUW Elevator 1A West Wall
+- Level 2 SUW Elevator 1B S Wall
+- Level 2 SUW Elevator 3 S and W wall exterior
+- Level 2 SUW FA 1 East wall interior
+- Level 2 SUW FA 1 West wall interior
+- Level 2 SUW FA Room 1 Interior N WALL SOUTH FACE
+- Level 2 SUW FA Room 1 S Wall
+- Level 2 SUW G.5 (E)/1.3 Data Center
+- Level 2 SUW G.8 (N), H (W)/1.3 Data Center
+- Level 2 SUW H.5-H.8/33 Interior
+- Level 2 SUW IT Security Room 1 East wall
+- Level 2 SUW J-K/33
+- Level 2 SUW J-K/33 Exterior
+- Level 2 SUW K-K.7/17.2 S Face
+- Level 2 SUW K-K.8/11 (N Wall N Face) Stair 2 Exter
+- Level 2 SUW K-K.8/11 (N Wall N Face) Stair 2 Exterior
+- Level 2 SUW K-L/1
+- Level 2 SUW K-L/17.2
+- Level 2 SUW K-L/17.2 S Face
+- Level 2 SUW K-L/17.3 Airlock 3 N Wall S Side
+- Level 2 SUW K-L/17.3 Airlock 3 S Wall N Side (excl
+- Level 2 SUW K-L/17.3 Airlock 3 S Wall N Side (exclude opening)
+- Level 2 SUW K-L/17.8
+- Level 2 SUW K-L/18 Stairs 3 Exterior S, E Wall
+- Level 2 SUW K-L/18 Stairs 3 Exterior S,E Wall
+- Level 2 SUW K-L/22.8
+- Level 2 SUW K-L/22.8 Vestibule 4 S Wall, N Face
+- Level 2 SUW K-L/23 Stair 4 S Wall S Face
+- Level 2 SUW K-L/23 Stair 4 S Wall S face
+- Level 2 SUW K-L/3-3.3 Duct Shaft All Interior Walls
+- Level 2 SUW K-L/3-3.3 Duct Shaft Interior S,N Wall
+- Level 2 SUW K-L/3-3.3 Duct Shaft Interior S,N Walls
+- Level 2 SUW K-L/3-3.3 Duct Shaft N,S,E,W
+- Level 2 SUW K-L/3-3.5 Duct Shaft
+- Level 2 SUW K-L/32.2
+- Level 2 SUW K-L/32.2 Airlock 5 S Wall
+- Level 2 SUW K-L/32.6 Ceiling
+- Level 2 SUW K-L/32.8
+- Level 2 SUW K-L/4 IT/Security Room 1 Exterior S Wa
+- Level 2 SUW K-L/4 IT/Security Room 1 Exterior S Wall
+- Level 2 SUW K-L/4.8 North Face wall
+- Level 2 SUW K.7-L/17
+- Level 2 SUW K.7-L/17 N,S Face
+- Level 2 SUW K.7/17-17.2
+- Level 2 SUW K.7/17-17.2 E,W Face
+- Level 2 SUW K.7/17-17.2 W,E Face
+- Level 2 SUW K.8-L/11 Vestibule 2
+- Level 2 SUW K.8-L/11 Vestibule 2 N Face (Top of th
+- Level 2 SUW K.8-L/11 Vestibule 2 N Face (Top of the Wall)
+- Level 2 SUW K.8-L/23.2 Vestibule 4 N Wall, S Face
+- Level 2 SUW K.8-L/23.2 Vestibule 4 N wall S face
+- Level 2 SUW K.8-L/23.3 Vestibule 4 N Face
+- Level 2 SUW K.8-L/23.3 Vestibule 4 S Face
+- Level 2 SUW K.8/32-32.3 Elevator Hall 5
+- Level 2 SUW K.8/32-32.3 Elevator Hall 5 W Face
+- Level 2 SUW K/10-11
+- Level 2 SUW K/11 Stair 2 Interior N Wall
+- Level 2 SUW K/11 Stair 2 Interior S Wall NCR 0268
+- Level 2 SUW K/11 Stair 2 N Wall
+- Level 2 SUW K/11 Stair 2 W Wall (Interior)
+- Level 2 SUW K/11 Stair 2 W Wall + Horizontal EJ
+- Level 2 SUW K/11 Stair 2 W Wall Interior
+- Level 2 SUW K/11-11.3 (W) Vestibule 2
+- Level 2 SUW K/17-17.2 W Face
+- Level 2 SUW K/18 Stair 3 E, W Wall Interior
+- Level 2 SUW K/18 Stair 3 Interior E Wall
+- Level 2 SUW K/18 Stair 3 Interior E,W Wall
+- Level 2 SUW K/18 Stair 3 Interior N Wall
+- Level 2 SUW K/18 Stair 3 Interior S Wall
+- Level 2 SUW K/18 Stair 3 Interior W Wall
+- Level 2 SUW K/18 Stair 3 N,S,W Wall
+- Level 2 SUW K/18 Stairs 3 Interior All Walls
+- Level 2 SUW K/22.8-23 Vestibule 4 (E Wall W Side)
+- Level 2 SUW K/23.8-24 Duct Shaft W Face
+- Level 2 SUW K/29-29.8
+- Level 2 SUW K/29-29.8 W Face
+- Level 2 SUW K/32-32.2
+- Level 2 SUW K/32-32.2 W face
+- Level 2 SUW K/32-32.7
+- Level 2 SUW K/32-33
+- Level 2 SUW K/32.7-33
+- Level 2 SUW K/32.7-33 W Face
+- Level 2 SUW K/33-34 Exterior
+- Level 2 SUW K/34-35 Exterior
+- Level 2 SUW K/4.2-4.8 East Face (goalpost)
+- Level 2 SUW K/4.2-4.8 Goalpost E Face
+- Level 2 SUW K/4.2-4.8 goalpost E Face
+- Level 2 SUW K/4.8-5
+- Level 2 SUW K/4.8-5 W Face
+- Level 2 SUW L -N/4-14
+- Level 2 SUW L- N/4-14
+- Level 2 SUW L-L.5/17 Elevator 3 N Face (exclude openings for electrical box)
+- Level 2 SUW L-L.5/17 Elevator 3 N Wall (Front)
+- Level 2 SUW L-L.5/18.2
+- Level 2 SUW L-M/18.2
+- Level 2 SUW L-M/30.5
+- Level 2 SUW L-M/30.5 S Face (Double Door)
+- Level 2 SUW L-N/14-20
+- Level 2 SUW L-N/20-26
+- Level 2 SUW L-N/26-30
+- Level 2 SUW L-N/3
+- Level 2 SUW L.2-L.5/3.5 Elevator 1A Front
+- Level 2 SUW L.3/3 (Data Center)
+- Level 2 SUW L.5-M/32
+- Level 2 SUW L.5-M/32 N Face
+- Level 2 SUW L.5/17.5-18
+- Level 2 SUW L.5/17.5-18.2
+- Level 2 SUW L.5/3.3-4 Elevator 1 W Face (Center wa
+- Level 2 SUW L.5/3.3-4 Elevator 1 W Face (Center wall of the elevator)
+- Level 2 SUW L.517.5-18.2
+- Level 2 SUW L.8-M/33 Exterior
+- Level 2 SUW L.8/3 (Data Center)
+- Level 2 SUW L/10-12
+- Level 2 SUW L/11 Stair 2 Exterior N Wall
+- Level 2 SUW L/11-11.3 (W Wall E Side) Vestibule 2
+- Level 2 SUW L/11-11.3 Vestibule 2 W Wall
+- Level 2 SUW L/11-11.4 Vestibule 2 W Wall E Side
+- Level 2 SUW L/11-13
+- Level 2 SUW L/14-15 west face bottom of wall
+- Level 2 SUW L/16-16.2
+- Level 2 SUW L/16-16.2 E,W Face
+- Level 2 SUW L/16-16.2 West Face
+- Level 2 SUW L/16-17
+- Level 2 SUW L/17 Elevator 3 Front
+- Level 2 SUW L/17-18 W Face
+- Level 2 SUW L/17.2-17.8 Airlock 3 W Wall E Face
+- Level 2 SUW L/17.2-18
+- Level 2 SUW L/17.8-18 E Face
+- Level 2 SUW L/19-19.5 W Face
+- Level 2 SUW L/19-20
+- Level 2 SUW L/19-20 W Face
+- Level 2 SUW L/19-22
+- Level 2 SUW L/19-22.5
+- Level 2 SUW L/19-22.5 W Face
+- Level 2 SUW L/19-22.5 W Wall (Bottom)
+- Level 2 SUW L/19-27 W Face
+- Level 2 SUW L/19-28 W Face
+- Level 2 SUW L/19.5, 20.5
+- Level 2 SUW L/19.5-20 W Face
+- Level 2 SUW L/21.5, 22.5
+- Level 2 SUW L/22.5-23 W Face
+- Level 2 SUW L/23-25.5 W Face
+- Level 2 SUW L/23.3 Vestibule 4 (Door opening)
+- Level 2 SUW L/23.3 Vestibule 4 N (Door opening)
+- Level 2 SUW L/23.3 Vestibule N Wall
+- Level 2 SUW L/23.3 Vestibule S Wall
+- Level 2 SUW L/23.5, 24.5, 25.5, 26.5
+- Level 2 SUW L/23.5, 24.5,25.5,26.5
+- Level 2 SUW L/25.5-27
+- Level 2 SUW L/25.5-27 W Face
+- Level 2 SUW L/26-27 W Face
+- Level 2 SUW L/27-28
+- Level 2 SUW L/27-28 W Face
+- Level 2 SUW L/27.5-28.5
+- Level 2 SUW L/28-29 W Face
+- Level 2 SUW L/29-29.6 W Side (Excluded Opening)
+- Level 2 SUW L/29-31
+- Level 2 SUW L/29.6-30 E Face
+- Level 2 SUW L/29.6-30 W Face
+- Level 2 SUW L/3-3.3 Duct Shaft W Interior Wall Inf
+- Level 2 SUW L/3-3.3 Duct Shaft W Interior Wall Infill
+- Level 2 SUW L/3-3.5
+- Level 2 SUW L/3-4
+- Level 2 SUW L/3.3 Duct Shaft W & E Interior Wall
+- Level 2 SUW L/3.8-4 Elevator 1A E Face
+- Level 2 SUW L/30-30.5 (Exclude opening)
+- Level 2 SUW L/32.3-32.8 Airlock 5 W Wall W Side
+- Level 2 SUW L/33-34 Stair 5 Exterior
+- Level 2 SUW L/34-35 Exterior W Wall
+- Level 2 SUW L/4 Elevator 1A Interior S & E Wall
+- Level 2 SUW L/4 W Face (Door opening)
+- Level 2 SUW L/4-4.2 IT Security Room
+- Level 2 SUW L/4-4.2 IT Security Room 1
+- Level 2 SUW L/4-4.3 IT Room W Wall W Face
+- Level 2 SUW L/4.2-4.8
+- Level 2 SUW L/4.3 Airlock 1 S Face
+- Level 2 SUW L/4.3 Airlock 1 S Wall N Face
+- Level 2 SUW L/4.8-5
+- Level 2 SUW L/4.8-5 E Side
+- Level 2 SUW L/4.8-5 E,W Face
+- Level 2 SUW L/5 Elevator 1 1A
+- Level 2 SUW L/5-6
+- Level 2 SUW L/5-6, 15.3-16, 25-25.5
+- Level 2 SUW L/5.1-6
+- Level 2 SUW L/5.1-6 (Exclude opening)
+- Level 2 SUW L/5.2-6
+- Level 2 SUW L16-16.2 E,W Face
+- Level 2 SUW L16-16.2 West Face
+- Level 2 SUW L4.8-L5 East Side
+- Level 2 SUW L5-6
+- Level 2 SUW Leaveout J-K/3
+- Level 2 SUW Leaveout K-L/3
+- Level 2 SUW M-M.3/3.4 Elevator Front 1B
+- Level 2 SUW M-N/14
+- Level 2 SUW M-N/14 Interior
+- Level 2 SUW M-N/15-20 & Behind Columns
+- Level 2 SUW M-N/16.5 N,S Wall
+- Level 2 SUW M-N/19 N,S Face
+- Level 2 SUW M-N/27 N Face
+- Level 2 SUW M-N/27 N Wall
+- Level 2 SUW M-N/27 S Face
+- Level 2 SUW M-N/27.5 Battery Room 3 S Wall N Face
+- Level 2 SUW M-N/33
+- Level 2 SUW M-N/33 Exterior
+- Level 2 SUW M-N/33 Interior
+- Level 2 SUW M-N33 Interior
+- Level 2 SUW M.3-M.6/3.5 Goalpost
+- Level 2 SUW M.6-N/3-3.3 Duct Shaft N Wall S Side
+- Level 2 SUW M.6-N/3.3 Duct Shaft N Wall S Side
+- Level 2 SUW M.6-N/3.3 Duct shaft N Wall S Side
+- Level 2 SUW M.6/3-3.3 Duct shaft Room E Wall W Fac
+- Level 2 SUW M.6/3-3.3 Duct shaft Room E Wall W Face
+- Level 2 SUW M.8-N/3 (Data Center)
+- Level 2 SUW M.8/3-3.3 Duct Shaft E Wall W Face
+- Level 2 SUW M.8/3-3.3 Duct shaft (E wall W Side)
+- Level 2 SUW M/14-16.5 W Face
+- Level 2 SUW M/16.5-18 W Face
+- Level 2 SUW M/16.5-19 W Face
+- Level 2 SUW M/16.6 & M/16.4 FAB120314B & FAB120315B W face
+- Level 2 SUW M/17.5
+- Level 2 SUW M/17.5-18
+- Level 2 SUW M/18-19 W Face
+- Level 2 SUW M/18-19 West Face
+- Level 2 SUW M/18.5
+- Level 2 SUW M/28.5,29.5,14.8,15.5 W face
+- Level 2 SUW M/3 Elevator 1B E Wall
+- Level 2 SUW M/3 Elevator 1B E, W, S Wall
+- Level 2 SUW M/3 Elevator 1B E,W,S Wall
+- Level 2 SUW M/3 Elevator 1B S Wall
+- Level 2 SUW M/3 Elevator 1B W Wall
+- Level 2 SUW M/4-5 W Face
+- Level 2 SUW M/4-5 West Face
+- Level 2 SUW N/10.4-11, 12-14 NCR 0592
+- Level 2 SUW N/10.5-12, 16-17
+- Level 2 SUW N/12-13
+- Level 2 SUW N/12-16
+- Level 2 SUW N/13-16 (exclude 14-14.2)
+- Level 2 SUW N/16-16.5
+- Level 2 SUW N/16-17
+- Level 2 SUW N/16-17 (confined space)
+- Level 2 SUW N/17-18; 20-21 NCR 0592
+- Level 2 SUW N/19-20
+- Level 2 SUW N/2-5
+- Level 2 SUW N/20 -21
+- Level 2 SUW N/21-23
+- Level 2 SUW N/21-24 (exclude 22.5,22.8)
+- Level 2 SUW N/21-24 (exclude 22.5-22.8)
+- Level 2 SUW N/21-25
+- Level 2 SUW N/22-22.6 NCR 0592
+- Level 2 SUW N/23-25
+- Level 2 SUW N/25-26
+- Level 2 SUW N/25-27
+- Level 2 SUW N/25-29
+- Level 2 SUW N/25-29 NCR-0220
+- Level 2 SUW N/25.5-29.9
+- Level 2 SUW N/26-30
+- Level 2 SUW N/27-29
+- Level 2 SUW N/29-30 NCR-0592
+- Level 2 SUW N/29.2-30 NCR-0592
+- Level 2 SUW N/3 Elevator 1B Exterior E,W Wall
+- Level 2 SUW N/3 Elevator 1B S Wall
+- Level 2 SUW N/3.5-4 NCR-0592
+- Level 2 SUW N/3.5-5 NCR 0592
+- Level 2 SUW N/4-14
+- Level 2 SUW N/4-5,6-7 NCR 0592
+- Level 2 SUW N/4-7
+- Level 2 SUW N/5-6
+- Level 2 SUW N/5-6 NCR-0592
+- Level 2 SUW N/5-6, 7-10, 11-12 NCR-0592
+- Level 2 SUW N/5-6, 7-8.2, 8.5-10.1, 10.3-12
+- Level 2 SUW N/5-6,7-8.2,8.5-10.1,10.3-12
+- Level 2 SUW N/6-7
+- Level 2 SUW N/6-7 top angle NCR 0592
+- Level 2 SUW N/7-12
+- Level 2 SUW N/7-12,16-17
+- Level 2 SUW N/8-8.2 NCR 0592
+- Level 2 SUW N/8.5-9.2 NCR 0592
+- Level 2 SUW N/9.2-10; 11-14 NCR-0592
+- Level 2 SUW SOMD J-L/29-30
+- Level 2 SUW Stair 2 N Wall
+- Level 2 SUW Stair 2 S Wall
+- Level 2 SUW Stair 2 W Wall
+- Level 2 SUW Stair 3
+- Level 2 SUW Stair 5 Exterior E Wall
+- Level 2 SUW Stair 5 Exterior E Wall 33-34
+- Level 2 SUW Stair 5 Exterior N Wall
+- Level 2 SUW Stair 50 E,S Wall
+- Level 2 SUW Stairs 1 Exterior N Wall
+- Level 2 SUW Stairs 1 S and W wall
+- Level 2 SUW Stairs 2 E Wall
+- Level 2 SUW Stairs 2 Exterior W Wall
+- Level 2 SUW Stairs 3
+- Level 2 SUW Stairs 3 Exterior W Wall
+- Level 2 SUW Stairs 5 Exterior W Wall
+- Level 2 SUW Stairs 5 N Wall
+- Level 2 SUW Stairs 50 Exterior E Wall
+- Level 2 SUW Vestibule 1 S Wall
+- Level 2 SUW Vestibule 3 N Wall
+- Level 2 Sector 1 L.2-L.3/5.5-7.9 Installation
+- Level 2 Sector 1 L.2-M.8/ 3.8-8 Nipple inspection
+- Level 2 Sector 1 L.2-M.8/ 3.8-8 Torquing Bus Bars
+- Level 2 Sector 1 L.5-M/6.5-7.5 Raceways
+- Level 2 Sector 1 L.5/5.5-9 Gear Install
+- Level 2 Sector 1 L.5/6.5-7.5 Raceway
+- Level 2 Sector 1 L.5/7 gear install
+- Level 2 Sector 1 L.8/6.8-7.4 Gear Install
+- Level 2 Sector 1 L/6.5 GTB Raceways
+- Level 2 Sector 1 L/6.5 GTB install
+- Level 2 Sector 1 L/6.5 torquing ground lugs
+- Level 2 Sector 1 M.5-N/3.5-5 Torquing bus bars
+- Level 2 Sector 1 M.5-N/3.5-5 gear install
+- Level 2 Sector 1 M.5-N/5.5-8 Gear install
+- Level 2 Sector 1 M.5-N/6-8 Bus bar torque
+- Level 2 Sector 1 M.5/ 4.8-5.5 Gear Install
+- Level 2 Sector 1&2 L.5/5.5-9 bus bar torquing
+- Level 2 Sector 1&2 M5-M9 Torquing bus bars
+- Level 2 Sector 1-2 L-L.5/7-10.5 installation
+- Level 2 Sector 1-2 L.2-M.6/4.2-13.4 Fiber Raceways
+- Level 2 Sector 1-2 L.2-M.6/4.2-13.4 Fiber route
+- Level 2 Sector 1-2 L.5-M/5.5-8.5 Gear installation
+- Level 2 Sector 1-2 L.5-M/5.5-8.5 Torquing Bus Bars
+- Level 2 Sector 1-2 MV Cable 3/0 Routing
+- Level 2 Sector 1-4 M13, M27 Fiber Panel Install
+- Level 2 Sector 1-4 M13, M27 Raceway inspection
+- Level 2 Sector 2 L-L.5/8-10.5 torquing bus bars
+- Level 2 Sector 2 L.25-M.75/14-15 Comm Tray
+- Level 2 Sector 2 L.4-L.6/11.9-12.5 UPS Raceways
+- Level 2 Sector 2 L.5/11-14 Gear Install
+- Level 2 Sector 2 L.8/11-14 Gear Install
+- Level 2 Sector 2 L.8/11-14 Torque Bus
+- Level 2 Sector 2 M-M.5/12-13.5
+- Level 2 Sector 2 M-M.5/12-13.5 torquing bus bars
+- Level 2 Sector 2 M-M.5/13-14 CPU Panel inspection
+- Level 2 Sector 2 M-M.5/13-14 CPU panel install
+- Level 2 Sector 2 M-M.5/13-14 RIO Panel Inspection
+- Level 2 Sector 2 M-M.5/13-14 RIO Panel install
+- Level 2 Sector 2 M-M.5/13-14 RIO panel install
+- Level 2 Sector 2 M-M.5/8-11.5 Gear install
+- Level 2 Sector 2 M-M.5/8-11.5 torquing bus bars
+- Level 2 Sector 2 M.5-M.7/14.2-14.9 Cable route
+- Level 2 Sector 2 M.5-N/10-13 Bus Bar Torquing
+- Level 2 Sector 2 M.5-N/10-13 Nipple inspection
+- Level 2 Sector 2 M.5-N/10-13 gear installation
+- Level 2 Sector 2 M.5-N/10.5-12.5 Fiber raceways
+- Level 2 Sector 2 M.5-N/12.8-14 Gear install
+- Level 2 Sector 2 M.5-N/12.8-14 Torquing bus bars
+- Level 2 Sector 2 M.5-N/8.5-10.5 gear install
+- Level 2 Sector 2 M.5-N/8.5-10.5 torquing bus bars
+- Level 2 Sector 2 M.5/12 Rectifier install
+- Level 2 Sector 2 M.5/12 Rectifier torquing
+- Level 2 Sector 2 M.5/9.5-10.5 UPS Raceways
+- Level 2 Sector 2 M.6-M.7/5.7-9 Raceway
+- Level 2 Sector 2 M.8/12.8-13.8 Nipple Inspection
+- Level 2 Sector 2 M/9-10 MCG install
+- Level 2 Sector 2-3 L/19-23 gear install
+- Level 2 Sector 3 M.2-M.6/16.6-18.6 LIB install
+- Level 2 Sector 3 M.4-M.6/16.6-18.8 LIB raceway
+- Level 2 Sector 3 M.5-M.7/16.6-17.5 LV Cable Route
+- Level 2 Sector 4 M.1/23.1-23.8 installation
+- Level 2 Sector 4 M.5/22.5-25 Fiber nipples
+- Level 2 Sector 4 M.5/22.5-25 Nipple inspection
+- Level 2 Sector 4 M.5/22.5-26 gear install
+- Level 2 Sector 4 M.5/22.5-26 torquing bus bars
+- Level 2 Sector 4 M.6-M.6/22.5-26.1 MV Cables
+- Level 2 Sector 4 M.6/25.2-26.2 Nipple Inspection
+- Level 2 Sector 4 M/25-26 NET panel install
+- Level 2 Sector 41 E-F/3 Panel Install
+- Level 2 Sector 41 E.1-E.4/1.7-1.8 LV Cable route
+- Level 2 Sector 41 E.2-E.3/1.8-1.9 LV cable Routing
+- Level 2 Sector 41 E/2 Nipple inspection
+- Level 2 Sector 41 E/2 panelboard raceways
+- Level 2 Sector 41 E/3 GTB Panel Install
+- Level 2 Sector 41 E/3 Torquing GTB
+- Level 2 Sector 41 F-F.2/1 Torquing DTRs UPSs
+- Level 2 Sector 41 F.4-D/1-2 Nipple inspection
+- Level 2 Sector 41 F.5/1.2-1.5 Transformer install
+- Level 2 Sector 41 F.5/1.5 Panelboard installation
+- Level 2 Sector 41 F.6-F.9/1.2-2.5
+- Level 2 Sector 41 F/3 Panelboard install
+- Level 2 Sector 41-61 A-E.5/1-3 VLF/ TAN DELTA test
+- Level 2 Sector 41-61 B-E/1-3 bus bar torque
+- Level 2 Sector 41-61A-E/1-3 Termination
+- Level 2 Sector 41-61A.5-E.5/1.5-3 LV Cable Routing
+- Level 2 Sector 41/61 A-F.4/1-3 Torquing feeders
+- Level 2 Sector 41E/2 Panelboard install
+- Level 2 Sector 5 M.5/27 Rectifier install
+- Level 2 Sector 61 A-B.5/1-1.5 Torquing
+- Level 2 Sector 61 A-D/1 Gear install
+- Level 2 Sector 61 A.5-D/1-2 MV Terminations
+- Level 2 Sector 61 A.5/2-3 SWGR installation
+- Level 2 Sector 61 A.5/2-3 switchgear nipple insp.
+- Level 2 Sector 61 A.8-A.9/3 Cable Route
+- Level 2 Sector 61 B.5-B.7/2 LV Cable Route
+- Level 2 Sector 61 B.5-D/1 nipple inspection
+- Level 2 Sector 61 B.5-D/1-1.5 Torquing
+- Level 2 Sector 61 B.5/2 panelboard raceways
+- Level 2 Sector 61 B2 Panelboard nipples
+- Level 2 Sector 61 B2 Panelboards
+- Level 2 Sector 61 C/1 Panel install
+- Level 2 Sector 61 C/1 Raceway inspection
+- Level 2 Sector 61 FIZ B-1.5 Rectifier
+- Level 2 Sector 61-62 C-D/6-10 LV Risers
+- Level 2 Sector 61A.5-B.5/2.5 Meg.OHM. Term. Torque
+- Level 2 Sector 61B.5-D/1-1.5 Torquing stress cones
+- Level 2 Sector 63-64 A.2/19.7-25 LV Cable Tray
+- Level 2 Sector 64 A-B/25-27 LV CT
+- Level 2 Sector 64 A-B/25-27 Panel install
+- Level 2 Sector 64 A-C/25-27 Lighting
+- Level 2 Sector 64 A-C/25-27 gear install
+- Level 2 Sector 64 A.5-C/25-27 comm tray
+- Level 2 Sector 64 A.7-A.8/25.2-26.4
+- Level 2 Sector 64-65 A-C/25-31.5 Nipple inspection
+- Level 2 Sector 64-65 A-D/23-31 MV Cable Routing
+- Level 2 Sector 65 A-C/27-32 Gear install
+- Level 2 Sector 65 A-C/27-32 MV Cable Tray
+- Level 2 Sector 65 A.3-C/27-34 Lighting
+- Level 2 Sector 65 B/28-30 panelboard install
+- Level 2 Slurry RM Stair J-K/4-4.5; Level 1 Stair 2
+- Level 2 Slurry RM Stair J-K/4-4.5; Level 1 Stair 23 M.5-N/13
+- Level 2 Slurry Room Stair
+- Level 2 Stair 1 S Wall
+- Level 2 Stair 2 North Wall
+- Level 2 Stair 20
+- Level 2 Stair 21 Exterior E Wall
+- Level 2 Stair 22 Exterior S Wall
+- Level 2 Stair 4 L/23 S Wall 1st Layer; W Wall 2nd Layer
+- Level 2 Stair 50 K-L/29-30
+- Level 2 Stair 54 at N/31; Level 4 Stair 78 at B.5/3.5; Level 4 SUW L-L.5/5-6 Ramp Columns; Level 4 SUE C/5 Stair Columns
+- Level 2 Stairs # 21 ( East Walls Exterior)
+- Level 2 Stairs 1 West Wall exterior
+- Level 2 Stairs 20 South Walls
+- Level 2 Stairs 21 East walls
+- Level 2 Stairs 3 South walls Exterior
+- Level 2 Stairs 4 L/23
+- Level 2 Stairs 4 South wall
+- Level 2 Storage - OF1202004
+- Level 2 TBD
+- Level 2 airlocks C4, C13, C18, C25, C29,L23
+- Level 2 at GL L.5/30.5
+- Level 2 ceiling C-D/25-26 Stair 19
+- Level 2 ceiling C-D/26-27
+- Level 2 ceiling D west side only 23-33
+- Level 2 ceiling D-E/25-28
+- Level 2 ceiling D/12-22 West side
+- Level 2 ceiling D/20-25,C-D/25
+- Level 2 ceiling K.4-K.9/11.3-11.7
+- Level 2 ceiling L/4 (under Level 3A)
+- Level 2 ceiling M-M.5 / 3-3.4
+- Level 2 ceiling M-M.5 / 3-3.5
+- Level 2 ceiling, M-M.5 / 3-3.4
+- Level 2 ceiling, M-M.5/3-3.4
+- Level 2 elevator 5 south wall
+- Level 2 fire alarm 5 L/31-32
+- Level 2 slurry Room
+- Level 2 to Level 4 Stair 18 SOMD C-D/33-34
+- Level 2&3 H.8-G.5/16-17
+- Level 2&3 H.8-G.5/18-19.6
+- Level 2&3 K-L/3-4
+- Level 2&3 Porches Stair 5 post install DBAs
+- Level 2&3 SUW SOMD J-L/29-30
+- Level 2, GL: C/12-13
+- Level 2,3 C-D/25,26 Stair 19
+- Level 2,3 Ceiling K-L/23-23.7
+- Level 2,3 K-K.8/ 23-23.8 Ceiling (K-W Face, K.8-E
+- Level 2,3 K-K.8/ 23-23.8 Ceiling (K-W Face, K.8-E Face, S of 23.8, N of 23)
+- Level 2,3 K-K.8/23-23.8 Ceiling (K-W Face, K.8-E Face, S of 23.8, N of 23)
+- Level 2,3 K-L/11-12 Ceiling
+- Level 2,3 K/23-23.7 (beam both sides); K-L/23.7 S
+- Level 2,3 K/23-23.7 (beam both sides); K-L/23.7 S Face; K-L/23 N Face; L/23-23.7 E Face
+- Level 2,3 SUE Stairs 18 W Wall
+- Level 2,3,4 C/32
+- Level 2,3,4 G-J/33
+- Level 2,3,4 Porches on Stair 5
+- Level 2,3,4 Stair 20
+- Level 2- 2.5 stair 19
+- Level 2-2.5 Stair 19
+- Level 2-3 C-17
+- Level 2-3 C/17
+- Level 2-3 C/19 Stair 20
+- Level 2-3 C/25 Stair 19
+- Level 2-3 C/5 Stair 22
+- Level 2-3 Elevator 1B
+- Level 2-3 Elevator 20
+- Level 2-3 F-G/33
+- Level 2-3 FAB F-H/33
+- Level 2-3 H.8/33 Exterior
+- Level 2-3 J-K/33 Exterior
+- Level 2-3 K/10 Stair 2
+- Level 2-3 K/18 Stair 3
+- Level 2-3 K/32 Elevator 5
+- Level 2-3 K/5 Stair 1
+- Level 2-3 M/31-32
+- Level 2-3 N/2-3
+- Level 2-3 N/3-4
+- Level 2-3 N/30-31
+- Level 2-3 N/31-32
+- Level 2-3 SUE D/33-34 Exterior Stair 18 W Wall
+- Level 2-3 SUE D/33-34 Stair 18 Exterior W Wall
+- Level 2-3 SUE D/33-35 Exterior Stair 18 W Wall
+- Level 2-3 SUE N/31-32
+- Level 2-3 SUW N/31-32
+- Level 2-3 Sector 2-4 L-K/13-21 Comm tray risers
+- Level 2-3 Sector 3 L-19 MV Cable Tray
+- Level 2-3 Sector 4 L-26 MV Cable Tray
+- Level 2-3 Sector 62 D-11 Vetical Comm tray
+- Level 2-3 Stair 19
+- Level 2-4 A/18-19
+- Level 2-4 A/19-20 Exterior
+- Level 2-4 C/17 Elevator 20
+- Level 2-4 C/32 Elevator 18
+- Level 2-4 F-G/33
+- Level 2-4 L/17 Elevator 3
+- Level 2-4 L/33 Stair 5
+- Level 2-4 L/33-34 Stair 5
+- Level 2-4 N/31-32 Exterior
+- Level 2-4 SOMD C-D/33-34 Stair 18
+- Level 2-4 SOMD K-L/33-34 Stair 5
+- Level 2-4 Sector 4 K-L/26 Vertical GEN Tray
+- Level 2-4 Stair 18
+- Level 2-4 Stair 18 SOMD C-D/33-34
+- Level 2-4 Stair 5 SOMD K-L/33-34
+- Level 2-4A M/5
+- Level 2.5 G.3/3-8 G.3-H.8/8
+- Level 2.5 G.3/3-8, G.3-H.8/8
+- Level 2.5 G/3-8; G.3-H.8/8
+- Level 2.5-3 Stair 19
+- Level 2.5-4, C.3-D/5-5.8(D Line east side, C.3 west face, 5 line North, 5.8 south)
+- Level 2/3 Fab E10-E11
+- Level 2/3 Fab E11-E12
+- Level 2/3 Fab E13-E14
+- Level 2/3 Fab E14-E15
+- Level 2/3 Fab E15-E16
+- Level 2/3 Fab E16-E17
+- Level 2/3 Fab E19-E20
+- Level 2/3 Fab E20-E21
+- Level 2/3 Fab E23-E24
+- Level 2/3 Fab E24-E25
+- Level 2/3 Fab E26-E27
+- Level 2/3 Fab E29-E30
+- Level 2/3 Fab E30-E31
+- Level 2/3 Fab E5-E6
+- Level 2/3 Fab E6-E7
+- Level 2/3 Fab E7-E8
+- Level 2/3 Fab J10-J11
+- Level 2/3 Fab J11-J12
+- Level 2/3 Fab J12-J13
+- Level 2/3 Fab J13-J14
+- Level 2/3 Fab J14-J15
+- Level 2/3 Fab J15-J16
+- Level 2/3 Fab J19-J20
+- Level 2/3 Fab J20-J21
+- Level 2/3 Fab J21-J22
+- Level 2/3 Fab J24-J25
+- Level 2/3 Fab J25-J26
+- Level 2/3 Fab J26-J27
+- Level 2/3 Fab J27-J28
+- Level 2/3 Fab J29-J30
+- Level 2/3 Fab J3-J4
+- Level 2/3 Fab J30-J31
+- Level 2/3 Fab J31-J32
+- Level 2/3 Fab J5-J6
+- Level 2/3 Fab J6-J7
+- Level 2/3 Fab J8-J9
+- Level 2/3 Fab J9-J10
+- Level 2/3 Fab Sector 21 J6-J7
+- Level 2/3 Fab Sector 41 E6-E7
+- Level 2/3 Fab Sector 42 E11-E12
+- Level 2/3 Fab Sector 43 E18-E19
+- Level 2/3 Fab Sector 43 E19-E20
+- Level 2/3 Fab Sector 44 E26-E27
+- Level 2/3 Fab Sector 45 E28-E29
+- Level 2/3 Fab Sector 45 E29-E30
+- Level 3
+- Level 3 & 4 C.3-D/5-5.8 (D Line east side, C.3 west face, 5 line North, 5.8 south)
+- Level 3 & 4 C/32
+- Level 3 & 4, C.3-D/5-5.8(D Line East side, C.3 West, 5 Line North, 5.8 South)
+- Level 3 & 4, C.3-D/5-5.8(D Line east side, C.3 west face, 5 line North, 5.8 south)
+- Level 3 & 4, K-K.7/5-5.8(K-West, K.6-East, 5-North, 5.8-South face) Staircase 1
+- Level 3 (B/10,11,12)
+- Level 3 (B/10,11,12) (C/29,30)(M/3,4,5)
+- Level 3 (C7,9,14-16,19-24)
+- Level 3 (C7,9,14-16,19-24,27,31)
+- Level 3 (E.3,5,8/33)(F/33)
+- Level 3 (L/6-10,12-16)
+- Level 3 - SL Entrance Sector 41 F/2-3 East Side
+- Level 3 - SL Entrance Sector 41 ~E.3/2-3 West Side
+- Level 3 10-19 /G Line -Column Base Plates
+- Level 3 24-26 (E) 2 Each Row; 23-24(E) 4 Lights
+- Level 3 28-28.5 Elevator 19
+- Level 3 4E D to E, 6-10
+- Level 3 4E D,E/17-22
+- Level 3 4E D- E/6-10
+- Level 3 4E D-E/ 6-11
+- Level 3 4E D-E/19-22
+- Level 3 4E D-E/22-24, 26-33
+- Level 3 4E D-E/24-26
+- Level 3 4E D-E/3-5
+- Level 3 4E D-E/3-6
+- Level 3 4E D/E 22-24 & 26-33
+- Level 3 4E D/E, 13-16
+- Level 3 4E D/E, 17-22
+- Level 3 4E J-K/ 5-9
+- Level 3 4E J-K/12-16
+- Level 3 4E J-K/16-21
+- Level 3 4E J-K/21-29
+- Level 3 4E J-K/25-28
+- Level 3 4E J-K/3-5
+- Level 3 4E J-K/30-33
+- Level 3 4E J-K/5-9
+- Level 3 4E J-K/9-11 & 12-16
+- Level 3 4E J/K 21-25
+- Level 3 4E J/K, 16-21
+- Level 3 4E J/K, 28-33
+- Level 3 8.3-9/G-E.3
+- Level 3 A,B/3
+- Level 3 A-B, C-D/1
+- Level 3 A-B/ 3-3.3 (Muster @ level 1 scaffold)
+- Level 3 A-B/1
+- Level 3 A-B/1 Soffit
+- Level 3 A-B/1 Soffits
+- Level 3 A-B/12.5
+- Level 3 A-B/14-24
+- Level 3 A-B/2
+- Level 3 A-B/2 East Face
+- Level 3 A-B/2 South Wall
+- Level 3 A-B/2 north face
+- Level 3 A-B/22.8
+- Level 3 A-B/22.8 Goalposts
+- Level 3 A-B/24-26
+- Level 3 A-B/26-29
+- Level 3 A-B/29-30
+- Level 3 A-B/29-33
+- Level 3 A-B/2; B-C/2; C/2-3
+- Level 3 A-B/3 South Wall
+- Level 3 A-B/3-3.3
+- Level 3 A-B/3.3
+- Level 3 A-B/30-31
+- Level 3 A-B/31-33
+- Level 3 A-B/33 Exterior
+- Level 3 A-C/1
+- Level 3 A-C/1-2
+- Level 3 A-C/15-20
+- Level 3 A-C/20-24
+- Level 3 A-C/24
+- Level 3 A-C/24 Bottom
+- Level 3 A-C/24, 29 Bottom
+- Level 3 A-C/24-26
+- Level 3 A-C/29
+- Level 3 A-C/29 Bottom
+- Level 3 A-C/3
+- Level 3 A-C/3-9
+- Level 3 A-C/3.2
+- Level 3 A-C/9-18
+- Level 3 A-D/33 NCR-0565
+- Level 3 A-F/1
+- Level 3 A-F/1 vertical columns
+- Level 3 A-b/1
+- Level 3 A.5-B/3.3
+- Level 3 A.5-B/3.3 (North Side)
+- Level 3 A.5-B/3.3; C/3 (NE)
+- Level 3 A.5/1
+- Level 3 A.5/1 Column
+- Level 3 A.5/1 vertical column
+- Level 3 A.5/10 & 12 Goalposts
+- Level 3 A.5/10&12 Goalposts
+- Level 3 A.5/10, 12.5, 23; B.5/17, 29; B/4.5; C/17,
+- Level 3 A.5/10, 12.5, 23; B.5/17, 29; B/4.5; C/17, 33, 4.5;3; F.4/2; L.5/17, 18, 19; L/17, 32; M.5/19, M/17, 19; Level 1 L/4.5 Goalposts
+- Level 3 A.5/23 Goalpost
+- Level 3 A/1-3
+- Level 3 A/10,24
+- Level 3 A/11-12.5
+- Level 3 A/11-12.9
+- Level 3 A/12-15.2
+- Level 3 A/12.5-16
+- Level 3 A/13-16
+- Level 3 A/16-17
+- Level 3 A/17-18
+- Level 3 A/18-19
+- Level 3 A/19-21
+- Level 3 A/2 (SW), E/3 (SE)
+- Level 3 A/2 S Face
+- Level 3 A/2 S,W Face
+- Level 3 A/21-24
+- Level 3 A/21.1-24
+- Level 3 A/21.5-23.3
+- Level 3 A/24; C/12, 29-30
+- Level 3 A/25-32
+- Level 3 A/25-33
+- Level 3 A/27.3-28.1
+- Level 3 A/28-33 NCR-0564
+- Level 3 A/29
+- Level 3 A/29-33
+- Level 3 A/29; B/33
+- Level 3 A/3
+- Level 3 A/3(E & W); A/10(W); A/24(SW); A/29(N)
+- Level 3 A/3(EW), 10(W), 24(SW)
+- Level 3 A/3-5
+- Level 3 A/3-6
+- Level 3 A/3.5-7.4
+- Level 3 A/6-8
+- Level 3 A/9 expansion joint remedial work
+- Level 3 Airlock 20 Gridline C-C.5/ Column 17-17.7
+- Level 3 B (33)
+- Level 3 B-B.4/3.2
+- Level 3 B-B.5/32-33
+- Level 3 B-C/1
+- Level 3 B-C/1-2
+- Level 3 B-C/2
+- Level 3 B-C/2 ; C/2-3 North Wall
+- Level 3 B-C/24-26
+- Level 3 B-C/26-29
+- Level 3 B-C/29 Goalpost
+- Level 3 B-C/29-30
+- Level 3 B-C/29-31
+- Level 3 B-C/29-33
+- Level 3 B-C/3
+- Level 3 B-C/3 Goalpost
+- Level 3 B-C/3 goalpost
+- Level 3 B-C/3-4
+- Level 3 B-C/30-33
+- Level 3 B-C/31.5-32 Elevator 18 W,S
+- Level 3 B-C/32
+- Level 3 B-C/4 Elevator # 22 West and South Face
+- Level 3 B-C/4 W, S Face Elevator 22
+- Level 3 B-D/1
+- Level 3 B.3/4-5
+- Level 3 B.5, D/1
+- Level 3 B.5-C/18-18.5
+- Level 3 B.5-C/18-18.5 IT Room 20
+- Level 3 B.5-C/18-18.5 IT/Security Room 20
+- Level 3 B.5-C/18.3-18.6 IT/Security Room 20
+- Level 3 B.5-C/31-32 Elevator 18
+- Level 3 B.5-C/31-32 Elevator 18 N Face
+- Level 3 B.5-C/31.3
+- Level 3 B.5-C/31.3 Elevator 18 Interior S Face Column
+- Level 3 B.5-C/31.3 Elevator 18 Interior S Wall
+- Level 3 B.5-C/31.3-32 Elevator 18 Interior E Face
+- Level 3 B.5-C/31.3-32 Elevator 18 Interior East &
+- Level 3 B.5-C/31.3-32 Elevator 18 Interior East and South Wall
+- Level 3 B.5-C/32 elevator 18
+- Level 3 B.5-C/32-33
+- Level 3 B.5-C/4 Elevator 22
+- Level 3 B.5-D/1
+- Level 3 B.5/1
+- Level 3 B.5/1 vertical column
+- Level 3 B.5/17 Goalpost
+- Level 3 B.5/17-18
+- Level 3 B.5/3.3-4 E Face
+- Level 3 B.5/32-33
+- Level 3 B.5/4-5 W Face
+- Level 3 B.8-C/24 Door S Face
+- Level 3 B.8-C/24-25
+- Level 3 B.8-C/3
+- Level 3 B.8-C/3 S Face goal post
+- Level 3 B.8/24-25
+- Level 3 B/10 & N/27
+- Level 3 B/10,11,12
+- Level 3 B/10,11,12,23,24
+- Level 3 B/10,11,12; C/29,30; M/3,4,5
+- Level 3 B/10-12,23,24
+- Level 3 B/11,12 E Face
+- Level 3 B/11.4 Top E Wall
+- Level 3 B/12 Vertical E Wall
+- Level 3 B/3 Ongoing
+- Level 3 B/3(EW), 10(E Wall N Face)
+- Level 3 B/3.2 N Face
+- Level 3 B/3.3 (N)
+- Level 3 B/3.3; C/3 (NE)
+- Level 3 B/33
+- Level 3 B/33 East and West sides
+- Level 3 B/4.5
+- Level 3 B/4.5 Goalpost
+- Level 3 Between 21-22 (E)
+- Level 3 Between 21-25 (J) Remaining Lights
+- Level 3 Between 21-25(J) Remaining Lights
+- Level 3 Between 22-23 (E)
+- Level 3 Between 24-25 (E)
+- Level 3 Between 25-26 (J)
+- Level 3 Between 26-27 (J)
+- Level 3 Between 27-28 (J)
+- Level 3 Between 29-30 (J)
+- Level 3 Between 30-31 (J)
+- Level 3 Between 4-5 (J)
+- Level 3 Between 5-6 (E)
+- Level 3 Between 5-6 (J)
+- Level 3 Between 6-7 (E)
+- Level 3 Between 6-7 (J) & 7-8 (J)
+- Level 3 Between 7-8 (J)
+- Level 3 Between D26-D31 (Connection)
+- Level 3 Between E-18-E21 (Remaining Lights)
+- Level 3 Between E18-E20
+- Level 3 Between E21.5-E23
+- Level 3 Between E23-E24
+- Level 3 Between E24-E25
+- Level 3 Between E3-E4
+- Level 3 Between E6-E7
+- Level 3 Between E6-E8 Partial
+- Level 3 Between E7-E8
+- Level 3 Between EUV Rm 4 (3); E29-E30.5 Hallway
+- Level 3 Between EUV Rm 4(3); E29-E30.5 Hallway
+- Level 3 Between EUV Rm 4; E29-E30.5
+- Level 3 Between J21-J22
+- Level 3 Between J23-J24
+- Level 3 Between J23-J24; E8-E10
+- Level 3 Between J24-J25
+- Level 3 Between J25-J26
+- Level 3 Between J3-J4
+- Level 3 Between J3-J4(2)
+- Level 3 Between J3-J5
+- Level 3 Between J8-J10 Partial
+- Level 3 Between J8-J9 (3); E4-E5
+- Level 3 Between K4-K5
+- Level 3 C (19)
+- Level 3 C-D / 32
+- Level 3 C-D 28-29 Elevator 19
+- Level 3 C-D 6-17
+- Level 3 C-D, 26-27, 29-30 & 31-32
+- Level 3 C-D/1
+- Level 3 C-D/1 Soffits
+- Level 3 C-D/12-16
+- Level 3 C-D/13
+- Level 3 C-D/13-13.3
+- Level 3 C-D/13-13.3 Staircase platform
+- Level 3 C-D/13-13.3 staircase platform
+- Level 3 C-D/13-14
+- Level 3 C-D/16-17
+- Level 3 C-D/17
+- Level 3 C-D/18.5-19 SOMD
+- Level 3 C-D/19-20
+- Level 3 C-D/20-23
+- Level 3 C-D/20-25 Ceiling
+- Level 3 C-D/23-24
+- Level 3 C-D/24-25
+- Level 3 C-D/24-25, 26-26.7, 29-30.7 & 31-31.7
+- Level 3 C-D/25
+- Level 3 C-D/25-25.3 staircase platform
+- Level 3 C-D/25-25.5
+- Level 3 C-D/25-25.9 Ceiling (C-Line East, D-Line W
+- Level 3 C-D/25-25.9 Ceiling (C-Line West, D-line East, 25 North)
+- Level 3 C-D/25-25.9 Ceiling (C-Line west, D-Line east, 25 North Side)
+- Level 3 C-D/26-27
+- Level 3 C-D/26-27, 29-30, 31-32
+- Level 3 C-D/26-28
+- Level 3 C-D/27
+- Level 3 C-D/27; 28
+- Level 3 C-D/28
+- Level 3 C-D/28 S Face
+- Level 3 C-D/28-28.5
+- Level 3 C-D/28-28.5 Elevator 19
+- Level 3 C-D/28-29 ELV 19 (Beam Connections)
+- Level 3 C-D/28-29 Elevator 19
+- Level 3 C-D/28.3-30.6
+- Level 3 C-D/28.3-30.7
+- Level 3 C-D/29
+- Level 3 C-D/29 ELV 19
+- Level 3 C-D/29 N Face
+- Level 3 C-D/3
+- Level 3 C-D/3 Duct Shaft Room 22
+- Level 3 C-D/3 S Face
+- Level 3 C-D/3 Shaft duct room 22
+- Level 3 C-D/3-3.5
+- Level 3 C-D/3-4
+- Level 3 C-D/3-5 Fire alarm room interior
+- Level 3 C-D/3-6
+- Level 3 C-D/3.5
+- Level 3 C-D/3.5, 4
+- Level 3 C-D/3.5-4
+- Level 3 C-D/3.5-4 FA & IT/Security Room 22
+- Level 3 C-D/3.6-4 (IT Room 22)
+- Level 3 C-D/30
+- Level 3 C-D/30 N Face
+- Level 3 C-D/30 N,S Face
+- Level 3 C-D/30.5
+- Level 3 C-D/30.6-31
+- Level 3 C-D/30.7
+- Level 3 C-D/31-33
+- Level 3 C-D/4
+- Level 3 C-D/4 North Face
+- Level 3 C-D/4.7 North & South Face
+- Level 3 C-D/4.8 N Face
+- Level 3 C-D/6-12
+- Level 3 C-E.3/1
+- Level 3 C-E/1
+- Level 3 C-E/19-20
+- Level 3 C-E/30
+- Level 3 C-E/4.8
+- Level 3 C-E/5 South Face
+- Level 3 C-F/3
+- Level 3 C.2-D/5 S Face ( Only CJ)
+- Level 3 C.2/18.0-18.8
+- Level 3 C.5/30
+- Level 3 C/10 (N,S)
+- Level 3 C/11,15
+- Level 3 C/12
+- Level 3 C/12,14,15,16
+- Level 3 C/12-13
+- Level 3 C/13-13.3
+- Level 3 C/13-13.3 E Face
+- Level 3 C/17
+- Level 3 C/17 Goalpost
+- Level 3 C/17 N Wall W Face
+- Level 3 C/17 N, S Wall W Face
+- Level 3 C/17-18
+- Level 3 C/17-18 (Goal Post)
+- Level 3 C/17-18 Elevator 20
+- Level 3 C/17-18 Goalposts west side
+- Level 3 C/18
+- Level 3 C/18 IT Room 20 Interior
+- Level 3 C/18 IT Security Room 20
+- Level 3 C/18, 26, 33
+- Level 3 C/18, 33
+- Level 3 C/18.2-18.7
+- Level 3 C/18.5
+- Level 3 C/18.5 FA Room 20 N Face
+- Level 3 C/18.5 FA Room 20 S,E,W Face
+- Level 3 C/18.5 Fire Alarm 20 N Face
+- Level 3 C/18.5 Fire Alarm 20 S,E,W Face
+- Level 3 C/18.8-19 (inside electrical room)
+- Level 3 C/18.8-19 East face
+- Level 3 C/19
+- Level 3 C/19 & 23
+- Level 3 C/19, 23
+- Level 3 C/19,20,21,22,23
+- Level 3 C/19,20,22,24 (S),25 (S)
+- Level 3 C/19,22
+- Level 3 C/19,22,33
+- Level 3 C/19,23
+- Level 3 C/2,3
+- Level 3 C/2,3 Ceiling
+- Level 3 C/2,3 S Wall E Face
+- Level 3 C/2,3,27 (S face),29 (N face),30; E/3
+- Level 3 C/2,3,27,29,30; E/3
+- Level 3 C/2-3
+- Level 3 C/20
+- Level 3 C/20(NS,W),21 (NS,W)22(NS,W),24 (S,W),25 (
+- Level 3 C/20(NS,W),21 (NS,W)22(NS,W),24 (S,W),25 (S,W)
+- Level 3 C/20, 21 (S), 24 (S)
+- Level 3 C/20,21,22,23
+- Level 3 C/20,21,24
+- Level 3 C/21 & 23
+- Level 3 C/21,22
+- Level 3 C/22 (N), 25, 33
+- Level 3 C/23
+- Level 3 C/23,19
+- Level 3 C/24-24.1
+- Level 3 C/24.1-24.7
+- Level 3 C/25-26.4, 26.6-27 Bottom
+- Level 3 C/26
+- Level 3 C/26,33
+- Level 3 C/27 W Wall S Face
+- Level 3 C/27(S), 31(S), 32(W)
+- Level 3 C/27, 31, 32
+- Level 3 C/28
+- Level 3 C/28 Elevator 19
+- Level 3 C/28 W Face
+- Level 3 C/28-28.5
+- Level 3 C/29
+- Level 3 C/29 Elevator 19 Blockouts
+- Level 3 C/29, 30
+- Level 3 C/29-30
+- Level 3 C/29-30 E Face
+- Level 3 C/29-30 W Face
+- Level 3 C/3 (E), 5 (NW)
+- Level 3 C/3 (NE)
+- Level 3 C/3 (NE), 5 (NW)
+- Level 3 C/3 all walls inside of Duct shaft
+- Level 3 C/3,19,22,23,24,33
+- Level 3 C/3-4
+- Level 3 C/3.3 Fire Alarm room elevator 22
+- Level 3 C/3.3 fire alarm room elevator 22
+- Level 3 C/3.5
+- Level 3 C/30
+- Level 3 C/30 Goalpost
+- Level 3 C/30-31
+- Level 3 C/30-31 E Face
+- Level 3 C/30-31 East Face
+- Level 3 C/30.8-31
+- Level 3 C/31-32
+- Level 3 C/31-32 Elevator 18
+- Level 3 C/31-32 Elevator 18 S,W,E
+- Level 3 C/31-32 Elevator 18 S,W,E Walls
+- Level 3 C/31.3-32 Elevator 18 Interior W Face
+- Level 3 C/31.3-32 Elevator 18 Interior W Wall
+- Level 3 C/32
+- Level 3 C/32 Elevator 18 Interior E Wall
+- Level 3 C/32 W Wall N Face/N Wal
+- Level 3 C/32 W Wall N Face/N Wall
+- Level 3 C/32-33
+- Level 3 C/33
+- Level 3 C/33 Goalpost
+- Level 3 C/4
+- Level 3 C/4 (S, W WALLS), L/4 (N, E WALLS), M/27-2
+- Level 3 C/4 (SW), L/4 (NE), M/27-29 all sides
+- Level 3 C/4 All Faces
+- Level 3 C/4 ELV22
+- Level 3 C/4 Elevator #22
+- Level 3 C/4 IT/Security room 22
+- Level 3 C/4-5
+- Level 3 C/4-5 (Goal Post)
+- Level 3 C/4-5 Goalposts
+- Level 3 C/4.5
+- Level 3 C/4.5 Goalpost
+- Level 3 C/4; L/11
+- Level 3 C/5 (NE) (both sides of wall)
+- Level 3 C/5, 6, 16, 20
+- Level 3 C/5,17,19,25,27,29,30,32
+- Level 3 C/5,6
+- Level 3 C/6
+- Level 3 C/6 (N),8 (NS), 10 (NS), 11 (NS), 12 (S)
+- Level 3 C/6 (S)
+- Level 3 C/6 (S),12 (N), 13 (NS)
+- Level 3 C/6 (S),12 (N,S) 13 (NS)
+- Level 3 C/6(N), 7(NS), 9(NS), 10(NS), 11(NS), 12(S), 14(NS), 15(NS), 16(S), 19(NS), 20(NS), 21(NS), 22(NS), 23(NS), 24(S)
+- Level 3 C/6(N), 8(N), 10(NS), 11(NS), 12(S)
+- Level 3 C/6(N), 8(NS), 10(NS), 11(NS), 12(S)
+- Level 3 C/6(N), 8,10,11,12; E/3
+- Level 3 C/6(NE), 8(SE), 10(NS,E),11(NS,E)12(NS,E);
+- Level 3 C/6(NE), 8(SE), 10(NS,E),11(NS,E)12(NS,E); E/3(NE)
+- Level 3 C/6,20
+- Level 3 C/6,7,8,9,10,11
+- Level 3 C/6,C/20
+- Level 3 C/7(NS,W),9(NS,W),14(NS,W),15(NS,W),16 (SW
+- Level 3 C/7(NS,W),9(NS,W),14(NS,W),15(NS,W),16 (SW)
+- Level 3 C/7, 8, 10, 11, 13, 14, 15
+- Level 3 C/7, 9, 14, 15, 16
+- Level 3 C/7, 9, 14, 16, 20-24
+- Level 3 C/7,9,14,15,16
+- Level 3 C/7,9,14,15,16 (S)
+- Level 3 C/7,9,14-16,19-24
+- Level 3 C/7,9,14-16,19-24,27,31
+- Level 3 C/9
+- Level 3 C/9,12,21,22,23,24
+- Level 3 C27 - C28
+- Level 3 C28 - C29
+- Level 3 C28-C29
+- Level 3 C7,9,14-16,19-24, (27,31(both sides))
+- Level 3 Ceiling 19-20/F.8-G.3
+- Level 3 Ceiling 21-23/G.3-H.8
+- Level 3 Ceiling 23-24/H.8-G.3
+- Level 3 Ceiling 24-24.7/H.8-G.3
+- Level 3 Ceiling 29-24/K-J
+- Level 3 Ceiling 4A & 4C C-D/32-33
+- Level 3 Ceiling 4C C-D/ 32-33
+- Level 3 Ceiling 4C C-D/3.3-5
+- Level 3 Ceiling 4C C-D/32-33
+- Level 3 Ceiling 4C K-L/ 3-5
+- Level 3 Ceiling 4C K-L/3-5
+- Level 3 Ceiling 4C&4A C-D/3.3-5
+- Level 3 Ceiling 4E K/26-31
+- Level 3 Ceiling 4E K/26-31 (west side only)
+- Level 3 Ceiling A-B/3-3.5
+- Level 3 Ceiling A-C/ 25-25.2
+- Level 3 Ceiling A-C/25
+- Level 3 Ceiling A-C/25-25.2
+- Level 3 Ceiling A-C/4; K-L/32-33
+- Level 3 Ceiling C-D/11-12
+- Level 3 Ceiling C-D/17-18 & 19-25
+- Level 3 Ceiling C-D/18-18.7
+- Level 3 Ceiling C-D/20-25
+- Level 3 Ceiling C-D/24-32
+- Level 3 Ceiling C-D/27-28, 28.5,30.5-30.7
+- Level 3 Ceiling C-D/27-28.7
+- Level 3 Ceiling C-D/30-30.5
+- Level 3 Ceiling C-D/32-33
+- Level 3 Ceiling C-D/6-11
+- Level 3 Ceiling C.1-C.6/2.2-2.7
+- Level 3 Ceiling C.8-D/1-3
+- Level 3 Ceiling C/18-18.7
+- Level 3 Ceiling D 17-18
+- Level 3 Ceiling D, 13-19
+- Level 3 Ceiling D, 25-33
+- Level 3 Ceiling D, 3-5
+- Level 3 Ceiling D- E/16-17
+- Level 3 Ceiling D- E/5-10
+- Level 3 Ceiling D-E 9-12
+- Level 3 Ceiling D-E/ 16-21
+- Level 3 Ceiling D-E/10-13
+- Level 3 Ceiling D-E/13-16
+- Level 3 Ceiling D-E/16-17
+- Level 3 Ceiling D-E/17-24
+- Level 3 Ceiling D-E/21-28
+- Level 3 Ceiling D-E/24-28
+- Level 3 Ceiling D-E/28-33
+- Level 3 Ceiling D-E/3-5
+- Level 3 Ceiling D-E/33
+- Level 3 Ceiling D-E/5-10
+- Level 3 Ceiling D-E/5-13
+- Level 3 Ceiling D-E/8-13
+- Level 3 Ceiling D/1-3
+- Level 3 Ceiling D/13-17
+- Level 3 Ceiling D/13-19
+- Level 3 Ceiling D/17-18
+- Level 3 Ceiling D/17-25
+- Level 3 Ceiling D/18-25 West Side Only
+- Level 3 Ceiling D/25-33
+- Level 3 Ceiling D/3-4 West side 4-5 both
+- Level 3 Ceiling D/3-4West side 4-5 both
+- Level 3 Ceiling D/3-5
+- Level 3 Ceiling D/5-11
+- Level 3 Ceiling D/5-12
+- Level 3 Ceiling D/E 28-33
+- Level 3 Ceiling E line 3-4,8-13 & 16-17
+- Level 3 Ceiling E, 3-4, 8-13, & 16-17
+- Level 3 Ceiling E-E.1/4.8-5.8
+- Level 3 Ceiling E-E.5/18-19.1
+- Level 3 Ceiling E-E.5/27-28.3
+- Level 3 Ceiling E-F.8/26-28
+- Level 3 Ceiling E-F.8/28-29
+- Level 3 Ceiling E-F.8/29-30
+- Level 3 Ceiling E-F.8/30-31
+- Level 3 Ceiling E-F.8/31-33
+- Level 3 Ceiling E-G/3-4
+- Level 3 Ceiling E.3-F.8/9-10
+- Level 3 Ceiling E.3-G.3/20-21
+- Level 3 Ceiling E.3-G.3/21-22
+- Level 3 Ceiling E.3-G.3/22-23
+- Level 3 Ceiling E.3-G.3/23-26
+- Level 3 Ceiling E.3-H.8/4-6
+- Level 3 Ceiling E/3-4,8-13 & 16-17
+- Level 3 Ceiling E/3-4.2&8-13&16-17
+- Level 3 Ceiling F.3-G.3/21.3-22.3
+- Level 3 Ceiling F.8-E.3/9-10
+- Level 3 Ceiling F.8-G-5/8.5-10.1
+- Level 3 Ceiling F.8-G.3/27.9-28.8
+- Level 3 Ceiling F.8-G.5/10.1-8.5
+- Level 3 Ceiling F.8-G.5/8.5-10.1
+- Level 3 Ceiling F.8-G/25-32
+- Level 3 Ceiling F.8-G/26-33
+- Level 3 Ceiling F/26-32 (Columns only)
+- Level 3 Ceiling G-E.3/8.3-9
+- Level 3 Ceiling G-E/4-6
+- Level 3 Ceiling G-F.5/15.6-16.6
+- Level 3 Ceiling G-H.8/24.7-26
+- Level 3 Ceiling G-H.8/26.5-28
+- Level 3 Ceiling G-H.8/26.5-30
+- Level 3 Ceiling G-H.8/28-29
+- Level 3 Ceiling G-H.8/29-31
+- Level 3 Ceiling G-H.8/30-31
+- Level 3 Ceiling G-H.8/5-6
+- Level 3 Ceiling G-H.8/6-7
+- Level 3 Ceiling G-J/12-15
+- Level 3 Ceiling G-J/15-16
+- Level 3 Ceiling G-J/16-17
+- Level 3 Ceiling G-J/17-18
+- Level 3 Ceiling G-J/32-33
+- Level 3 Ceiling G.5-H.8/9-10
+- Level 3 Ceiling G/14-17
+- Level 3 Ceiling G/16-19
+- Level 3 Ceiling G/16-19 (Columns only)
+- Level 3 Ceiling G/20-30 (Columns only)
+- Level 3 Ceiling G/26-32 Column Base Plates
+- Level 3 Ceiling G/26-33 Column Base Plates
+- Level 3 Ceiling G/3-33 & F/26-33 (Columns only)
+- Level 3 Ceiling G/3-33 (Columns only)
+- Level 3 Ceiling G/3-33, F/28-33 (Columns only)
+- Level 3 Ceiling G/3-7 (Columns only)
+- Level 3 Ceiling G/8-15 (Columns only)
+- Level 3 Ceiling H.8-G.3/23-24
+- Level 3 Ceiling H.8-G.3/24-24.7
+- Level 3 Ceiling H.8-G/24.7-26
+- Level 3 Ceiling H.8-G/26-26.5
+- Level 3 Ceiling H.8-G/31-32
+- Level 3 Ceiling H.8-J/20.5-22.7
+- Level 3 Ceiling J, 16-17
+- Level 3 Ceiling J-H.8/11-12; F.8-H/10.8-12.1
+- Level 3 Ceiling J-K, 16-17
+- Level 3 Ceiling J-K/ 3-8
+- Level 3 Ceiling J-K/11-16
+- Level 3 Ceiling J-K/12-16
+- Level 3 Ceiling J-K/12-17
+- Level 3 Ceiling J-K/17-22
+- Level 3 Ceiling J-K/18-24
+- Level 3 Ceiling J-K/29-30
+- Level 3 Ceiling J-K/5-15
+- Level 3 Ceiling J-K/5-16
+- Level 3 Ceiling J/11-17
+- Level 3 Ceiling J/3-10
+- Level 3 Ceiling J/3-11
+- Level 3 Ceiling K, 9-10; 16-33
+- Level 3 Ceiling K-J/31-33
+- Level 3 Ceiling K-L / 11-LINE (NORTH SIDE OF BEAM AND BOTTOM)
+- Level 3 Ceiling K-L 6-10
+- Level 3 Ceiling K-L/ 3-5
+- Level 3 Ceiling K-L/1-3
+- Level 3 Ceiling K-L/10-11
+- Level 3 Ceiling K-L/11.3
+- Level 3 Ceiling K-L/11.3 Line
+- Level 3 Ceiling K-L/12-15.9
+- Level 3 Ceiling K-L/12-16
+- Level 3 Ceiling K-L/16
+- Level 3 Ceiling K-L/16.2-18
+- Level 3 Ceiling K-L/16.5-18
+- Level 3 Ceiling K-L/16.5-18(South only)
+- Level 3 Ceiling K-L/19-23,24-27
+- Level 3 Ceiling K-L/27-32
+- Level 3 Ceiling K-L/3-5
+- Level 3 Ceiling K-L/6-10
+- Level 3 Ceiling K-L/6-7, 8-10
+- Level 3 Ceiling K-line, 27-28.9 & 30-31.9
+- Level 3 Ceiling K/ 3-11
+- Level 3 Ceiling K/1, 2, 3
+- Level 3 Ceiling K/1-3
+- Level 3 Ceiling K/12-16
+- Level 3 Ceiling K/12-16 (east side)
+- Level 3 Ceiling K/16-33
+- Level 3 Ceiling L-M/19
+- Level 3 Ceiling L-N/ 9
+- Level 3 Ceiling L-N/9
+- Level 3 Ceiling L-N/9-9.2
+- Level 3 Ceiling Truss J-K/29-30
+- Level 3 Ceiling, (L/2.5)(L.5/2.5-2.7)(L.7/2.5-2.7)
+- Level 3 Ceiling, (M.3/2.8-3)(M.4/2.8-3)(M.7/2.8-3)
+- Level 3 Ceiling, C.8- D/1-3
+- Level 3 Ceiling, J-K / 3-5
+- Level 3 Ceiling, K-L / 11-LINE
+- Level 3 Ceiling, K-L/ 1-3
+- Level 3 Ceiling, K-L/ 29-29.5
+- Level 3 Ceiling, K-L/11-LINE
+- Level 3 Ceiling, K.4-L / 11.3-11.7
+- Level 3 Ceiling, K.4-L/11.3-11.7
+- Level 3 Ceiling, L-N / 2.5-3 (NEWLY ADDED BEAMS ONLY)
+- Level 3 Ceiling, L-N / 2.5-3 (Newly added beams only)
+- Level 3 Ceiling, L.2-L.7 / 2.5-2.7
+- Level 3 Ceiling, L.2-L.7/2.5-2.7
+- Level 3 Ceiling, M.2-M.9 / 2.7-3
+- Level 3 Ceiling, M.2-M.9/2.7-3
+- Level 3 Celling C-D/13-18
+- Level 3 Celling K-L/19-23
+- Level 3 Clean Vestibule 1 Column K5
+- Level 3 Clean Vestibule 20 Column D18
+- Level 3 Clean Vestibule 20 D17.8 - D18 -East
+- Level 3 Clean Vestibule 21 Shaft Ceiling DC/13
+- Level 3 Clean Vestibule 22 Column D5
+- Level 3 Clean Vestibule 3 Column K18
+- Level 3 Clean Vestibule 4 Shaft Ceiling LK/22.5-23
+- Level 3 Clean Vestibule 4 Shaft Ceiling LK/23
+- Level 3 Column G.10
+- Level 3 Column G.3
+- Level 3 Column G.4
+- Level 3 Column G.5
+- Level 3 Column G.6
+- Level 3 Column G.7
+- Level 3 Column G.8
+- Level 3 Columns D/3/D5/D12/D13/D18/D19/D25
+- Level 3 Columns G.10 -Top 2nd layer
+- Level 3 Columns G.11 -Top 2nd layer
+- Level 3 Columns G.11,12,14 - REWORK
+- Level 3 Columns G.12 -Top 2nd layer
+- Level 3 Columns G.13,17,18,19,20,21 REWORK
+- Level 3 Columns G.14,15,16
+- Level 3 Columns G.14,15,16,17,18
+- Level 3 Columns G.15,16- REWORK
+- Level 3 Columns G.19,20,21,22,23
+- Level 3 Columns G.19,20,21,22,23,24,26
+- Level 3 Columns G.22,23,24,25,26
+- Level 3 Columns G.24,25,26,27,28,29,30,31,32
+- Level 3 Columns G.27,28,29,30,31,32
+- Level 3 Columns G.3,27,28
+- Level 3 Columns G.4 REWORK - 2nd Layer
+- Level 3 Columns G.4,5,6,7 - REWORK
+- Level 3 Columns G.4,5,6,7,8,10
+- Level 3 Columns G.5 REWORK - 2nd Layer
+- Level 3 Columns G.6 REWORK - 2nd Layer
+- Level 3 Columns G.7 REWORK - 2nd Layer
+- Level 3 Columns G.8 REWORK - 2nd Layer
+- Level 3 Columns G.8,9,10 - REWORK
+- Level 3 Columns G.9 -Top 2nd layer
+- Level 3 Columns G.9,11,12,13
+- Level 3 Columns K/24-29
+- Level 3 D E 4
+- Level 3 D, 12-16 East side
+- Level 3 D, K/3
+- Level 3 D,E/2
+- Level 3 D,E/2 Column
+- Level 3 D,K/1-3
+- Level 3 D- E/4
+- Level 3 D-C/6-12
+- Level 3 D-E / 25
+- Level 3 D-E 5-8
+- Level 3 D-E.3/1
+- Level 3 D-E/1
+- Level 3 D-E/17
+- Level 3 D-E/17-24 Ceiling
+- Level 3 D-E/18
+- Level 3 D-E/3
+- Level 3 D-E/3-5
+- Level 3 D-E/32
+- Level 3 D-E/33
+- Level 3 D-E/4, 4.8
+- Level 3 D-E/4.8
+- Level 3 D-E/5
+- Level 3 D-E/8-13
+- Level 3 D-E17
+- Level 3 D-E5
+- Level 3 D-F.1/1
+- Level 3 D-F/1
+- Level 3 D-J/1
+- Level 3 D.2/2, E.2/2
+- Level 3 D/ 9-28
+- Level 3 D/1
+- Level 3 D/1 vertical column
+- Level 3 D/1 vertical columns
+- Level 3 D/1-3
+- Level 3 D/11-12
+- Level 3 D/12-13
+- Level 3 D/12-16
+- Level 3 D/12.2 & 17
+- Level 3 D/12.2, 13, 13.2, 17, 17.8, 18
+- Level 3 D/12.2, 13, 13.2, 17, 17.8, 18, 28
+- Level 3 D/13-14
+- Level 3 D/13-16
+- Level 3 D/13.5-13.7
+- Level 3 D/13.5-13.8
+- Level 3 D/16-17
+- Level 3 D/19-20
+- Level 3 D/2
+- Level 3 D/2 Beam
+- Level 3 D/2 vertical column
+- Level 3 D/2.5
+- Level 3 D/20-25 & A-B/3,K/24-29
+- Level 3 D/20-26
+- Level 3 D/24.5-25
+- Level 3 D/24.5-25; D/18-19
+- Level 3 D/25-25.3
+- Level 3 D/25-25.8
+- Level 3 D/27-28
+- Level 3 D/27-29
+- Level 3 D/27.9-29
+- Level 3 D/28
+- Level 3 D/28-28.5
+- Level 3 D/29-30
+- Level 3 D/29-30 E Face
+- Level 3 D/3
+- Level 3 D/3-4
+- Level 3 D/3.2, 3.6, 4, 4.8, 5
+- Level 3 D/30
+- Level 3 D/30 Ceiling
+- Level 3 D/30-32
+- Level 3 D/30.5
+- Level 3 D/30; K/5
+- Level 3 D/31-32
+- Level 3 D/32-33
+- Level 3 D/33-33
+- Level 3 D/4,4.8,5
+- Level 3 D/5
+- Level 3 D/5-11
+- Level 3 D/6-11
+- Level 3 D/6-12, 14-27
+- Level 3 D/6-8
+- Level 3 D/6-9
+- Level 3 D/9-11
+- Level 3 D24.5-25; D18-19
+- Level 3 E, E.3, E.5, E.8/1
+- Level 3 E, F.2, G.5/2 vertical column
+- Level 3 E,3-4,8-13 & 16-17 Ceiling
+- Level 3 E-E.3-E.5-E.8/1
+- Level 3 E-E.3/20
+- Level 3 E-E.3/33
+- Level 3 E-E.5/18.8-19.1
+- Level 3 E-E.5/33 NCR-0565
+- Level 3 E-E.8 vertical column
+- Level 3 E-E.8/1 vertical columns
+- Level 3 E-E.8/19-19.6
+- Level 3 E-F.8/26-33
+- Level 3 E-F/1
+- Level 3 E-F/3
+- Level 3 E-F1
+- Level 3 E-G/23
+- Level 3 E-G/26-33 Ceiling
+- Level 3 E-G/33
+- Level 3 E-J/3-33
+- Level 3 E-J/33
+- Level 3 E.1-E.8/1
+- Level 3 E.2/2
+- Level 3 E.3, F, F.4, F.6, F.8/33
+- Level 3 E.3, F, F.4, G.5/33
+- Level 3 E.3,5,8/33;F/33
+- Level 3 E.3-E.8
+- Level 3 E.3-E.8/1
+- Level 3 E.3-F.8/16-19
+- Level 3 E.3-F.8/19-25.3
+- Level 3 E.3-F.8/9-10
+- Level 3 E.3-F/20.6
+- Level 3 E.3-F/3
+- Level 3 E.3-F/33 Top of Soffit
+- Level 3 E.3-G.3/20-21, 22-23; G/20-22; E.3-G/4-6
+- Level 3 E.3-G.3/20-21, 22-23; G/20-25; E.3-G/4-6
+- Level 3 E.3-G/11-13 Ceiling
+- Level 3 E.3-G/13-16 Ceiling
+- Level 3 E.3-G/16-18 Ceiling
+- Level 3 E.3-G/6-8.3 Ceiling
+- Level 3 E.3/33
+- Level 3 E.5,E.8/33
+- Level 3 E.5-F.8/33
+- Level 3 E.5-F/2
+- Level 3 E.5/33
+- Level 3 E.5/33, E.8/33, F.2/33
+- Level 3 E.8-F.2/33
+- Level 3 E.8-F/1
+- Level 3 E/1
+- Level 3 E/1 Goalpost
+- Level 3 E/1 goalpost
+- Level 3 E/1, E.3/1, E.5/1, E.8/1
+- Level 3 E/1-2
+- Level 3 E/10-13, 16-20 mega columns light repair
+- Level 3 E/10-13,16-20 mega columns
+- Level 3 E/11, 13, 15, 17, 19
+- Level 3 E/13, 15, 17, 19
+- Level 3 E/14, G/13
+- Level 3 E/16
+- Level 3 E/16-18
+- Level 3 E/19
+- Level 3 E/2 Beam
+- Level 3 E/21,23,25,27,29,31
+- Level 3 E/22-24
+- Level 3 E/22-30
+- Level 3 E/23,25,27
+- Level 3 E/27-32
+- Level 3 E/3 E Wall S Face
+- Level 3 E/3-3.2
+- Level 3 E/31
+- Level 3 E/31-32
+- Level 3 E/32; J/33
+- Level 3 E/4,10
+- Level 3 E/4,21,26 mega columns
+- Level 3 E/4-26
+- Level 3 E/4-8
+- Level 3 E/5, 9
+- Level 3 E/5,7,9,11
+- Level 3 E/5,7,9,12
+- Level 3 E/8,9
+- Level 3 E/8,9 Mega Columns
+- Level 3 E/9-33
+- Level 3 E1-ED
+- Level 3 E1-ED Shaft Wall
+- Level 3 ELEC. RM. FAB136302 (East) 16/A
+- Level 3 ELEC. RM. FAB136302 (East) 16/A.5
+- Level 3 ELEC. RM. FAB136302 (East) 16/B
+- Level 3 ELEC. RM. FAB136302 (East) 27/M
+- Level 3 ELEC. RM. FAB136302 (East) 7/B
+- Level 3 ELEC. RM. FAB136302 (East)5/B
+- Level 3 ELEVATOR 19
+- Level 3 ELEVATOR 19 C-D/28-29
+- Level 3 East E/5,7,9
+- Level 3 East Side K/3-12
+- Level 3 Elevator # 3
+- Level 3 Elevator # 3 ( West wall ,West Face)
+- Level 3 Elevator #3 west wall west face
+- Level 3 Elevator 1 L-M/3-4
+- Level 3 Elevator 1 L-M/3-4 north and east walls
+- Level 3 Elevator 18
+- Level 3 Elevator 18 (N,E&S Exterior)
+- Level 3 Elevator 18 (N,E,&W Exterior)
+- Level 3 Elevator 18 B.5-C/31.3 (Top of South Wall
+- Level 3 Elevator 18 B.5-C/31.3 (Top of South Wall Interior)
+- Level 3 Elevator 18 B.5-C/31.3 (Top of South Wall Interior).
+- Level 3 Elevator 18 B.5-C/31.3 Interior S Wall Top
+- Level 3 Elevator 18 B.5-C/31.3 Mezzanine Infill
+- Level 3 Elevator 19
+- Level 3 Elevator 19 C/29 Blockouts
+- Level 3 Elevator 19, C-D / 28-29 (Beam Connections)
+- Level 3 Elevator 1A L.5/3.3-4 West Wall, East Face
+- Level 3 Elevator 1B touch up
+- Level 3 Elevator 22
+- Level 3 Elevator 22 B-C/3-4
+- Level 3 Elevator 22 Exterior
+- Level 3 Elevator 3
+- Level 3 Elevator 3 Exterior S,W Wall
+- Level 3 Elevator 3 North Side Only
+- Level 3 Elevator 3 South Wall South Face
+- Level 3 Elevator 3 South and East Walls
+- Level 3 Elevator 5
+- Level 3 Elevator 5 Exterior S Wall
+- Level 3 Elevator 5 L-L.5/31.3-32 (North Wall)
+- Level 3 Elevator 5 L-L.5/31.3-32 (West & South, Top and Bottom)
+- Level 3 Elevator 5 L-L.5/31.3-32 (West & South, Top and Bottom).
+- Level 3 Elevator 5 L/31-32 (East Wall)
+- Level 3 Elevator 5 Top Bin Infill
+- Level 3 Elevator 5, South Wall Exterior, Beam Infi
+- Level 3 F-33 Column
+- Level 3 F-F.4/1
+- Level 3 F-F.4/1 (bottom only)
+- Level 3 F-F.4/1 Bottom Soffit
+- Level 3 F-F.4/1 Top Soffit
+- Level 3 F-F.4/1 top soffit
+- Level 3 F-F.41
+- Level 3 F-F.6/1 (top and bottom)
+- Level 3 F-F.6/33
+- Level 3 F-G/1
+- Level 3 F-G/1 (bottom face only)
+- Level 3 F-G/1-2
+- Level 3 F-G/2-2.8
+- Level 3 F-G/33
+- Level 3 F-G/33 (Exterior)
+- Level 3 F-G/33 Exterior
+- Level 3 F-J/33 Transition to Lvl 4
+- Level 3 F.1-F.6/1
+- Level 3 F.1-F.61
+- Level 3 F.2, F.4, F.6, F.8, G, G.3, G.5, G.8, H/33
+- Level 3 F.2, H, M/2
+- Level 3 F.2,F.4,F.6,F.8,G,G.3,G.5,G.8,H/33
+- Level 3 F.2/2
+- Level 3 F.2/33
+- Level 3 F.3-F.5/2 (Both Sides)
+- Level 3 F.3-F.5/2 Goalpost
+- Level 3 F.3-F.6/1
+- Level 3 F.3/1
+- Level 3 F.4-F.6/1 Top & Bottom Soffit
+- Level 3 F.4-F.6/1.5
+- Level 3 F.4-F.8/1 (Top&Bottom Soffits)
+- Level 3 F.4-F.8/1 Soffit
+- Level 3 F.4-F.8/1 TOP & BOTTOM Soffits
+- Level 3 F.4-F.8/1 Top Soffit
+- Level 3 F.4-F.8/1 Top&Bottom Soffit
+- Level 3 F.4-G/1
+- Level 3 F.4/1
+- Level 3 F.4/1 Goalpost
+- Level 3 F.4/1 goalpost
+- Level 3 F.4/2 Goalpost
+- Level 3 F.4/33
+- Level 3 F.4/33, F.6/33, F.8/33
+- Level 3 F.6, F.8, G.3/33
+- Level 3 F.6-F.8/1 Top & Bottom Soffit
+- Level 3 F.6/1
+- Level 3 F.6/1 Vertical Column
+- Level 3 F.6/1.5-2
+- Level 3 F.6/2 Stair 59
+- Level 3 F.6/33
+- Level 3 F.8-E/26-33
+- Level 3 F.8-G.3/19-20
+- Level 3 F.8-G/1
+- Level 3 F.8-G/1 Soffit
+- Level 3 F.8-G/1 Soffit (top & front face soffit)
+- Level 3 F.8-G/1 Top Soffit (Bottom Face Only)
+- Level 3 F.8-G/1 Top Soffit (Front & Top Face only)
+- Level 3 F.8-G/1 Top Soffit (Top/Front Face only)
+- Level 3 F.8-G/1 Top Soffit bottom face only
+- Level 3 F.8-G/1 bottom soffit
+- Level 3 F.8-G/1, Top Soffit Bottom Face
+- Level 3 F.8/1-1.5
+- Level 3 F.8/33
+- Level 3 F/1-2
+- Level 3 F/1-2 East Wall
+- Level 3 F/2 Beam
+- Level 3 F/2 ROOM
+- Level 3 F/2 Stair 59
+- Level 3 F/2.5-3
+- Level 3 F/27, 29, 31 columns
+- Level 3 F/33 W,E Face
+- Level 3 F/33 W,E Side
+- Level 3 F/9
+- Level 3 FA Room 22
+- Level 3 FAB A-B/33 Exterior
+- Level 3 FAB B-C/33 Exterior
+- Level 3 FAB D-E/32.7 Under Beam FA 18 N Face
+- Level 3 FAB D-E/33 (over beam / transition to lvl
+- Level 3 FAB D-E/33 (over beam / transition to lvl 4)
+- Level 3 FAB D-E/33 Exterior
+- Level 3 FAB D-E/33 S Face (Top of the wall over beam)
+- Level 3 FAB D/33 (column body)
+- Level 3 FAB E,J/3-33
+- Level 3 FAB E-E.2/33
+- Level 3 FAB E-E.2/33 (only Opening)
+- Level 3 FAB E-E.2/33 Interior S Face (Close Opening 126x126)
+- Level 3 FAB E-E.2/33 S Face (10.5 x 10.5 ft. Closed Opening)
+- Level 3 FAB E-E.2/33 S Face (10.5 x 10.5 ft.)
+- Level 3 FAB E-E.3/33 Interior Framing Infill
+- Level 3 FAB E.3-F/33 (Top of Soffit)
+- Level 3 FAB E.3-F/33 Interior (Top Infill)
+- Level 3 FAB E.3-F/33 S Face (Top Infill)
+- Level 3 FAB E.3/33 Interior Framing Infill
+- Level 3 FAB E.4-F/33 Exterior
+- Level 3 FAB E/17-17.7
+- Level 3 FAB E/17-17.7 E Face
+- Level 3 FAB E/17-17.8 E Wall
+- Level 3 FAB E/17-17.8 E Wall (19 feet from top to bottom)
+- Level 3 FAB E/17-17.8 W FACE (19 feet from top to
+- Level 3 FAB E/17-18 E Wall (19 feet from top to bottom)
+- Level 3 FAB E/17.1
+- Level 3 FAB E/17.3 Single Door
+- Level 3 FAB E/17.5 Double Door E Face (Left)
+- Level 3 FAB E/17.7
+- Level 3 FAB E/17.7-18
+- Level 3 FAB E/17.9
+- Level 3 FAB E/17.9 (single door)
+- Level 3 FAB E/32-33
+- Level 3 FAB E/32-33 (Double Door)
+- Level 3 FAB E/32-33 E Face
+- Level 3 FAB E/33 Exterior Loading Dock (Opening Only)
+- Level 3 FAB E/33 Loading Dock (opening only) Exter
+- Level 3 FAB E/33 Loading Dock (opening only) Exterior access
+- Level 3 FAB E/4-4.7 W Face (Bottom Half)
+- Level 3 FAB E/4-5
+- Level 3 FAB E/4.2-4.3
+- Level 3 FAB E/4.4 (Left on Double Door)
+- Level 3 FAB F-E.3/33 Interior
+- Level 3 FAB F-G/33 Exterior
+- Level 3 FAB F-G/33 S Face (Top Infill)
+- Level 3 FAB F.3-F.5/2 N Face
+- Level 3 FAB F.3-F.5/2 North Face
+- Level 3 FAB F.8-G/1.3
+- Level 3 FAB F.8/1-1.3
+- Level 3 FAB F/2-3 W Face
+- Level 3 FAB F/26 Column
+- Level 3 FAB F/26, 27, 28, 29 Columns (bottom of co
+- Level 3 FAB F/26, 27, 28, 29 Columns (bottom of column)
+- Level 3 FAB F/26,31,32 (on column Bottom)
+- Level 3 FAB F/26,31,32 Column (on column Bottom)
+- Level 3 FAB F/26,31,32 Columns Bottom
+- Level 3 FAB F/27 Column Body
+- Level 3 FAB F/27, 28, 29 (Column bottom, under flo
+- Level 3 FAB F/27, 28, 29 (Column bottom, under floor)
+- Level 3 FAB F/27,28,29 Column (on column Bottom)
+- Level 3 FAB F/27,28,29, Columns Bottom
+- Level 3 FAB F/28 Column Body
+- Level 3 FAB F/28,30 Column
+- Level 3 FAB F/29 & 30 Columns
+- Level 3 FAB F/29,30 Columns
+- Level 3 FAB F/30 Column (on column Bottom)
+- Level 3 FAB F/30 Column Bottom
+- Level 3 FAB F/30,31,32 (Column Bottom)
+- Level 3 FAB F/30,31,32 (on Column bottom)
+- Level 3 FAB F/31 Column Body
+- Level 3 FAB F/32 Column
+- Level 3 FAB F/32 Column Body
+- Level 3 FAB G-H/1 Top Soffit Front Face
+- Level 3 FAB G-H/33 Exterior
+- Level 3 FAB G-J 33 Line
+- Level 3 FAB G-J/33
+- Level 3 FAB G.3-H.3/33
+- Level 3 FAB G/11,13,14 (on Column bottom)
+- Level 3 FAB G/11,13,14 Column (Below Rise Flooring
+- Level 3 FAB G/11,13,14 Column (Below Rise Flooring)
+- Level 3 FAB G/15 (on column Bottom)
+- Level 3 FAB G/15 Column (Below Rise Flooring)
+- Level 3 FAB G/15 Column (on column Bottom)
+- Level 3 FAB G/2 134103C (Door opening bottom)
+- Level 3 FAB G/23 Column
+- Level 3 FAB G/28,29 Column (on column Bottom)
+- Level 3 FAB G/33 Column
+- Level 3 FAB G/33 on Column body
+- Level 3 FAB J-G/33 S Face (Top Infill)
+- Level 3 FAB J-K/17 N Face
+- Level 3 FAB J-K/17.7 S Face
+- Level 3 FAB J-K/33
+- Level 3 FAB J-K/33 Exterior
+- Level 3 FAB J/17-17.5 E Face (Bottom Half)
+- Level 3 FAB J/17-17.7
+- Level 3 FAB J/17-17.7 Airlock 3 W Face
+- Level 3 FAB J/17-18 Airlock 3 W Face
+- Level 3 FAB J/23,16
+- Level 3 FAB J/32-32.7 W Face (only after 24 ft)
+- Level 3 FAB J/32-33
+- Level 3 FAB J/32-33 Airlock 6 E Face
+- Level 3 FAB J/32.7 W Face (left on double Door)
+- Level 3 FAB J/4-4.7
+- Level 3 FAB J/4-4.7 W Face
+- Level 3 FAB J/4-4.7 W Face (2 doors)
+- Level 3 FAB J/4-5 Airlock 1 W Face
+- Level 3 FAB J/4-5 E Face (Bottom Half)
+- Level 3 FAB J/4.7-5 ( Single Door )
+- Level 3 FAB K-L/17 N Face (Bottom & Right side, exclude opening)
+- Level 3 FAB K/4.7-5 W Face
+- Level 3 FIZ E/1
+- Level 3 FIZ E/3
+- Level 3 FIZ F.4-F.8/1 Top Soffit
+- Level 3 FIZ F.5/1.5-2
+- Level 3 FIZ F.6/1 Vertical Column
+- Level 3 FIZ F.6/1 vertical column
+- Level 3 FIZ F.6/1.5-2
+- Level 3 FIZ F.8-G/1.3
+- Level 3 FIZ F.8-G/1.3 N Wall S Face
+- Level 3 FIZ F.8-G/1.3 N Wall S Face ( Exclude open from pipe )
+- Level 3 FIZ F.8-G/1.3 North Face (include CJ gap)
+- Level 3 FIZ F.8/1-1.3 E Face
+- Level 3 FIZ F.8/1-1.3 E Wall W Face
+- Level 3 FIZ F/1.5-2 W Face
+- Level 3 FIZ F/1.5-2 West face.
+- Level 3 FIZ F/2-3 W Face
+- Level 3 FIZ G-F.6/2 south face.
+- Level 3 FIZ G-F/2 south face.
+- Level 3 FIZ G-G.2/1.8-2 N,W Face
+- Level 3 FIZ G-G.2/1.8-2 S, W, E Face
+- Level 3 FIZ G-G.2/1.8-2 W Wall E Face
+- Level 3 FIZ G-G.5/1
+- Level 3 FIZ G-H/1 Top Soffit (Bottom face only)
+- Level 3 FIZ G.5-H/1
+- Level 3 FIZ G.5-H/1 Bottom Soffit
+- Level 3 FIZ G/1 134103C (Door opening bottom)
+- Level 3 FIZ G/1 Column
+- Level 3 FIZ G/1 Column Body (E,S,N Faces)
+- Level 3 FIZ G/1.1-1.2
+- Level 3 FIZ G/1.3-2 East face (exclude opening).
+- Level 3 Fab 3-4(E) One Beam Along Wall
+- Level 3 Fab 33(J) One Roll of Beams Along Wall
+- Level 3 Fab J11-J12
+- Level 3 Fab J11-J12; J10-J11
+- Level 3 Fab Sector 22 J10-J11
+- Level 3 Fab Sector 22 J12-J13
+- Level 3 Fab Sector 23 J16-J17
+- Level 3 Fab Sector 23 J18-J19
+- Level 3 Fab Sector 23 J19-J20
+- Level 3 Fab Sector 23 J20-J21
+- Level 3 Fab Sector 24 J21-J22
+- Level 3 Fab Sector 24 J22-J23
+- Level 3 Fab Sector 24 J25-J26
+- Level 3 Fab Sector 24 J26-J27
+- Level 3 Fab Sector 25 J27-J28
+- Level 3 Fab Sector 25 J28-J29
+- Level 3 Fab Sector 25 J29-J30
+- Level 3 Fab Sector 42 E10-E11
+- Level 3 Fab Sector 42 E11-E12
+- Level 3 Fab Sector 42 E13-E14
+- Level 3 Fab Sector 42 E14-E15
+- Level 3 Fab Sector 43 E15-E16
+- Level 3 Fab Sector 43 E20-E21
+- Level 3 Fab Sector 44 E21-E22
+- Level 3 Fab Sector 45 E29-E30
+- Level 3 Fire Alarm Room # 3
+- Level 3 Fire Alarm Room 22
+- Level 3 Fire Room # 3
+- Level 3 G Column 20-21, 23
+- Level 3 G Columns 19, 24, 25, 26
+- Level 3 G Columns 19,24,25,26
+- Level 3 G Columns 20-21
+- Level 3 G Columns 20-21,23
+- Level 3 G Columns 4-10
+- Level 3 G, H.5/33
+- Level 3 G,H.3,H.5/33
+- Level 3 G-F.4/1
+- Level 3 G-F.4/1 Wall
+- Level 3 G-F.6/1
+- Level 3 G-G.2/1.7 Goalposts
+- Level 3 G-G.2/1.8
+- Level 3 G-G.5 (Bottom Soffit)
+- Level 3 G-G.5/1 (bottom soffit)
+- Level 3 G-G.5/1 Soffit bottom sofit only
+- Level 3 G-H, H.5-L/1
+- Level 3 G-H.8/3-5
+- Level 3 G-H.8/30-31 Ceiling
+- Level 3 G-H.8/32-33
+- Level 3 G-H.8/7-9 Ceiling
+- Level 3 G-H/1
+- Level 3 G-H/1 (Bottom Face Soffit only)
+- Level 3 G-H/1 Soffit (bottom & front face)
+- Level 3 G-H/1 Top and Bottom
+- Level 3 G-H/1 Top and front top soffit
+- Level 3 G-H/1,2
+- Level 3 G-H/1,2 Column
+- Level 3 G-H/1-2
+- Level 3 G-H/2
+- Level 3 G-H1
+- Level 3 G-J 33
+- Level 3 G-J/12-15 Ceiling
+- Level 3 G-J/17-18 Ceiling
+- Level 3 G-J/3-5
+- Level 3 G-J/33
+- Level 3 G-J/33 Interior
+- Level 3 G-J/33 internal face (includes bottom plat
+- Level 3 G.2/2
+- Level 3 G.3, G.5, G.8/1 Vertical Columns
+- Level 3 G.3,G.5,G.8/1 Vertical Columns
+- Level 3 G.3-F.5/4.9-8.1
+- Level 3 G.3-G.5-G.8/1 Vertical Columns
+- Level 3 G.3/33
+- Level 3 G.3/33, G.5/33, G.8/33
+- Level 3 G.4/1
+- Level 3 G.5, G.8, H, H.3/33
+- Level 3 G.5, G.8, H/33
+- Level 3 G.5-H (Bottom Soffit)
+- Level 3 G.5-H/1 (bottom soffit)
+- Level 3 G.5/19
+- Level 3 G.5/19.3
+- Level 3 G.5/19.6
+- Level 3 G.5/2
+- Level 3 G.5/2 Column
+- Level 3 G.5/20
+- Level 3 G.5/20.3
+- Level 3 G.5/20.6
+- Level 3 G.5/21
+- Level 3 G.5/22
+- Level 3 G.8/19
+- Level 3 G.8/19.3
+- Level 3 G.8/19.6
+- Level 3 G.8/20
+- Level 3 G.8/20.3
+- Level 3 G.8/20.6
+- Level 3 G.8/21
+- Level 3 G/1
+- Level 3 G/1.7 Goalposts
+- Level 3 G/1.7 S Face
+- Level 3 G/10
+- Level 3 G/10-19 Column Base Plates
+- Level 3 G/11, 27 & 28
+- Level 3 G/12
+- Level 3 G/12, 15, 16, 29-32
+- Level 3 G/18
+- Level 3 G/19.3
+- Level 3 G/2
+- Level 3 G/2 Goalpost
+- Level 3 G/2 North goalpost
+- Level 3 G/2 South goalpost
+- Level 3 G/2 goal post north face
+- Level 3 G/2 goalpost
+- Level 3 G/20
+- Level 3 G/20,21,22
+- Level 3 G/20,21,22 Column Body
+- Level 3 G/22
+- Level 3 G/22-32
+- Level 3 G/23 Column
+- Level 3 G/23-26
+- Level 3 G/23-30
+- Level 3 G/26
+- Level 3 G/26-32 Column Base Plates
+- Level 3 G/27,28, 31, 32
+- Level 3 G/27-32 Column Body
+- Level 3 G/3 Stair 68
+- Level 3 G/3, 10,19
+- Level 3 G/3, 19-30 columns body
+- Level 3 G/3, G/19-30 columns body
+- Level 3 G/31,32
+- Level 3 G/32
+- Level 3 G/33
+- Level 3 G/33 Column
+- Level 3 G/33 E,W Face
+- Level 3 G/4,5,7,8,9,13,14,17,19,24,25,26 Column Body
+- Level 3 G/4-9
+- Level 3 G/4-9, 20-30
+- Level 3 G/6,10,18
+- Level 3 G/6,10,18 Columns Body
+- Level 3 G1.7/2
+- Level 3 G2
+- Level 3 GL E.3-F.2/22.6
+- Level 3 Goalpost L/4.5
+- Level 3 Goalpost M&L/4.5
+- Level 3 Goalpost M/4.5
+- Level 3 Gridline C - Column 26.4-26.8
+- Level 3 Gridline J – Column 3
+- Level 3 Gridline L – Column 11
+- Level 3 Gridline L – Column 16
+- Level 3 Gridline N & L - Column Line 14
+- Level 3 Gridline N.17 – N.17.6
+- Level 3 H, K & L /2
+- Level 3 H,H.3,H.5/1 Column
+- Level 3 H,K,L/2 vertical column
+- Level 3 H-G/1
+- Level 3 H-H.5/1
+- Level 3 H-H.5/1 soffits
+- Level 3 H-H.51
+- Level 3 H-J/1-1.5
+- Level 3 H-J/33
+- Level 3 H-K/1
+- Level 3 H-L/1
+- Level 3 H.2/2
+- Level 3 H.3/1
+- Level 3 H.3/19
+- Level 3 H.3/20
+- Level 3 H.3/20.3
+- Level 3 H.3/20.6
+- Level 3 H.3/21
+- Level 3 H.5,H.8/33
+- Level 3 H.5-H.8-J-K/1
+- Level 3 H.5-H.8/1
+- Level 3 H.5-J/1
+- Level 3 H.5-K/1
+- Level 3 H.5-K/1 vertical columns
+- Level 3 H.5-L/1
+- Level 3 H.5/19
+- Level 3 H.5/19.3
+- Level 3 H.5/19.6
+- Level 3 H.5/2
+- Level 3 H.5/2 COLUMN
+- Level 3 H.5/2 Vertical Column
+- Level 3 H.5/2 Vertical column
+- Level 3 H.5/2 vertical column
+- Level 3 H.5/20
+- Level 3 H.5/20.3
+- Level 3 H.5/20.6
+- Level 3 H.5/21
+- Level 3 H.5/33
+- Level 3 H.8, J/33
+- Level 3 H.8,H.5/33
+- Level 3 H.8,H.5/33 NCR-0136
+- Level 3 H.8-G.3/21-23
+- Level 3 H.8-G.3/23-24
+- Level 3 H.8-G/26-26.5
+- Level 3 H.8-G/31-31.5, 26-26.5
+- Level 3 H.8-H.3/8-11
+- Level 3 H.8-J/14-15
+- Level 3 H.8-L/1
+- Level 3 H.8/27
+- Level 3 H.8/33
+- Level 3 H/1
+- Level 3 H/1-2
+- Level 3 H/19
+- Level 3 H/2
+- Level 3 H/20
+- Level 3 H/20.3
+- Level 3 H/20.6
+- Level 3 H/21
+- Level 3 H/33, H.3/33
+- Level 3 H/33,H.3/33
+- Level 3 H/33; H.3/33 & G.8/33
+- Level 3 IT Security & FA Room 22
+- Level 3 IT Security Room 22
+- Level 3 IT Security Room Elevator 3 M.5/18-18.5
+- Level 3 IT/Security Room 3 interior walls
+- Level 3 J-H.8/15-18
+- Level 3 J-K, 3-11
+- Level 3 J-K/1
+- Level 3 J-K/11-17 Ceiling
+- Level 3 J-K/11.5
+- Level 3 J-K/17
+- Level 3 J-K/17.8, 18
+- Level 3 J-K/18
+- Level 3 J-K/18 South Face
+- Level 3 J-K/24-33 (Perimeter)
+- Level 3 J-K/3-11
+- Level 3 J-K/32
+- Level 3 J-K/33 Interior
+- Level 3 J-K/4
+- Level 3 J-K/4.7
+- Level 3 J-K/4.7 North Face
+- Level 3 J-K/4.8
+- Level 3 J-K/4.8, 5
+- Level 3 J-K/5
+- Level 3 J-K/5 South Face
+- Level 3 J-K5
+- Level 3 J-L/1
+- Level 3 J-L/17.7
+- Level 3 J-L/17.7 North Face
+- Level 3 J-L/4 N Face
+- Level 3 J-L/4.7
+- Level 3 J-L/4.7 S Face
+- Level 3 J-L/4.7 South Face
+- Level 3 J/10-20
+- Level 3 J/12
+- Level 3 J/13-16 "Elevated Area"
+- Level 3 J/13-16 Looking up
+- Level 3 J/13-17
+- Level 3 J/15
+- Level 3 J/15-18
+- Level 3 J/17
+- Level 3 J/17-23
+- Level 3 J/17-23 "Elevated Area"
+- Level 3 J/17-23 Looking up
+- Level 3 J/17.7-18
+- Level 3 J/17.7-18 E Face
+- Level 3 J/2
+- Level 3 J/2 vertical column
+- Level 3 J/21-25
+- Level 3 J/26-32
+- Level 3 J/3-11 Ceiling
+- Level 3 J/3-24,32-33
+- Level 3 J/3-5,9
+- Level 3 J/32
+- Level 3 J/33
+- Level 3 J/33 NCR-0393
+- Level 3 J/4-19
+- Level 3 J/4-19 Columns
+- Level 3 J/4-19 Mega Columns
+- Level 3 J/4-19 light repair
+- Level 3 J/4-19 mega columns
+- Level 3 J/4-19 mega columns light repair
+- Level 3 J/4.7-5
+- Level 3 J/4.7-5 E Face
+- Level 3 J/4.7-5 W Face
+- Level 3 J/5
+- Level 3 K Line 3-11
+- Level 3 K-J/29-24
+- Level 3 K-J/30-31
+- Level 3 K-J/31-33
+- Level 3 K-J/5
+- Level 3 K-K.3/11.3-12 Elevator 2
+- Level 3 K-K.5/3
+- Level 3 K-K.53
+- Level 3 K-K.8/23.8 N Face
+- Level 3 K-L /17-16
+- Level 3 K-L 23
+- Level 3 K-L, 19-23, 24-29 & 30-31
+- Level 3 K-L/1
+- Level 3 K-L/11-12 Elevator 2
+- Level 3 K-L/12
+- Level 3 K-L/12-13; Level 4 Topping B.5-C/5-6
+- Level 3 K-L/12-17
+- Level 3 K-L/16 N Face
+- Level 3 K-L/16 S Face
+- Level 3 K-L/16-17
+- Level 3 K-L/17
+- Level 3 K-L/17 S Face
+- Level 3 K-L/17 south face
+- Level 3 K-L/17-16
+- Level 3 K-L/17-18 Stair 64
+- Level 3 K-L/17.8, 18
+- Level 3 K-L/18
+- Level 3 K-L/18 South Face
+- Level 3 K-L/18-19 (Stairs)
+- Level 3 K-L/19-23, 24-29, 30-32
+- Level 3 K-L/19.4-23 Ceiling
+- Level 3 K-L/2 columns body
+- Level 3 K-L/2 vertical column
+- Level 3 K-L/22-23
+- Level 3 K-L/23
+- Level 3 K-L/23-23.3
+- Level 3 K-L/23-23.3 staircase platform
+- Level 3 K-L/24-29
+- Level 3 K-L/29.6 S face
+- Level 3 K-L/3
+- Level 3 K-L/3 (3rd & transition to 4th )
+- Level 3 K-L/3 S Face
+- Level 3 K-L/3 South
+- Level 3 K-L/3 South Face
+- Level 3 K-L/3 transition with lvl 4
+- Level 3 K-L/3-4
+- Level 3 K-L/3-5
+- Level 3 K-L/30
+- Level 3 K-L/30-32
+- Level 3 K-L/32
+- Level 3 K-L/32 S Face
+- Level 3 K-L/32 South Face
+- Level 3 K-L/32-33
+- Level 3 K-L/4
+- Level 3 K-L/4 (South face) (3rd & transition to 4t
+- Level 3 K-L/4 S Face
+- Level 3 K-L/4.7
+- Level 3 K-L/5
+- Level 3 K-L/5 Stair 1 S Face
+- Level 3 K-L/6-7, 8-10
+- Level 3 K-L/7-8
+- Level 3 K-L17.8
+- Level 3 K-M/1
+- Level 3 K.3/11.3-11.7 Elevator 2
+- Level 3 K.6-L.4/18.5-18.7 FA Room #3
+- Level 3 K.8-L5 Stair 1 W Wall
+- Level 3 K.8-L5 west wall stairs #1
+- Level 3 K.8/32-33
+- Level 3 K/ 3-10.5; 16-22.25; 23-29.5 & 30-32
+- Level 3 K/1
+- Level 3 K/1 & 3
+- Level 3 K/1 Plains
+- Level 3 K/1&3
+- Level 3 K/1, 2, 3
+- Level 3 K/1, 3
+- Level 3 K/1-3
+- Level 3 K/10
+- Level 3 K/10-11
+- Level 3 K/11
+- Level 3 K/11 Stair 2
+- Level 3 K/11.3-12 Elevator 2
+- Level 3 K/11.5-12
+- Level 3 K/12-16 East side only
+- Level 3 K/14,15,16,19,22 Vertical Column
+- Level 3 K/16.3-17
+- Level 3 K/16.3-17 & Level 4 K/16-17
+- Level 3 K/16.5-17
+- Level 3 K/17
+- Level 3 K/17,32
+- Level 3 K/17-18
+- Level 3 K/17.5,32.6
+- Level 3 K/18
+- Level 3 K/18-20
+- Level 3 K/19-22
+- Level 3 K/19-23
+- Level 3 K/2
+- Level 3 K/2 Vertical Column
+- Level 3 K/20-22
+- Level 3 K/20-22; 25-28; 30-32
+- Level 3 K/22-22.8
+- Level 3 K/22-23, 24-27 Ceiling
+- Level 3 K/22-32
+- Level 3 K/23-24
+- Level 3 K/24-28; K/30-32; L/19-24,
+- Level 3 K/24-29 Columns
+- Level 3 K/26-23
+- Level 3 K/28-29
+- Level 3 K/28-29, 23-24
+- Level 3 K/29
+- Level 3 K/29-29.5
+- Level 3 K/29.5-30
+- Level 3 K/3
+- Level 3 K/3 Vertical Column
+- Level 3 K/3-4
+- Level 3 K/3-4; 11.5-12; 29-30
+- Level 3 K/3.3-4
+- Level 3 K/3.3-4 (West Face)
+- Level 3 K/3.3-4, Bottom Track
+- Level 3 K/3.5,4,4.8,5,11,16,16.2,17,17.8,30
+- Level 3 K/30
+- Level 3 K/32-33
+- Level 3 K/4,16,17; D/1,29
+- Level 3 K/4-4.7
+- Level 3 K/4-5
+- Level 3 K/4.8
+- Level 3 K/4.8-5
+- Level 3 K/5
+- Level 3 K/5-10
+- Level 3 K/5-6
+- Level 3 K/6
+- Level 3 K/6,7,8 Vertical Column
+- Level 3 K/7 vertical column
+- Level 3 K12-16
+- Level 3 K2/2
+- Level 3 K23-25
+- Level 3 K4.8-5
+- Level 3 K5-10
+- Level 3 K5-10, K12-15
+- Level 3 K5-10, K12-16
+- Level 3 L (18)
+- Level 3 L (5)
+- Level 3 L 17-18
+- Level 3 L 5-6
+- Level 3 L-12 Column /muster on level 2
+- Level 3 L-H/1
+- Level 3 L-I/1
+- Level 3 L-K/18-19 Rooms
+- Level 3 L-L.5 3-4
+- Level 3 L-L.5 31-32 Elevator #5
+- Level 3 L-L.5//31-3 elevator 5
+- Level 3 L-L.5/17
+- Level 3 L-L.5/3-4
+- Level 3 L-L.5/31.3
+- Level 3 L-L.5/31.3 Elevator 5 S Wall
+- Level 3 L-L.5/32 Elevator 5
+- Level 3 L-L.5/32 Elevator 5 Exterior NORTH
+- Level 3 L-L.5/32 Elevator 5 N Wall
+- Level 3 L-M 3-6 Confined Space
+- Level 3 L-M/1
+- Level 3 L-M/10-12
+- Level 3 L-M/12-13.6
+- Level 3 L-M/12-14
+- Level 3 L-M/13-13.6
+- Level 3 L-M/14-16
+- Level 3 L-M/16-17 Elevator 3
+- Level 3 L-M/19
+- Level 3 L-M/19 south face
+- Level 3 L-M/19 west face
+- Level 3 L-M/29.6
+- Level 3 L-M/29.6 S Face
+- Level 3 L-M/3
+- Level 3 L-M/3 transition with lvl 4
+- Level 3 L-M/3-4
+- Level 3 L-M/3-6 Confined Space
+- Level 3 L-M/3.2 S Wall Elevator 1
+- Level 3 L-M/32 elevator 5
+- Level 3 L-M/5
+- Level 3 L-M/5 north face
+- Level 3 L-M/9
+- Level 3 L-M/9-10
+- Level 3 L-M/9-12
+- Level 3 L-M5 north face
+- Level 3 L-N
+- Level 3 L-N/1
+- Level 3 L-N/1 Soffit
+- Level 3 L-N/1-1
+- Level 3 L-N/19 S Face
+- Level 3 L-N/19-29
+- Level 3 L-N/29.5
+- Level 3 L-N/29.5 North Face
+- Level 3 L-N/29.6
+- Level 3 L-N/29.6-32
+- Level 3 L-N/3
+- Level 3 L-N/3 S Face Transition to lvl 4
+- Level 3 L-N/3 transition with lvl 4
+- Level 3 L-N/30
+- Level 3 L-N/9
+- Level 3 L-N/9 South Face
+- Level 3 L.2-L.6/3.1 E Wall Elevator 1
+- Level 3 L.2-M/3
+- Level 3 L.2/2
+- Level 3 L.5&M/17 Goalposts
+- Level 3 L.5, M.5/1 Column
+- Level 3 L.5, M.5/19
+- Level 3 L.5/18 Elevator 3
+- Level 3 L.5/18 Goalpost
+- Level 3 L.5/19 Goalpost
+- Level 3 L.5/2
+- Level 3 L.5/2 WEST BEAM
+- Level 3 L.5/31.3-32 Elevator 5 Exterior W
+- Level 3 L.5/31.3-32 Elevator 5 W Wall
+- Level 3 L.5/31.3-32 Elevetor 5 Exterior NORTH
+- Level 3 L.5/32-33
+- Level 3 L.6/1-16.1 Bottom
+- Level 3 L.7-M/18
+- Level 3 L.7-N/33
+- Level 3 L.8-M/32-33
+- Level 3 L.8-M/33 (Only On Top of Mezzanine)
+- Level 3 L.8/33
+- Level 3 L/ 18(ES)
+- Level 3 L/10
+- Level 3 L/10-11
+- Level 3 L/10-12
+- Level 3 L/10-14
+- Level 3 L/11
+- Level 3 L/11,23
+- Level 3 L/11.5 Elevator #2
+- Level 3 L/11.5 elevator pit #2
+- Level 3 L/11.5-12
+- Level 3 L/11East,23
+- Level 3 L/12 Column
+- Level 3 L/12-16
+- Level 3 L/13-14
+- Level 3 L/13-16
+- Level 3 L/15-16
+- Level 3 L/15-16 W Face
+- Level 3 L/16
+- Level 3 L/16, 22
+- Level 3 L/16-17 Elevator 3
+- Level 3 L/17
+- Level 3 L/17 (E WALL S FACE), 19 (W WALL N, S FAC)
+- Level 3 L/17 (ES), 19 (NS)
+- Level 3 L/17 E Wall N Face
+- Level 3 L/17 Goalpost
+- Level 3 L/17 N Face E Side
+- Level 3 L/17(E & N) L/18(W)
+- Level 3 L/17(E,S); L/19(NS); A/10 & 24 (W,N)
+- Level 3 L/17(EN), 18(W)
+- Level 3 L/17-18
+- Level 3 L/17-18 E Face
+- Level 3 L/18
+- Level 3 L/18 (E); N/3
+- Level 3 L/18 (N), L/33
+- Level 3 L/18 (N),33; N/9 (E)
+- Level 3 L/18 (S)
+- Level 3 L/18 (W wall, south face)
+- Level 3 L/18 (W)
+- Level 3 L/18 (W,N),33(W,S); N/9 (NS,E)
+- Level 3 L/18 (WEST WALL SOUTH FACE )
+- Level 3 L/18 South Wall
+- Level 3 L/18 W Wall S Face
+- Level 3 L/18-19 Rooms
+- Level 3 L/19
+- Level 3 L/19 (N), 20, 21, 22, , 24, 25 (NS)
+- Level 3 L/19 (N), 20, 21, 22, 23, 24, 25 (NS)
+- Level 3 L/19 (N), 20, 21, 22, 24, 25 (NS)
+- Level 3 L/19 Goalpost
+- Level 3 L/19,20,21,22,23,24
+- Level 3 L/19,20,21,22,23,24,25,26,27,28,29
+- Level 3 L/19-20
+- Level 3 L/19-22,24-28
+- Level 3 L/19-23,24-26
+- Level 3 L/2
+- Level 3 L/2,3
+- Level 3 L/22.7-23
+- Level 3 L/23
+- Level 3 L/23 N,S,E Face
+- Level 3 L/23, 24
+- Level 3 L/24-25
+- Level 3 L/24-29 & M-N/27-9.5
+- Level 3 L/25,26,27,28,29
+- Level 3 L/25-26
+- Level 3 L/25-26; 27-29
+- Level 3 L/25-28
+- Level 3 L/26
+- Level 3 L/26, 27, 28, 29 (NS)
+- Level 3 L/26-27
+- Level 3 L/26-27 west face
+- Level 3 L/27-29
+- Level 3 L/27-29 E Wall S Face
+- Level 3 L/29
+- Level 3 L/29 (N)
+- Level 3 L/29-29.6
+- Level 3 L/29-29.6 W Face
+- Level 3 L/29-30
+- Level 3 L/3
+- Level 3 L/3-4
+- Level 3 L/3-4 (Both Sides)
+- Level 3 L/3-4 (Remediation)
+- Level 3 L/3-4 E Face
+- Level 3 L/3-4 W Face
+- Level 3 L/30
+- Level 3 L/30 Goalpost
+- Level 3 L/30-31
+- Level 3 L/30-31 W Face
+- Level 3 L/31-32 E face
+- Level 3 L/31-32 Elevator 5
+- Level 3 L/31-32 Elevator 5 E Wall
+- Level 3 L/31-32 Elevator 5 S,W Wall
+- Level 3 L/31-32 elevator 5
+- Level 3 L/32 Goalpost
+- Level 3 L/32-33 Goalpost
+- Level 3 L/33
+- Level 3 L/4
+- Level 3 L/4 (NE),5 (NSW),6 (S)
+- Level 3 L/4 (SE), J/33 (W)
+- Level 3 L/4 (SOUTH FACE EAST WALL) J/33 (W WALL))
+- Level 3 L/4 N,E face
+- Level 3 L/4 S,W face
+- Level 3 L/4(SE); B/23(NS), 24(EW)
+- Level 3 L/4,17; C/17
+- Level 3 L/4,17; C/17 airlock
+- Level 3 L/4-5
+- Level 3 L/4-5 E&W Face
+- Level 3 L/4-5 East Face
+- Level 3 L/4.5 Goalpost
+- Level 3 L/5
+- Level 3 L/5 (WS)
+- Level 3 L/5(NS), 6(S), 7,8,9,10-N; 11(S); 12,13,14
+- Level 3 L/5(NS), 6(S), 7,8,9,10-N; 11(S); 12,13,14,15,16-E
+- Level 3 L/5(WE Face) ,6,10,11,16,23,24
+- Level 3 L/5, 6, 10, 11
+- Level 3 L/5,6,10,11
+- Level 3 L/5,6,10,11,16,23,24
+- Level 3 L/5-6
+- Level 3 L/5-9 W Face
+- Level 3 L/6 (N),7(NS),8(NS),10 (S), 30(N)
+- Level 3 L/6 (N),7,8,9,10 (S), 30
+- Level 3 L/6-10,12-16
+- Level 3 L/6-7
+- Level 3 L/6-9
+- Level 3 L/7-10
+- Level 3 L/7-9, 12-15
+- Level 3 L/7-9; 12-15
+- Level 3 L/9 (NS), 12 (N), 13 (NS), 14 (NS), 15 (NS
+- Level 3 L/9 (NS), 12 (N), 13 (NS), 14 (NS), 15 (NS)
+- Level 3 L/9-10
+- Level 3 L/9-11
+- Level 3 L/9-11, 12-16
+- Level 3 L/9-11,12-13
+- Level 3 L/9-11,12-16
+- Level 3 L/9-11,12-16 transition 2F-3F
+- Level 3 L/9-16
+- Level 3 L15-16
+- Level 3 L18 South Wall
+- Level 3 L19-25
+- Level 3 L2/2
+- Level 3 L26-29, 23-25
+- Level 3 L28-29
+- Level 3 L29-30
+- Level 3 M (33)
+- Level 3 M&L.5/17 Goalposts
+- Level 3 M-4
+- Level 3 M-L/17 Elevator 3
+- Level 3 M-N/10-11
+- Level 3 M-N/11-14
+- Level 3 M-N/17; M/16.7-17
+- Level 3 M-N/18
+- Level 3 M-N/18 North Face
+- Level 3 M-N/18-19
+- Level 3 M-N/19
+- Level 3 M-N/27 (exclude still posts)
+- Level 3 M-N/29.6
+- Level 3 M-N/29.6 S Face
+- Level 3 M-N/3-3.5 Ceiling
+- Level 3 M-N/3-4
+- Level 3 M-N/32-33
+- Level 3 M-N/6-7
+- Level 3 M-N/9
+- Level 3 M-N/9-12
+- Level 3 M.2/2
+- Level 3 M.5/1 Column
+- Level 3 M.5/18-19
+- Level 3 M.5/18-19 west face
+- Level 3 M.5/19
+- Level 3 M.5/19 goalpost
+- Level 3 M.5/27
+- Level 3 M/18 (S), 19 (S), 27 Exterior
+- Level 3 M/18,27-29
+- Level 3 M/19 Goalpost
+- Level 3 M/2
+- Level 3 M/2 vertical column
+- Level 3 M/27, 28,29 2 side each column
+- Level 3 M/27,28,29
+- Level 3 M/27-28
+- Level 3 M/27-29.6
+- Level 3 M/27-29.6 (cable tray down)
+- Level 3 M/28-29.6
+- Level 3 M/3
+- Level 3 M/3,4,5
+- Level 3 M/3,4,5,18(E,W),19
+- Level 3 M/3,4,5,18,19
+- Level 3 M/3-3.2 Elevator 1
+- Level 3 M/3-3.4 Elevator 1B
+- Level 3 M/33
+- Level 3 M/4
+- Level 3 M/4,5,18,19
+- Level 3 M/4-5
+- Level 3 M/4-5 E&W Face
+- Level 3 M/4-6
+- Level 3 M/4.5 Goalpost
+- Level 3 M/4.5,17.5,19; M.5/19; L/4.5; G/1
+- Level 3 M/4.5,17.5,19; M.5/19; L/4.5; G/1.5,2; C/3.5
+- Level 3 M/9
+- Level 3 N (3)
+- Level 3 N 3-4
+- Level 3 N-L/1
+- Level 3 N-L/3
+- Level 3 N-M 27-29.5
+- Level 3 N-M/10-14
+- Level 3 N-M/27 N,S Face
+- Level 3 N-M/9
+- Level 3 N-M/9-10
+- Level 3 N/1
+- Level 3 N/10, 11, 12, 13, 15
+- Level 3 N/10-14
+- Level 3 N/14-16
+- Level 3 N/14-17
+- Level 3 N/16
+- Level 3 N/16.5-17
+- Level 3 N/17
+- Level 3 N/17 Men restroom
+- Level 3 N/17 Women & Men restroom
+- Level 3 N/17 Women &Men restroom
+- Level 3 N/17-18
+- Level 3 N/18
+- Level 3 N/18 (S)
+- Level 3 N/18, 19, 20, 27, 33
+- Level 3 N/19 (E), 20 (NS)
+- Level 3 N/21-22
+- Level 3 N/22-22.6
+- Level 3 N/22.6-22.8
+- Level 3 N/22.8-24
+- Level 3 N/25-26
+- Level 3 N/27-29.5
+- Level 3 N/3
+- Level 3 N/3 duct shaft (all walls)
+- Level 3 N/3-3.5 room
+- Level 3 N/3-4, 8-9, 14.5-16.5
+- Level 3 N/30-31 N,S,E Face NCR-0208
+- Level 3 N/30-31 NCR-0208
+- Level 3 N/31-33
+- Level 3 N/33
+- Level 3 N/4
+- Level 3 N/4 (N), 9 (E), 14 (NS), 18, 33 (S)
+- Level 3 N/4 (NS), 9 (E), 14 (NS), 18, 33 (S)
+- Level 3 N/4-16
+- Level 3 N/4-16 (column only)
+- Level 3 N/4-16 (only column)
+- Level 3 N/4-6.5
+- Level 3 N/4-9
+- Level 3 N/4.1-8.5
+- Level 3 N/5-8
+- Level 3 N/5-9
+- Level 3 N/6.5-10
+- Level 3 N/9 (E) S Face
+- Level 3 S/L Storage A-C/2-3
+- Level 3 S/L storage A1-A3/C1-C3
+- Level 3 S2,3,12&13 East Atrium.
+- Level 3 SOMD C-D/25
+- Level 3 SOMD C/25-26; Level 2 FIZ J/3 Blockout
+- Level 3 SUE
+- Level 3 SUE & SUW NCR 0245
+- Level 3 SUE & SUW NCR-0245
+- Level 3 SUE A-B.4/33 Interior (6" screws)
+- Level 3 SUE A-B.4/33 Interior (6” screws)
+- Level 3 SUE A-B.5/33
+- Level 3 SUE A-B/10 N Face (Without Goalpost)
+- Level 3 SUE A-B/10 N Face (without goalpost)
+- Level 3 SUE A-B/10 S Face
+- Level 3 SUE A-B/12.5 N Face
+- Level 3 SUE A-B/12.5 S Face
+- Level 3 SUE A-B/22.8 S FacE
+- Level 3 SUE A-B/22.8 S Face
+- Level 3 SUE A-B/23
+- Level 3 SUE A-B/24
+- Level 3 SUE A-B/24 S Face
+- Level 3 SUE A-B/24 S face
+- Level 3 SUE A-B/33 Exterior
+- Level 3 SUE A-C/22-24
+- Level 3 SUE A-C/29-32
+- Level 3 SUE A-C/29-33
+- Level 3 SUE A-C/32-33
+- Level 3 SUE A-C/8-12
+- Level 3 SUE A.5-B/33 (6" / loading opening)
+- Level 3 SUE A.5-B/33 (6"/loading opening)
+- Level 3 SUE A.5-B/33 (former loading opening)
+- Level 3 SUE A.5/10 Goalpost
+- Level 3 SUE A.5/10 North Face (goal post)
+- Level 3 SUE A.5/10 South Face (goal post)
+- Level 3 SUE A.5/12.5 Goalpost
+- Level 3 SUE A.5/12.5 North Face (goal post)
+- Level 3 SUE A.5/12.5 South Face
+- Level 3 SUE A.5/22.5 North Face (goal post)
+- Level 3 SUE A.5/22.5 South Face goalpost
+- Level 3 SUE A/1-3.2
+- Level 3 SUE A/10-11
+- Level 3 SUE A/14-15
+- Level 3 SUE A/15-16,17-18,22-24
+- Level 3 SUE A/16-17
+- Level 3 SUE A/17-18
+- Level 3 SUE A/18-18.5
+- Level 3 SUE A/18-19
+- Level 3 SUE A/19-20 (NCR 0592)
+- Level 3 SUE A/19-21
+- Level 3 SUE A/22-24 NCR-0592
+- Level 3 SUE A/28-33 NCR-1328
+- Level 3 SUE A/29-32
+- Level 3 SUE A/29-33
+- Level 3 SUE A/3-5 NCR-0592
+- Level 3 SUE A/32-33
+- Level 3 SUE A/4-14
+- Level 3 SUE A/7-15
+- Level 3 SUE A/7-15 NCR-0592
+- Level 3 SUE A/7.6-8.3, 8.6-9.4 ,9.9-10.7 ,10.8-11
+- Level 3 SUE A/8-10
+- Level 3 SUE A/8-13 NCR-0592 & 0212
+- Level 3 SUE Above Stairs 21 N Wall Exterior
+- Level 3 SUE Airlock 20 N,S face bottom
+- Level 3 SUE B-C/3 N Face
+- Level 3 SUE B-C/31-32
+- Level 3 SUE B-C/33 Exterior
+- Level 3 SUE B.2-B.4/24
+- Level 3 SUE B.3-C/3 N Face
+- Level 3 SUE B.3-C/33 S Face (under mezzanine)
+- Level 3 SUE B.4-C/32 N Face under mezzanine
+- Level 3 SUE B.4-C/32 N face under mezzanine
+- Level 3 SUE B.4-C/33 Interior (6" screws)
+- Level 3 SUE B.4-C/33 Interior (6” screws)
+- Level 3 SUE B.4-C/33 S Face under mezzanine
+- Level 3 SUE B.4-C/33 S face under mezzanin
+- Level 3 SUE B.4/3
+- Level 3 SUE B.4/4.1-4.4 (double door)
+- Level 3 SUE B.5-C/17 Elevator 20 Front
+- Level 3 SUE B.5-C/29 S Face
+- Level 3 SUE B.5-C/30.7 S Face
+- Level 3 SUE B.5-C/32 N Face (under mezzanine )
+- Level 3 SUE B.5-C/32 N Face (under mezzanine)
+- Level 3 SUE B.5-C/33 S Face (under mezzanine)
+- Level 3 SUE B.5/17-18
+- Level 3 SUE B.5/17-18 (Double Door)
+- Level 3 SUE B.5/17-18 W face
+- Level 3 SUE B.5/3-4
+- Level 3 SUE B.5/3.2-4
+- Level 3 SUE B.5/32-33
+- Level 3 SUE B.5/32.9 (single door)
+- Level 3 SUE B.5/33
+- Level 3 SUE B.6-B.8/29 Goal Post
+- Level 3 SUE B.6-C/30.7
+- Level 3 SUE B.8-C/27-28
+- Level 3 SUE B.8-C/27-28 ; Level 2 SUE B.8-D/27-28
+- Level 3 SUE B.8/25.1 (Door opening bottom)
+- Level 3 SUE B/10-10.5 W Face
+- Level 3 SUE B/10-11 E Face
+- Level 3 SUE B/10-11 Electrical room
+- Level 3 SUE B/10.5-11 W Face
+- Level 3 SUE B/10–12.5 east face battery room
+- Level 3 SUE B/11-12 E Face
+- Level 3 SUE B/11-12 W Face
+- Level 3 SUE B/11-12.5
+- Level 3 SUE B/12-12.5 E Face
+- Level 3 SUE B/12-12.5 W Face
+- Level 3 SUE B/24
+- Level 3 SUE C,D/3-3.4
+- Level 3 SUE C-C.2/12.7 N Face
+- Level 3 SUE C-C.2/12.7-13
+- Level 3 SUE C-C.2/12.7-13 Vestibule 21 Ceiling
+- Level 3 SUE C-C.2/12.7-13 Vestibule 21 on Ceiling
+- Level 3 SUE C-C.2/13 S Face (top wall, over beam)
+- Level 3 SUE C-C.2/18
+- Level 3 SUE C-C.2/18 ( Under Box Header)
+- Level 3 SUE C-C.2/18 N Face
+- Level 3 SUE C-C.2/18 N Face ( Below 10ft)
+- Level 3 SUE C-C.2/18-18.8
+- Level 3 SUE C-C.2/18-18.9 on Ceiling
+- Level 3 SUE C-C.2/18.8 S Face
+- Level 3 SUE C-C.3/12.7 N Face
+- Level 3 SUE C-C.3/12.7 S Face
+- Level 3 SUE C-C.3/13 (Top of the wall, all over b
+- Level 3 SUE C-C.3/13 (Top of the wall, all over beam)
+- Level 3 SUE C-C.3/18 S Face
+- Level 3 SUE C-C.3/18 S Face ( Closed Opening)
+- Level 3 SUE C-C.3/18 S Face (Closed Opening)
+- Level 3 SUE C-C.5/32.7 Airlock 18 N Wall S Face (o
+- Level 3 SUE C-C.5/32.7 Airlock 18 N Wall S Face (on top over beam)
+- Level 3 SUE C-D.1/32.7 N Face
+- Level 3 SUE C-D/13
+- Level 3 SUE C-D/13 Stair 21 (over beam) take stair
+- Level 3 SUE C-D/13 Stair 21 (over beam) take stairs to half level
+- Level 3 SUE C-D/13 Vestibule 21 (over beam, exclud
+- Level 3 SUE C-D/13 Vestibule 21 (over beam, exclude opening)
+- Level 3 SUE C-D/13.3
+- Level 3 SUE C-D/13.3 (Over beam Access by stairs, exclude Opening Vestibule 21)
+- Level 3 SUE C-D/13.3 (under beam)
+- Level 3 SUE C-D/13.3 S Face (6” screws)
+- Level 3 SUE C-D/13.3 South face, under beam
+- Level 3 SUE C-D/17 N Face
+- Level 3 SUE C-D/17 N Face (HW; BW & WW)
+- Level 3 SUE C-D/17 North & South face
+- Level 3 SUE C-D/17 North Face
+- Level 3 SUE C-D/17 S Face
+- Level 3 SUE C-D/17 South face
+- Level 3 SUE C-D/17-18
+- Level 3 SUE C-D/17-18 Ceiling
+- Level 3 SUE C-D/17.7 N Face
+- Level 3 SUE C-D/17.7 N Side
+- Level 3 SUE C-D/17.7 S Face
+- Level 3 SUE C-D/17.7 S Face(HW; BW & WW)
+- Level 3 SUE C-D/18
+- Level 3 SUE C-D/18.8
+- Level 3 SUE C-D/20-24
+- Level 3 SUE C-D/27 Duct Shaft RM
+- Level 3 SUE C-D/27.5-28.5
+- Level 3 SUE C-D/28.5-29 Ceiling
+- Level 3 SUE C-D/28.5-29 Elevator 19 Ceiling
+- Level 3 SUE C-D/29 S Face
+- Level 3 SUE C-D/29-29.5 Ceiling
+- Level 3 SUE C-D/29-30 Duct Shaft Room Exterior S,E Wall
+- Level 3 SUE C-D/3 N Face
+- Level 3 SUE C-D/3 N Face (only top & left side of
+- Level 3 SUE C-D/3 N Face (only top & left side of the wall)
+- Level 3 SUE C-D/3 S Face
+- Level 3 SUE C-D/3.4 Ductshaft S Face
+- Level 3 SUE C-D/3.4 FA Room 22 N Face
+- Level 3 SUE C-D/3.4-4
+- Level 3 SUE C-D/3.6 FA Room 22 S Face (under beam,
+- Level 3 SUE C-D/3.6 FA Room 22 S Face (under beam, no transition to lvl 4)
+- Level 3 SUE C-D/30 N Face
+- Level 3 SUE C-D/30-31
+- Level 3 SUE C-D/30-31 Ceiling
+- Level 3 SUE C-D/30.7 N Face
+- Level 3 SUE C-D/30.8 N Face
+- Level 3 SUE C-D/31-32
+- Level 3 SUE C-D/32
+- Level 3 SUE C-D/32 Airlock 18 Shaftwall S Wall
+- Level 3 SUE C-D/32 Duct Shaft N Face
+- Level 3 SUE C-D/32 N Face
+- Level 3 SUE C-D/32.7
+- Level 3 SUE C-D/32.7 (on top over beam, transition
+- Level 3 SUE C-D/32.7 (on top over beam, transition to lvl 4)
+- Level 3 SUE C-D/32.7 Airlock 18 top wall
+- Level 3 SUE C-D/32.7 Airlock 18 top wall South Face
+- Level 3 SUE C-D/32.7 S Face
+- Level 3 SUE C-D/32.8
+- Level 3 SUE C-D/4 (transition to lvl 4)
+- Level 3 SUE C-D/4 Airlock 22 (North face top wall)
+- Level 3 SUE C-D/4 Airlock 22 North face top wall
+- Level 3 SUE C-D/4 IT Room 22 S Face
+- Level 3 SUE C-D/4 N Face (Only transition to lvl 4)
+- Level 3 SUE C-D/4 N Face (transition to lvl 4)
+- Level 3 SUE C-D/4.7 N & S Face (Top Wall Transition)
+- Level 3 SUE C-D/4.7 N Face
+- Level 3 SUE C-D/4.7 N, S Face (top wall transition)
+- Level 3 SUE C-D/4.7 N,S Face
+- Level 3 SUE C-D/4.7 N,S Face (top wall)
+- Level 3 SUE C-D/4.7 top wall North face, South face
+- Level 3 SUE C-D/4.8 (upstairs to lvl 4)
+- Level 3 SUE C-D/4.8 N,S Face (transition to lvl 4)
+- Level 3 SUE C-E/17.7
+- Level 3 SUE C-E/17.7 S Face
+- Level 3 SUE C-E/25-26
+- Level 3 SUE C-E/4.7 S Face
+- Level 3 SUE C.2-C.9/18 Stairs 20 E Wall
+- Level 3 SUE C.2-D/12.3
+- Level 3 SUE C.2-D/12.3-12.8
+- Level 3 SUE C.2-D/13 N Face Stair 21
+- Level 3 SUE C.2-D/18 S Face
+- Level 3 SUE C.2-D/5
+- Level 3 SUE C.2-D/5 S Face
+- Level 3 SUE C.2-D/5 S Face (Only CJ)
+- Level 3 SUE C.2/12.3-12.8
+- Level 3 SUE C.2/12.8-13
+- Level 3 SUE C.2/18-18.8 E Face
+- Level 3 SUE C.2/18-18.9 (on ceiling)
+- Level 3 SUE C.2/5-5.8 Stair 22 E Face
+- Level 3 SUE C.2/5-5.9
+- Level 3 SUE C.2/5-5.9 E Face
+- Level 3 SUE C.3-.6/13.2 (below 9ft only)
+- Level 3 SUE C.3-D/13 Above Stair 21 N Face
+- Level 3 SUE C.3-D/18 Stair 20 S Face
+- Level 3 SUE C.3-D/18.8 Stairs 20 N Wall N face
+- Level 3 SUE C.3/12.2-13 Stairs 21 E Face
+- Level 3 SUE C.3/18-18.8 Stair 20 E Face
+- Level 3 SUE C.5-C/30 Exterior S Wall
+- Level 3 SUE C.9/18-19 Stair 20 W Wall
+- Level 3 SUE C/12-12.7 W Face
+- Level 3 SUE C/12-13
+- Level 3 SUE C/12.7 N Face
+- Level 3 SUE C/12.7 S Face
+- Level 3 SUE C/12.7-13
+- Level 3 SUE C/12.7-13 W Face
+- Level 3 SUE C/16-16.2 E Face
+- Level 3 SUE C/16-16.5
+- Level 3 SUE C/16.3-17 Electrical Room E Face
+- Level 3 SUE C/17 Elevator 20 Front
+- Level 3 SUE C/17-18 (3Doors)
+- Level 3 SUE C/17-18 E Face
+- Level 3 SUE C/18 Stair 20 N Wall N Face
+- Level 3 SUE C/18.4
+- Level 3 SUE C/18.5 IT Room 20 W Face
+- Level 3 SUE C/18.8
+- Level 3 SUE C/18.8 FA Room 20 W Face
+- Level 3 SUE C/18.8-19 E Face
+- Level 3 SUE C/19-24
+- Level 3 SUE C/2 (Door opening bottom)
+- Level 3 SUE C/20-26
+- Level 3 SUE C/24-27
+- Level 3 SUE C/24-29
+- Level 3 SUE C/24.5 FAB136407A (Door opening bottom)
+- Level 3 SUE C/25-26
+- Level 3 SUE C/26-27
+- Level 3 SUE C/26-27 (exclude 2ft 8" from floor under door)
+- Level 3 SUE C/26-27 (exclude 2ft 8” from floor under Door)
+- Level 3 SUE C/26-27(exclude 2ft 8” from floor und
+- Level 3 SUE C/26.3-26.7 (Control Joint)
+- Level 3 SUE C/26.3-26.7 E face (below 11ft only)
+- Level 3 SUE C/26.5 E face
+- Level 3 SUE C/28.5-29 (On top of Beam Soffit)
+- Level 3 SUE C/28.5-29 (on top of the beam soffit)
+- Level 3 SUE C/28.5-29 W Face
+- Level 3 SUE C/28.5-29 W Face (top of soffit)
+- Level 3 SUE C/29-30
+- Level 3 SUE C/29-30 East Face
+- Level 3 SUE C/29-30 Exterior W Face
+- Level 3 SUE C/29-30 Interior N,W,S Wall
+- Level 3 SUE C/3 (all walls inside of Duct shaft 22)
+- Level 3 SUE C/3 Ductshaft 22
+- Level 3 SUE C/3-3.4 Ductshaft W Face (Under beam)
+- Level 3 SUE C/3-3.4 E Face
+- Level 3 SUE C/3-4
+- Level 3 SUE C/3.4 FA Room 22
+- Level 3 SUE C/3.4-3.6
+- Level 3 SUE C/3.4-3.6 W Face
+- Level 3 SUE C/3.6 IT Room 22
+- Level 3 SUE C/3.6-4 IT Room 22 W Face
+- Level 3 SUE C/30-31 Soffit Ceiling
+- Level 3 SUE C/30-31 soffit on top of the beam
+- Level 3 SUE C/30-31.2 E Face
+- Level 3 SUE C/31-32
+- Level 3 SUE C/32 Elev Hall 18 FAB136504A (NCR 0245)
+- Level 3 SUE C/32-33
+- Level 3 SUE C/32-33 E Face
+- Level 3 SUE C/32-33 E Face (Bottom)
+- Level 3 SUE C/32-33 E Face (under mezzanine)
+- Level 3 SUE C/32-33 W Face
+- Level 3 SUE C/32-33 West Face
+- Level 3 SUE C/32-33 shaft Wall inspection (Bottom)
+- Level 3 SUE C/32.3 S Side (one Side)
+- Level 3 SUE C/32.7-33
+- Level 3 SUE C/32.9 (single door)
+- Level 3 SUE C/33-34 Stair 18 Exterior E Wall
+- Level 3 SUE C/4.7-5 W Face
+- Level 3 SUE C/5-24 (Inside Electrical Room)
+- Level 3 SUE C/5-8
+- Level 3 SUE C/5-8 (east face, electrical room)
+- Level 3 SUE C/5-8 Electrical Room E Face (12ft from floor)
+- Level 3 SUE C/5-8 electrical room east face 12ft from floor
+- Level 3 SUE C/5.2
+- Level 3 SUE C/5.3
+- Level 3 SUE C26-27
+- Level 3 SUE Clean Vestibule 21 N,S Face Bottom
+- Level 3 SUE D 22-23
+- Level 3 SUE D Line 20-25; A-B 3 Line ;SUW K 24-29
+- Level 3 SUE D-3-6; 9-11; 20-21; 23-24; 26-28; 29-30; 30.5-32
+- Level 3 SUE D-E/17.7 N Face
+- Level 3 SUE D-E/32.7 Airlock 18 S Face (Under beam)
+- Level 3 SUE D-E/32.7 Airlock 18 S Face (below beam
+- Level 3 SUE D-E/32.7 Airlock 18 S Face (below beam)
+- Level 3 SUE D-E/32.7 FA # 18
+- Level 3 SUE D-E/32.7 FA 18
+- Level 3 SUE D-E/32.7 N Face
+- Level 3 SUE D-E/32.7 S Face (Transition to lvl 4)
+- Level 3 SUE D-E/32.7 S Face (transition to lvl 4)
+- Level 3 SUE D-E/32.7 S Face transition to lvl4
+- Level 3 SUE D-E/33 (Transition to lvl 4)
+- Level 3 SUE D-E/33 Exterior
+- Level 3 SUE D-E/33 S Face
+- Level 3 SUE D-E/33 S Face (include column D33 only south face)
+- Level 3 SUE D-E/4 N Face
+- Level 3 SUE D-E/4.7 N Face
+- Level 3 SUE D-E/5 S Face
+- Level 3 SUE D.1/12.3-13
+- Level 3 SUE D.1/32.8-33
+- Level 3 SUE D/13 Stair 21 Interior W Wall
+- Level 3 SUE D/13 Stair 21 N Wall
+- Level 3 SUE D/13 Stair 21 N Wall Interior NCR-0267
+- Level 3 SUE D/13 Stair 21 S Wall Interior NCR-0267
+- Level 3 SUE D/13 Stair 21 W Wall Interior
+- Level 3 SUE D/13-13.3
+- Level 3 SUE D/13-13.3 West face
+- Level 3 SUE D/13-16
+- Level 3 SUE D/13.3-14
+- Level 3 SUE D/16-17
+- Level 3 SUE D/17-18
+- Level 3 SUE D/18
+- Level 3 SUE D/18 (Single Door)
+- Level 3 SUE D/18 N face FAB 136310.
+- Level 3 SUE D/18 Stair 20 E Wall (Transition 3-4)
+- Level 3 SUE D/18 Stair 20 N Wall
+- Level 3 SUE D/18 Stair 20 N Wall S Face
+- Level 3 SUE D/18 Stairs 20 S Face
+- Level 3 SUE D/18 Stairs 20 S Wall N Face
+- Level 3 SUE D/18 Stairs 20 W Wall E Face
+- Level 3 SUE D/18-19
+- Level 3 SUE D/20-26
+- Level 3 SUE D/23-24
+- Level 3 SUE D/24-24.5
+- Level 3 SUE D/25
+- Level 3 SUE D/25 Clean Vestibule 19 FAB136406C (NCR 0245)
+- Level 3 SUE D/25.5-26
+- Level 3 SUE D/26-27
+- Level 3 SUE D/27-28
+- Level 3 SUE D/27-28 E Face
+- Level 3 SUE D/28-28.5 East Face Elevator 19
+- Level 3 SUE D/28-29
+- Level 3 SUE D/28-29 Ceiling
+- Level 3 SUE D/29-30
+- Level 3 SUE D/3-3.4
+- Level 3 SUE D/3-3.4 Duct Shaft E Face (Under Beam)
+- Level 3 SUE D/3-6; 9-11; 20-21; 23-24; 26-28; 29-30; 30.5-32
+- Level 3 SUE D/3.4-3.6 E Face
+- Level 3 SUE D/3.4-4
+- Level 3 SUE D/30 Ceiling
+- Level 3 SUE D/30-30.5, 30.9-31
+- Level 3 SUE D/30-30.5, Also include 30.9-31
+- Level 3 SUE D/30-31
+- Level 3 SUE D/30.6-30.7
+- Level 3 SUE D/31-32
+- Level 3 SUE D/32-32.5
+- Level 3 SUE D/32-33
+- Level 3 SUE D/32.5-33
+- Level 3 SUE D/32.5-33 Airlock 18
+- Level 3 SUE D/32.7-33
+- Level 3 SUE D/32.7-33 E Face
+- Level 3 SUE D/32.7-33 W Face
+- Level 3 SUE D/32.8 Vestibule 18 FAB136505A ( NCR 0245)
+- Level 3 SUE D/4-4.3
+- Level 3 SUE D/4-5
+- Level 3 SUE D/5 (single door)
+- Level 3 SUE D/5-6
+- Level 3 SUE D/5-6, 16-17
+- Level 3 SUE D/5-8
+- Level 3 SUE D/6-11
+- Level 3 SUE D/7-8
+- Level 3 SUE D/8-9
+- Level 3 SUE D/9-11, 20-22, 22-24, 24-24.5, 25.5-27, 27-28, 29-30
+- Level 3 SUE D/9-13, 17-28
+- Level 3 SUE D20-21
+- Level 3 SUE E-E.3/33 (top of the wall, transition
+- Level 3 SUE E-E.3/33 (top of the wall, transition to lvl 4)
+- Level 3 SUE E-E.3/33 Exterior
+- Level 3 SUE E-E.3/33 Interior
+- Level 3 SUE E-E.3/33 Interior (Above Platform open
+- Level 3 SUE E-E.3/33 Interior (Above Platform opening)
+- Level 3 SUE E.7/2-3
+- Level 3 SUE E/17-17.7
+- Level 3 SUE E/17-17.7 Airlock 20 E Face
+- Level 3 SUE E/17-17.7 E Face
+- Level 3 SUE E/17-17.7 W Face
+- Level 3 SUE E/17-17.8/ E/17.8-17 only 1st Layer -
+- Level 3 SUE E/17-17.8/ E/17.8-17 only 1st Layer - W Face (17ft from floor to up)
+- Level 3 SUE E/17-18
+- Level 3 SUE E/17-18 W Face (Bottom Half)
+- Level 3 SUE E/17.7-18 E Face
+- Level 3 SUE E/25-26
+- Level 3 SUE E/32-33
+- Level 3 SUE E/32-33 (Bottom Half)
+- Level 3 SUE E/32-33 (Top Half)
+- Level 3 SUE E/32-33 Airlock W Face
+- Level 3 SUE E/32-33 E Face
+- Level 3 SUE E/32-33 W Face (Bottom Half)
+- Level 3 SUE E/4-4.7
+- Level 3 SUE E/4-4.7 E Face
+- Level 3 SUE E/4-4.7 E Face (Bottom half)
+- Level 3 SUE E/4-4.7 W Face (airlock, bottom 17ft)
+- Level 3 SUE E/4-5 W Face (Top half of wall)
+- Level 3 SUE E/4.2
+- Level 3 SUE E/4.5 ( Double door )
+- Level 3 SUE E/4.5 (Double Door)
+- Level 3 SUE E/4.6 (E Face Right CJ)
+- Level 3 SUE E/4.7-5
+- Level 3 SUE E/4.7-5 (5 ft from floor to up west fa
+- Level 3 SUE E/4.7-5 (5 ft from floor to up west face)
+- Level 3 SUE E/4.7-5 W Face (bottom 17 ft)
+- Level 3 SUE E/4.9
+- Level 3 SUE Elevator 20 Interior E Wall W Face
+- Level 3 SUE F/2-3
+- Level 3 SUE K-K.8/11 N Face
+- Level 3 SUE K/17-18
+- Level 3 SUE Pourstrip Blockout A/9
+- Level 3 SUE Stair 21 S Wall Interior
+- Level 3 SUE Stairs 21 E Wall
+- Level 3 SUE Stairs 21 E,S Wall Interior
+- Level 3 SUE Vestibule 20 N Face Bottom , S Face Top
+- Level 3 SUE Vestibule 20 S Face Bottom , Vertical
+- Level 3 SUE elevator 20 W wall E & South wall N
+- Level 3 SUW
+- Level 3 SUW C/13.3
+- Level 3 SUW Curbs L.5-N/18-19
+- Level 3 SUW Curbs M-N/16.5-17
+- Level 3 SUW Curbs M-N/18-19; Sump Leaveout N/18
+- Level 3 SUW Elevator 1 E Wall
+- Level 3 SUW Elevator 1 Exterior S,E Face
+- Level 3 SUW Elevator 1 W Face
+- Level 3 SUW Elevator 1A Horizontal Joint
+- Level 3 SUW Elevator 1A W Wal
+- Level 3 SUW Elevator 5 Exterior S Wall (Top Bin Infill)
+- Level 3 SUW Elevator 5 Exterior S Wall (top beam)
+- Level 3 SUW Elevator 5 Top Beam N Wall
+- Level 3 SUW F-J/33 (Bottom of Wall)
+- Level 3 SUW F-J33 (Bottom of Wall)
+- Level 3 SUW J-J.3/32.7 N Face (10 fts only)
+- Level 3 SUW J-J.3/32.7 S Face (only 10 fts from floor)
+- Level 3 SUW J-K.8/32 Air Lock 5
+- Level 3 SUW J-K/29-30
+- Level 3 SUW J-K/29.5
+- Level 3 SUW J-K/32.7 Airlock 5 S Face (Exclude around the Door frame)
+- Level 3 SUW J-K/32.7 Elevator 5
+- Level 3 SUW J-K/32.7 N Face
+- Level 3 SUW J-K/32.7 N,Face
+- Level 3 SUW J-K/32.7 S Face
+- Level 3 SUW J-K/33
+- Level 3 SUW J-K/33 Exterior
+- Level 3 SUW J-K/33 Interior
+- Level 3 SUW J-K/33 Interior (Transition to Lvl 4 exclude NMB scope)
+- Level 3 SUW J-K/33 Interior Transition to Lvl 4 (e
+- Level 3 SUW J-K/33 Interior Transition to Lvl 4 (exclude NMB scope)
+- Level 3 SUW J-L/10-12
+- Level 3 SUW J-L/17 Airlock 3 S Wall (Vertical, Bottom)
+- Level 3 SUW J-L/17.7 Airlock 3 N Wall (Bottom)
+- Level 3 SUW J-L/17.7 Vestibule 3 S Wall (Bottom)
+- Level 3 SUW J-L/29-30
+- Level 3 SUW J/17-17.4 W Face (Right CJ on double door)
+- Level 3 SUW J/17-17.7 (2 Control Joints)
+- Level 3 SUW J/17-17.7 Airlock
+- Level 3 SUW J/17-17.7 Airlock 3 W Face
+- Level 3 SUW J/17-17.7 E Face (Bottom half)
+- Level 3 SUW J/17-18 E Face (top half)
+- Level 3 SUW J/17.3 Single Door
+- Level 3 SUW J/17.4-17.6 (Double door)
+- Level 3 SUW J/17.7-18 Single Door
+- Level 3 SUW J/17.7-18 Single door
+- Level 3 SUW J/32-32.7
+- Level 3 SUW J/32-32.7 (Right side of the big door)
+- Level 3 SUW J/32-32.7 (after 24 ft from floor)
+- Level 3 SUW J/32-32.7 W Face (23 ft & above)
+- Level 3 SUW J/32-32.7 W Face (23 ft below)
+- Level 3 SUW J/32-32.7 W Face (3 doors)
+- Level 3 SUW J/32-32.7 W Face (after 24' from floor)
+- Level 3 SUW J/32-33 (2 Control Joints)
+- Level 3 SUW J/32-33 Air Lock 5
+- Level 3 SUW J/32-33 E Face (Bottom Half)
+- Level 3 SUW J/32-33 E Face (Top Half)
+- Level 3 SUW J/32-33 W Face
+- Level 3 SUW J/32-33 W Face (23 ft below)
+- Level 3 SUW J/32.7 W Face (left CJ on double door)
+- Level 3 SUW J/4-4.7 (17ft 2” 3/4 from floor)
+- Level 3 SUW J/4-4.7 (double door)
+- Level 3 SUW J/4-4.7 E,W Face
+- Level 3 SUW J/4-4.7 W Face
+- Level 3 SUW J/4-5 W Face
+- Level 3 SUW J/4.2 FAB132151A (single door).
+- Level 3 SUW J/4.4-4.7 E Face
+- Level 3 SUW J/4.7-5 West Face
+- Level 3 SUW J/5 (single door)
+- Level 3 SUW K Line 5-22
+- Level 3 SUW K-K.3/32.7 N Face (Single Door) FAB130504C
+- Level 3 SUW K-K.4/17.4-18 Airlock 3 Ceiling
+- Level 3 SUW K-K.7/5 Vestibule 1 (Top, Bottom)
+- Level 3 SUW K-K.7/6 Vestibule 1 (Bottom)
+- Level 3 SUW K-K.8/10.2
+- Level 3 SUW K-K.8/10.2 S Face
+- Level 3 SUW K-K.8/10.2-11 W Face
+- Level 3 SUW K-K.8/11 N Face
+- Level 3 SUW K-K.8/11 Stairs 2 N Face
+- Level 3 SUW K-K.8/11 Vestibule 2 N Face
+- Level 3 SUW K-K.8/11 Vestibule 2 N Face (exclude o
+- Level 3 SUW K-K.8/11 Vestibule 2 N Face (exclude open down)
+- Level 3 SUW K-K.8/18 Stairs
+- Level 3 SUW K-K.8/18 Stairs Stairs 3 S Wall
+- Level 3 SUW K-K.8/18.8 Stairs 3 N WaLL
+- Level 3 SUW K-K.8/18.8 Stairs 3 N Wall
+- Level 3 SUW K-K.8/23 S Face
+- Level 3 SUW K-K.8/23 S wall South face stair #4
+- Level 3 SUW K-K.8/23 South Face
+- Level 3 SUW K-K.8/23 Vestibule 4
+- Level 3 SUW K-K.8/23.8 N Face
+- Level 3 SUW K-K.8/32.7
+- Level 3 SUW K-K.8/32.7 Air Lock 5
+- Level 3 SUW K-K.8/32.7 N Face
+- Level 3 SUW K-K.8/32.7 S Face
+- Level 3 SUW K-K.8/5
+- Level 3 SUW K-K.8/5 (Exclude Opening)
+- Level 3 SUW K-K.8/5 S Face
+- Level 3 SUW K-K.8/5-6 W Face
+- Level 3 SUW K-K.8/5-6 West Face
+- Level 3 SUW K-K.8/5.8 Stair 1 N Face
+- Level 3 SUW K-K.8/5.8 Stair 1 N Wall
+- Level 3 SUW K-K.8/5.8 Stairs 1 N Face
+- Level 3 SUW K-L/11-11.5
+- Level 3 SUW K-L/11-11.5 Ceiling
+- Level 3 SUW K-L/11-11.5 Elevator 2 Ceiling
+- Level 3 SUW K-L/12-17
+- Level 3 SUW K-L/16
+- Level 3 SUW K-L/16 S Face
+- Level 3 SUW K-L/16 South face
+- Level 3 SUW K-L/16-16.3
+- Level 3 SUW K-L/16-16.3 Ceiling
+- Level 3 SUW K-L/16-17
+- Level 3 SUW K-L/16.3
+- Level 3 SUW K-L/16.3 S Face
+- Level 3 SUW K-L/17 S Face
+- Level 3 SUW K-L/17 South Face
+- Level 3 SUW K-L/17-17.7 Ceiling (exclude opening i
+- Level 3 SUW K-L/17-17.7 Ceiling (exclude opening in K-K.3/17.7)
+- Level 3 SUW K-L/17-18 (exclude K-K.4 from 17.4 to
+- Level 3 SUW K-L/17-18 (exclude K-K.4 from 17.4 to 18 opened area)
+- Level 3 SUW K-L/17-18 Ceiling (exclude opened area)
+- Level 3 SUW K-L/17.7 (Soffit on top of wall)
+- Level 3 SUW K-L/17.7 Top Soffit
+- Level 3 SUW K-L/17.7 on top soffit
+- Level 3 SUW K-L/18 Vestibule 3 N Wall (Vertical)
+- Level 3 SUW K-L/22.7 Vestibule 4
+- Level 3 SUW K-L/22.8 (under beam)
+- Level 3 SUW K-L/22.8 under beam
+- Level 3 SUW K-L/23
+- Level 3 SUW K-L/23 South Face
+- Level 3 SUW K-L/23.8 Stair N Wall
+- Level 3 SUW K-L/29.5 N Face
+- Level 3 SUW K-L/29.5 Stairs 50 N Face
+- Level 3 SUW K-L/29.5-30 Ceiling
+- Level 3 SUW K-L/3.4
+- Level 3 SUW K-L/3.4 North Face
+- Level 3 SUW K-L/30
+- Level 3 SUW K-L/33
+- Level 3 SUW K-L/4.7 Airlock 1 (Bottom)
+- Level 3 SUW K-L/4.7 N Face
+- Level 3 SUW K-L/4.7 North face
+- Level 3 SUW K-L/4.7 S Face
+- Level 3 SUW K-L/4.7 South Face transition to 4th
+- Level 3 SUW K-L/5 Stair 1 S Face
+- Level 3 SUW K-L/5.3 S Face
+- Level 3 SUW K-L/6-10
+- Level 3 SUW K.1-K.8/11 Stair 2 N Face
+- Level 3 SUW K.1-K.8/11 Stairs 2 N Wall
+- Level 3 SUW K.1-K.8/23.1-23.8 Stairs 4 E Wall
+- Level 3 SUW K.1/10.2-11 Stair 2 E Wall
+- Level 3 SUW K.1/18-18.8 Stair 3 E Wall
+- Level 3 SUW K.1/23 S wall stair #4
+- Level 3 SUW K.1/23 Stair 4
+- Level 3 SUW K.1/23.1-23.8 Stair 4 E Wall
+- Level 3 SUW K.3/29-29.4
+- Level 3 SUW K.8-L/11
+- Level 3 SUW K.8-L/11 Elevator 2 N Face
+- Level 3 SUW K.8-L/11 N Face (exclude opening)
+- Level 3 SUW K.8-L/11 S Face
+- Level 3 SUW K.8-L/11 Vestibule 2
+- Level 3 SUW K.8-L/23 Vestibule 4 S Face
+- Level 3 SUW K.8-L/23.2
+- Level 3 SUW K.8-L/23.2 N Face
+- Level 3 SUW K.8-L/23.2 S Face
+- Level 3 SUW K.8-L/23.3 Vestibule 4
+- Level 3 SUW K.8-L/32
+- Level 3 SUW K.8-L/5.3 N Face
+- Level 3 SUW K.8/10.2-11
+- Level 3 SUW K.8/10.2-11 W Face
+- Level 3 SUW K.8/23-23.3 Vestibule 4
+- Level 3 SUW K.8/23-23.8 W
+- Level 3 SUW K.8/23-23.8 W Face
+- Level 3 SUW K.8/23-23.8 W face.
+- Level 3 SUW K.8/32-33
+- Level 3 SUW K.8/32-33 E,W Face
+- Level 3 SUW K.8/32-33 W Face (3 doors)
+- Level 3 SUW K.8/32.3 Elev Hall 5 FAB130505A ( NCR 0245)
+- Level 3 SUW K.8/5-6 Stair 1 W Wall
+- Level 3 SUW K.8/5-6 West Face
+- Level 3 SUW K.8/5-6 West face (stair 1)
+- Level 3 SUW K.9/18-18.5 IT Room 3 Interior
+- Level 3 SUW K/ 22.8-23 West face (include gap)
+- Level 3 SUW K/10-10.2 W Face
+- Level 3 SUW K/11 Ceiling
+- Level 3 SUW K/11 Stair 2 N Wall
+- Level 3 SUW K/11 Stair 2 W Wall (Interior)
+- Level 3 SUW K/11 stair #2 S wall
+- Level 3 SUW K/11, Stair 2 S Wall
+- Level 3 SUW K/12-13
+- Level 3 SUW K/14,15,16,19,22 Vertical Column
+- Level 3 SUW K/16 Ceiling
+- Level 3 SUW K/16 Vestibule 3 Ceiling
+- Level 3 SUW K/16-17
+- Level 3 SUW K/17-18
+- Level 3 SUW K/17.5-18
+- Level 3 SUW K/17.6-17.8
+- Level 3 SUW K/18
+- Level 3 SUW K/18 Stair 3 S Wall (Interior)
+- Level 3 SUW K/18 Stair 3 S Wall Interior
+- Level 3 SUW K/18 Stair 3 W Wall
+- Level 3 SUW K/18 Stair 3 W Wall (Interior)
+- Level 3 SUW K/18 Stair 3 W Wall Interior
+- Level 3 SUW K/18 Stairs 3 N,S,W Wall
+- Level 3 SUW K/18 stairs 3 S Face
+- Level 3 SUW K/22
+- Level 3 SUW K/22.7-23 Vestibule 4
+- Level 3 SUW K/22.8 FAB 130403A
+- Level 3 SUW K/22.8-23
+- Level 3 SUW K/22.8-23 East Face
+- Level 3 SUW K/23 South Face
+- Level 3 SUW K/23.8-24 1st West face
+- Level 3 SUW K/23.8-24 W Face
+- Level 3 SUW K/23.8-24 West face
+- Level 3 SUW K/29.5-30 E Face (Top of the beam soffit)
+- Level 3 SUW K/3
+- Level 3 SUW K/3 (Vertical Column)
+- Level 3 SUW K/3 column
+- Level 3 SUW K/3-4 W face
+- Level 3 SUW K/3.3-4 West Face
+- Level 3 SUW K/30 Air Lock 5
+- Level 3 SUW K/30,K/17 Ceiling
+- Level 3 SUW K/32-3.5
+- Level 3 SUW K/32-32.3&32.4-32.6
+- Level 3 SUW K/32.5-33
+- Level 3 SUW K/32.7-33
+- Level 3 SUW K/32.7-33 Air Lock 5
+- Level 3 SUW K/32.7-33 E Face
+- Level 3 SUW K/32.7-33 W Face
+- Level 3 SUW K/32.8
+- Level 3 SUW K/32.9 E Face (single door)
+- Level 3 SUW K/33-34 Stairs 5 Exterior E Wall
+- Level 3 SUW K/34-35
+- Level 3 SUW K/4-5
+- Level 3 SUW K/4.5-5
+- Level 3 SUW K/4.7-5 West Face
+- Level 3 SUW K/6 Column
+- Level 3 SUW K/6, 7, 8 Column Bodies
+- Level 3 SUW K/6,7,8 column
+- Level 3 SUW K/9 (column body)
+- Level 3 SUW K16-17
+- Level 3 SUW K4.5-5
+- Level 3 SUW L-L.1/3
+- Level 3 SUW L-L.4/18.5 IT Security Room 3 (all wal
+- Level 3 SUW L-L.4/18.5 IT Security Room 3 (all walls)
+- Level 3 SUW L-L.6/18 S Face
+- Level 3 SUW L-M/3 S,E Face
+- Level 3 SUW L-M/3-4 Elevator 1 S,E Face
+- Level 3 SUW L-M/3.2-3.6 Elevator 1 S,E Face
+- Level 3 SUW L-M/33, K25-32/, N/30-33
+- Level 3 SUW L-N/19-29
+- Level 3 SUW L-N/9, M-N/29.5, L.5/32-33
+- Level 3 SUW L.1/3-3.2
+- Level 3 SUW L.1/3-3.2 W Face
+- Level 3 SUW L.2/3-3.2
+- Level 3 SUW L.2/3-3.2 W Face
+- Level 3 SUW L.2/3-3.3 W Face
+- Level 3 SUW L.5-L.7/17 (Above Mezzanine)
+- Level 3 SUW L.5-L.7/17 Above Mezzanine
+- Level 3 SUW L.5-M/17
+- Level 3 SUW L.5-M/17 S Face (under mezzanine)
+- Level 3 SUW L.5/18.5 FA Room 3
+- Level 3 SUW L.5/18.6
+- Level 3 SUW L.5/3-4 Elevator 1 W Face
+- Level 3 SUW L.5/3.2 (on column body)
+- Level 3 SUW L.5/3.2 Column Body
+- Level 3 SUW L.5/32 FAB130507B ( NCR 0245)
+- Level 3 SUW L.6-L.8/32.7
+- Level 3 SUW L.6-M/3 Elevator 1 N,E Face (Transition to lvl 4)
+- Level 3 SUW L.6-N/3 Elevator 1 N,E Face (Transitio
+- Level 3 SUW L.6/32-33
+- Level 3 SUW L.7 -M/17
+- Level 3 SUW L.7-M.2/17.5
+- Level 3 SUW L.7-M/17 S Face (Above 10 ft.)
+- Level 3 SUW L.7-M/18 N Face (Exclude MEP)
+- Level 3 SUW L.7-M/33 Interior S Face
+- Level 3 SUW L.7-M/33 S Face
+- Level 3 SUW L.7-N/17.4
+- Level 3 SUW L.7-N/33
+- Level 3 SUW L.7/17-17.4 W Face
+- Level 3 SUW L.7/17-17.4 W Wall (Above 8 ft. only)
+- Level 3 SUW L.7/17-17.9
+- Level 3 SUW L.7/17-17.9 E Face
+- Level 3 SUW L.7/17-17.9 East face
+- Level 3 SUW L.7/18-18.7 W Face (transfer room)
+- Level 3 SUW L.7/18-19
+- Level 3 SUW L.8-M/17
+- Level 3 SUW L.8-N/17.4 S Face
+- Level 3 SUW L.8/17.8 W face (Right CJ only) FAB130311B -
+- Level 3 SUW L.8/32-33 E Face
+- Level 3 SUW L.8/32.6-33 E Face
+- Level 3 SUW L.9/18.9 Double Door (Right CJ only)
+- Level 3 SUW L/11-11.5 (on top of the beam Soffit)
+- Level 3 SUW L/11-11.5 (on top of the beam soffit)
+- Level 3 SUW L/11-11.7 (top soffit)
+- Level 3 SUW L/11.4-11.8 W Face ( Above 22 FT)
+- Level 3 SUW L/16-16.3 E Face (Top of the beam soff
+- Level 3 SUW L/16-16.3 E Face (Top of the beam soffit)
+- Level 3 SUW L/16-16.3 Top Soffit
+- Level 3 SUW L/17 Elevator 3 Front
+- Level 3 SUW L/17-18
+- Level 3 SUW L/17-18 (Soffit top Ceiling)
+- Level 3 SUW L/17-18 (top soff
+- Level 3 SUW L/17-18 (top soffit)
+- Level 3 SUW L/17-18 W Face
+- Level 3 SUW L/17.4
+- Level 3 SUW L/18-18.4 S Face
+- Level 3 SUW L/19.5,20.5, W face
+- Level 3 SUW L/22.8 (single door)
+- Level 3 SUW L/22.8 (single door) E face
+- Level 3 SUW L/22.8 (single door) E face.
+- Level 3 SUW L/22.8 (single door) W face
+- Level 3 SUW L/23 Vestibule 4 Ceiling
+- Level 3 SUW L/23 Vestibule 4 FAB130402C; FAB130406A (NCR 0245)
+- Level 3 SUW L/23-24
+- Level 3 SUW L/23-24 East Face
+- Level 3 SUW L/23-24 East face
+- Level 3 SUW L/23.8-24 West Face
+- Level 3 SUW L/26.7,27.5,28.5 W face
+- Level 3 SUW L/29.5-30 (on soffit / top of the beam
+- Level 3 SUW L/29.5-30 (on soffit / top of the beam)
+- Level 3 SUW L/29.5-30 E Face (Top of the beam soff
+- Level 3 SUW L/29.5-30 E Face (Top of the beam soffit)
+- Level 3 SUW L/32, L/33 Leaveouts
+- Level 3 SUW L/32-33 Leaveouts
+- Level 3 SUW L/33-34 Exterior
+- Level 3 SUW L/3; 3.5 FAB130104A; FAB130102A (NCR 0245)
+- Level 3 SUW L/4 Elevator 1A Front
+- Level 3 SUW L/4 Elevator Front 1A
+- Level 3 SUW L/4-5
+- Level 3 SUW L/4-5 West Face
+- Level 3 SUW L/4.7-6 Vestibule 1 (Vertical)
+- Level 3 SUW L/5-6 E Face
+- Level 3 SUW L/5.2
+- Level 3 SUW L/5.3 N,S Face
+- Level 3 SUW L/5.3 S Face
+- Level 3 SUW M, M.3/16.7-17
+- Level 3 SUW M-M.1/33 S Face (4x4ft from floor)
+- Level 3 SUW M-M.2/9
+- Level 3 SUW M-M.2/9 N Face
+- Level 3 SUW M-M.2/9 S Face
+- Level 3 SUW M-M.3/16.7
+- Level 3 SUW M-M.3/3 Elevator 1B S Face
+- Level 3 SUW M-M.3/3 Elevator 1B S Wall
+- Level 3 SUW M-M.4/16.8 S Wall (Sub Clean RM. FAB 1
+- Level 3 SUW M-M.4/16.8 S Wall (Sub Clean RM. FAB 130315 10 fts Wall)
+- Level 3 SUW M-M.4/16.8 S Wall (Sub Clean RM. FAB)
+- Level 3 SUW M-M.5/17.2
+- Level 3 SUW M-M.5/17.2 South face
+- Level 3 SUW M-M.7/16.8
+- Level 3 SUW M-M.7/16.8 Clean Vestibule N Face
+- Level 3 SUW M-M.7/16.8 S Face (above 8')
+- Level 3 SUW M-M.7/16.8 S Face (after 8 ft from floor)
+- Level 3 SUW M-M.7/17 S Face (after 8fts from floor / with control joint)
+- Level 3 SUW M-N/16.5-17 Curbs
+- Level 3 SUW M-N/18, M-N/19, K-L/17
+- Level 3 SUW M-N/3
+- Level 3 SUW M-N/33
+- Level 3 SUW M-N/33 Exterior
+- Level 3 SUW M-N/33 Interior
+- Level 3 SUW M-N/33 Interior S Face
+- Level 3 SUW M-N/33 S Face (HW; BW & WW)
+- Level 3 SUW M.3/3 Elevator 1B W Wall W Face
+- Level 3 SUW M.4-M.8/16.8 (clean vestibule on Eleva
+- Level 3 SUW M.4-M.8/16.8 (clean vestibule on Elevator 3)
+- Level 3 SUW M.4/3-3.3 Elevator 1B
+- Level 3 SUW M.4/3-3.3 Elevator 1B W Wall
+- Level 3 SUW M.5-N/3.5 Ductshaft Exterior N Face
+- Level 3 SUW M.5/16.8-17 Clean Vestibule W Face
+- Level 3 SUW M.6-M.8/17.2
+- Level 3 SUW M.6-M.8/17.2 North face
+- Level 3 SUW M.6/16.8-17.2
+- Level 3 SUW M.7-N/16.6 N Face
+- Level 3 SUW M.7-N/17
+- Level 3 SUW M.7-N/17 N Face (only 10 feet from floor)
+- Level 3 SUW M.7/16.6-17
+- Level 3 SUW M.7/16.8-17 E Face
+- Level 3 SUW M.7/17.2-17.4
+- Level 3 SUW M.7/17.2-17.4 East Face (include CJ gap)
+- Level 3 SUW M.8-N/16.5 S Face
+- Level 3 SUW M/.7-17.5 E Face
+- Level 3 SUW M/17-17.4 (10ft wall) SUB CLEAN RM. AI
+- Level 3 SUW M/17-17.4 (10ft wall) SUB CLEAN RM. AIR LOCK
+- Level 3 SUW M/17-17.4 W Face (10ft wall)
+- Level 3 SUW M/17-17.7 S Face
+- Level 3 SUW M/17-17.7 S Face (after 8 ft from floor)
+- Level 3 SUW M/3-3.2 E Face
+- Level 3 SUW M/3-3.2 Elevator 1A E Face
+- Level 3 SUW M/3-3.2 Elevator 1A E Wall
+- Level 3 SUW M/3-3.2 Elevator 1B E Wall
+- Level 3 SUW M/3-3.3 Elevator 1B S Face
+- Level 3 SUW M/3-3.3 Elevator 1B South Wall
+- Level 3 SUW M/3-3.3 Elevator 1B W Wall W Face
+- Level 3 SUW M/3.3-4 Elevator 1A W Wall
+- Level 3 SUW M/3.3-4 Elevator Hall 1 W Face
+- Level 3 SUW M/3.3-4 W Face
+- Level 3 SUW M/5 Elev Hall 2 FAB130103A (NCR 0245)
+- Level 3 SUW M/9 130117Q (Door opening bottom)
+- Level 3 SUW M/9 130117Q (door opening bottom)
+- Level 3 SUW N/1-3
+- Level 3 SUW N/1-3,9-10,14-14.5,16.5-17,21-22,23-24
+- Level 3 SUW N/14 Blockout
+- Level 3 SUW N/14-15
+- Level 3 SUW N/14-17
+- Level 3 SUW N/15-16.5
+- Level 3 SUW N/15-17
+- Level 3 SUW N/16.5-17
+- Level 3 SUW N/16.6-17 E Face
+- Level 3 SUW N/18.2-18.9
+- Level 3 SUW N/2.2-2.7 E Face (bottom half)
+- Level 3 SUW N/21-22
+- Level 3 SUW N/21-22.5
+- Level 3 SUW N/21-23
+- Level 3 SUW N/22-23
+- Level 3 SUW N/22.6-22.8
+- Level 3 SUW N/23-24
+- Level 3 SUW N/23.2-24
+- Level 3 SUW N/24-25
+- Level 3 SUW N/25-25.5
+- Level 3 SUW N/25-26
+- Level 3 SUW N/26-27
+- Level 3 SUW N/26-28
+- Level 3 SUW N/27-29
+- Level 3 SUW N/3 N,S,W Face (duct shaft interior wa
+- Level 3 SUW N/3 N,S,W Face (duct shaft interior walls)
+- Level 3 SUW N/3 all interior walls in duct shaft
+- Level 3 SUW N/3 all interior walls inside duct shaft
+- Level 3 SUW N/3-3.5 E Face (exclude 1 ft from floo
+- Level 3 SUW N/3-3.5 E Face (exclude 1 ft from floor duct shaft exterior wall)
+- Level 3 SUW N/3.5 N Face (duct shaft exterior wall
+- Level 3 SUW N/3.5 N Face (duct shaft exterior wall)
+- Level 3 SUW N/30 Leaveout
+- Level 3 SUW N/30, L/32 and L/33 Leaveouts
+- Level 3 SUW N/30-31
+- Level 3 SUW N/30-31 E Face
+- Level 3 SUW SOMD K-L/28-29
+- Level 3 SUW Stair 2 N Wall
+- Level 3 SUW Stair 21 N,S Wall
+- Level 3 SUW Stair 3 E Wall
+- Level 3 SUW Stair 3 W Wall
+- Level 3 SUW Stair 5 Exterior N Wall
+- Level 3 SUW Stair 5 Interior E Face Exterior Side
+- Level 3 SUW Stair 5 Interior E Face Exterior Side Airlock 5
+- Level 3 SUW Stairs 3 N,E Wall
+- Level 3 SUW Stairs 3 W Wall
+- Level 3 SUW Stairs 5 Exterior W,E,N Wall
+- Level 3 SUW Stairs 5 W Wall
+- Level 3 SUW Vestibule 5 E ,N face Bottom
+- Level 3 SUW sump pit Leaveout N/18
+- Level 3 SUW sump pit N/19
+- Level 3 Sector 1
+- Level 3 Sector 1 K.1/6.7 LV Risers Cable Tray
+- Level 3 Sector 1 L-M.5/6-8 LV Cable Tray
+- Level 3 Sector 1 L-M/5-6 LV and Comm Tray
+- Level 3 Sector 1 M-M.5/3.5-5.5 LV Cable Tray
+- Level 3 Sector 1-2 L.5/5-9 Lighting
+- Level 3 Sector 1-2 L.5/5-9 lighting raceways
+- Level 3 Sector 1-2 M.5-N/5-9 LV Cable Tray
+- Level 3 Sector 1-2 M.5/4-9 Lighting Raceways
+- Level 3 Sector 1-2 M.5/4-9 Lighting inspection
+- Level 3 Sector 1-21 H.5-N/1 LV and Comm Tray
+- Level 3 Sector 12E
+- Level 3 Sector 12W
+- Level 3 Sector 2
+- Level 3 Sector 2 L-N/9-12 Comm Tray
+- Level 3 Sector 2 L-N/9-12 LV CBL Tray
+- Level 3 Sector 2 L.3-M.6/12-15.1 LV and Comm
+- Level 3 Sector 2 L.5/9-15 Lighting Raceways
+- Level 3 Sector 2 L.5/9-15 Lighting inspetion
+- Level 3 Sector 2 M-M.5/9-14 Lighting
+- Level 3 Sector 2 M-M.5/9-14 Lighting Raceways
+- Level 3 Sector 3
+- Level 3 Sector 3 L-N/19-21 Comm Tray
+- Level 3 Sector 3 L-N/19-21MV Cable Tray Inspection
+- Level 3 Sector 3 L/18-19 Comm Tray
+- Level 3 Sector 3 M.2-M.6/19.3-20.6 Raceways
+- Level 3 Sector 3-4 L.5-M/21-24.5 UPS unstallation
+- Level 3 Sector 4 L.2-L.3 21.4-23.7 LTR Raceways
+- Level 3 Sector 4 L.7-M.6/25.3-26.8 LTR Raceways
+- Level 3 Sector 4 L/24.8
+- Level 3 Sector 4 M-M.5/21-25 Comm Tray
+- Level 3 Sector 4 M-M.5/25-27 Comm Tray
+- Level 3 Sector 4 M-N/22-24 Raceway inspection
+- Level 3 Sector 4 M-N/22-24Fiber Panelboard install
+- Level 3 Sector 4 M-N/27-29.5 LIB Panel install
+- Level 3 Sector 4 M-N/27-29.5 LIB raceway
+- Level 3 Sector 4 M.3-M.7/25.2-26.7 LV swgr install
+- Level 3 Sector 4 M.5-N/22-24 gear installation
+- Level 3 Sector 4 M.5-N/24-25 Gear install
+- Level 3 Sector 4 M.6-24.8 MTS install
+- Level 3 Sector 4 M.6-M.8/21.9-23.8 VCB raceway
+- Level 3 Sector 4 M.7-M.8/23.9-24.7 raceways
+- Level 3 Sector 4-5 L.5/26-29.5 UPS install
+- Level 3 Sector 4-5 L.5/26-29.5 switchgear install
+- Level 3 Sector 41 F-G/2-3 Raised Floor Bonding
+- Level 3 Sector 5 L.2-L.9/27-29.3MV Cable Tray Ins
+- Level 3 Sector 5 L.4-L.5/28.6-29.2 LTR Raceways
+- Level 3 Sector 5 M-N,27-29.5 Battery room lighting
+- Level 3 Sector 61 A-B/3-4 LV Cable Tray
+- Level 3 Sector 61 A-B/3-4 MV Cable Tray
+- Level 3 Sector 61 A-C/3-8 Nipple inspection
+- Level 3 Sector 61 A-C/3-8 gear install inspection
+- Level 3 Sector 61 A.5-B/3-4 Rectifier install
+- Level 3 Sector 61 A.5-B/3-4 cable routing
+- Level 3 Sector 61 A.5-B/3-4 rectifier raceway
+- Level 3 Sector 61 B-B.5/6.5-8 Torquing bus bars
+- Level 3 Sector 61 B.2-C.4/1.3-3.1
+- Level 3 Sector 61 B.5/5.5-6.5 torquing bus bars
+- Level 3 Sector 61 B.5/7-8 Torquing bus bars
+- Level 3 Sector 61 B/3-4 Rectifier Termination
+- Level 3 Sector 61 B/3-4 Rectifier Torquing
+- Level 3 Sector 61 B/3-4 Term. Meg. Ohm
+- Level 3 Sector 61 B/3-4 Torquing Terminations
+- Level 3 Sector 61 B/5-6.6 Torquing Bus bars
+- Level 3 Sector 61 B/5-7 Torquing bus bars
+- Level 3 Sector 61 B/7-8 Gear install
+- Level 3 Sector 61 B/7-8 Nipple inspection
+- Level 3 Sector 61 C/7 Torquing ground lugs
+- Level 3 Sector 61 MV Cable routing
+- Level 3 Sector 61-62 A-B/6.8-12.5 LV cable routing
+- Level 3 Sector 61-62 A-C/4-12 Fiber Routing
+- Level 3 Sector 61-62 A.6-B.4/7.7-9.3 Raceways
+- Level 3 Sector 61-62 C-D/6-9 LV Risers
+- Level 3 Sector 61-63 A.5-B: 4-21 Comm Tray to RIO
+- Level 3 Sector 61-64 B.9/7.3-23.7 Panel install
+- Level 3 Sector 61C/5-6 torquing bus bars
+- Level 3 Sector 62 A-A.5/12.5-15 Troquing bus bars
+- Level 3 Sector 62 A-B/10-12.5 Lighting
+- Level 3 Sector 62 A-B/10-12.5 Lighting Raceways
+- Level 3 Sector 62 A-B/10-12.5 Panel Raceways
+- Level 3 Sector 62 A-B/10-12.5 Panelboard install
+- Level 3 Sector 62 A-C/8-15 MV Cable Routing
+- Level 3 Sector 62 A-C/8-15 Nipple inspection
+- Level 3 Sector 62 A-C/8-15 gear install inspection
+- Level 3 Sector 62 A.7/8-9.7 Torquing bus bars
+- Level 3 Sector 62 A/13 comm tray
+- Level 3 Sector 62 B.3-B.5/12.3-13.2 UPS Raceways
+- Level 3 Sector 62 B.5/13-14 torquing bus bars
+- Level 3 Sector 62 B.9-C/8.2-8.6 panel install
+- Level 3 Sector 62 B/10-12.5 torquing bus bars
+- Level 3 Sector 62 B/8-9.5 Torquing bus bars
+- Level 3 Sector 62 C-11 Comm Tray
+- Level 3 Sector 62 C/8.2-8.4 Raceway inspection
+- Level 3 Sector 62 C/9 raceway inspection
+- Level 3 Sector 62 C/9 transformer install
+- Level 3 Sector 62 C9 panel install
+- Level 3 Sector 63 (B18-24) Rectifier Gear
+- Level 3 Sector 63 A-B/17.5-19 Torquing Multi-Day
+- Level 3 Sector 63 A-C/15-20 Nipple inspection
+- Level 3 Sector 63 A-C/15-21 Gear install
+- Level 3 Sector 63 A.5-B/15.5-17 Gear install
+- Level 3 Sector 63 A.5-B/15.5-17 Torquing bus bars
+- Level 3 Sector 63 A.5/15.5 Rectifier install
+- Level 3 Sector 63 A.5/15.5 Rectifier raceway
+- Level 3 Sector 63 A.6/19.4 Rectifier A cable route
+- Level 3 Sector 63 B.97-C/15.4-15.5 GTB Raceways
+- Level 3 Sector 63-64 A-A.5/19-23 ANCHOR IMPLACE
+- Level 3 Sector 63-64 A-A.5/19-23 Nipple inspection
+- Level 3 Sector 63-64 A-C/14-23 FIBER ROUTING
+- Level 3 Sector 63-64 MV Cable routing
+- Level 3 Sector 64 A-C/21-24 Cable Routing
+- Level 3 Sector 64 A-C/21-24 Switcghgear Raceways
+- Level 3 Sector 64 A-C/21-24 Switchgear Termination
+- Level 3 Sector 64 A-C/21-24 Switchgear install
+- Level 3 Sector 64 A.5-B/23-24 Panelboard Raceways
+- Level 3 Sector 64 A.5-B/23-24 Panelboard inspect
+- Level 3 Sector 64 B/22-23 Nipple inspection
+- Level 3 Sector 64 C/22 comm tray riser
+- Level 3 Sector 64-65 A.5-B.5/26-29 Lighting
+- Level 3 Sector 64-65 A.5-B.5/26-29 Lighting Racewa
+- Level 3 Sector 64-65 A.5-B.5/26-29 lighting WD
+- Level 3 Sector 65 A-C/29-33 Raised Floor Bonding
+- Level 3 Sector sec 63 A/18-19 Raceways/Nipples
+- Level 3 Stair 1 K.8/5-5.8
+- Level 3 Stair 19
+- Level 3 Stair 2
+- Level 3 Stair 21
+- Level 3 TBD
+- Level 3 West Atrium Screw Inspection
+- Level 3 airlock L4, L17,C17
+- Level 3 ceiling 4C&4A C-D/3.3.5
+- Level 3 ceiling A-C/25-25.2
+- Level 3 ceiling C-D 13-18
+- Level 3 ceiling C-D/27-28,28.5,30.5-30.7
+- Level 3 ceiling D-E/22-24
+- Level 3 ceiling D-E/27-33
+- Level 3 ceiling D-E/28-33
+- Level 3 ceiling D-line 26-27, 29-30, 31-32
+- Level 3 ceiling D/18-24 westside only
+- Level 3 ceiling D/18-24.9 westside only
+- Level 3 ceiling E-G/3-4
+- Level 3 ceiling E.3-F.5/3.9-5.8
+- Level 3 ceiling E.3-G.3/21-22
+- Level 3 ceiling E/4-3
+- Level 3 ceiling F.3-J/3
+- Level 3 ceiling F.5-J/3
+- Level 3 ceiling J-K/17-18
+- Level 3 ceiling J-K/21-25
+- Level 3 ceiling J-K/25-28
+- Level 3 ceiling J/3-13
+- Level 3 ceiling K-L/11
+- Level 3 ceiling k/1-3
+- Level 3 ceilling J/K, 10-10.9 & 12-15.9
+- Level 3 ceilling J/K, 10-11& 12-16
+- Level 3 ceilling K/L 19-23
+- Level 3 elevator 22 exterior south & west wall
+- Level 3 elevator 22 south & west wall
+- Level 3 mega columns E/5-7, 22-25
+- Level 3 mega columns E10-13/E16-20
+- Level 3 mega columns J/20-32
+- Level 3 mega columns J4-19
+- Level 3 sector 64 B/21.3-22.6 Torquing Bus Bars
+- Level 3&4 C-D/25-25.3
+- Level 3&4 D/19-20
+- Level 3&4 D19-20
+- Level 3(L/19-22,24-28)
+- Level 3(L5,6,10,11,16,23,24)
+- Level 3, 22.6/E.3-F.2
+- Level 3, B.8-C/27-28
+- Level 3, C-D / 13-14
+- Level 3, C-D / 16-17
+- Level 3, C-D/13-14
+- Level 3, C-D/16-17
+- Level 3, E11-E12
+- Level 3, E16-E17
+- Level 3, E19-E20
+- Level 3, E6-E7
+- Level 3, ELEV 3 L-L.5/16-17
+- Level 3, GL: K/29-29.5
+- Level 3, H-J/33(2nd layer)
+- Level 3, J12-J13
+- Level 3, J14-J15
+- Level 3, J20-J21
+- Level 3, K.3-LINE (Elevator structure beam) / 11.3-11.7 Elevator 2
+- Level 3, L-11.5 Elevator #2
+- Level 3, L-L.5/16-17 Elevator #3
+- Level 3,4 SUE D/33-34 Stair 18 W Wall (Exterior)
+- Level 3,4 SUE Stairs 18 N Wall
+- Level 3,J5-J6
+- Level 3-3.5 PAN STAIRS Stair 21
+- Level 3-3.5 Stair 21 Pan Stairs
+- Level 3-4 A/19-20.2
+- Level 3-4 A/19-20.20 & Lvl 1-4 A/20-20.2
+- Level 3-4 A/19-20.5 Exterior
+- Level 3-4 A/23-25
+- Level 3-4 C-13 Stair Hang down Platform
+- Level 3-4 C-D/12-13 Stair #21
+- Level 3-4 D/11-12; Level 4 D/26-27
+- Level 3-4 D/12-13
+- Level 3-4 D/13-16
+- Level 3-4 K-L/4 N Face
+- Level 3-4 K-L/4 North Face
+- Level 3-4 K/10-11
+- Level 3-4 K/18-19
+- Level 3-4 K/19-20
+- Level 3-4 K/23-24
+- Level 3-4 K10-11
+- Level 3-4 K18-19
+- Level 3-4 K19-20
+- Level 3-4 K23-24
+- Level 3-4 L-23 Stair Hang down Platform
+- Level 3-4 M/3 Elevator 1B
+- Level 3-4 N/20-21 Leave Out
+- Level 3-4 N/30-31
+- Level 3-4 N/30-31 Duct Framing
+- Level 3-4 N/30-31 Duct Shaft
+- Level 3-4 N/30-31 Post Install Plates
+- Level 3-4 N/30-N/31 Duct Framing
+- Level 3-4 SUE C-D/35 Exterior Stairs 18 N Wall
+- Level 3-4 SUE C/33-34 Stair 18 Exterior E Wall
+- Level 3-4 SUE C/34-35 Stair 18 Exterior E Wall
+- Level 3-4 SUE D-E/33 Exterior
+- Level 3-4 SUE D/34-35 Exterior Stair 18 W Wall
+- Level 3-4 SUW K/11 Stair 2 N Wall
+- Level 3-4 SUW K/18 Stair 3 N Wall
+- Level 3-4, C-13 Stair Hang down Platform
+- Level 3-4, L-23 Stair Hang down Platform
+- Level 3-4, L-K/18
+- Level 3-6 N/31-32 connections above the trestle.
+- Level 3-6 N/31-N/32 connections above the trestle.
+- Level 3-Ceiling 10-11/G-H.5
+- Level 3-Ceiling 18-19/E.5-G.3
+- Level 3-Ceiling 18-21/G-H.5
+- Level 3-Ceiling 19-20/E.3-F.8
+- Level 3-Ceiling 20.5-22.7/H.8-H.3
+- Level 3-Ceiling 24-24.7/H.8-G.3
+- Level 3-Ceiling 8.5-10.1/-F8-G-5
+- Level 3-Ceiling E.3-F.8/19-20
+- Level 3-Ceiling E.5-G.3/18-19
+- Level 3-Ceiling H.8-G/24.7-26
+- Level 3-Ceiling H.8-H.3/20.5-22.7
+- Level 3. K-L 23
+- Level 3.5 C-D/13 Intermediate Stair Landing
+- Level 3.5 J-K/23 Intermediate Stair Landing
+- Level 3.5 SOMD C-D/13 Stair Intermediate Landing
+- Level 3.5-4.5 G/3-4 Stair #68
+- Level 3A C/25
+- Level 3A C/25 Stair 19
+- Level 3A Column C/2
+- Level 3A Sector 1-3 K-L/5-17 Lighting
+- Level 3A Sector 1-3 K-L/5-17 Lighting raceways
+- Level 3A, 4A C/19
+- Level 3Ceiling E.3-F.8/19-20
+- Level 3Ceiling H.8-G /7-6
+- Level 3Ceiling K-J/29-24& 30-31
+- Level 3Ceiling, K-L/ 1-3
+- Level 4
+- Level 4 & 5 Ceiling, K-L / 5-7
+- Level 4 & 5 Ceiling, K-L / 5-7 (Exclude 6-7 L-Line)
+- Level 4 & 5 Ceiling, K-L / 7-9
+- Level 4 & 5 K-L/7-9
+- Level 4 (Penthouse) L-N/3-5
+- Level 4 (Truses) E -E.5/13.5-14.5
+- Level 4 (Truses) E-E.5/13.5-14.5
+- Level 4 (Truses) E-E.5/18-19
+- Level 4 - B/4 MCC Room #1 (Goalpost)
+- Level 4 - IT security room 18 North Face / South wall
+- Level 4 - M/3.4 Machine Room
+- Level 4 - SUE C/2.5-3 E Wall, W Face (exclude Columns)
+- Level 4 - SUE C/3 Column
+- Level 4 - SUW L/2.6 Column
+- Level 4 - SUW N/3-5
+- Level 4 - Shaft Room K-L/4 Interior Walls
+- Level 4 16.5-17/E-J
+- Level 4 17-18 VOC
+- Level 4 19-20/E-J
+- Level 4 3-3.5/E- J
+- Level 4 32.5-33/E-J
+- Level 4 4G A to C, 2.5-3.2
+- Level 4 4G A,C/2.5-3.2
+- Level 4 4G A-C/2.5-3.2
+- Level 4 4G A/C, 2.5-3.2
+- Level 4 4G Ato C, 2.5-3.2
+- Level 4 5/5-16
+- Level 4 A & B/1
+- Level 4 A 26.6-27.6
+- Level 4 A&B/1
+- Level 4 A&N
+- Level 4 A-B/3
+- Level 4 A-B/3.5
+- Level 4 A-B/4 MCC Room
+- Level 4 A-B/4-6
+- Level 4 A-B/5 Southeast Penthouse
+- Level 4 A-B/5 Southeast Penthouse (Under Penthouse
+- Level 4 A-C/2.6-3
+- Level 4 A-C/3
+- Level 4 A-C/31-32; B/31-32
+- Level 4 A-C/33
+- Level 4 A-C/33 Exterior
+- Level 4 A-C/33 Line
+- Level 4 A-C/5 Ramp
+- Level 4 A-C31-32; B31-32
+- Level 4 A-G/2-3
+- Level 4 A.5-B/32.5
+- Level 4 A.5/31 Stair R30
+- Level 4 A.5/31 stair R30
+- Level 4 A.5/31-32
+- Level 4 A/1
+- Level 4 A/1-3
+- Level 4 A/1-3; Level 4 D-E/19
+- Level 4 A/10-13.6
+- Level 4 A/10-14
+- Level 4 A/10-18
+- Level 4 A/10.2-21
+- Level 4 A/10.5, 14, 17.5, 24.5, 25
+- Level 4 A/11-21
+- Level 4 A/13-14
+- Level 4 A/13.6-11
+- Level 4 A/13.6-16.3
+- Level 4 A/13.6-19
+- Level 4 A/13.6-19.3
+- Level 4 A/13.8-19
+- Level 4 A/15-19
+- Level 4 A/16-17
+- Level 4 A/16.3-19
+- Level 4 A/18-31
+- Level 4 A/19
+- Level 4 A/19-21
+- Level 4 A/19-21.3
+- Level 4 A/19-22.6
+- Level 4 A/19-24
+- Level 4 A/19-28
+- Level 4 A/19.3-13.6
+- Level 4 A/2.5-3.2
+- Level 4 A/21-26.6
+- Level 4 A/21.3-22.6
+- Level 4 A/22.6-25.3
+- Level 4 A/22.6-26.3
+- Level 4 A/22.9-25.3
+- Level 4 A/24-28
+- Level 4 A/25-30
+- Level 4 A/25.3-26.6
+- Level 4 A/25.4-22.6
+- Level 4 A/26-28
+- Level 4 A/26-29
+- Level 4 A/26.6-28
+- Level 4 A/26.8-31
+- Level 4 A/28-26
+- Level 4 A/28-26.6
+- Level 4 A/29-29.5
+- Level 4 A/29-31
+- Level 4 A/29.6-31
+- Level 4 A/3-5 (Under Penthouse)
+- Level 4 A/31, 32, 33 NE Penthouse
+- Level 4 A/31-26
+- Level 4 A/31-32
+- Level 4 A/31-32 Columns
+- Level 4 A/31-32 MCC Room 2 Column
+- Level 4 A/4 Column
+- Level 4 A/4 MCC Room 1
+- Level 4 A/5-7.3
+- Level 4 A/5-9
+- Level 4 A/5-9.6
+- Level 4 A/7-14
+- Level 4 A/7-19
+- Level 4 A/7-9
+- Level 4 A/7-9.6
+- Level 4 A/7.3-11
+- Level 4 A/7.3-13.6
+- Level 4 A/7.3-28.6
+- Level 4 A/7.3-9.6
+- Level 4 A/7.5-8.1
+- Level 4 A/9-28
+- Level 4 AS/31 Stair R30
+- Level 4 B-B.3/3.4
+- Level 4 B-B.3/3.5
+- Level 4 B-B.3/3.5 SE PH S Face
+- Level 4 B-C/11-17
+- Level 4 B-C/3-4
+- Level 4 B-C/3-4 Elevator 22
+- Level 4 B-C/31-32 Elevator 18
+- Level 4 B-C/32 Elevator 18
+- Level 4 B-C/5
+- Level 4 B-C/5 Southeast Penthouse
+- Level 4 B-C/5 Under Southeast Penthouse
+- Level 4 B.5-C /31-32, Elevator 18
+- Level 4 B.5-C/ South face, south wall
+- Level 4 B.5-C/2.6
+- Level 4 B.5-C/2.6 NCR-0119
+- Level 4 B.5-C/31.3 Elevator 18
+- Level 4 B.5-C/32 north face north wall
+- Level 4 B.5-C/5-6
+- Level 4 B.5-C/5-6 Topping
+- Level 4 B.5-C/South face. South wall
+- Level 4 B.5-D/2
+- Level 4 B.5-D/2.6
+- Level 4 B.5-D/2.6 NCR-0119
+- Level 4 B.5/3.5-4.5 Southeast Penthouse
+- Level 4 B.5/31-32.5 Ramp
+- Level 4 B.5/31.3-32
+- Level 4 B.5/32 North face North wall
+- Level 4 B.5/4.5 Goal Post
+- Level 4 B.5/4.5 Goalpost
+- Level 4 B.5/5-17 Topping slab Repair
+- Level 4 B.8-C/3.5
+- Level 4 B.8-C/3.5 Lower wall
+- Level 4 B.9/32.2-32.8
+- Level 4 B/1
+- Level 4 B/2 Column
+- Level 4 B/2 SE PH
+- Level 4 B/2 SE PH NCR-0151
+- Level 4 B/2 Stair 69,70,78
+- Level 4 B/2 Stair 70,78
+- Level 4 B/2.5 column
+- Level 4 B/3 Interior wall east side
+- Level 4 B/3 west wall ( Pipe Room)
+- Level 4 B/3-5
+- Level 4 B/3.5
+- Level 4 B/3.5 Elevator 22 SE Penthouse
+- Level 4 B/31 Stair R30; Level 4 B-C/3-4 Stair 77
+- Level 4 B/31-32
+- Level 4 B/31-32 Columns
+- Level 4 B/31-32 Ramp & lvl 4E D-E/3 pad
+- Level 4 B/31-32.3 Penthouse
+- Level 4 B/32 Stair R5
+- Level 4 B/32 Stair R9; Level 4 FIZ Ramp D/2.5; Level U1 Stair at M/26
+- Level 4 B/32-32.5 NE Penthouse
+- Level 4 B/4 Column
+- Level 4 B/5 I/O Room
+- Level 4 B/5 Ramp Baseplates
+- Level 4 B/9.6 & 13
+- Level 4 Between J13-J16; J25-J27
+- Level 4 C-1 & C-2
+- Level 4 C-2/C-1 Column
+- Level 4 C-32-32.7
+- Level 4 C-C.2/32-32.2
+- Level 4 C-C.2/32-32.2 S Wall N Face / W Wall E Face
+- Level 4 C-C5/32
+- Level 4 C-C5/32.7
+- Level 4 C-D/1, 2, 3
+- Level 4 C-D/1-3
+- Level 4 C-D/11
+- Level 4 C-D/13
+- Level 4 C-D/13-17
+- Level 4 C-D/20,22
+- Level 4 C-D/21-28
+- Level 4 C-D/28-29
+- Level 4 C-D/28-29 Elevator 19
+- Level 4 C-D/3-4
+- Level 4 C-D/31-32
+- Level 4 C-D/31.3 elevator 18 south and west
+- Level 4 C-D/31.3-32 Elevator 18 South and WEST
+- Level 4 C-D/32
+- Level 4 C-D/32.8 NE Penthouse
+- Level 4 C-D/32.8 North Face
+- Level 4 C-D/4 Fire Alarm Room 22 Interior
+- Level 4 C-D11
+- Level 4 C.2/32
+- Level 4 C.32-32.7
+- Level 4 C.4/32-32.8
+- Level 4 C.5/32-32.7
+- Level 4 C.5/GL32-32.7
+- Level 4 C/1
+- Level 4 C/11
+- Level 4 C/11, 15
+- Level 4 C/15
+- Level 4 C/15 &18
+- Level 4 C/15, 18
+- Level 4 C/18-26
+- Level 4 C/19
+- Level 4 C/19 Expansion joint South side only
+- Level 4 C/19 Expansion joint south side only
+- Level 4 C/19 expansion joint North side
+- Level 4 C/19-20
+- Level 4 C/2.5-3
+- Level 4 C/2.5-3.5
+- Level 4 C/20
+- Level 4 C/20-33
+- Level 4 C/23
+- Level 4 C/24-28
+- Level 4 C/25-30
+- Level 4 C/27.5
+- Level 4 C/3 SUE Elevator 22
+- Level 4 C/3-4
+- Level 4 C/3-4 W Face
+- Level 4 C/3.5-4
+- Level 4 C/30-32
+- Level 4 C/31
+- Level 4 C/31-31.5
+- Level 4 C/32
+- Level 4 C/32 Elevator 18
+- Level 4 C/32-33
+- Level 4 C/33
+- Level 4 C/4
+- Level 4 C/4 airlock 22
+- Level 4 C/5 Stair #R11
+- Level 4 C/5 Stair R11
+- Level 4 C/5 stair 22
+- Level 4 C/5-17.6
+- Level 4 C/5-7
+- Level 4 C/6
+- Level 4 C/6-17.6
+- Level 4 C/9
+- Level 4 C5-/32.7
+- Level 4 Ceiling G.5-G.8/2.5-3
+- Level 4 Column 3
+- Level 4 Column B/4
+- Level 4 Columns A/4
+- Level 4 Confined Space L-N/3-5
+- Level 4 Confined Space L-N/31-33
+- Level 4 D /3-32
+- Level 4 D-E/1-32
+- Level 4 D-E/10-14
+- Level 4 D-E/14-18
+- Level 4 D-E/14-8
+- Level 4 D-E/15-20
+- Level 4 D-E/15-20 Trusses
+- Level 4 D-E/19
+- Level 4 D-E/19-20,22-31
+- Level 4 D-E/2-19
+- Level 4 D-E/2-32
+- Level 4 D-E/20-32 Topping Blockouts
+- Level 4 D-E/3-33
+- Level 4 D-E/32-33
+- Level 4 D-E/33
+- Level 4 D-E/4, 4.8
+- Level 4 D-G/1-3 Topping Slab Blockouts & Stair R19
+- Level 4 D-G/1-3 Topping Slab Blockouts & Stair R19 Pad
+- Level 4 D-G/1-3 Topping Slab Blockouts and Stair R19 Pad
+- Level 4 D-J/33
+- Level 4 D/10-11
+- Level 4 D/11-13
+- Level 4 D/13-14
+- Level 4 D/13-16
+- Level 4 D/13.4-16
+- Level 4 D/14-15
+- Level 4 D/15-16
+- Level 4 D/15-17
+- Level 4 D/16-17
+- Level 4 D/16-17.6
+- Level 4 D/16-18
+- Level 4 D/17-18
+- Level 4 D/18-19
+- Level 4 D/18-20
+- Level 4 D/19-20
+- Level 4 D/2-32
+- Level 4 D/20-25
+- Level 4 D/21-26
+- Level 4 D/22-29
+- Level 4 D/24.5-25
+- Level 4 D/25-26
+- Level 4 D/26-27
+- Level 4 D/26-32
+- Level 4 D/26-33
+- Level 4 D/27-28
+- Level 4 D/27-29
+- Level 4 D/28,31
+- Level 4 D/28-29
+- Level 4 D/29-30
+- Level 4 D/3
+- Level 4 D/3-18
+- Level 4 D/3-33
+- Level 4 D/3-4 SE PH
+- Level 4 D/3-5
+- Level 4 D/3-5 SE PH Knee Wall
+- Level 4 D/3-5 kneewall
+- Level 4 D/30-32
+- Level 4 D/31-32
+- Level 4 D/32,33
+- Level 4 D/32-33
+- Level 4 D/32-33 kneewall (IT room interior)
+- Level 4 D/4-5, 28-29, 30-31
+- Level 4 D/5 Column
+- Level 4 D/5-11
+- Level 4 D/5-6
+- Level 4 D/6-10
+- Level 4 D/6-11
+- Level 4 D/7-10
+- Level 4 Duct Shaft West Wall B/2.9-3.4
+- Level 4 E -E.5/13.5-14.5 (Trusses)
+- Level 4 E&J/3
+- Level 4 E,K/12-13
+- Level 4 E-E.5/29-30
+- Level 4 E-F.5/4-6/Transition SFRM to IFRM
+- Level 4 E-F/33
+- Level 4 E-F; G-H/33 exterior
+- Level 4 E-G 33
+- Level 4 E-G/11-12
+- Level 4 E-G/3
+- Level 4 E-G/33 Interior
+- Level 4 E-G/33.2-33 Exterior
+- Level 4 E-G/4-6/Transition SFRM to IFRM
+- Level 4 E-H.5/18-19
+- Level 4 E-H.5/20-21
+- Level 4 E-H.8/8-9
+- Level 4 E-H/33
+- Level 4 E-J/ GL33
+- Level 4 E-J/1
+- Level 4 E-J/1-2
+- Level 4 E-J/10-11; 12-13
+- Level 4 E-J/11-12
+- Level 4 E-J/11-19
+- Level 4 E-J/12-13, 13.5-14
+- Level 4 E-J/13.5-14.25
+- Level 4 E-J/15-15.25
+- Level 4 E-J/15.25-16.5
+- Level 4 E-J/15.25-16.5 & 23
+- Level 4 E-J/16.5-17
+- Level 4 E-J/18-19
+- Level 4 E-J/19
+- Level 4 E-J/19 NCR-236
+- Level 4 E-J/19-20
+- Level 4 E-J/20-21; 23-25
+- Level 4 E-J/22-22.5
+- Level 4 E-J/22.5-23
+- Level 4 E-J/23-24
+- Level 4 E-J/24-25
+- Level 4 E-J/27-28
+- Level 4 E-J/27-29
+- Level 4 E-J/28-29
+- Level 4 E-J/3
+- Level 4 E-J/3-3.5
+- Level 4 E-J/32.5-33
+- Level 4 E-J/33
+- Level 4 E-J/6-10 (Transition from IFRM to SFRM)
+- Level 4 E-J/6-10(Transition from IFRM to SFRM)
+- Level 4 E-J/7.25-8
+- Level 4 E-J/8-9
+- Level 4 E.2-G.8
+- Level 4 E.2-G.8/33
+- Level 4 E.3-H.8/10-11
+- Level 4 E.3-H.8/11-31
+- Level 4 E.3-H.8/14-30
+- Level 4 E.3-H.8/4-12
+- Level 4 E.3-H.8/4-12 gusset plate gap
+- Level 4 E.3-H.8/4-30
+- Level 4 E/1-3
+- Level 4 E/14
+- Level 4 E/15-26
+- Level 4 E/16-33
+- Level 4 E/2-29
+- Level 4 E/29-33
+- Level 4 E/29-33 NCR-0189
+- Level 4 E/3
+- Level 4 E/3-12
+- Level 4 E/3-16
+- Level 4 E/3-32
+- Level 4 E/3-33
+- Level 4 E/3-33; J/3-33 columns
+- Level 4 E/3-7, 18-22
+- Level 4 E/5-31 Columns
+- Level 4 E/7-18
+- Level 4 ELEV. 5 L-L.5/31-32
+- Level 4 ELEV. 5 L-L.5/31-32 / access from lvl. 3
+- Level 4 Elev 22
+- Level 4 Elevator 1 W Wall
+- Level 4 Elevator 18
+- Level 4 Elevator 18 South S & W exterior
+- Level 4 Elevator 22
+- Level 4 Elevator 22 C/4
+- Level 4 Elevator 5
+- Level 4 Elevator 5 Excluding North
+- Level 4 Elevator 5 Knee Wall S Face
+- Level 4 Elevator 5 L-L.5/31-32
+- Level 4 Elevator 5 N Face
+- Level 4 Elevator 5 S Face
+- Level 4 Elevator 5 Top and Bottom East & South Wa
+- Level 4 Elevator 5 Top and Bottom South & East Walls
+- Level 4 Elevator 5 knee wall
+- Level 4 Elevator Machine Room North Wall M/3.4
+- Level 4 F-G 33 Line From Interior
+- Level 4 F-G/33
+- Level 4 F-G/33 Interior
+- Level 4 F-H/33
+- Level 4 F.6-G.2/21-22.4 Trusses
+- Level 4 F.8-G.2/28-28.8 Trusses
+- Level 4 FA Room # 22 N/E/S Walls
+- Level 4 FA Room 18 Exterior
+- Level 4 FA Room 22
+- Level 4 FAB A/33 Column
+- Level 4 FAB D-E/33 Exterior
+- Level 4 FAB E-F,G-H/33 Interior
+- Level 4 FAB E-F/33
+- Level 4 FAB E-F/33 (walkable ceiling upper area)
+- Level 4 FAB E-F/33 Exterior
+- Level 4 FAB E-F/33 Walkable Ceiling Interior
+- Level 4 FAB E.3-F/33 Exterior (Around Corbels)
+- Level 4 FAB E.3-F/33 Exterior (Rip)
+- Level 4 FAB E.3/33 Interior Framing Infill
+- Level 4 FAB E.5-F/33 Exterior (Around Corbels)
+- Level 4 FAB E/3-4 Walkable ceiling
+- Level 4 FAB E/32-33 Walkable Ceiling
+- Level 4 FAB Exterior E-F/33
+- Level 4 FAB F-G.1/33 Interior
+- Level 4 FAB F-G/33 Exterior
+- Level 4 FAB F-G/33 Exterior Infill
+- Level 4 FAB F-G/33 Walkable ceiling (upper area)
+- Level 4 FAB F-G33 Exterior
+- Level 4 FAB G-H.3/33
+- Level 4 FAB G-H.3/33 Densglass (Exterior)
+- Level 4 FAB G-H.3/33 Exterior
+- Level 4 FAB G-H.3/33 Exterior (around truss)
+- Level 4 FAB G-H/33 Exterior
+- Level 4 FAB G-H/33.3 Exterior
+- Level 4 FAB G.1-G.8/33 Interior
+- Level 4 FAB G.8-H/33 S Face (Interior)
+- Level 4 FAB G.9-H.3/33
+- Level 4 FAB H-J/33
+- Level 4 FAB H-J/33 S Face (Interior)
+- Level 4 FAB H.3-J/33 Exterior
+- Level 4 FAB H.3-J/33 Exterior Infill
+- Level 4 FAB H.3-J/33 Exterior NCR-0605
+- Level 4 FAB H.4-J/33 Exterior
+- Level 4 FAB J-K/33 Exterior
+- Level 4 FAB J-K/33 N Wall S Face
+- Level 4 FAB K-J/33 N Wall S Face
+- Level 4 FAB K/3-4 Walkable ceiling
+- Level 4 FIZ A-A.5/1
+- Level 4 FIZ A-B/3
+- Level 4 FIZ A-C/1-1.5
+- Level 4 FIZ A-C/1-3
+- Level 4 FIZ A-C/2-3
+- Level 4 FIZ A-C/2.5-3
+- Level 4 FIZ A-C/3
+- Level 4 FIZ A-D/1
+- Level 4 FIZ A-D/1-3
+- Level 4 FIZ A-D/1-3 Topping
+- Level 4 FIZ A-E & E.5-K/1
+- Level 4 FIZ A-N/1-3
+- Level 4 FIZ A/1-3
+- Level 4 FIZ B-C/1
+- Level 4 FIZ B-C/2-3
+- Level 4 FIZ B-D/1-3
+- Level 4 FIZ B.5-C/2.5-3
+- Level 4 FIZ B/1
+- Level 4 FIZ Blockouts G.5/1, F.6/1, F.2/1, F/1
+- Level 4 FIZ Blockouts H.5,J/1; F,F.2,F.6,E.5/2
+- Level 4 FIZ C-D/1-1.5
+- Level 4 FIZ C-D/1-2
+- Level 4 FIZ C/1
+- Level 4 FIZ D-E.5/1
+- Level 4 FIZ D/1-2
+- Level 4 FIZ D/1-3
+- Level 4 FIZ D/3
+- Level 4 FIZ E-E.5/1
+- Level 4 FIZ E-E.5/1-2
+- Level 4 FIZ E-F.2/1-2
+- Level 4 FIZ E-F/2
+- Level 4 FIZ E-G.2/3
+- Level 4 FIZ E-G/1 & 2
+- Level 4 FIZ E-G/3
+- Level 4 FIZ E-J/1
+- Level 4 FIZ E-J/2
+- Level 4 FIZ F.2-F.6/1-2
+- Level 4 FIZ G-J/1
+- Level 4 FIZ G-J/2
+- Level 4 FIZ G-J/3
+- Level 4 FIZ G-N/2-3
+- Level 4 FIZ G.5,F.6,F.2,F/1
+- Level 4 FIZ G/2.5 Doghouse
+- Level 4 FIZ Grouting B.5-C.5/2-3
+- Level 4 FIZ J-G/3
+- Level 4 FIZ K-L/1-2
+- Level 4 FIZ K-L/1-3
+- Level 4 FIZ K-L/1-3 & 29
+- Level 4 FIZ K-L/3
+- Level 4 FIZ K-M.5/1-3
+- Level 4 FIZ K-N/1,N/1-3,K-N/2.5
+- Level 4 FIZ K-N/1-2
+- Level 4 FIZ K-N/1-3
+- Level 4 FIZ K-N/2-3
+- Level 4 FIZ K-N/2.5-3
+- Level 4 FIZ K.5-N/1-1.5
+- Level 4 FIZ K/1-3
+- Level 4 FIZ L-M.5/3
+- Level 4 FIZ M.5-N/1
+- Level 4 FIZ N/1-3
+- Level 4 FIZ Pad C/1.5
+- Level 4 FIZ Pad C/1.5; Level 4E East Equipment Pad
+- Level 4 FIZ Pad C/1.5; Level 4E East Equipment Pad D/17
+- Level 4 FIZ Pad C/3
+- Level 4 FIZ Pad K.5-L.5/2-2.5
+- Level 4 FIZ Topping Blockouts G.5-J/1,2
+- Level 4 FIZ Topping C-E/1-3
+- Level 4 FIZ Topping E-F.5/1-3
+- Level 4 FIZ Topping J-N/1-3
+- Level 4 FIZ Topping K-N/1-2.5
+- Level 4 FIZ Topping K-N/1-3
+- Level 4 FIZ Topping Leaveout E.8/1-3
+- Level 4 FIZ Topping Slab A-C/1-3
+- Level 4 FIZ Topping Slab K-N/1-2.5
+- Level 4 FIZ Topping slab E-F.5/1-3
+- Level 4 Fire Alarm 1
+- Level 4 Fire Alarm 18 Exterior S Wall N Face
+- Level 4 Fire Alarm 22
+- Level 4 Fire Alarm Room 1 Interior
+- Level 4 Fire Alarm Room 22
+- Level 4 Fire Alarm Room 22 Interior
+- Level 4 Fiz Roof E-F/3
+- Level 4 G-E/3
+- Level 4 G-H/33
+- Level 4 G-J/14.25-15
+- Level 4 G-J/3.5-4
+- Level 4 G-N/1-3 Topping Blockouts
+- Level 4 G.9-H.3/33 Exterior
+- Level 4 G/19 NCR-0236
+- Level 4 G/3-3.7 Stair 68
+- Level 4 G/5 Stair 68
+- Level 4 GL j line/ 3-19
+- Level 4 H.3-H.5 /33
+- Level 4 H.3-H.5/33
+- Level 4 H.3-H.5/34
+- Level 4 H.3/33 Exterior
+- Level 4 H.5-E/22-22.5
+- Level 4 H/33 Exterior
+- Level 4 H/33 exterior
+- Level 4 I/O Room north face A.5-B/32
+- Level 4 I/O Room west face A.5/31-32
+- Level 4 IO Room 5
+- Level 4 IT Security 22
+- Level 4 IT/Security Room 1 Interior
+- Level 4 IT/Security Room 18 NE Penthouse Interior
+- Level 4 J & K/2-32
+- Level 4 J&K/2-31 Columns
+- Level 4 J&K2-31 Columns
+- Level 4 J-E/10-11
+- Level 4 J-E/12-13 & 13.5-14
+- Level 4 J-E/12-13,13.5-14.25
+- Level 4 J-E/15.25-16.5
+- Level 4 J-E/18-19,20-21
+- Level 4 J-E/23-25
+- Level 4 J-E/27-29
+- Level 4 J-G/3
+- Level 4 J-K /33-32
+- Level 4 J-K/10- 11.5
+- Level 4 J-K/10-11.5
+- Level 4 J-K/10-32
+- Level 4 J-K/17, 33
+- Level 4 J-K/17.8, 18
+- Level 4 J-K/2-32
+- Level 4 J-K/3-7
+- Level 4 J-K/31-32
+- Level 4 J-K/32-33
+- Level 4 J-K/33
+- Level 4 J-K/33 W Trough
+- Level 4 J-K/33-32
+- Level 4 J-K/33; L/17
+- Level 4 J-K/4.8, 5
+- Level 4 J/ 3-19
+- Level 4 J/2.5-7
+- Level 4 J/20-27
+- Level 4 J/3,4,32,33; E/3,4,17,32,33 Columns
+- Level 4 J/3-10
+- Level 4 J/3-19
+- Level 4 J/3-26
+- Level 4 J/3-31
+- Level 4 J/3-32
+- Level 4 J/3-32 Caulking
+- Level 4 J/3-6
+- Level 4 J/32-33
+- Level 4 J/32-33 NCR-0189
+- Level 4 J/4,32,33; E/4,17,32,33 Columns
+- Level 4 J/5-31
+- Level 4 K /3-32
+- Level 4 K-J/11.5-12; 16-17
+- Level 4 K-J/31-33
+- Level 4 K-L / 5-6
+- Level 4 K-L.4 Duct shaft
+- Level 4 K-L/1-2
+- Level 4 K-L/11-12
+- Level 4 K-L/15-22. 29-33
+- Level 4 K-L/18
+- Level 4 K-L/18,20
+- Level 4 K-L/22-23
+- Level 4 K-L/3-4 Fire Alarm Room 1
+- Level 4 K-L/3-5 SW Penthouse
+- Level 4 K-L/32-33
+- Level 4 K-L/4 (South face) (3rd & transition to 4th )
+- Level 4 K-L/4 Fire Alarm 1
+- Level 4 K-L/4 Fire Alarm 1 S Wall N Face
+- Level 4 K-L/4 IT Security Room 1
+- Level 4 K-L/4 SW Penthouse IT/Security 1 South Wal
+- Level 4 K-L/4 SW Penthouse IT/Security 1 South Wall
+- Level 4 K-L/4 Shaft Room Columns inside
+- Level 4 K-L/4-4.5 it/security 1
+- Level 4 K-L/4-5 fire alarm 1
+- Level 4 K-L/4.5
+- Level 4 K-L/4.8
+- Level 4 K-L/5
+- Level 4 K-L/5-6
+- Level 4 K-L/6 Ceiling
+- Level 4 K-M/3 SW Penthouse
+- Level 4 K-N/1-3; A-C/2.6-3; C-D/1-1.5
+- Level 4 K-N/2-3
+- Level 4 K-N/3
+- Level 4 K.2-L/4.5
+- Level 4 K/1
+- Level 4 K/11-11.5
+- Level 4 K/11-12
+- Level 4 K/12-13
+- Level 4 K/12-14; 15-16
+- Level 4 K/12-16
+- Level 4 K/13,15
+- Level 4 K/14-15
+- Level 4 K/14-17.6
+- Level 4 K/17, J/33
+- Level 4 K/17-29, 30-32
+- Level 4 K/17.2-18
+- Level 4 K/17.5-29, 30-32
+- Level 4 K/18 Stair 64
+- Level 4 K/18 Stair 64 (exclude landing and columns
+- Level 4 K/18 Stair 64 (exclude landing and columns)
+- Level 4 K/18 Stairs 3 Ceiling
+- Level 4 K/18-19
+- Level 4 K/18-21
+- Level 4 K/19.5-22
+- Level 4 K/20 -29
+- Level 4 K/20-21
+- Level 4 K/20-29
+- Level 4 K/21-22
+- Level 4 K/21-22.5, 23-29
+- Level 4 K/21-29
+- Level 4 K/22-23
+- Level 4 K/22-25
+- Level 4 K/23 W,E & N wall stair 4
+- Level 4 K/25,27,30
+- Level 4 K/25,28,29-30,31
+- Level 4 K/25-29
+- Level 4 K/27-28, 24-26, 23-24
+- Level 4 K/28-29
+- Level 4 K/29-.29.5
+- Level 4 K/29-30
+- Level 4 K/29-33
+- Level 4 K/3-4
+- Level 4 K/3-4, 29-33
+- Level 4 K/3.3-4
+- Level 4 K/3.5-5
+- Level 4 K/30-31
+- Level 4 K/30-32
+- Level 4 K/31-32
+- Level 4 K/31-33; L-M/3
+- Level 4 K/32,33
+- Level 4 K/32-33
+- Level 4 K/4-18
+- Level 4 K/4-5 Shaft walls
+- Level 4 K/4-5 Southwest Penthouse
+- Level 4 K/5 Column
+- Level 4 K/5-10
+- Level 4 K/5-10.5,12.5-16
+- Level 4 K/5-16
+- Level 4 K/5-6
+- Level 4 K/6-7
+- Level 4 K/7-12
+- Level 4 K/7-13
+- Level 4 K14-15
+- Level 4 K17.2-18
+- Level 4 K18-21
+- Level 4 K20-21
+- Level 4 K21-22
+- Level 4 K28-29
+- Level 4 K3-32
+- Level 4 K3-4
+- Level 4 K30-31
+- Level 4 K31-32
+- Level 4 L & M/6-26
+- Level 4 L 17-18 VOC
+- Level 4 L&M /9
+- Level 4 L-K/5
+- Level 4 L-L.5 3-4
+- Level 4 L-L.5/ 3-4
+- Level 4 L-L.5/16.8-17.8
+- Level 4 L-L.5/17-18 VOC Room
+- Level 4 L-L.5/18 VOC Room Awning
+- Level 4 L-L.5/3-4
+- Level 4 L-L.5/31-32 Elevator 5
+- Level 4 L-L.5/31-32 elevator 5 mezzanine
+- Level 4 L-L.5/31.3 Elevator 5
+- Level 4 L-L.5/31.3 elevator 5 south wall
+- Level 4 L-L.5/32 Elevator 5 North knee wall
+- Level 4 L-L.5/32 Norh knee wall
+- Level 4 L-L.5/32 North knee wall
+- Level 4 L-L.5/5-6
+- Level 4 L-L5/31.3 elevator 5 south/ wall
+- Level 4 L-M.5/3 SW Penthouse
+- Level 4 L-M.5/32.7
+- Level 4 L-M/19-31
+- Level 4 L-M/2.6
+- Level 4 L-M/2.6 Ramp
+- Level 4 L-M/31 Ramp Pad
+- Level 4 L-M/5 Awnings
+- Level 4 L-M/5; L/3-5 Subfloor
+- Level 4 L-N/3-9 NCR-0150
+- Level 4 L-N/31
+- Level 4 L-N/33 Backside Stiffeners
+- Level 4 L-N/5
+- Level 4 L-N/5-18
+- Level 4 L-N/5-19
+- Level 4 L.4-H/33
+- Level 4 L.5 /3.3-3.9 Elevator 1
+- Level 4 L.5-C/31.3 Elevator 18 knee wall S
+- Level 4 L.5-C/32 Elevator 18 knee wall N
+- Level 4 L.5-M/21-24 & Pedestal M/30
+- Level 4 L.5-M/31-32
+- Level 4 L.5-M/31-32.5 Ramp 3203
+- Level 4 L.5-M/31-32.6
+- Level 4 L.5-M/32
+- Level 4 L.5-N/5 & L/3-5
+- Level 4 L.5-N/5-6
+- Level 4 L.5-N/5-6 SUW
+- Level 4 L.5/3.3-3.9 Elevator 1
+- Level 4 L.5/3.3-4 Elevator 1
+- Level 4 L.5/31-32
+- Level 4 L.5/5 roof ramp 1
+- Level 4 L.5/5 roof stair R1
+- Level 4 L/10
+- Level 4 L/12-14; M/5-9 & N/5-13
+- Level 4 L/15-18
+- Level 4 L/16
+- Level 4 L/16-18 VOAC Room
+- Level 4 L/17
+- Level 4 L/17 (VOC ROOM)
+- Level 4 L/17, J/33
+- Level 4 L/17-18
+- Level 4 L/17-18 Stair 3
+- Level 4 L/17-18 VOC Room
+- Level 4 L/18
+- Level 4 L/18 roof stair #R12
+- Level 4 L/18.5 Stair 65
+- Level 4 L/19
+- Level 4 L/19 Expansion Joint
+- Level 4 L/19-31
+- Level 4 L/2
+- Level 4 L/2.5-3.8
+- Level 4 L/2.5-4
+- Level 4 L/21
+- Level 4 L/22-23 & 25-26
+- Level 4 L/23-24 Stair 4
+- Level 4 L/26
+- Level 4 L/29
+- Level 4 L/3 Stair 79
+- Level 4 L/3-17, 20-31
+- Level 4 L/3-3.4 SW Penthouse
+- Level 4 L/3.5-4.5
+- Level 4 L/3.7-4.8
+- Level 4 L/30-31
+- Level 4 L/32 Elevator 5
+- Level 4 L/4.4-4.8 IT Room 1
+- Level 4 L/5 & 16
+- Level 4 L/5 Ramp
+- Level 4 L/5 ramp
+- Level 4 L/5-32 NCR-474
+- Level 4 L/5-6
+- Level 4 L/5-6 & L-M/19-31
+- Level 4 L/6
+- Level 4 L/6-11
+- Level 4 L17-18 VOC
+- Level 4 M-M.3/3 Elev Machine Room W Wall
+- Level 4 M-M.4/3.4
+- Level 4 M-M.4/3.5
+- Level 4 M-M.5/31-32 NW Penthouse
+- Level 4 M-N/13-14
+- Level 4 M-N/19
+- Level 4 M-N/31
+- Level 4 M-N/31 NW Penthouse Knee Wall
+- Level 4 M-N/31-32
+- Level 4 M-N/31.1-32
+- Level 4 M-N/5-6
+- Level 4 M.3/2.8-3.4 Elevator Machine Room
+- Level 4 M.3/2.8-3.4 Elevator machine room
+- Level 4 M.3/3.2-.3.5
+- Level 4 M.3/3.2-3.5
+- Level 4 M.3/31-32 NW Penthouse W Face
+- Level 4 M.5-N/1
+- Level 4 M.5-N/31 Frame modification
+- Level 4 M.5/19; N/9-22.5; A/1-3; Level 1 C/29 Machine Room
+- Level 4 M.5/2.6 Stair 60
+- Level 4 M.5/3.2-3.4
+- Level 4 M.5/31 Stair R18
+- Level 4 M.5/31-32.3 North West Penthouse 1/0 Room
+- Level 4 M/ 3.3 -3.9 Elevator 1
+- Level 4 M/10-18
+- Level 4 M/2.5-3 MCC Room Bottom
+- Level 4 M/2.8-3.4
+- Level 4 M/2.8-3.4 SW Penthouse
+- Level 4 M/2.8-3.5 Elevator Machine Room Interior
+- Level 4 M/3
+- Level 4 M/3-3.5 Lower Section
+- Level 4 M/3-3.5 SW Duct Shaft
+- Level 4 M/3-3.5 SW Penthouse S&E&W Wall
+- Level 4 M/3.2 ( West Wall, West Face)
+- Level 4 M/3.3-3.9 Elevator 1
+- Level 4 M/3.4-3.5
+- Level 4 M/3.5-4
+- Level 4 M/30
+- Level 4 M/31-32 Column
+- Level 4 M/31-32 Columns 3
+- Level 4 M/31-32 NW Penthouse
+- Level 4 M/31-32 columns
+- Level 4 M/31-32.3 NW PH I/O Room Exterior W Wall
+- Level 4 M/31-32.6
+- Level 4 M/4-5
+- Level 4 M/5, 30
+- Level 4 M3-3.5 SW Penthouse S&E&W Wall
+- Level 4 MCC Room 1 Goalpost E,W Face
+- Level 4 MCC Room B-B.3/3.5 lower wall
+- Level 4 MCC Room SW PH
+- Level 4 N/1
+- Level 4 N/1 Post Install Embed
+- Level 4 N/1-3
+- Level 4 N/1-3 FIZ
+- Level 4 N/1-6, 9-17
+- Level 4 N/10-12
+- Level 4 N/12-13
+- Level 4 N/12-13, 14-15
+- Level 4 N/12-16
+- Level 4 N/12-17
+- Level 4 N/13-15
+- Level 4 N/13.5-17
+- Level 4 N/15-16.5, 20-21.3
+- Level 4 N/15-16.8; 20-21.3
+- Level 4 N/15.5-17.4
+- Level 4 N/16.5-17, 18-18.5
+- Level 4 N/16.5-17, 19.1-20
+- Level 4 N/18-19
+- Level 4 N/18-19.1
+- Level 4 N/18.5-19.5 (Exclude Expansion Joint at N/19)
+- Level 4 N/18.9-19.1
+- Level 4 N/19
+- Level 4 N/19-20
+- Level 4 N/19-30
+- Level 4 N/19.1-19.5 (Exclude Expansion Joint at N/
+- Level 4 N/19.1-19.5 (Exclude Expansion Joint at N/19)
+- Level 4 N/20-21
+- Level 4 N/21-23
+- Level 4 N/21-31
+- Level 4 N/22.8; 25-26
+- Level 4 N/22.8; N/25-26
+- Level 4 N/22.8; N/25.8
+- Level 4 N/23-24, 25-26, 27.5-28
+- Level 4 N/26-29
+- Level 4 N/26-31
+- Level 4 N/29-31
+- Level 4 N/3 Column
+- Level 4 N/3 Electrical Room
+- Level 4 N/3 electrical room
+- Level 4 N/3-33
+- Level 4 N/30.5-31 Interior
+- Level 4 N/31 column
+- Level 4 N/31-32 Columns
+- Level 4 N/32 Column
+- Level 4 N/32 Columns
+- Level 4 N/5-10
+- Level 4 N/5-12, 16.5-14.5
+- Level 4 N/5-7
+- Level 4 N/6-7
+- Level 4 N/7-12
+- Level 4 N/9-10
+- Level 4 N/9-13.5
+- Level 4 N/9-19
+- Level 4 N5-12, 16.5-14.5
+- Level 4 NW PH L-N/31
+- Level 4 Northeast Penthouse 1/0 Room Forth Wall
+- Level 4 OAC Pad B/11
+- Level 4 Penthouse A-B/3.5
+- Level 4 Penthouse South A-B/3
+- Level 4 Penthouse South A-B/3.5
+- Level 4 Penthouse South B-C/3.5
+- Level 4 Penthouse Southeast A-C/5
+- Level 4 Penthouse Southwest K.6-L
+- Level 4 Penthouse Southwest L 3-5 Lower
+- Level 4 Penthouse Southwest L-M/3.5 Upper
+- Level 4 Penthouse Southwest L.6-L.9/3.3
+- Level 4 Penthouse Southwest L/3-4.5
+- Level 4 Penthouse Southwest N-M/4.5; M/4-5
+- Level 4 Ramp Pad L-M/31
+- Level 4 SE Penthouse B-C/5
+- Level 4 SE Penthouse B.5/3 corner
+- Level 4 SE Penthouse MCC
+- Level 4 SUE 4 D/16-17
+- Level 4 SUE 5 line ramp 3206
+- Level 4 SUE A-B.5/11
+- Level 4 SUE A-B.5/12-14
+- Level 4 SUE A-B.5/12-15
+- Level 4 SUE A-B.5/12-18
+- Level 4 SUE A-B.5/16-3-17.6
+- Level 4 SUE A-B.5/16.3,17.6,20,21
+- Level 4 SUE A-B.5/16.3-17.6
+- Level 4 SUE A-B.5/20
+- Level 4 SUE A-B.5/20-21
+- Level 4 SUE A-B.5/20-22 Topping Airlocks
+- Level 4 SUE A-B.5/21
+- Level 4 SUE A-B.5/22.6,24,25.3
+- Level 4 SUE A-B.5/22.6-25.3
+- Level 4 SUE A-B.5/26-28
+- Level 4 SUE A-B.5/26.6
+- Level 4 SUE A-B.5/27-28
+- Level 4 SUE A-B.5/28
+- Level 4 SUE A-B.5/4
+- Level 4 SUE A-B.5/4-5
+- Level 4 SUE A-B.5/5-6
+- Level 4 SUE A-B.5/5-7.3
+- Level 4 SUE A-B.5/5-7.33
+- Level 4 SUE A-B.5/7.3-11.5
+- Level 4 SUE A-B.5/8.3
+- Level 4 SUE A-B.5/9.6
+- Level 4 SUE A-B.5/9.6,11
+- Level 4 SUE A-B/16-18 Airlocks
+- Level 4 SUE A-B/16.3, 17.6
+- Level 4 SUE A-B/19
+- Level 4 SUE A-B/28-31
+- Level 4 SUE A-B/3.1
+- Level 4 SUE A-B/3.1 S Face
+- Level 4 SUE A-B/31-32
+- Level 4 SUE A-B/33 Exterior
+- Level 4 SUE A-B/7
+- Level 4 SUE A-B/9-11
+- Level 4 SUE A-C/17.5-19 Pedestal Baseplates
+- Level 4 SUE A-C/19
+- Level 4 SUE A-C/28-31
+- Level 4 SUE A-C/28-31; Level 3 L,M/17 Pedestal Bas
+- Level 4 SUE A-C/28-31; Level 3 L,M/17 Pedestal Baseplates
+- Level 4 SUE A-C/29-31 Topping slab
+- Level 4 SUE A-C/31
+- Level 4 SUE A-C/31 & B/31-33 outside stiffeners on
+- Level 4 SUE A-C/31, B&B.5/31-33 SE Penthouse
+- Level 4 SUE A-C/31, B/31-33 SE Penthouse
+- Level 4 SUE A-C/31-33
+- Level 4 SUE A-C/31; B/31-32
+- Level 4 SUE A-C/33 Exterior
+- Level 4 SUE A-C/33 Exterior (under penthouse)
+- Level 4 SUE A-C/33 Shaftliner
+- Level 4 SUE A-C/4
+- Level 4 SUE A-C/4-5
+- Level 4 SUE A-C/5
+- Level 4 SUE A-C/5-11
+- Level 4 SUE A-C/5-11; 2.6-3
+- Level 4 SUE A-C/5-12
+- Level 4 SUE A-C/5-6
+- Level 4 SUE A-C/5-6 Topping
+- Level 4 SUE A-C/5-7.3
+- Level 4 SUE A-C/7
+- Level 4 SUE A-C/7-11 Pedestals
+- Level 4 SUE A-C/7-8
+- Level 4 SUE A-C/8
+- Level 4 SUE A.5-B/3.1 (openings only)
+- Level 4 SUE A.5-B/3.1 MCC Room 1 (only Opening)
+- Level 4 SUE A.5/4.6 ( IO room #1) fab 146107 South wall North face
+- Level 4 SUE A/1-1.5
+- Level 4 SUE A/1-3
+- Level 4 SUE A/1.5-3
+- Level 4 SUE A/11-13
+- Level 4 SUE A/12-13.5
+- Level 4 SUE A/12.3-16
+- Level 4 SUE A/12.3-19
+- Level 4 SUE A/12.5-17
+- Level 4 SUE A/13-19
+- Level 4 SUE A/13.5-17
+- Level 4 SUE A/13.6-16.3
+- Level 4 SUE A/13.6-17.6
+- Level 4 SUE A/13.6-17.6 & 29.4-30
+- Level 4 SUE A/13.6-19.3
+- Level 4 SUE A/16-19
+- Level 4 SUE A/16-24
+- Level 4 SUE A/16-24.3
+- Level 4 SUE A/16.3
+- Level 4 SUE A/16.3-19
+- Level 4 SUE A/17-18
+- Level 4 SUE A/17-19
+- Level 4 SUE A/18-31
+- Level 4 SUE A/19
+- Level 4 SUE A/19-21
+- Level 4 SUE A/19-21.3
+- Level 4 SUE A/19-22
+- Level 4 SUE A/19-23; 25.3-26.6
+- Level 4 SUE A/19-24
+- Level 4 SUE A/19-27
+- Level 4 SUE A/19.3-13.6
+- Level 4 SUE A/2-3
+- Level 4 SUE A/20
+- Level 4 SUE A/20-22.6
+- Level 4 SUE A/20-27
+- Level 4 SUE A/20-29
+- Level 4 SUE A/21-26
+- Level 4 SUE A/21-29.3, 29.5-31
+- Level 4 SUE A/21.3-22.6
+- Level 4 SUE A/22-24
+- Level 4 SUE A/22.6-25
+- Level 4 SUE A/22.6-29, 29.5-30
+- Level 4 SUE A/24-24.3
+- Level 4 SUE A/24-28
+- Level 4 SUE A/24.3-25
+- Level 4 SUE A/25-25.6
+- Level 4 SUE A/25-29
+- Level 4 SUE A/25.3-26.6
+- Level 4 SUE A/25.3-29.5
+- Level 4 SUE A/25.6-26.5
+- Level 4 SUE A/25.6-31
+- Level 4 SUE A/26-29.3
+- Level 4 SUE A/26.6-29.3
+- Level 4 SUE A/27-31
+- Level 4 SUE A/29.5-31
+- Level 4 SUE A/3-5 (underneath Penthouse)
+- Level 4 SUE A/3-5 MCC Room
+- Level 4 SUE A/3-5 MCC Room 1
+- Level 4 SUE A/3-5 SE PH
+- Level 4 SUE A/3-5 Under PH
+- Level 4 SUE A/30-29.5
+- Level 4 SUE A/31,32,33 Column
+- Level 4 SUE A/31-32 Column
+- Level 4 SUE A/31-33
+- Level 4 SUE A/31-33 MCC Room
+- Level 4 SUE A/31-33 MCC Room (Top & Bottom)
+- Level 4 SUE A/33 Column
+- Level 4 SUE A/4 Electrical Room Column
+- Level 4 SUE A/4,5 MCC Room 1 Column
+- Level 4 SUE A/5 Column
+- Level 4 SUE A/5-6
+- Level 4 SUE A/5-7
+- Level 4 SUE A/5-9
+- Level 4 SUE A/5-9.6
+- Level 4 SUE A/6 (only 4 ft)
+- Level 4 SUE A/6-12
+- Level 4 SUE A/7-13
+- Level 4 SUE A/7-9
+- Level 4 SUE A/7-9.6
+- Level 4 SUE A/7.5-13
+- Level 4 SUE A/8-11
+- Level 4 SUE A/8-9, A/24-28
+- Level 4 SUE A/8.3-9.6
+- Level 4 SUE A/9-13.5
+- Level 4 SUE A/9-14
+- Level 4 SUE A/9.6-11
+- Level 4 SUE A/9.6-13.6
+- Level 4 SUE Airlocks A-B.5/25-28
+- Level 4 SUE Airlocks A-B/16-18
+- Level 4 SUE Airlocks A-B/16-18; Level 1 Ramp L/19
+- Level 4 SUE B-B.5/30-31
+- Level 4 SUE B-B.5/30.31
+- Level 4 SUE B-B.5/30.5-31
+- Level 4 SUE B-B.5/30.5-32
+- Level 4 SUE B-B.5/31-31.5 NE Breezeway
+- Level 4 SUE B-B.5/32 N/E Breezeway
+- Level 4 SUE B-B.5/5
+- Level 4 SUE B-C/11-17
+- Level 4 SUE B-C/11-17.5
+- Level 4 SUE B-C/11-17.6
+- Level 4 SUE B-C/11-18
+- Level 4 SUE B-C/11-29 Intermediate Walls
+- Level 4 SUE B-C/15-17
+- Level 4 SUE B-C/17-20
+- Level 4 SUE B-C/19
+- Level 4 SUE B-C/20-22
+- Level 4 SUE B-C/22-24
+- Level 4 SUE B-C/24-26
+- Level 4 SUE B-C/24-27
+- Level 4 SUE B-C/24-28
+- Level 4 SUE B-C/24-28.5
+- Level 4 SUE B-C/24.5-26.5
+- Level 4 SUE B-C/26-27.5
+- Level 4 SUE B-C/26-28
+- Level 4 SUE B-C/26.6-28
+- Level 4 SUE B-C/28-30
+- Level 4 SUE B-C/28-31
+- Level 4 SUE B-C/31-32 Ramp Columns
+- Level 4 SUE B-C/33 Exterior
+- Level 4 SUE B-C/4-5
+- Level 4 SUE B-C/4.5-5
+- Level 4 SUE B-C/5
+- Level 4 SUE B-C/5 Ramp
+- Level 4 SUE B-C/5 Ramp seq. 3206
+- Level 4 SUE B.4/4.6 IO 1 (FAB146107A)
+- Level 4 SUE B.4/4.6 IO Room 1 (FAB146107A)
+- Level 4 SUE B.5-B/31-33
+- Level 4 SUE B.5-C/11-11.5
+- Level 4 SUE B.5-C/11-12
+- Level 4 SUE B.5-C/11-15
+- Level 4 SUE B.5-C/11-18
+- Level 4 SUE B.5-C/17-20
+- Level 4 SUE B.5-C/19.8-22.6
+- Level 4 SUE B.5-C/20-22
+- Level 4 SUE B.5-C/20-22.6
+- Level 4 SUE B.5-C/20-24
+- Level 4 SUE B.5-C/22-24
+- Level 4 SUE B.5-C/22.6-24
+- Level 4 SUE B.5-C/24-28 Topping
+- Level 4 SUE B.5-C/5-10
+- Level 4 SUE B.5-C/5-12
+- Level 4 SUE B.5-C/5-6
+- Level 4 SUE B.5-C/5-7
+- Level 4 SUE B.5-C/5-8
+- Level 4 SUE B.5-C/8-10
+- Level 4 SUE B.5-c/11-12
+- Level 4 SUE B.5/24-25
+- Level 4 SUE B.5/31-32; SUW L.5-M/31-32
+- Level 4 SUE B.5/31.2-32 Elevator 18 E Face
+- Level 4 SUE B.5/5-14 and Pedestal B.5/16.3
+- Level 4 SUE B.5/5-6
+- Level 4 SUE B.5/7-11
+- Level 4 SUE B.5/7-17 Topping Leaveouts
+- Level 4 SUE B.5/7.3-11
+- Level 4 SUE B/2.5 Column
+- Level 4 SUE B/2.8-3.1
+- Level 4 SUE B/2.8-3.1 Shaft Room Exterior
+- Level 4 SUE B/2.9-3.1 Column
+- Level 4 SUE B/2.9-3.1 Shaft Room
+- Level 4 SUE B/2.9-3.1 W Face Exterior
+- Level 4 SUE B/2.9-3.1 W Face Exterior (excluding c
+- Level 4 SUE B/2.9-3.1 W Face Exterior (excluding column)
+- Level 4 SUE B/3.5-4 MCC ROOM goalpost W,E Face, from 12' up
+- Level 4 SUE B/33 Column
+- Level 4 SUE B/33 NE Penthouse Column
+- Level 4 SUE B/4 Electrical Room Column
+- Level 4 SUE B/4 IO Room 1 W & E Face (FAB146107A)
+- Level 4 SUE B/4.3 Door fab 146106 West face Right side CJ only
+- Level 4 SUE B/4.6 MCC room (Left CJ only)
+- Level 4 SUE C /4.1 Fire Alarm 22 N wall South face
+- Level 4 SUE C-C.2/5
+- Level 4 SUE C-C.3/5 (exclude cj)
+- Level 4 SUE C-C.5 Fire Alarm 18
+- Level 4 SUE C-C.9/4.8 Face N
+- Level 4 SUE C-C.9/4.8 N Face
+- Level 4 SUE C-D/ 25-28
+- Level 4 SUE C-D/13-17
+- Level 4 SUE C-D/20-24
+- Level 4 SUE C-D/25-28
+- Level 4 SUE C-D/29-32
+- Level 4 SUE C-D/32
+- Level 4 SUE C-D/32 Column
+- Level 4 SUE C-D/32 NE PH S Face
+- Level 4 SUE C-D/32-32.1 Face N
+- Level 4 SUE C-D/32-32.1 N Face
+- Level 4 SUE C-D/4 SE PENTHOUSE
+- Level 4 SUE C-D/4 SE Penthouse S Face
+- Level 4 SUE C.2-D/5 Stair 22 S Wall
+- Level 4 SUE C.3-C/5
+- Level 4 SUE C.3-D/5 Stair 22 S Wall
+- Level 4 SUE C.3/18-18.8 E Wall
+- Level 4 SUE C.3/18-18.8 Stair 20 E Wall
+- Level 4 SUE C.5/32-32.7
+- Level 4 SUE C/13-18
+- Level 4 SUE C/18 Column
+- Level 4 SUE C/18 column.
+- Level 4 SUE C/18-19 Stair
+- Level 4 SUE C/18-26
+- Level 4 SUE C/18-33
+- Level 4 SUE C/19 Column
+- Level 4 SUE C/19 column.
+- Level 4 SUE C/19-20
+- Level 4 SUE C/19-20.
+- Level 4 SUE C/2.5-3 E Wall W Face (exclude Columns
+- Level 4 SUE C/2.5-3 E Wall W Face (exclude Columns)
+- Level 4 SUE C/2.5-3 W Face (including Column)
+- Level 4 SUE C/2.8 E face upper duct-shaft FAB146101B
+- Level 4 SUE C/2.8 West face upper door ( fab 146101B)
+- Level 4 SUE C/24-28
+- Level 4 SUE C/3 Column
+- Level 4 SUE C/3-4 Duct Shaft E Wall W Face
+- Level 4 SUE C/3-4 Elev Hall 22
+- Level 4 SUE C/3.3 Duct shaft East wall West face
+- Level 4 SUE C/3.3 Ductshaft E wall E face
+- Level 4 SUE C/3.9 Duct Shaft (Door Lower)
+- Level 4 SUE C/30.1
+- Level 4 SUE C/30.9-31.3
+- Level 4 SUE C/32
+- Level 4 SUE C/32 FA 18
+- Level 4 SUE C/32 N Face (FAB146507C)
+- Level 4 SUE C/32.8 FA 18 (FAB146506A) E Face
+- Level 4 SUE C/32.8 FA 18 (FAB146506A) E,W Face
+- Level 4 SUE C/32.8 FA 18 E Face (FAB146506A)
+- Level 4 SUE C/32.8 FA 18 E,W Face (FAB146506A)
+- Level 4 SUE C/32.8 Fire Alarm 18
+- Level 4 SUE C/33 Column
+- Level 4 SUE C/33 NE Penthouse Column
+- Level 4 SUE C/4
+- Level 4 SUE C/4 Shaft door lower duct
+- Level 4 SUE C/4.1 FA 22 (FAB146102A)
+- Level 4 SUE C/4.1 FA 22 S Wall N Face
+- Level 4 SUE C/4.1 FAB 146102A.
+- Level 4 SUE C/4.1 Fa 22 S wall face N
+- Level 4 SUE C/4.1 Fire Alarm 22 East wall East face
+- Level 4 SUE C/5 SE-PH Column
+- Level 4 SUE C/5 Stair Posts
+- Level 4 SUE C/5 column
+- Level 4 SUE C/5-17
+- Level 4 SUE C/5-17 Topping
+- Level 4 SUE C/5-28.5
+- Level 4 SUE C/5-32
+- Level 4 SUE C/6-13
+- Level 4 SUE C4
+- Level 4 SUE D /16-32
+- Level 4 SUE D /3-16
+- Level 4 SUE D /3-17
+- Level 4 SUE D /3-18
+- Level 4 SUE D /3-19
+- Level 4 SUE D /3-20
+- Level 4 SUE D /3-21
+- Level 4 SUE D /3-22
+- Level 4 SUE D /3-32
+- Level 4 SUE D-E/10-14
+- Level 4 SUE D-E/12-14
+- Level 4 SUE D-E/14-10
+- Level 4 SUE D-E/14-17
+- Level 4 SUE D-E/14-19
+- Level 4 SUE D-E/14-20
+- Level 4 SUE D-E/17
+- Level 4 SUE D-E/17-18
+- Level 4 SUE D-E/18-20
+- Level 4 SUE D-E/18-32
+- Level 4 SUE D-E/19-22
+- Level 4 SUE D-E/20-22
+- Level 4 SUE D-E/20-30
+- Level 4 SUE D-E/22-19
+- Level 4 SUE D-E/22-25
+- Level 4 SUE D-E/23-28
+- Level 4 SUE D-E/25-28
+- Level 4 SUE D-E/25-30
+- Level 4 SUE D-E/26.5-28
+- Level 4 SUE D-E/28-31
+- Level 4 SUE D-E/29-31
+- Level 4 SUE D-E/3-4.5
+- Level 4 SUE D-E/3-5
+- Level 4 SUE D-E/3-6
+- Level 4 SUE D-E/30-33
+- Level 4 SUE D-E/31-33
+- Level 4 SUE D-E/33 Exterior
+- Level 4 SUE D-E/33 Interior Parapet S Wall
+- Level 4 SUE D-E/4.5-6
+- Level 4 SUE D-E/5-7
+- Level 4 SUE D-E/6-8
+- Level 4 SUE D-E/7-10
+- Level 4 SUE D-E/8-10
+- Level 4 SUE D-E/8-9
+- Level 4 SUE D/13 Stair 21 Ceiling
+- Level 4 SUE D/13 Stair 21 E Wall
+- Level 4 SUE D/13 Stair 21 N Wall (Stair Rm)
+- Level 4 SUE D/13 Stair 21 N Wall (Transition to 4
+- Level 4 SUE D/13 Stair 21 N Wall (Transition to 4 only)
+- Level 4 SUE D/13 Stair 21 Room E,W Wall
+- Level 4 SUE D/13 Stair 21 Room N,S Wall
+- Level 4 SUE D/13 Stair 21 ceiling
+- Level 4 SUE D/14-15
+- Level 4 SUE D/15-16
+- Level 4 SUE D/16-17
+- Level 4 SUE D/17
+- Level 4 SUE D/18 (upper column only 6ft)
+- Level 4 SUE D/18 (upper column portion only 6ft)
+- Level 4 SUE D/18 Column (Only top 6')
+- Level 4 SUE D/18 Column (Upper portion only)
+- Level 4 SUE D/18-19
+- Level 4 SUE D/19 Column (Only top 6')
+- Level 4 SUE D/19 Column (only upper 6ft)
+- Level 4 SUE D/19 Column (upper 6 ft. only)
+- Level 4 SUE D/19-25
+- Level 4 SUE D/2-3
+- Level 4 SUE D/2.5 Column
+- Level 4 SUE D/20-21
+- Level 4 SUE D/20-24.5
+- Level 4 SUE D/21
+- Level 4 SUE D/21-22
+- Level 4 SUE D/22-23
+- Level 4 SUE D/22-25
+- Level 4 SUE D/23-24
+- Level 4 SUE D/24-24.5
+- Level 4 SUE D/25-19
+- Level 4 SUE D/3 Column
+- Level 4 SUE D/3-13
+- Level 4 SUE D/3-4
+- Level 4 SUE D/3-4 Knee Wall Duct Shaft W Wall E Face
+- Level 4 SUE D/3-4 knee wall duct shaft W wall face E
+- Level 4 SUE D/32 Column
+- Level 4 SUE D/32 column
+- Level 4 SUE D/33 Column (4 Foot and up only)
+- Level 4 SUE D/4 NE Penthouse Column
+- Level 4 SUE D/5 Column
+- Level 4 SUE D/5 Stair 22 S Wall
+- Level 4 SUE D/5-6
+- Level 4 SUE D/6-11
+- Level 4 SUE E/17-18 (walkable ceiling)
+- Level 4 SUE E/19-25
+- Level 4 SUE E/29-33
+- Level 4 SUE Elevator 22
+- Level 4 SUE FA Room 22 (Only East of Expansion Joint)
+- Level 4 SUE FA Room 22 (West of Expansion Joint)
+- Level 4 SUE IO Room 2 N Wall (only opening area)
+- Level 4 SUE IO Room 2 N Wall N,S Face (only Openin
+- Level 4 SUE IO Room 2 N Wall N,S Face (only Opening area)
+- Level 4 SUE IT Room 22 SE Penthouse Interior N,E W
+- Level 4 SUE IT Room 22 SE Penthouse Interior N,E Wall
+- Level 4 SUE IT Security 22 E,N Wall
+- Level 4 SUE IT Security Room 22 Exterior N Face
+- Level 4 SUE IT Security Room 22 Interior N,E Wall
+- Level 4 SUE IT Security Room 22 North & East Inter
+- Level 4 SUE IT Security Room 22 North & East Interior Walls
+- Level 4 SUE IT Security Room 22 S Wall
+- Level 4 SUE Intermediate Wall L-M/8
+- Level 4 SUE Intermediate Walls B-C/11-29
+- Level 4 SUE Intermediate Walls B-C/17, 20, 23, 29
+- Level 4 SUE Intermediate Walls B.5-C/8,11
+- Level 4 SUE Intermediate walls B-C/17, 20, 23, 29
+- Level 4 SUE L-M/6-23
+- Level 4 SUE L/19
+- Level 4 SUE N-L/5 PH
+- Level 4 SUE N/1.3-3
+- Level 4 SUE NE PH A-B/31 & B/31-32.3
+- Level 4 SUE Pad A.5-B/5-5.3
+- Level 4 SUE Pedestal B/6
+- Level 4 SUE Pedestal Baseplates A-C/13.6-15
+- Level 4 SUE Pedestal Baseplates A-C/15-18
+- Level 4 SUE Pedestal Baseplates A-C/20-21.5
+- Level 4 SUE Pedestal Baseplates A-C/24-26; Level 1
+- Level 4 SUE Pedestal Baseplates A-C/24-26; Level 1 North Pit M/23
+- Level 4 SUE Pedestal Baseplates A-C/25-26.6
+- Level 4 SUE Pedestal Baseplates A-C/25-28
+- Level 4 SUE Pedestal Baseplates A-C/5-7
+- Level 4 SUE Pedestal Baseplates A-C/9.5-11; Level 4 SUE B.5-C/5-6
+- Level 4 SUE Pedestal Baseplates B.5/5-6
+- Level 4 SUE Pedestal Baseplates GL A,B.6,C/8.3-12.3
+- Level 4 SUE Stair 21 ceiling
+- Level 4 SUE Stair Posts C/18,26, B/32; SUW Stair Posts L/5; FIZ Stair Posts M/3, B.5/2.5
+- Level 4 SUE Topping A-C/5-12
+- Level 4 SUE Topping A-C/5-6
+- Level 4 SUE Topping Airlocks A-B.5/12.5-15
+- Level 4 SUE Topping Airlocks A-B.5/12.5-15 & Topping Slab D-E/18-22
+- Level 4 SUE Topping Airlocks A-B.5/20-22
+- Level 4 SUE Topping Airlocks A-B.5/20-24.3
+- Level 4 SUE Topping Airlocks A-B.5/22.5-24.3
+- Level 4 SUE Topping B-C/17-24
+- Level 4 SUE Topping B.5-C/24-28
+- Level 4 SUE Topping C/5-17
+- Level 4 SUE Wall B.5/8-8.5
+- Level 4 SUE Walls A/11-16
+- Level 4 SUE Walls A/12.3-17
+- Level 4 SUE Walls A/19, 20, 27, 28
+- Level 4 SUE Walls A/19-29
+- Level 4 SUE Walls A/21.5-25.5
+- Level 4 SUE Walls A/7-11.5
+- Level 4 SUE Walls B.5/24-25.5
+- Level 4 SUE Walls B.5/24-26
+- Level 4 SUE Walls B.5/24.5-25.5
+- Level 4 SUE roof stair #11 C/5
+- Level 4 SUE, GL: A/13.8-19
+- Level 4 SUW 34-35 Stair 5 Exterior N,E,W Wall
+- Level 4 SUW A/1-3
+- Level 4 SUW C/24-28
+- Level 4 SUW C/3-4 duct shaft E wall face w
+- Level 4 SUW C/33 Column
+- Level 4 SUW C/4.5 IT Security 22 East wall East face
+- Level 4 SUW D/5 stair #22 S wall S face
+- Level 4 SUW E/3-32
+- Level 4 SUW Elevator 1 N,E
+- Level 4 SUW Elevator 1 Pit Exterior N,E Wall
+- Level 4 SUW Elevator 1 W Wall E Face
+- Level 4 SUW Elevator 1B (Interior South ,West. Exterior east wall
+- Level 4 SUW Elevator 1B E Wall
+- Level 4 SUW FA # 5 East Wall West Face
+- Level 4 SUW FA 5 E Wall
+- Level 4 SUW FA 5 E Wall W Face
+- Level 4 SUW FA 5 Interior S,N Face
+- Level 4 SUW FA 5 N Wall N Face
+- Level 4 SUW FA 5 N,W, & S Walls
+- Level 4 SUW FA Room 5 N,W,S Walls
+- Level 4 SUW IT Security 5 N Wall
+- Level 4 SUW IT Security 5 N Wall N Face
+- Level 4 SUW IT Security 5 N Wall S Face
+- Level 4 SUW IT Security 5 N wall N Face
+- Level 4 SUW IT Security 5 S Wall
+- Level 4 SUW IT Security 5 S Wall N Face
+- Level 4 SUW IT Security 5 W Wall E Face
+- Level 4 SUW IT Security Room 5 S Wall (exclude column)
+- Level 4 SUW IT Security Room 5 S Wall N Face
+- Level 4 SUW IT Security S Wall
+- Level 4 SUW IT/Security 5 N Face
+- Level 4 SUW IT/Security 5 N Wall
+- Level 4 SUW Intermediate Wall L-M/8
+- Level 4 SUW Intermediate Walls L-N/26,29
+- Level 4 SUW Intermediate wall L-M/8
+- Level 4 SUW J-K/10-11.5
+- Level 4 SUW J-K/10-12,18-19
+- Level 4 SUW J-K/10-19
+- Level 4 SUW J-K/11,12,17
+- Level 4 SUW J-K/11-31
+- Level 4 SUW J-K/11.5-12.5, 16-17
+- Level 4 SUW J-K/12-16
+- Level 4 SUW J-K/12-18
+- Level 4 SUW J-K/12-19
+- Level 4 SUW J-K/14-19
+- Level 4 SUW J-K/16-19
+- Level 4 SUW J-K/19
+- Level 4 SUW J-K/19-22.5
+- Level 4 SUW J-K/19-23
+- Level 4 SUW J-K/19-23.5
+- Level 4 SUW J-K/19-23; 25-26.5
+- Level 4 SUW J-K/19-26
+- Level 4 SUW J-K/19-31
+- Level 4 SUW J-K/23.5-25
+- Level 4 SUW J-K/24-33
+- Level 4 SUW J-K/25-26.5
+- Level 4 SUW J-K/26-29
+- Level 4 SUW J-K/26-33
+- Level 4 SUW J-K/29-31
+- Level 4 SUW J-K/29-33
+- Level 4 SUW J-K/3
+- Level 4 SUW J-K/3-10
+- Level 4 SUW J-K/3-3.5
+- Level 4 SUW J-K/3-4.5
+- Level 4 SUW J-K/3-7
+- Level 4 SUW J-K/30
+- Level 4 SUW J-K/31-32
+- Level 4 SUW J-K/31-33
+- Level 4 SUW J-K/33
+- Level 4 SUW J-K/33 Exterior
+- Level 4 SUW J-K/33 Exterior (knee wall)
+- Level 4 SUW J-K/4-7
+- Level 4 SUW J-K/6-10
+- Level 4 SUW J-K/6-13
+- Level 4 SUW J-K/6-9
+- Level 4 SUW J-K/7-10
+- Level 4 SUW J-K/9-12,16-19
+- Level 4 SUW J-K/9-13
+- Level 4 SUW J-K/9-13,16-19
+- Level 4 SUW J-K/9/13
+- Level 4 SUW J-L/11,12,17
+- Level 4 SUW J/3-19
+- Level 4 SUW J/3-6
+- Level 4 SUW J/6.5-32
+- Level 4 SUW K /3-32
+- Level 4 SUW K-J/19-24
+- Level 4 SUW K-J/23-26
+- Level 4 SUW K-J/24-33
+- Level 4 SUW K-J/26.5-29.5
+- Level 4 SUW K-J/33 S Wall
+- Level 4 SUW K-L.9/17-18 (Transition level 3-4)
+- Level 4 SUW K-L/ 19-24
+- Level 4 SUW K-L/12-16
+- Level 4 SUW K-L/17.5-18.5
+- Level 4 SUW K-L/17.7 (Door)
+- Level 4 SUW K-L/17.8
+- Level 4 SUW K-L/17.8 Exterior
+- Level 4 SUW K-L/17.8 Interior
+- Level 4 SUW K-L/17.8 N Face
+- Level 4 SUW K-L/17.8 S Wall/S Face
+- Level 4 SUW K-L/18, 18.3
+- Level 4 SUW K-L/3-33 NCR 0150
+- Level 4 SUW K-L/30-32
+- Level 4 SUW K-L/4 South face (3rd & transition to 4th )
+- Level 4 SUW K-L/5
+- Level 4 SUW K-L/5 S Face (Exclude Open door)
+- Level 4 SUW K-L/6-10
+- Level 4 SUW K-L/6-9
+- Level 4 SUW K-N/3-5, L-M.5/2.5-3.5
+- Level 4 SUW K.3/32-32.2 IT Security 5 W Wall E,W F
+- Level 4 SUW K.3/32-32.2 IT Security 5 W Wall E,W Face
+- Level 4 SUW K.3/32-32.2 IT Security 5 W Wall W Fac
+- Level 4 SUW K.3/32-32.2 IT Security 5 W Wall W Face
+- Level 4 SUW K.3/32-32.2 IT Security W Wall
+- Level 4 SUW K.3/32.2-32.8 IT/Security 5 W Wall E Face
+- Level 4 SUW K.7-K.8/18
+- Level 4 SUW K.7-K.8/18 (transition level 3-4)
+- Level 4 SUW K.7-L/32
+- Level 4 SUW K.7/32.2-32.5 W wall E & W face IT sec
+- Level 4 SUW K.7/32.2-32.5 W wall E & W face IT security #5 (only opening)
+- Level 4 SUW K.7/32.3-32.4 IT Room 5 W Wall (only o
+- Level 4 SUW K.7/32.3-32.4 IT Room 5 W Wall (only opening)
+- Level 4 SUW K.7/32.3-32.4 IT Room W Wall E Face
+- Level 4 SUW K.8/18 (transition level 3-4)
+- Level 4 SUW K.9/17.7-18
+- Level 4 SUW K.9/17.7-18 (Transition lvl 3-4)
+- Level 4 SUW K/17-18 (walkable ceiling)
+- Level 4 SUW K/17.7-18.8
+- Level 4 SUW K/18 Column
+- Level 4 SUW K/18 Stair #3 ceiling
+- Level 4 SUW K/18 Stair 3 Interior W Wall
+- Level 4 SUW K/18 Stair 3 N Wall
+- Level 4 SUW K/18 stair #3 ceiling
+- Level 4 SUW K/18-18.7 Stair 3
+- Level 4 SUW K/2.5 (Column)
+- Level 4 SUW K/2.5 Column
+- Level 4 SUW K/2.6 Column
+- Level 4 SUW K/2.6-3
+- Level 4 SUW K/2.8 Column
+- Level 4 SUW K/3-33
+- Level 4 SUW K/30
+- Level 4 SUW K/31-32.5 NW PH
+- Level 4 SUW K/32 Column
+- Level 4 SUW K/32-32.9 E Face (Knee wall)
+- Level 4 SUW K/32-32.9 poni wall face east
+- Level 4 SUW K/32-33 Walkable Ceiling
+- Level 4 SUW K/32.8 I.T security #5 (Door Fab 140503A)
+- Level 4 SUW K/33 Column
+- Level 4 SUW K/33 Column NW PH E, W, S Face
+- Level 4 SUW K/33 NW PH
+- Level 4 SUW K/5 Column
+- Level 4 SUW K/5 Columns
+- Level 4 SUW K/5 Stair 1
+- Level 4 SUW K/5 Stair 1 S Wall S Face
+- Level 4 SUW K/5-11
+- Level 4 SUW L & M/19-26
+- Level 4 SUW L & M/9
+- Level 4 SUW L-L.5/17-18
+- Level 4 SUW L-L.5/17-18 VOC Room
+- Level 4 SUW L-L.5/21-24
+- Level 4 SUW L-L.5/24-26
+- Level 4 SUW L-L.5/24-27
+- Level 4 SUW L-L.5/26-29
+- Level 4 SUW L-L.5/32 North knee wall
+- Level 4 SUW L-L.5/5
+- Level 4 SUW L-L.5/5-6
+- Level 4 SUW L-L.5/6-8
+- Level 4 SUW L-L.5/8-9
+- Level 4 SUW L-M/13-19 Topping Slab Repair
+- Level 4 SUW L-M/17-18
+- Level 4 SUW L-M/17.5-18.5
+- Level 4 SUW L-M/18-19, N/19.5, 20.5
+- Level 4 SUW L-M/18-21
+- Level 4 SUW L-M/18.5-21
+- Level 4 SUW L-M/19
+- Level 4 SUW L-M/19-7
+- Level 4 SUW L-M/21-24
+- Level 4 SUW L-M/22-24
+- Level 4 SUW L-M/26-29
+- Level 4 SUW L-M/29-31
+- Level 4 SUW L-M/33 Exterior (under penthouse)
+- Level 4 SUW L-M/5
+- Level 4 SUW L-M/5-15
+- Level 4 SUW L-M/6-13
+- Level 4 SUW L-M/6-19 Topping
+- Level 4 SUW L-M/6-23
+- Level 4 SUW L-M/6-26
+- Level 4 SUW L-M/6-8
+- Level 4 SUW L-M/6-9
+- Level 4 SUW L-M/9
+- Level 4 SUW L-M/9-10
+- Level 4 SUW L-N/19
+- Level 4 SUW L-N/19-26 Topping Leaveouts
+- Level 4 SUW L-N/20-26
+- Level 4 SUW L-N/20-27 NCR 0150
+- Level 4 SUW L-N/26-29 Topping
+- Level 4 SUW L-N/26-30
+- Level 4 SUW L-N/30-33
+- Level 4 SUW L-N/31
+- Level 4 SUW L-N/31 & M/31-33
+- Level 4 SUW L-N/31, M/31-32
+- Level 4 SUW L-N/31; M/31-32
+- Level 4 SUW L-N/33 Exterior (under Penthouse)
+- Level 4 SUW L-N/33 Exterior (under penthouse)
+- Level 4 SUW L-N/33 NW PH
+- Level 4 SUW L-N/5
+- Level 4 SUW L-N/5-6
+- Level 4 SUW L-N/6-9
+- Level 4 SUW L-N/9
+- Level 4 SUW L-N/9-20
+- Level 4 SUW L.3-M.5/5
+- Level 4 SUW L.5-L/17-18
+- Level 4 SUW L.5-M/18-20
+- Level 4 SUW L.5-M/21-24
+- Level 4 SUW L.5-M/31-32
+- Level 4 SUW L.5-M/31-32 Topping
+- Level 4 SUW L.5-M/31.5-32
+- Level 4 SUW L.5-M/32
+- Level 4 SUW L.5-M/32.5
+- Level 4 SUW L.5-M/6-9
+- Level 4 SUW L.5-N/24-26
+- Level 4 SUW L.5-N/5
+- Level 4 SUW L.5-N/5-6
+- Level 4 SUW L.5/30.3, 30.6 & M.5/30.3, 30.6
+- Level 4 SUW L.5/31
+- Level 4 SUW L.5/31-32; Level 4 SUW M/32 Stair R3
+- Level 4 SUW L.5/31.2-32 Elevator 5 W Face
+- Level 4 SUW L.5/5
+- Level 4 SUW L/17
+- Level 4 SUW L/17 Upper Area Parapet E Wall
+- Level 4 SUW L/17 VOC CNTR ROOM E Wall
+- Level 4 SUW L/17 VOC CNTR Room
+- Level 4 SUW L/17 VOC CTR Room
+- Level 4 SUW L/17 VOC CTR Room (upper area)
+- Level 4 SUW L/17 VOC CTR Room Interior
+- Level 4 SUW L/17 VOCC ROOM
+- Level 4 SUW L/17 VOCC Room W Wall E Face (Upper le
+- Level 4 SUW L/17 VOCC Room W Wall E Face (Upper level parapet wall)
+- Level 4 SUW L/17 VOCC. CNTR. ROOM (upper area) Par
+- Level 4 SUW L/17 VOCC. CNTR. ROOM (upper area) Parapet Wall East
+- Level 4 SUW L/18
+- Level 4 SUW L/18 Column
+- Level 4 SUW L/18.3 (Door)
+- Level 4 SUW L/2.6 Column
+- Level 4 SUW L/2.6-3
+- Level 4 SUW L/2.6-3 (modified on door area)
+- Level 4 SUW L/2.6-3 Duct Shaft
+- Level 4 SUW L/2.6-3 Ductshaft Room
+- Level 4 SUW L/2.8 (FAB140104B) W Face Only
+- Level 4 SUW L/2.8 (Upper Duct Shaft / single door)
+- Level 4 SUW L/2.8 (upper ductshaft door)
+- Level 4 SUW L/2.8 Duct Shaft Door (Upper)
+- Level 4 SUW L/22-23,25-26
+- Level 4 SUW L/24-26
+- Level 4 SUW L/26-27
+- Level 4 SUW L/27-30
+- Level 4 SUW L/3 Column
+- Level 4 SUW L/3 Column (Inside duct shaft)
+- Level 4 SUW L/3 Column (Inside ductshaft)
+- Level 4 SUW L/3 Column Ductshaft Room
+- Level 4 SUW L/3-4 Ductshaft Room Interior
+- Level 4 SUW L/3-4 Shaft room
+- Level 4 SUW L/3.9 Lower duct-shaft FAB140104A -
+- Level 4 SUW L/30-31
+- Level 4 SUW L/30-31 & N/26-28
+- Level 4 SUW L/30.8-31.3
+- Level 4 SUW L/31.5, L-M/5-6, K/5-6
+- Level 4 SUW L/32 (single door)
+- Level 4 SUW L/32 FA 5 S Wall S Face
+- Level 4 SUW L/32.2-32.4 ( Opening Only )
+- Level 4 SUW L/32.2-32.4 FA #5 (opening only) W wall W face
+- Level 4 SUW L/32.2-32.4 W Wall E Face ( Opening Only )
+- Level 4 SUW L/32.2-32.4 W Wall E Face (Opening Only)
+- Level 4 SUW L/32.2-32.8 FA Room 5 Exterior
+- Level 4 SUW L/32.2-32.8 FA Room 5 Interior
+- Level 4 SUW L/32.8 FA 5 E,W Face
+- Level 4 SUW L/32.8 Fire Alarm 5
+- Level 4 SUW L/33 Column
+- Level 4 SUW L/33 Column (Exclude N Face)
+- Level 4 SUW L/33 Column N Face
+- Level 4 SUW L/33 NW PH Column
+- Level 4 SUW L/33 column S,E,W Face
+- Level 4 SUW L/4 (Lower Duct Shaft / single door)
+- Level 4 SUW L/4 (lower ductshaft door)
+- Level 4 SUW L/4 FA Room 1
+- Level 4 SUW L/4.1 FA #1
+- Level 4 SUW L/4.1 FA 1 ( FAB140103A) E Face only
+- Level 4 SUW L/4.1 FA 1 E Face (FAB140103A)
+- Level 4 SUW L/4.5 IT Room 1
+- Level 4 SUW L/5-10
+- Level 4 SUW L/5-32
+- Level 4 SUW L/5-32 NCR-0475
+- Level 4 SUW L/5-6
+- Level 4 SUW L/9 & M/9
+- Level 4 SUW L/9, M/9
+- Level 4 SUW L/9-20
+- Level 4 SUW L16.9-/17.7 VOC CNTR Room
+- Level 4 SUW M-L.5/26-29
+- Level 4 SUW M-M.5/26-29
+- Level 4 SUW M-M.5/3-3.5
+- Level 4 SUW M-M.8/21.5, 23.5
+- Level 4 SUW M-M.8/21.5,23.5
+- Level 4 SUW M-M.8/27.5, 28,5
+- Level 4 SUW M-M.8/27.5, 28.5
+- Level 4 SUW M-N/10-16
+- Level 4 SUW M-N/14
+- Level 4 SUW M-N/16,17.5
+- Level 4 SUW M-N/16-17.5
+- Level 4 SUW M-N/17.5; 15.9
+- Level 4 SUW M-N/18-21,N/22-23
+- Level 4 SUW M-N/19
+- Level 4 SUW M-N/21,23 Topping Slabs
+- Level 4 SUW M-N/27.5, 28.5
+- Level 4 SUW M-N/29-31
+- Level 4 SUW M-N/30-31
+- Level 4 SUW M-N/30-31 Pedestal Blockouts
+- Level 4 SUW M-N/5
+- Level 4 SUW M-N/5-6
+- Level 4 SUW M-N/9
+- Level 4 SUW M-N/9-10
+- Level 4 SUW M.3, M.6/30.3, 30.6
+- Level 4 SUW M.5/19 Topping Slab
+- Level 4 SUW M.5/19; Level 1 C/29 Machine Room
+- Level 4 SUW M.5/3
+- Level 4 SUW M/2.8-3.4 Mech Room Interior W Wall
+- Level 4 SUW M/3
+- Level 4 SUW M/3 Column
+- Level 4 SUW M/3 Columns
+- Level 4 SUW M/3 Elevator 1 E Wall W Face (Exclude
+- Level 4 SUW M/3 Elevator 1 E Wall W Face (Exclude Bottom Right)
+- Level 4 SUW M/3 Elevator 1B E Wall E Face
+- Level 4 SUW M/3 Elevator 1B S Wall (top half)
+- Level 4 SUW M/3 Elevator 1B S Wall N Face (Top Half)
+- Level 4 SUW M/3 Elevator 1B S Wall N Face (only 5
+- Level 4 SUW M/3 Elevator 1B S Wall N Face (only 5 ft)
+- Level 4 SUW M/3 Elevator 1B S Wall N Face (top hal
+- Level 4 SUW M/3 Elevator 1B S Wall N Face (top half)
+- Level 4 SUW M/3 Elevator 1B S,E Wall (only 5 ft of
+- Level 4 SUW M/3 Elevator 1B S,E Wall (only 5 ft of S Wall)
+- Level 4 SUW M/3 Elevator 1B W Wall (only 4 ft)
+- Level 4 SUW M/3 Elevator 1B W Wall E Face (Bottom 4 ft)
+- Level 4 SUW M/3 Elevator 1B W Wall E Face (only 4 ft)
+- Level 4 SUW M/3 Elevator Machine
+- Level 4 SUW M/3 Elevator machine (single door)
+- Level 4 SUW M/3 Elevator machine FAB140110A.
+- Level 4 SUW M/3 column
+- Level 4 SUW M/3.4 Mech Room Interior N Wall
+- Level 4 SUW M/30
+- Level 4 SUW M/31-32
+- Level 4 SUW M/31-32.3
+- Level 4 SUW M/32
+- Level 4 SUW M/4.3-4.6 MCC Room
+- Level 4 SUW M/4.3-4.6 MCC Room Interior
+- Level 4 SUW M/4.3-4.6 MCC Room exterior wall
+- Level 4 SUW M/4.6 IO Room E & W Face (FAB146107A)
+- Level 4 SUW M/4.6 IO room E,W Face ( FAB146102A)
+- Level 4 SUW M/4.6 IO room FAB140109A.
+- Level 4 SUW M/5
+- Level 4 SUW M/6-26
+- Level 4 SUW M/7-14 Topping
+- Level 4 SUW MCC ROOM N/3-5
+- Level 4 SUW MCC Room N/3-5
+- Level 4 SUW N / 28-29.9
+- Level 4 SUW N-M/33 Exterior (under penthouse)
+- Level 4 SUW N/1-1.3
+- Level 4 SUW N/1-1.5
+- Level 4 SUW N/1-3
+- Level 4 SUW N/1-3 (Upper portion only)
+- Level 4 SUW N/1-3 (only bottom)
+- Level 4 SUW N/1.3-3
+- Level 4 SUW N/1.5-3
+- Level 4 SUW N/10-12
+- Level 4 SUW N/10-13
+- Level 4 SUW N/10-13.5
+- Level 4 SUW N/10-16
+- Level 4 SUW N/11-13
+- Level 4 SUW N/12-13
+- Level 4 SUW N/12-13, 16.5-17, 18.5-19
+- Level 4 SUW N/12-13, 16.5-17, 18.5-19, 22.5-23
+- Level 4 SUW N/12-3, 16.5-17, 18.5-19, 22.5-23
+- Level 4 SUW N/13-14
+- Level 4 SUW N/13-15
+- Level 4 SUW N/13-16
+- Level 4 SUW N/14
+- Level 4 SUW N/14-14.9
+- Level 4 SUW N/14-16
+- Level 4 SUW N/14.9-16.5
+- Level 4 SUW N/15-16, 20-21.3
+- Level 4 SUW N/16-17
+- Level 4 SUW N/16-17.5,19.5,21.5
+- Level 4 SUW N/16-19
+- Level 4 SUW N/16-21
+- Level 4 SUW N/16.5-17, 18.8-19 Bottom of the wall
+- Level 4 SUW N/16.5-17, 18.9-19 Bottom of the wall
+- Level 4 SUW N/16.5-18
+- Level 4 SUW N/16.5-18, 19.2-20
+- Level 4 SUW N/16.5-18, N/19.2-20
+- Level 4 SUW N/17-18
+- Level 4 SUW N/17-18 (Edge of slab)
+- Level 4 SUW N/17-18,20.5-21.5
+- Level 4 SUW N/17-18.2
+- Level 4 SUW N/17.5-19
+- Level 4 SUW N/18-18.5
+- Level 4 SUW N/18-19
+- Level 4 SUW N/18-19 20-23
+- Level 4 SUW N/18-19,M-N/18-21
+- Level 4 SUW N/18-21
+- Level 4 SUW N/18.5-18.9
+- Level 4 SUW N/18.9-19.1
+- Level 4 SUW N/19
+- Level 4 SUW N/19-20
+- Level 4 SUW N/19-21
+- Level 4 SUW N/19.2-20
+- Level 4 SUW N/19.5-20
+- Level 4 SUW N/20-21
+- Level 4 SUW N/21-23
+- Level 4 SUW N/21-23, 26-27.5
+- Level 4 SUW N/21-25
+- Level 4 SUW N/21.5-22-5
+- Level 4 SUW N/21.5-22.5
+- Level 4 SUW N/21.5-22.5,L-M/17.5-18.5
+- Level 4 SUW N/22.5-22.7
+- Level 4 SUW N/22.5-25
+- Level 4 SUW N/22.8 -25.8 -(only pipe opening ) (2 sections)
+- Level 4 SUW N/22.8 Parapet (behind pipe
+- Level 4 SUW N/22.8 Parapet (behind pipe)
+- Level 4 SUW N/23-24
+- Level 4 SUW N/23-25
+- Level 4 SUW N/23.5-25
+- Level 4 SUW N/24-25, 26-28
+- Level 4 SUW N/25-26
+- Level 4 SUW N/25-26 ( Excluide pipe opening
+- Level 4 SUW N/25-31
+- Level 4 SUW N/25.8 ( behind Pipe)
+- Level 4 SUW N/25.8 (behind pipe)
+- Level 4 SUW N/26-27.5
+- Level 4 SUW N/26-28
+- Level 4 SUW N/26-28.9
+- Level 4 SUW N/26-29
+- Level 4 SUW N/27.5-28.9
+- Level 4 SUW N/28-29
+- Level 4 SUW N/28-29.9
+- Level 4 SUW N/28-30
+- Level 4 SUW N/28.9-29.1
+- Level 4 SUW N/29-29.1
+- Level 4 SUW N/29-29.5
+- Level 4 SUW N/29-31
+- Level 4 SUW N/29.1-31
+- Level 4 SUW N/29.5-30.5
+- Level 4 SUW N/29.5-31
+- Level 4 SUW N/3-5
+- Level 4 SUW N/3-5 MCC ROOM
+- Level 4 SUW N/3-5 MCC ROOM Interior
+- Level 4 SUW N/3-5 inside MCC ROOM
+- Level 4 SUW N/31 Column
+- Level 4 SUW N/31-33 bottom of penthouse
+- Level 4 SUW N/32 NW PH
+- Level 4 SUW N/4 Column
+- Level 4 SUW N/4 column
+- Level 4 SUW N/5
+- Level 4 SUW N/5-10
+- Level 4 SUW N/5-6
+- Level 4 SUW N/5-7
+- Level 4 SUW N/5-8
+- Level 4 SUW N/5-9
+- Level 4 SUW N/5.1-9
+- Level 4 SUW N/9-10
+- Level 4 SUW N/9-11
+- Level 4 SUW N/9-12
+- Level 4 SUW N/9-22.5 Topping Slab
+- Level 4 SUW N/9-29 Topping Slab
+- Level 4 SUW N/9-5
+- Level 4 SUW PH IT Security Room (E Wall 1st Layer)
+- Level 4 SUW PH IT Security Room E Wall 1st Layer
+- Level 4 SUW PH IT Security Room S Wall
+- Level 4 SUW Pad L-L.5/6-6.5
+- Level 4 SUW Pad L.5/6
+- Level 4 SUW Pedestal Blockouts L,N/5.3
+- Level 4 SUW Pedestal Blockouts L,N/5.3; Level 4 SUW Pedestals M-N/30-31; Level 4 SUW Wall L/9
+- Level 4 SUW Pedestal Blockouts L,N/5.3; M-N/30-31;
+- Level 4 SUW Pedestal Blockouts M-N/30-31
+- Level 4 SUW Pedestal Blockouts M/5.3, M/30.6
+- Level 4 SUW Pedestals Blockouts M/5.3 & 30.6
+- Level 4 SUW Pedestals L, N/5.3
+- Level 4 SUW Pedestals L,N/5.3
+- Level 4 SUW Pedestals M-N/30-31
+- Level 4 SUW Pedestals M/5.3, M/30.6
+- Level 4 SUW Pedestals M/5.3, M/30.6; M-N/16,17.5
+- Level 4 SUW Pourstrip 9/L-N
+- Level 4 SUW Ramp L/5
+- Level 4 SUW Ramp N/6; Level 4C SUW N/33; Level 2 E
+- Level 4 SUW Ramp N/6; Level 4C SUW N/33; Level 2 Elevator 20
+- Level 4 SUW Stair 3 (Door)
+- Level 4 SUW Stair 3 N Wall
+- Level 4 SUW Stair 3 W Wall
+- Level 4 SUW Topping L-N/21-24
+- Level 4 SUW Topping L-N/24-26
+- Level 4 SUW Topping L-N/26-29
+- Level 4 SUW Topping L-N/29-31
+- Level 4 SUW Topping L-N/5-6
+- Level 4 SUW Topping L-N/6-9
+- Level 4 SUW Topping L-N/8.5-9.5
+- Level 4 SUW Topping L-N/9-10
+- Level 4 SUW Topping M-N/16,17.5
+- Level 4 SUW Topping M/7-14
+- Level 4 SUW Topping Repair L-M/6-13
+- Level 4 SUW Topping Slab L-N/18-21
+- Level 4 SUW Topping Slabs M-N/21,23
+- Level 4 SUW Wall L/9
+- Level 4 SUW Walls B.5/24-26
+- Level 4 SW PH NCR 0189
+- Level 4 SW PH South Ramp and Stair
+- Level 4 SW Penthouse Elevator 1
+- Level 4 SW Penthouse K-L/3-5
+- Level 4 SW Penthouse K/3-5
+- Level 4 SW Penthouse M/4-5
+- Level 4 Sector 1 K.2-M/4.3-6.7 LV Cable tray
+- Level 4 Sector 1 M-N/3-4.5 LV Cable Tray
+- Level 4 Sector 1 M.2-M.7/4.6-5.1 Cable Tray
+- Level 4 Sector 1 M.7/4.5 Comm tray risers
+- Level 4 Sector 1 N/4.6 LV Cable route
+- Level 4 Sector 22-42 D-K/14 GEN Tray
+- Level 4 Sector 24-44 D-K/26 GEN Tray
+- Level 4 Sector 61 A-A.5/3-4.5 Panel install
+- Level 4 Sector 61 A-A.5/3-5 Panelboard raceways
+- Level 4 Sector 61 A-B.3/4.5-5.2 LV Tray
+- Level 4 Sector 61 A-B/4 panelboard install
+- Level 4 Sector 61 A-B/4 panelboard raceways
+- Level 4 Sector 61 A.3-A.6/4-4.1 panel install
+- Level 4 Sector 61 A.3-A.6/4-4.2 Raceway insepction
+- Level 4 Sector 61 A.3-A.7/3.6-4 Panelboard install
+- Level 4 Sector 61 A.5-B/4.5-5 LV Cable Tray
+- Level 4 Sector 61 A/3-5 Panel Install
+- Level 4 Sector 61 A/3-5 Panel raceway
+- Level 4 Sector 61 B-D/4-11 comm tray
+- Level 4 Sector 61 B.5/5 Panel raceway
+- Level 4 Sector 61 B.5/5 panelboard installation
+- Level 4 Sector 61-62 B.5/7-12.3 LV Cable Tray
+- Level 4 Sector 62 C-11 Comm Tray
+- Level 4 South west penthouse GL 3
+- Level 4 Southeast Penthouse A-B.5/3.5, 4.7; A.5/4.5-5; B.5/3.5-
+- Level 4 Southeast Penthouse A-B.5/3.5, 4.7; A.5/4.5-5; B.5/3.5-4.5
+- Level 4 Southeast Penthouse A-B/3.5
+- Level 4 Southeast Penthouse A-B/3.5 - Upper Wall
+- Level 4 Southeast Penthouse B.2/3.2-4.2
+- Level 4 Southeast Penthouse B.23.2-4.2
+- Level 4 Southwest Penthouse L-N/5
+- Level 4 Stair 18
+- Level 4 Stair 18 D/34-35
+- Level 4 Stair 19
+- Level 4 Stair 5
+- Level 4 Stair 5 K-L/34-35
+- Level 4 Stair 70; Level 1 L/4.5, M.5/25,M.5/25.5,M.5/26,M.5/27,M.5/27.5,C/32 Goalposts
+- Level 4 Topping B.5-C/5-6
+- Level 4 Topping Blockouts G-N/1-3 NCR-0150
+- Level 4 Trusses E-E .5/ 27-28.2
+- Level 4 Trusses E-E.5/27-28
+- Level 4 Trusses E-E.5/29-30
+- Level 4 Trusses E-J/12-13
+- Level 4 Trusses E-J/13.5-14.25
+- Level 4 Trusses F.5-G.2/ 21-22
+- Level 4 Trusses F.6-G/ 21.2-22.4
+- Level 4 Trusses F.6-G/21.2-22.4
+- Level 4 Trusses F.8-G.2/28-28.8
+- Level 4 Trusses F.9-G.2 /28-28.8
+- Level 4 Trusses H.2-J/18-19.8
+- Level 4 Trusses H.8-J/20.5-22.8
+- Level 4 Walls A/7-11.5
+- Level 4 West J-K/10-19
+- Level 4 elevator 18
+- Level 4 elevator 18 Exclude North Wall
+- Level 4 elevator 18 L.5-C/31.3
+- Level 4 elevator 18 L.5-C/32
+- Level 4 elevator 18 excludes north wall
+- Level 4 elevator 18 south wall
+- Level 4 elevator 5 excludes North wall
+- Level 4 elevator 5 excludes morth
+- Level 4 elevator 5 knee wall
+- Level 4 elevator 5 north side
+- Level 4 elevator 5 southside
+- Level 4 stair #21 SUE D/13 N wall.
+- Level 4 suw J-K/29-32
+- Level 4&5 Ceiling K-L/5-7
+- Level 4&5 Ceiling K-L/7-9
+- Level 4&5 K-L/5-7 Ceiling
+- Level 4, C-D /31-32
+- Level 4, C/1-2 Column
+- Level 4, L-L.5, 3.5 under penthouse
+- Level 4, L-L.5/ 3-4
+- Level 4, M-M.3/ 3
+- Level 4, M-M.3/3
+- Level 4- B/4 MCC Room # 1
+- Level 4-6 A-C/30-33 NE Penthouse
+- Level 4-6 A-C/31
+- Level 4-6 A-C/33
+- Level 4-6 A-C/5
+- Level 4-6 A/3-5
+- Level 4-6 A/31-33
+- Level 4-6 C-D/27-30
+- Level 4-6 C-D/32-33
+- Level 4-6 C/13-15
+- Level 4-6 C/13-16
+- Level 4-6 C/16-19
+- Level 4-6 C/19 North side
+- Level 4-6 C/19 South side Expansion Joint
+- Level 4-6 C/19-23
+- Level 4-6 C/20-23
+- Level 4-6 C/23-24
+- Level 4-6 C/24-25
+- Level 4-6 C/27-29
+- Level 4-6 C/29-31
+- Level 4-6 D/2.6-3
+- Level 4-6 D/26-27
+- Level 4-6 D2.6-3
+- Level 4-6 K-M/33
+- Level 4-6 K-N/33
+- Level 4-6 K/12-19
+- Level 4-6 K/19
+- Level 4-6 K/19-24
+- Level 4-6 K/2.6-5
+- Level 4-6 K/23-29
+- Level 4-6 K/3-7
+- Level 4-6 L-N/5; N/3-5
+- Level 4-6 L/12-14
+- Level 4-6 L/15-17
+- Level 4-6 L/18-19
+- Level 4-6 L/19
+- Level 4-6 L/22-21
+- Level 4-6 L/22-24
+- Level 4-6 L/24-26
+- Level 4-6 L/28-30
+- Level 4-6 L/30-31
+- Level 4-6 L/30-32
+- Level 4-6 L/30-33
+- Level 4-6 L/30-34
+- Level 4-6 L/30-35
+- Level 4-6 L/30-36
+- Level 4-6 L/5-8
+- Level 4-6 M-N/31
+- Level 4-6 N/3 &5
+- Level 4-6 SUE A-C/2.6 & 3 SW Penthouse south wall
+- Level 4-6 SUE A-C/2.6 & 3 SW Penthouse south wall (Only from A line to C Line)
+- Level 4-6 SUE A-C/5
+- Level 4-6 SUE B-B.5/32-33 Breezeway
+- Level 4-6 SUE B.5/32-33 Breezeway
+- Level 4-6 SUE B/31-32 Breezeway
+- Level 4-6 SUE C/25-27
+- Level 4-6 SUE C/27-29
+- Level 4-6 SUE C/27-C/29
+- Level 4-6 SUE C/29-31
+- Level 4-6 SUE C/29-C/31
+- Level 4-6 SUE C/5-7
+- Level 4-6 SUE D/19
+- Level 4-6 SUE D/20
+- Level 4-6 SUE L/29-31
+- Level 4-6 SUW K-N/33
+- Level 4-6 SUW K/10-17
+- Level 4-6 SUW K/17-25
+- Level 4-6 SUW K/3-10
+- Level 4-6 SUW L-N/5
+- Level 4-6 SUW L/10-11
+- Level 4-6 SUW L/10-12
+- Level 4-6 SUW L/10-15
+- Level 4-6 SUW L/14-16
+- Level 4-6 SUW L/16-18
+- Level 4-6 SUW L/17-18
+- Level 4-6 SUW L/17-L/18
+- Level 4-6 SUW L/18-20
+- Level 4-6 SUW L/19-20
+- Level 4-6 SUW L/20-22
+- Level 4-6 SUW L/22-24
+- Level 4-6 SUW L/28-29
+- Level 4-6 SUW L/29-L/31
+- Level 4-6 SUW L/5-6
+- Level 4-6 SUW L/5-L/6
+- Level 4-6 SUW L/6-7&8-10
+- Level 4-6 SUW L/6-L/7 & L/8-L/10
+- Level 4-6 SUW L/7-8
+- Level 4-6 SUW L/7-L/8
+- Level 4-6 SUW L/8-10
+- Level 4-6 SUW L/8/10
+- Level 4-6 SUW M-N/31
+- Level 4-6 SUW M/31-33 Breezeway
+- Level 4-6 SW Penthouse M.5/3
+- Level 4-6 SW Penthouse M3
+- Level 4-6 suw L/18-20
+- Level 4-6 suw L/20-22
+- Level 4-6, L/26-28
+- Level 4.5 A-D SE Penthouse South wall
+- Level 4.5 B & B.5/31.5-33
+- Level 4.5 B & C/3 Stair #69 & Stair #71
+- Level 4.5 B&B.5/31.5-33
+- Level 4.5 B.5-C/2 ramp 3206 & roof stair #R17
+- Level 4.5 B.5-C/3.5 Stair #70
+- Level 4.5 B.5-C/3.5 Stair 70
+- Level 4.5 B.5-D/2.6 Ramp
+- Level 4.5 B.5-D/2.6 Ramp Handrail and #R17 Handrail
+- Level 4.5 B.5-D/2.6 Ramp Handrail and Stair #R17
+- Level 4.5 B.5-D/2.6 Ramp Handrail and Stair #R17 Handrail
+- Level 4.5 B/3 Stair 71
+- Level 4.5 C-D/2.6
+- Level 4.5 C/2.6-3 Stair 78
+- Level 4.5 C/3 Stair 69
+- Level 4.5 C/3 Stair 69 & B/3 Stair 71
+- Level 4.5 C/3.5 Stair 70
+- Level 4.5 D/12-14
+- Level 4.5 D/13-14
+- Level 4.5 D/13-D/14
+- Level 4.5 D/19 Expansion Joint
+- Level 4.5 D/2.6 Lower Ramp Baseplate
+- Level 4.5 D/2.6 Lower Ramp Baseplates
+- Level 4.5 D/2.6-5
+- Level 4.5 D/24-25, 26-27
+- Level 4.5 D/3.5-14
+- Level 4.5 G.5/3 Stair #67
+- Level 4.5 G/2 Stair #67
+- Level 4.5 G/2 Stair #68
+- Level 4.5 K/19 Expansion Joint
+- Level 4.5 L-M/2 & Ramp Stair R16
+- Level 4.5 L-M/2 & Ramp Stair R16 NCR-0151
+- Level 4.5 L-M/2 Ramp Stair R16
+- Level 4.5 L-M/2-3
+- Level 4.5 L-M/2.6 Ramp
+- Level 4.5 L.5 & M/32-33 NW PH
+- Level 4.5 L.5-M/2.6 Awning
+- Level 4.5 L.5/2 Stair R16
+- Level 4.5 L.5/3 roof stair #R16
+- Level 4.5 L.5/32 NW PH Column & Stair #R18 M.5/31
+- Level 4.5 L.5/32 NW PH Column & Stair R18
+- Level 4.5 L/2.6 Pit Stair 79
+- Level 4.5 L/2.6 Stair 79
+- Level 4.5 L/3.5
+- Level 4.5 M.5/3 Stair R8
+- Level 4.5 M.5/3 roof stair #R8
+- Level 4.5 M.5/3 stair #R8
+- Level 4.5 N/2-N/3 tieback connections
+- Level 4.5 NW PH L.5 & M/32-33
+- Level 4.5 SUE A-C/3 & 2.6 SE PH South Wall
+- Level 4.5 SUE D/24-25, 26-27
+- Level 4.5 SUE D/3-14
+- Level 4.5 SUW K/14.4
+- Level 4.5 SUW L-M.5/2.6 & 3
+- Level 4.5 SUW M.5/2-3 stair #R8
+- Level 4.5 SUW M/31 column anchor bolts
+- Level 4.5 SUW N/31
+- Level 4.5 ceiling Penthouse L-M/3-5
+- Level 4.5 stair #R17 C/2
+- Level 4.5-6 B & B.5/31-33
+- Level 4.5-6 B&B.5/31-33
+- Level 4.5-6 C-D/33
+- Level 4.5-6 C.5-D/2.6
+- Level 4.5-6 D/15-16, 18-19
+- Level 4.5-6 D/21-19
+- Level 4.5-6 D/21-22
+- Level 4.5-6 D/25-26; 22-24
+- Level 4.5-6 D/26-27
+- Level 4.5-6 D/27-26
+- Level 4.5-6 D/27-33
+- Level 4.5-6 D/3-6
+- Level 4.5-6 D/6-8
+- Level 4.5-6 D/8-14
+- Level 4.5-6 K/23-26
+- Level 4.5-6 K/28-30
+- Level 4.5-6 K/28-31
+- Level 4.5-6 L.5 & M/31-33
+- Level 4.5-6 L.5&M/31-33
+- Level 4.5-6 SUE C-D/2.6
+- Level 4.5-6 SUE D/10-14
+- Level 4.5-6 SUE D/12-16
+- Level 4.5-6 SUE D/14-15
+- Level 4.5-6 SUE D/14-D/16
+- Level 4.5-6 SUE D/16-19
+- Level 4.5-6 SUE D/17-18
+- Level 4.5-6 SUE D/19-20
+- Level 4.5-6 SUE D/2.6-3
+- Level 4.5-6 SUE D/2.6-D/3
+- Level 4.5-6 SUE D/20-23
+- Level 4.5-6 SUE D/20-D/23
+- Level 4.5-6 SUE D/23-24/25-26
+- Level 4.5-6 SUE D/23-26
+- Level 4.5-6 SUE D/23-26 cheng grid line
+- Level 4.5-6 SUE D/28-33
+- Level 4.5-6 SUE D/29-27
+- Level 4.5-6 SUE D/29-33
+- Level 4.5-6 SUE D/3-5
+- Level 4.5-6 SUE D/3-D/14
+- Level 4.5-6 SUE D/5-10
+- Level 4.5-6 SUW K-N/2.6 & 3 Line
+- Level 4.5-6 SUW K-N/2.6&3
+- Level 4.5-6 SUW K/11-14
+- Level 4.5-6 SUW K/11-K/14
+- Level 4.5-6 SUW K/14-K/17
+- Level 4.5-6 SUW K/14-K/17 K/14-K/17 excluding column C2050 at the bottom k/14.4
+- Level 4.5-6 SUW K/19-22
+- Level 4.5-6 SUW K/2.6-5
+- Level 4.5-6 SUW K/22-23
+- Level 4.5-6 SUW K/22-K/23
+- Level 4.5-6 SUW K/27-28
+- Level 4.5-6 SUW K/27-K8
+- Level 4.5-6 SUW K/30-31,32-33
+- Level 4.5-6 SUW K/30-33
+- Level 4.5-6 SUW K/30-K/31 & K/32-K/33
+- Level 4.5-6 SUW K/31-33
+- Level 4.5-6 SUW K/7-8
+- Level 4.5-6 SUW K/7-K/8
+- Level 4.5-6 SUW K/8-11
+- Level 4.5-6 SUW K/8-K/11
+- Level 4/C12-13
+- Level 4A & 4C Ceiling K-L/ 3-5
+- Level 4A C/19
+- Level 4A C/4
+- Level 4A Ceiling C-D/ 27-27.8, 28.7, 30.3,30-31,32
+- Level 4A Ceiling C-D/27-27.8, 28.7, 30.3,30-31,32.7
+- Level 4A Ceiling J-K/ 27-27.8, 28.7, 30.3,30-31,32
+- Level 4A Ceiling J-K/ 27-27.8, 28.7, 30.3,30-31,32.7
+- Level 4A Ceiling J-K/ 29-29.5
+- Level 4A Ceiling J-K/29-29.5
+- Level 4A Ceiling K-L/ 32-33
+- Level 4A ELEVATOR 1 B.5/3
+- Level 4A ELEVATOR 1, M.5/
+- Level 4A J-K/17-24
+- Level 4A J/K 17-24
+- Level 4A L/5-6
+- Level 4A SUE A-C/11-18
+- Level 4A SUW Roof L-N/9
+- Level 4A&3 C/19
+- Level 4C & Penthouse Ceiling, A-D/33
+- Level 4C & Penthouse ceiling A-D/33
+- Level 4C A-C/31-33 (Confined Space)
+- Level 4C A-C/5, 4G A-C/2.5-3.5
+- Level 4C A-C/5, 4G A-C/2.5-3.5 Slab on metal deck
+- Level 4C A-D/31-32.9 (Confined Space)
+- Level 4C Confined Space A-C/31-33
+- Level 4C Confined Space L-M/2.5-3.2 (Roof)
+- Level 4C K-L/3-4
+- Level 4C L-N/31-32.9 (Confined Space)
+- Level 4C L-N/31-33 (Confined Space)
+- Level 4C L-N/33 Line
+- Level 4C M.5/2.6 Stair 60
+- Level 4C SUE A-C/31-33
+- Level 4C SUE A-C/33 Bentplate Levaout
+- Level 4C SUE A-C/33 Blockout
+- Level 4C SUE A-D/33 Blockout
+- Level 4C SUE B-C/3-4
+- Level 4C SUW Confined Space L-M/3-5
+- Level 4C SUW K-N/3-5 & L-M.5/2.5-3.5
+- Level 4C SUW K-N/3-5, 4G L-M.5/2.5-3.5
+- Level 4C SUW K-N/33 Bentplate Leaveout
+- Level 4C SUW L-N/31-33
+- Level 4E (K West side only) 5&6 K-L/25-28
+- Level 4E 5&6 K-L/23-25 West Side
+- Level 4E Ceiling C-D/28,30 &32
+- Level 4E Ceiling C.8-D / 1-3
+- Level 4E Ceiling J-K/ 29-30
+- Level 4E Ceiling J-K/28,30 &32
+- Level 4E Ceiling J-K/29-30
+- Level 4E Ceiling J-K/3-5
+- Level 4E Ceiling K/12-17.7 West side
+- Level 4E Ceiling, K 19.4-22
+- Level 4E Ceiling, K-line (West side only) 12-17.7
+- Level 4E CeilingC-D/28,30 &32
+- Level 4E Column E-J/3
+- Level 4E D,K/19 Topping Leaveouts
+- Level 4E D-E/10-13
+- Level 4E D-E/16-19 East
+- Level 4E D-E/22-25
+- Level 4E D-E/25-28
+- Level 4E D-E/3 Equipment Pads
+- Level 4E D-E/3-10
+- Level 4E D-E/32.8-33
+- Level 4E D-E/5-10
+- Level 4E D-E/8-13
+- Level 4E D-E/9-12
+- Level 4E D.3-D.5/32.8-33 (Access from level 3)
+- Level 4E D/10,12,16,19
+- Level 4E D/10,12,17,19
+- Level 4E D/13-17; K/30-33
+- Level 4E D/19,17,12,10
+- Level 4E D/19,20-21,22
+- Level 4E D/20,22
+- Level 4E D/21
+- Level 4E D/21-22
+- Level 4E D/21-22 Equipment Pad
+- Level 4E D/23-24,25
+- Level 4E D/23-24,25,28,31
+- Level 4E D/24-27
+- Level 4E D/3-14
+- Level 4E E-D/3-10
+- Level 4E E-J/3 Column
+- Level 4E E/12-26
+- Level 4E E/14
+- Level 4E E/15-26
+- Level 4E E/26-29
+- Level 4E E/26-33
+- Level 4E E/3-15
+- Level 4E E/3-33
+- Level 4E East AD/DS Pads D/3; 29; 30-31
+- Level 4E East AD/DS Pads D/3; D/29; D/30-31
+- Level 4E East C-D/19-27
+- Level 4E East C/2.5-3.5
+- Level 4E East D-E/27-33
+- Level 4E East D-E/29.5-29; D-E/30-31
+- Level 4E East D/18-22; K/5-6
+- Level 4E East D/21-22
+- Level 4E East E/29-33
+- Level 4E East Equipment Pad D/17
+- Level 4E East Equipment Pad D/21
+- Level 4E East Pads C-D/29, 30-31
+- Level 4E East Pads C-D/29, C-D/30-31
+- Level 4E East Pads D-E/29, D-E/30-31
+- Level 4E East Topping D-E/10-14
+- Level 4E J-K/11,12,17 West Equipment Pads
+- Level 4E J-K/11-12 west side
+- Level 4E J-K/29
+- Level 4E J-K/3
+- Level 4E J-K/3-10 West
+- Level 4E J-K/3-4 EQUIPMENT PADS
+- Level 4E J/10-20
+- Level 4E J/27-33
+- Level 4E J/3-33
+- Level 4E J/3-6
+- Level 4E K west side only & 5 K-L/15-17
+- Level 4E K west side only & 5 K-L/17-17.7
+- Level 4E K west side only & 5 K-L/19.4-23
+- Level 4E K west side only & 5 K-L/9-12
+- Level 4E K(West side only) 22-24 & 5 K-L/22-24
+- Level 4E K(west side only) 13-14 & 5 K-L/13-15
+- Level 4E K(west side only) 13-15 & 5 K-L/13-15
+- Level 4E K(west side only) 22-24 & 5 K-L/22-24
+- Level 4E K-L/12-13
+- Level 4E K/12-13
+- Level 4E K/15
+- Level 4E K/19,20-21,22
+- Level 4E K/19.4-22 West side only
+- Level 4E K/19; D/19 Blockouts
+- Level 4E K/24-25(west side only) & 5 K-L/24-25
+- Level 4E K/25,28,29-30,31
+- Level 4E K/28-30 WEST SIDE ONLY LVL 5&6 K-L/28-30
+- Level 4E K/28-30.8 west side only; Level 5&6 K-L/28-30.8
+- Level 4E K/3-6
+- Level 4E K/9-13,5 (West side only); K-L/11-13
+- Level 4E Pad D/17 East Equipment
+- Level 4E Pads D/3
+- Level 4E SUE A-D/3
+- Level 4E SUE B.5/3
+- Level 4E SUE D-E/17-19
+- Level 4E SUE D-E/17-22 Trough
+- Level 4E SUE D-E/18-22 Trough
+- Level 4E SUE D-E/22-28
+- Level 4E SUE D-E/22-33
+- Level 4E SUE D-E/24-33
+- Level 4E SUE E /19-25
+- Level 4E SUE E/19-25
+- Level 4E SUW J-K/10-19
+- Level 4E South West Penthouse L-N/3-5
+- Level 4E Topping Leaveouts D/19, K/19
+- Level 4E West AD/DS Pads K/3; K/31
+- Level 4E West Equipment Pads J-K/11,12,17
+- Level 4E West Equipment Pads J-K/11,12,17; Level 1
+- Level 4E West Equipment Pads J-K/11,12,17; Level 1 Ramp L/29
+- Level 4E West J-K/10-19
+- Level 4E West J-K/19-26.5
+- Level 4E West J-K/26-33
+- Level 4E West K/2.5-3.5; K/11-12
+- Level 4E West Pads J-K/11,12,17
+- Level 4E West Topping J-K/26-29
+- Level 4E West Topping J-K/29-33
+- Level 4E West Topping J-K/3-10
+- Level 4E West pad J-K/30.5-31
+- Level 4E, J-K (west side)/ 11-12
+- Level 4E-6 A-B.5/3
+- Level 4G C/3
+- Level 4G C/4
+- Level 4G L-M/2.5-3
+- Level 4G M/3
+- Level 4G SUE A-B.4/3.2
+- Level 4G-J/3
+- Level 4L17 VOC Room N,S,W Wall
+- Level 4e D/1-3
+- Level 4e SUE D-E/17-19
+- Level 4w SUW K-J/19-24
+- Level 5 & 6 Ceiling K-L/ 2.7-4.8
+- Level 5 & 6 D/11-18
+- Level 5 & 6, C-D/16.5-17
+- Level 5 & 6, C-D/3-5
+- Level 5 (Bottom Half) C-D/20-32
+- Level 5 (Penthouse) C-D/ 2.7-3
+- Level 5 A-D/3-5
+- Level 5 C to D, 20-25 Exclude D line
+- Level 5 C-D/18-20
+- Level 5 C.5-D/32-32.8 Penthouse
+- Level 5 Ceiling C/11-26 (Columns) 4E D/11-18.7 & 2
+- Level 5 Ceiling C/11-26 (Columns) 4E D/11-18.7 & 20-25 (East side)
+- Level 5 Ceiling C/13-18 & 20-25(Columns) 4E D/13-1
+- Level 5 Ceiling C/13-18 & 20-25(Columns) 4E D/13-18 & 20-25 (East side)
+- Level 5 Ceiling C/26-31 (Columns) 4E D/26-28, 29-32 (East side)
+- Level 5 Ceiling C/26-31 Columns; 4E D/26-28, 29-32
+- Level 5 Ceiling C/26-31 Columns; 4E D/26-28, 29-32 E Side
+- Level 5 Ceiling C/26-32 (Columns) 4E D/26-32 (East side)
+- Level 5 Ceiling C/26-32(Columns) 4E D/26-32 (East
+- Level 5 Ceiling C/5-10 (Columns) 4E D/6-11 (East s
+- Level 5 Ceiling C/5-10 (Columns) 4E D/6-11 (East side)
+- Level 5 Ceiling C/5-12 (Columns) 4E D/6-12 (East s
+- Level 5 Ceiling C/5-12 (Columns) 4E D/6-12 (East side)
+- Level 5 Ceiling K-L/12-17.7
+- Level 5 Ceiling K-L/25-26 & 4E K/25-26 (west side
+- Level 5 Ceiling K-L/25-26 & 4E K/25-26 (west side only)
+- Level 5 Ceiling K-L/26-31
+- Level 5 Ceiling K-L/26-31 (west side only)
+- Level 5 Ceiling, K-L 19.4-22
+- Level 5 Ceiling, K-L/ 12-17.7
+- Level 5 Ceiling, K-L/19.4-22 Access from NW penthouse
+- Level 5 Confined Space A-D/31-33
+- Level 5 D-E/33
+- Level 5 D-E/33 Pourback
+- Level 5 E-E.8/4-4.5
+- Level 5 E.3-E.8/3-3.8
+- Level 5 E.3-G/3-4
+- Level 5 E/11
+- Level 5 E/4,10,11
+- Level 5 FAB E-F/3
+- Level 5 FAB E-F/33
+- Level 5 FAB E-F/33 Densglass (Exterior)
+- Level 5 FAB E-F/33 Exterior
+- Level 5 FAB E.3-G.1/3-3.8
+- Level 5 FAB E/5-30
+- Level 5 FAB Exterior E-F/33
+- Level 5 FAB Exterior E.2-F/33
+- Level 5 FAB F-G/3
+- Level 5 FAB F-G/33 Exterior
+- Level 5 FAB F-G/33 Exterior Infill
+- Level 5 FAB F-H/33 Exterior
+- Level 5 FAB G-H.3/33
+- Level 5 FAB G-H.3/33 Densglass (Exterior)
+- Level 5 FAB G-H.3/33 Exterior
+- Level 5 FAB G-H.3/33 Exterior (Around Truss)
+- Level 5 FAB G-H.3/33 Exterior (around truss)
+- Level 5 FAB G-H.3/33 Exterior Infill
+- Level 5 FAB G-H.3/33 Infill E
+- Level 5 FAB G-H.3/33 Infill Exterior
+- Level 5 FAB G-H/33 Exterior
+- Level 5 FAB H-H.3/33 Exterior
+- Level 5 FAB H.3-J/33 Exterior
+- Level 5 FAB H.4-J/33 Exterior
+- Level 5 FAB J/5-15
+- Level 5 FIZ 3/F-F.6
+- Level 5 FIZ Roof E-F/3
+- Level 5 FIZ roof 3/F-F.6
+- Level 5 G-E/3
+- Level 5 G-J/3
+- Level 5 G.5-J/3
+- Level 5 K-L/17.8-19.3
+- Level 5 K-L/31-32
+- Level 5 K-L/9-11
+- Level 5 K/10.2 & K-L/2.6 Openings
+- Level 5 K/10.2 & K-L/2.6 Openings NCR-209
+- Level 5 L-L.5/17-18 VOC Room Roof
+- Level 5 L-M/16-17 (VOC Roof)
+- Level 5 L/17-18
+- Level 5 L/17-18 VOC Room Added Angle
+- Level 5 North Chase Frame Inspection
+- Level 5 North Chase Wall Gas Line (A12/-1)
+- Level 5 SUE C to D, 10-6 Exclude D line
+- Level 5 SUE C-D/10-16 Exclude D line
+- Level 5 SUE C-D/6-10 Exclude D line
+- Level 5 SUE Stairs 18 Parapet
+- Level 5 SUW J-K/33
+- Level 5 SUW L/17 VOC Room (Partial W Wall)
+- Level 5 SUW L/17-18
+- Level 5 SUW VOC Room N, S, W Wall (exclude scaffol
+- Level 5 SUW VOC Room N, S, W Wall (exclude scaffold)
+- Level 5 SUW VOC Room N,S,W Wall (exclude scaffold)
+- Level 5 VOC Room NSW Wall
+- Level 5 VOC Room Roof L-L.5/17-18
+- Level 5&6 C-D/16-17
+- Level 5&6 C-D/2.7-6 (Exclude D-line West side)
+- Level 5&6 C-D/32-33
+- Level 5&6 D/20-25 (West side only)
+- Level 5&6 D/6-10 West side only
+- Level 5&6 D/6-10 West side only NCR-0367
+- Level 5&6 K-L/2.7-4
+- Level 5&6 K-L/2.7-4.8
+- Level 5&6 K-L/32-33
+- Level 5&6 K-L/4-5
+- Level 5-6 C-D/16-17
+- Level 5-6 C-D/3-5
+- Level 5-6 C-D/5-6
+- Level 5-6 Ceiling, D-line West side 20-25
+- Level 6 (Penthouse) C-D/2.7-3
+- Level 6 A to C, 2.5-3.2
+- Level 6 A-A.5/3
+- Level 6 A-B.5/2.6-3
+- Level 6 A-B.5/2.6-3 Line
+- Level 6 A-B.5/3; B.5/2.5-3; B.5-D/2.5; D/2.5-3
+- Level 6 A-B/2.5
+- Level 6 A-B/3
+- Level 6 A-B/3-3.5
+- Level 6 A-B/3-4 SouthEast Penthouse Roof
+- Level 6 A-B/3.6 Frame changes
+- Level 6 A-B/5
+- Level 6 A-C/3
+- Level 6 A-C/31
+- Level 6 A-C/31-33
+- Level 6 A-C/31-33 NE Penthouse
+- Level 6 A-C/32
+- Level 6 A-D/3-4 Doghouse
+- Level 6 A-D/31-33
+- Level 6 A-D/31-33 NE Penthouse
+- Level 6 A-D/31-33 NE Penthouse Roof
+- Level 6 A-D/31-33 NW Penthouse
+- Level 6 A-D/31-33 SW Penthouse Roof
+- Level 6 A-D/33
+- Level 6 A/3-5
+- Level 6 A/3-5; A-D/5
+- Level 6 A/31-32.6
+- Level 6 A/31-32.8
+- Level 6 A/32-32.8
+- Level 6 B-C/3
+- Level 6 B-C/31-32
+- Level 6 B-C/5
+- Level 6 B-D/5
+- Level 6 B.5 -C/31-32
+- Level 6 B/3
+- Level 6 B/3 Stair 77
+- Level 6 B/3 Stair R12
+- Level 6 B/3 doghouse SE Penthouse
+- Level 6 B/3 stair #R12
+- Level 6 C to D, 20-25 Exclude D line
+- Level 6 C, D/19-26
+- Level 6 C,D/16-17
+- Level 6 C,D/19-26
+- Level 6 C,D/20,22
+- Level 6 C-D/16-17
+- Level 6 C-D/16-24 East
+- Level 6 C-D/16.5-17
+- Level 6 C-D/18-18.6
+- Level 6 C-D/18.6-20
+- Level 6 C-D/19-31
+- Level 6 C-D/2.5
+- Level 6 C-D/20,22
+- Level 6 C-D/24-31 East
+- Level 6 C-D/27
+- Level 6 C-D/33
+- Level 6 C-D/5-10 East
+- Level 6 C-D/5-31; J-K/5-31
+- Level 6 C-D/8
+- Level 6 C/11
+- Level 6 C/11-12.5
+- Level 6 C/11-16
+- Level 6 C/11p
+- Level 6 C/13
+- Level 6 C/14-20
+- Level 6 C/15, 17
+- Level 6 C/16-17
+- Level 6 C/16-18
+- Level 6 C/16-19
+- Level 6 C/16-20
+- Level 6 C/16-22
+- Level 6 C/17-18
+- Level 6 C/17-19
+- Level 6 C/17.6-22
+- Level 6 C/18-19
+- Level 6 C/18-20
+- Level 6 C/19 QOR-137 MSR-FSR Required
+- Level 6 C/19-24
+- Level 6 C/19-26
+- Level 6 C/19-31
+- Level 6 C/20
+- Level 6 C/20-28
+- Level 6 C/21
+- Level 6 C/22
+- Level 6 C/22.5-23.5
+- Level 6 C/23
+- Level 6 C/23.5-28
+- Level 6 C/24-30.5
+- Level 6 C/24-31
+- Level 6 C/25
+- Level 6 C/27
+- Level 6 C/28-31
+- Level 6 C/30
+- Level 6 C/31
+- Level 6 C/31-24
+- Level 6 C/31-26
+- Level 6 C/5
+- Level 6 C/5 NCR-0152
+- Level 6 C/5-11
+- Level 6 C/5-8
+- Level 6 C/5-9
+- Level 6 C/6
+- Level 6 C/8
+- Level 6 C/8-11
+- Level 6 C/9-15
+- Level 6 C/9.5-16
+- Level 6 Ceiling K-L/10-12
+- Level 6 Ceiling K-L/10-14
+- Level 6 Ceiling K-L/12-15
+- Level 6 Ceiling K-L/14-19
+- Level 6 Ceiling K-L/15-19
+- Level 6 Ceiling K-L/19-25
+- Level 6 Ceiling K-L/25-27
+- Level 6 Ceiling K-L/27-29
+- Level 6 Ceiling K-L/29-31
+- Level 6 Ceiling K-L/5-10
+- Level 6 Ceiling K-L/5-8
+- Level 6 Ceiling K-L/8-10
+- Level 6 Ceiling, C-D/18.6-20
+- Level 6 Ceiling, K-L/ 8-10
+- Level 6 Ceiling, K-L/14-19
+- Level 6 Ceiling, K-L/31-32
+- Level 6 D/11-13.2
+- Level 6 D/13.2-16
+- Level 6 D/14-20
+- Level 6 D/14.5-18
+- Level 6 D/15-17
+- Level 6 D/16-17
+- Level 6 D/18-20
+- Level 6 D/18.5-19
+- Level 6 D/19-23.5
+- Level 6 D/19-26
+- Level 6 D/19-31
+- Level 6 D/19-33
+- Level 6 D/2.5-4
+- Level 6 D/2.5-5
+- Level 6 D/20-28
+- Level 6 D/20-32.5
+- Level 6 D/23.5-29
+- Level 6 D/29-33
+- Level 6 D/3-15
+- Level 6 D/3-5, 7-8
+- Level 6 D/31-26
+- Level 6 D/32.8-33
+- Level 6 D/33 Rooftop
+- Level 6 D/33-19
+- Level 6 D/4.5-8
+- Level 6 D/5
+- Level 6 D/5-6
+- Level 6 D/5-7
+- Level 6 D/6-7
+- Level 6 D/7-19
+- Level 6 D/8-16
+- Level 6 D29-33
+- Level 6 Doghouse B.5/2.5-3
+- Level 6 E-F/33
+- Level 6 East C-D/10-16
+- Level 6 K 20-31
+- Level 6 K-L/14-30
+- Level 6 K-L/16-30
+- Level 6 K-L/19-23
+- Level 6 K-L/2.5
+- Level 6 K-L/2.5-3.1
+- Level 6 K-L/31-32 Ceiling
+- Level 6 K-L/4-5
+- Level 6 K-N/2.5-5 SW Penthouse Roof
+- Level 6 K-N/31-33 NW Penthouse Roof
+- Level 6 K/14-19
+- Level 6 K/18-19.5
+- Level 6 K/18-20
+- Level 6 K/18.5-19.7
+- Level 6 K/19-27
+- Level 6 K/2.5- 3.1
+- Level 6 K/2.5-3
+- Level 6 K/2.5-3.1
+- Level 6 K/2.5-5
+- Level 6 K/20.5-31
+- Level 6 K/27-33
+- Level 6 K/3-18
+- Level 6 K/3-18.5, 20-27
+- Level 6 K/3-5
+- Level 6 K/3.1-18.5, 20-27
+- Level 6 K/3.2-17
+- Level 6 K/31-32.5
+- Level 6 K/31-32.8
+- Level 6 K/32-33
+- Level 6 K/5-14
+- Level 6 K18.5-19.7
+- Level 6 K27-33
+- Level 6 L-K/2.5
+- Level 6 L-L.5/31-32 Top Connection
+- Level 6 L-M/16-17 (VOC Roof)
+- Level 6 L-M/16-17 VOC ROOF
+- Level 6 L-M/2.5
+- Level 6 L-M/2.5-2.7
+- Level 6 L-N/2.5
+- Level 6 L-N/31
+- Level 6 L-N/31-32.9 NW Penthouse
+- Level 6 L-N/5
+- Level 6 L.5/31
+- Level 6 L/10,13
+- Level 6 L/10,13,16
+- Level 6 L/12-15
+- Level 6 L/14-16.5
+- Level 6 L/15-18
+- Level 6 L/16-19
+- Level 6 L/16.5-19
+- Level 6 L/16.5-20
+- Level 6 L/18-19
+- Level 6 L/18-19, 21, 23-24
+- Level 6 L/18-19,21,23-24
+- Level 6 L/18-19,21,23-24,26,27,29
+- Level 6 L/18-20
+- Level 6 L/19-21
+- Level 6 L/2.5-5
+- Level 6 L/20-22
+- Level 6 L/20-31
+- Level 6 L/20.5-31
+- Level 6 L/21
+- Level 6 L/21 &23
+- Level 6 L/21, 23
+- Level 6 L/21-31
+- Level 6 L/22-31
+- Level 6 L/23
+- Level 6 L/25-23
+- Level 6 L/26
+- Level 6 L/27-35
+- Level 6 L/27.5
+- Level 6 L/29
+- Level 6 L/3-5
+- Level 6 L/31
+- Level 6 L/4
+- Level 6 L/5
+- Level 6 L/5 Bentplate & Support
+- Level 6 L/5 Cladding Columns
+- Level 6 L/5-13
+- Level 6 L/5-20
+- Level 6 L/5-5.5
+- Level 6 L/5.5-16
+- Level 6 L/5.5-16.5
+- Level 6 L/6, 8, 10, 13
+- Level 6 L/6, 8, 10, 13, 16
+- Level 6 L/6, 8, 10, 13, 16, 18.5
+- Level 6 L/6, 8, 16
+- Level 6 L/6,8,16
+- Level 6 M-N/2.7-5
+- Level 6 M/2.5-2.8
+- Level 6 N/13-14
+- Level 6 N/17.8-19
+- Level 6 N/2.5-2.8
+- Level 6 N/23-26
+- Level 6 N/3-5
+- Level 6 N/3-5 SW PH
+- Level 6 NW Penthause L-N/31
+- Level 6 NW Penthause Roof L-N/31
+- Level 6 NW Penthouse Roof L-N/31 South
+- Level 6 NW Penthouse Roof L-N/31 South wall
+- Level 6 Penthouse A-C/31-33
+- Level 6 Penthouse L-N / 3.5-5
+- Level 6 Penthouse L-N/2.5-3 S,E Wall
+- Level 6 Penthouse L-N/2.7-3
+- Level 6 Penthouse L-N/2.7-3.5
+- Level 6 Penthouse L-N/3.5-5
+- Level 6 Penthouse L-N/31-33
+- Level 6 Penthouse N/3-5, N-L/5
+- Level 6 SUE A-B.5/3, B.5/2.5-3, B.5-D/2.5, D/2.5-3
+- Level 6 SUE A-B/3-3.5 Doghouse
+- Level 6 SUE A-B/3-3.5 Doghouse E,N,W Wall
+- Level 6 SUE A-B/3-3.5 Doghouse. N,e,s,w
+- Level 6 SUE A-B/3-3.5 Doghouse. N,e,w
+- Level 6 SUE A-B/33
+- Level 6 SUE A-C/3-5
+- Level 6 SUE A-C/3-5; Level 6H SUE A-C/3-5
+- Level 6 SUE A-C/30-33
+- Level 6 SUE A-C/31
+- Level 6 SUE A-C/31-32.6
+- Level 6 SUE A-C/31-33
+- Level 6 SUE A-C/5
+- Level 6 SUE A-D/33
+- Level 6 SUE A-D/33 Exterior
+- Level 6 SUE A.2-A.8/3-3.5 Doghouse
+- Level 6 SUE A.5-B/3.1-3.2 Penthouse
+- Level 6 SUE A/19-21.3
+- Level 6 SUE A/3-5
+- Level 6 SUE A/31 & A-C/31
+- Level 6 SUE A/31-32.6
+- Level 6 SUE A/32-32.6
+- Level 6 SUE A/32.5-33, A-C.9/33 NE PH
+- Level 6 SUE A/32.6-33
+- Level 6 SUE A/32.7-33
+- Level 6 SUE B & B.5/31-33
+- Level 6 SUE B-B.5/31-33
+- Level 6 SUE B-C/3-5
+- Level 6 SUE B-C/33
+- Level 6 SUE B-D/3-3.5
+- Level 6 SUE B-D/3-5
+- Level 6 SUE B.3-D.3/2.5
+- Level 6 SUE B.3-D/2.5-3.2
+- Level 6 SUE B.5/2.5-3 Doghouse
+- Level 6 SUE C&D/16-11
+- Level 6 SUE C&D/19-22
+- Level 6 SUE C&D/22-19
+- Level 6 SUE C-D/10-17
+- Level 6 SUE C-D/14-17
+- Level 6 SUE C-D/16-17
+- Level 6 SUE C-D/16-19
+- Level 6 SUE C-D/17-19
+- Level 6 SUE C-D/18-20
+- Level 6 SUE C-D/19
+- Level 6 SUE C-D/19-31
+- Level 6 SUE C-D/20-28
+- Level 6 SUE C-D/22.5-28
+- Level 6 SUE C-D/28-31
+- Level 6 SUE C-D/3
+- Level 6 SUE C-D/3-5
+- Level 6 SUE C-D/3-5, 18-20, Doghouse B.5/2.5-3
+- Level 6 SUE C-D/33
+- Level 6 SUE C-D/5-14
+- Level 6 SUE C-D/5-17
+- Level 6 SUE C-D/5-8
+- Level 6 SUE C-D/6-10 Exclude D line
+- Level 6 SUE C-D/8-11
+- Level 6 SUE C-E/31-33
+- Level 6 SUE C.5/33
+- Level 6 SUE C.9-D/33 NE PH
+- Level 6 SUE C/24-31 & D/24-30
+- Level 6 SUE C/5
+- Level 6 SUE D-C/33
+- Level 6 SUE D/12,D/18
+- Level 6 SUE D/12-18
+- Level 6 SUE D/18-19
+- Level 6 SUE D/18-20
+- Level 6 SUE D/2.5-3
+- Level 6 SUE D/2.6-5
+- Level 6 SUE D/2.6-D/5
+- Level 6 SUE D/20-23
+- Level 6 SUE D/29-31
+- Level 6 SUE D/31-32.5
+- Level 6 SUE D/31-32.6
+- Level 6 SUE D/31-32.8
+- Level 6 SUE D/32.5-33
+- Level 6 SUE D/32.5-33 NE PH
+- Level 6 SUE D/32.5-34
+- Level 6 SUE D/32.8-33
+- Level 6 SUE D/32.9-33
+- Level 6 SUE D/5-8
+- Level 6 SUE D/5-D/8
+- Level 6 SUE D/8-D/12
+- Level 6 SUE Doghouse B.5/2.5-3
+- Level 6 SUE Penthouse B/C, 2
+- Level 6 SUE Stair 18 Roof Parapet N,E,W Walls
+- Level 6 SUW J-K/3-5
+- Level 6 SUW J-L/31-33
+- Level 6 SUW J-L/31-33 NW PH
+- Level 6 SUW J-L31-33 NW PH
+- Level 6 SUW J-N/33
+- Level 6 SUW K-L/15-19, 27-31
+- Level 6 SUW K-L/16-30
+- Level 6 SUW K-L/20-31
+- Level 6 SUW K-L/3
+- Level 6 SUW K-L/3-14
+- Level 6 SUW K-L/3-16
+- Level 6 SUW K-L/3-33
+- Level 6 SUW K-L/5-12
+- Level 6 SUW K-L/5-14
+- Level 6 SUW K-L/5-16
+- Level 6 SUW K-L/5-8
+- Level 6 SUW K-N/33 NW PH
+- Level 6 SUW K/11-18
+- Level 6 SUW K/20-27
+- Level 6 SUW K/27-33
+- Level 6 SUW K/3-7
+- Level 6 SUW K/31-32.5
+- Level 6 SUW K/7-10
+- Level 6 SUW L-J/3-5 S Penthouse
+- Level 6 SUW L-L.7/31
+- Level 6 SUW L-M.8/31
+- Level 6 SUW L-M/2.5; M/2.5-3; M-N/3
+- Level 6 SUW L-M/3-5 Penthouse
+- Level 6 SUW L-M/5.1 SW Penthouse
+- Level 6 SUW L-N/3-5
+- Level 6 SUW L-N/3-5.5
+- Level 6 SUW L-N/3-5; Level 6 SUE A-C/31-33
+- Level 6 SUW L-N/30.8
+- Level 6 SUW L-N/31 NW Penthouse
+- Level 6 SUW L-N/31-33
+- Level 6 SUW L.5,M/31-33
+- Level 6 SUW L/14-16.5, 20-22
+- Level 6 SUW L/18-19
+- Level 6 SUW L/2.5-5 SW Penthouse
+- Level 6 SUW L/3-5
+- Level 6 SUW L/3-5; L-M/2.5
+- Level 6 SUW L/33-34 Stair 5 Exterior (Roof Parapet
+- Level 6 SUW L/33-34 Stair 5 Exterior (Roof Parapet)
+- Level 6 SUW L/33-34 Stair 5 Exterior E,W Wall (Roo
+- Level 6 SUW L/33-34 Stair 5 Exterior E,W Wall (Roof Parapet)
+- Level 6 SUW L/5-5.1
+- Level 6 SUW L/5-7
+- Level 6 SUW L/7-11
+- Level 6 SUW M-K/2.5-3
+- Level 6 SUW M-N/2.8
+- Level 6 SUW M-N/2.8 Penthouse
+- Level 6 SUW M-N/3
+- Level 6 SUW M-N/3, L.2-N/5, N/3-5
+- Level 6 SUW M-N/5
+- Level 6 SUW M.2-L/5 SW Penthouse
+- Level 6 SUW M.2-N/5
+- Level 6 SUW M.5-N/31
+- Level 6 SUW M.8-N/31
+- Level 6 SUW N/21-21.5
+- Level 6 SUW N/21-21.5; 33-30 & L-N/30
+- Level 6 SUW N/3-5 SW Penthouse
+- Level 6 SUW N/31-33
+- Level 6 SUW N/31-33 NW Penthouse
+- Level 6 SUW NW PH L.7-N/31
+- Level 6 SUW NW PH N/31-32.8
+- Level 6 SUW Penthouse M-N/2.8
+- Level 6 Stair 18 Parapet Exterior N,E,W Face
+- Level 6 penthouse L-N/2.7-5
+- Level 6, B-C / 31-32
+- Level 6, B.5-C/31-32
+- Level 6, C-D/18-18.6
+- Level 6A & Level 6D Penthouse
+- Level 6A A-C/ 31-33 NorthEast Penthouse
+- Level 6A A-C/31-33 Leave out B.5-C31-32
+- Level 6A A-C/31-33 North East Penthouse
+- Level 6A C/19
+- Level 6A L/19
+- Level 6A Level 6D Penthouse
+- Level 6A SouthEast Penthouse / Roof
+- Level 6D A-B/3-4 Penthouse SOMD
+- Level 6D Penthouse SOMD
+- Level 6D Penthouse SOMD A-B/3-3.5
+- Level 6D Penthouse SOMD A-B/3-4
+- Level 7 A-D/2.7-3 Doghouse
+- Level 7 A-D/3-4 Doghouse
+- Level 7 Dog house, A-D / 2.7-3
+- Level 7 SUW L-N/3-5 S Penthouse
+- Level 7 Vapor Barrier
+- Level A/20 & A/30
+- Level J/32,33; E/33,32,17,4,3
+- Level L 2 L/4
+- Level South Pit M.5-N/19-20
+- Level U01 Ceiling L-M/25-25.2
+- Level U01 Ceiling L-N/25.2
+- Level U01 L-M/25-25.2
+- Level U01 M-N/30-30.3
+- Level U01 M.5-N/30-30.3
+- Level U1 C/4
+- Level U1 M.5/23-26
+- Level U1 M.5/23-26 North Pit
+- Level U1 M/25,27 Stair 31, 34; Level 6 C/4 Stair R12
+- Level U1 M/3 Elevator 1B Pit
+- Level U1 M3 Elevator 1B Pit
+- Level U1 SUW L-N/17
+- Level U1 SUW M-N/13-14
+- Level U1 Stair 40,41
+- Level U10 M.5-N/13-14 Basement
+- Level-Ceiling 4 E-J/15.25-16.5
+- Level1 3/H-H3
+- Level3 J-K/24-33 (Perimeter)
+- Level3 J-K/24-33 (Primeter)
+- Level3 SUW curb M-N/18-19 Sumb Leavout N/18
+- Level4 C.5-D/32-32.8 Penthouse
+- Level4 J-K/32-33
+- Levels 1,2,3 K-L/10-11 Stair 2
+- Levels 1-4 A/20.5-21
+- Levels 1-4 A/21-24
+- Levels 1-4 N/5-6
+- Levels 2, 3 ELEV. 5 L-L.5/31-32
+- Levels 2,3 ELEV. 5 L-L.5/31-32
+- Levels 2A, 3A B.8-D/27-28
+- Levels 4-6 C/20-20.6
+- Levels 4-6 C/20-24
+- Levels 4-6 K & N/33
+- Levels 4-6 K,N/33
+- Levels 4-6 SUE B&D/2.6
+- Lever 2 B.5-C/18-18.5 Exterior Wall
+- Lever 2 B.5-C/18-18.5 Interior Wall
+- Lever 2 B.5-C/18.5 South Wall North Face
+- Lever 2 C/30.7-31
+- Lever 3 K/29-29.5
+- Leves 4 SUE A-B.5/8.3
+- Lift Station
+- Liftstation
+- Light Fixtures/ L1M, Sector 02
+- Lighting
+- Lighting / GCS1A / L1M
+- Lighting / GCS1B / Sector 09
+- Lighting / GCSA1 / L1, Sector 08
+- Lighting / L1, LM, L3, Sector 08
+- Lighting / L1, Sector 04
+- Lighting / L1, Sector 08
+- Lighting / L1, Sector 09 & Sector 10
+- Lighting / L1M, Sector 03
+- Lighting / L1M, Sector 07
+- Loading Dock Rebar
+- Loose hand rails at the cherry spray booth
+- Low Voltage Cable
+- Low Voltage Cable / GCS1A / L1
+- Low Voltage Cable / GCS1B / L1, Sector 08
+- Low Voltage Cable / GCSA / L1M
+- Low Voltage Cable / L1, Sector 02
+- Low Voltage Cable / L1, Sector 06
+- Low Voltage Cable / L1, Sector 08
+- Low Voltage Cable / L1, Sector 09
+- Low Voltage Cable / L1, Sector 09 & Sector 10
+- Low Voltage Cable / L1M, Sector 03
+- Low Voltage Cable / L1M, Sector 07
+- Low Voltage Cable/ L1M, Sector 02
+- Low Voltage Cables / L1, L3
+- Low Voltage Cables / L1, LM, L3, Sector 08
+- Low voltage Cable / GCSA / L1M
+- Lv1 D-E3
+- Lv1 D-H/3
+- Lv1 F.3-H/3
+- Lv1 H-L/1
+- Lv1 SUE A/20-21
+- Lv1 SUE C/21-27
+- Lv2 SUE B-C/31-32 Elevator
+- Lv2 SUW K/18-20
+- Lv2 SUW K/18-22.8
+- Lv2 SUW K/22-22.7
+- Lv2 SUW K/23-28
+- Lv3 A/25-32
+- Lv3 E.3-F/3
+- Lv3 Elevator 22 Interior Walls
+- Lv3 FIZ F-G/2-2.8
+- Lv3 J-K/17
+- Lv3 SUE A-B/2
+- Lv3 SUE C-D/30.7
+- Lv3 SUE C/2-3
+- Lv3 SUE C/32-33
+- Lv3 SUE D-E/5
+- Lv3 SUE D/24.5-25
+- Lv3 SUE D/25-25.8
+- Lv3 SUW J-K/4
+- Lv3 SUW K.5-L/17.8
+- Lv3 SUW K/11.5-12
+- Lv3 SUW K/16.3-17
+- Lv3 SUW K/29-29.5
+- Lv3 SUW K/3.3-4
+- Lv3 SUW L-N/9
+- Lv3 SUW L/10-11
+- Lv3 SUW L/5-6
+- Lv3-4 SUE D/11-12 & D/26-27
+- Lv4 D/17-18
+- Lv4 D/27-28
+- Lv4 K/11-12
+- Lv4 K/14-15
+- Lv4 K/29-29.5
+- Lv4 K/32-33
+- Lv4 SUE A-B.5/3.5 and 4.7; A.5/4.5-5; B.5/3.5-4.5
+- Lv4 SUE B-C/5
+- Lv4 SUE B/31-32.3
+- Lv4 SUE C.5-D/32-32.8
+- Lv4 SUE D/19-20
+- Lv4 SUE D/24.5-25
+- Lv4 SUE D/25-26
+- Lv4 SUW K/21-22
+- Lv4 SUW K/22-22.8
+- Lv4 SUW K/22-23
+- Lv4 SUW N/15.5-16.5
+- Lv4 SUW N/21-13
+- Lv4 SUW N/26-29.5
+- Lv4 SUW N/7-12
+- Lv4E SUW J-K/19-23.5
+- Lv6 East ADDS C/22.5-23.5
+- Lv6 East ADDS C/23.5-28
+- Lv6 East ADDS C/28-30.5
+- Lv6 East ADDS D/19-23.5
+- Lv6 East ADDS D/23.5-33
+- Lv6 West ADDS K/14-18.5
+- Lv6 West ADDS K/19-27
+- Lv6 West ADDS K/27-33
+- Lv6 West ADDS K/3-18.5 & 20-27
+- Lv6 West ADDS K/5-14
+- Lv6 West ADDS L/15-18
+- Lv6 West ADDS L/19-21
+- Lv6 West ADDS L/21-31
+- Lv6 West ADDS L/22-31
+- Lv6 West ADDS L/5-13
+- Lvl 1 & 2 Elevator Lobby Face Frame Inspection
+- Lvl 2 SUE C/18-19, Lvl 3 SUE C/26-27
+- Lvl 2/3 Fab J5-J6
+- Lvl 3 Elevator 5 L-L.5/31.3-32 (West & South, Top
+- Lvl 3 Fab E12-E13
+- Lvl 3 Fab E17-E18
+- Lvl 3 Fab E18
+- Lvl 3 Fab E18-E19
+- Lvl 3 Fab E22-E23
+- Lvl 3 Fab E23-E24
+- Lvl 3 Fab E24-E25
+- Lvl 3 Fab E27-E28
+- Lvl 3 Fab E28-E29
+- Lvl 3 Fab E3-E4
+- Lvl 3 Fab E30-E31
+- Lvl 3 Fab E4-E5
+- Lvl 3 Fab E5,E33,J18,J33
+- Lvl 3 Fab E5-E6
+- Lvl 3 Fab E6-E7
+- Lvl 3 Fab E7-E8
+- Lvl 3 Fab E8-E9
+- Lvl 3 Fab E9-E10
+- Lvl 3 Fab J10-J11
+- Lvl 3 Fab J12-J13
+- Lvl 3 Fab J13-J14
+- Lvl 3 Fab J14-J15
+- Lvl 3 Fab J15-J16
+- Lvl 3 Fab J18
+- Lvl 3 Fab J24-J25
+- Lvl 3 Fab J3-J4
+- Lvl 3 Fab J30-J31
+- Lvl 3 Fab J31-J32
+- Lvl 3 Fab J5-J6
+- Lvl 3 Fab J7-J8
+- Lvl 3 Fab J8-J9
+- Lvl 3 Fab J9-J10
+- Lvl 3 Fab Scr 24 J26-J27
+- Lvl 4 D-16-18 paint touch up
+- Lvl 4 D-21-26
+- Lvl 4 D-6-10 paint touch up
+- Lvl.2 L-4-5
+- Lvl.2, C-D/10-18
+- Lvl.2, C-D/28-33
+- M.4-N 9-11 Column FIZ 3rd Floor FAB
+- M.6 / 21.3 Sump Pit
+- M1 30-31, A-C
+- M1 A12-A16
+- M1 A8-A12
+- M1 B11-B15
+- M1 B6-B10
+- MCC / GCSB / L1, Sector 10
+- MCC CONDUIT INSTALLATION
+- MCC RM-1 & Elec. Panel RM-2 (C-D 14-15)
+- MCC ROOM FAB 1F SEC 21 AND 24 COLUMN H 24 & H8
+- MCC ROOMS/ FTP CABLE PULL/ FAB 1F SECTOR 21 & 24
+- MECH/ AD STEEL GROUT INSTALLATION/CSF
+- MECH/ FSF
+- MECH/ Intumescent Paint / CSF G32
+- MECH/ Intumescent Paint/ CSF
+- MECH/ Intumescent Paint/ CSF G30
+- MECH/ Intumescent Paint: FSF G30
+- MECH/ Lateral Module/ CSF 31.3-31.6/G.3-H.8
+- MECH/ Lateral Module/ CSF 7-7.3/E.3-F.8
+- MECH/ Lateral Module/ CSF 9-9.3/E.3-F.8
+- MECH/ Lateral Module/CSF
+- MECH/ Mian Module Pre Lift/CSF G32
+- MECH/ NCR COlumn repair/FSF
+- MECH/ NCR Column Repair/CSF G32
+- MECH/ NCR Column repair/FSF 31.6/E.5
+- MECH/ Pre Lift Main MOdule/CSF M7E
+- MECH/ Primer Inspection / CSF
+- MECH/ Primer Inspection/ CSF
+- MECH/ Surface Prep/ CSF
+- MECH/ Surface Prep/ CSF G30
+- MECH/ Surface Prep/ FSF G23
+- MECH/ Surface Prep/ FSF G29
+- MECH/ Surface Prep/CSF G30
+- MECH/ Surface Prep/FSF
+- MECH/ Surface Prep/FSF G20
+- MECH/ Surface Prep: Primer/ CSF G30
+- MECH/ Surface prep/FSF G30
+- MECH/ UT Test/FSF G20
+- MECH/ UT/VT WELDS/ MCCARTHY YARD
+- MECH/ UT/VT Welds/CSF
+- MECH/CSF/ 14.3-20 / F8-G
+- MECH/CSF/ 21-21.6 / H8 - G3
+- MECH/CSF/ 3-3.6 / F8-E3
+- MECH/CSF/ CW20P, CW20D (19-19.7/G3-H8
+- MECH/CSF/(27.3-27.6/G3-H8), (26.3-26.6/E3-G)
+- MECH/CSF/10-12.6/G3-H8
+- MECH/CSF/11.3-11.6/G.3-H.8
+- MECH/CSF/11.3-12.6/E3-F8
+- MECH/CSF/11.6-14.6/G-G3
+- MECH/CSF/13-14.6/G3-H8
+- MECH/CSF/13-14.6/H8-G3
+- MECH/CSF/14.3-17.3/G-G3
+- MECH/CSF/15-15.6/E3-F8
+- MECH/CSF/15-17.6/G3-H8
+- MECH/CSF/16.0-16.6/E3-F8
+- MECH/CSF/17-17.3/E3-F8
+- MECH/CSF/17.3-17.6/E3-F8
+- MECH/CSF/17.6-14.6/G-G.3
+- MECH/CSF/18-18.3/E3-F8
+- MECH/CSF/18-18.3/G3-H8
+- MECH/CSF/18.3-18.6/E3-F8
+- MECH/CSF/18.3-18.6/G.3-H.8
+- MECH/CSF/18.3-22.6/G.3-H.8
+- MECH/CSF/19.3-19.6/E.3-F.8
+- MECH/CSF/20.3-20.6/E.3-F.8
+- MECH/CSF/22-28.6/E3-F8
+- MECH/CSF/23.6-29.3/G-G3
+- MECH/CSF/23.6-32.3/G-F8
+- MECH/CSF/24.3-24.6,25-25.6,26-26.3/E3-F8
+- MECH/CSF/25-25.3, 30.6-31, 32-32.3/G3-H8
+- MECH/CSF/25-31.3/E-E3
+- MECH/CSF/25-31/E-E.3
+- MECH/CSF/26-26.6 27-27.3.3/G3-H8
+- MECH/CSF/26.3-26.6/G.3-H.8
+- MECH/CSF/26.3-31/E-E.3
+- MECH/CSF/26.6-29.6/G-G3
+- MECH/CSF/28-29.6/ H8-G3
+- MECH/CSF/29-29.6/E3-F8
+- MECH/CSF/29.6-32.3/G-G3
+- MECH/CSF/3-3.6/E3-F8
+- MECH/CSF/3.3-5.6/F.8-G
+- MECH/CSF/3.3-8.3/F.8-G
+- MECH/CSF/30-30.6/E3-F8
+- MECH/CSF/30.3-31.6/ H8-G3
+- MECH/CSF/31-31.6/E3-F8
+- MECH/CSF/32-32.6/E3-F8
+- MECH/CSF/32.0-32.6/G-G3
+- MECH/CSF/4.3-4.6/E.3-F.8
+- MECH/CSF/5-10.6/E3-F8
+- MECH/CSF/5.6-8.3/F.8-G
+- MECH/CSF/5.6-8.3/G-G3
+- MECH/CSF/8-8.3/ G3-H8
+- MECH/CSF/8.3-11.6/G-G3
+- MECH/CSF/8.3-8.6/G.3-H.8
+- MECH/CSF/8.6-11.3/F8-G
+- MECH/CSF/9-9.6/ H8-G3
+- MECH/CSF/9.3-9.6/G.3-H.8
+- MECH/CSF/CM5W (17.6-23.3/F8-G3)
+- MECH/FSF/
+- MECH/FSF/(8-8.6/G3-H8)
+- MECH/FSF/(9-9.6/G3-H8)
+- MECH/FSF/11.3-12.6/E3-F8
+- MECH/FSF/11.3-14.3/G-G3
+- MECH/FSF/13-15.6/E3-F8
+- MECH/FSF/13.3-15.6/G3-H8
+- MECH/FSF/14.3-17.3/G-G3
+- MECH/FSF/16-17.6/G3-H8
+- MECH/FSF/16-18.3/E3-F8
+- MECH/FSF/17.3-14.3/F8-G
+- MECH/FSF/17.3-20.3/F8-G
+- MECH/FSF/17.3-20.3/G-G3
+- MECH/FSF/18-20.3/E3-F8
+- MECH/FSF/18-20.6/G3-H8
+- MECH/FSF/19.3-31.3/E3-F8
+- MECH/FSF/20.3-23.3/F.8-G
+- MECH/FSF/20.3-23.3/G-G3
+- MECH/FSF/21-26.6/G3-H8
+- MECH/FSF/21-29.3/G3-H8
+- MECH/FSF/21.3-32.6/E3-F8
+- MECH/FSF/23.3-26.3/F.8-G
+- MECH/FSF/23.3-26.3/G-G3
+- MECH/FSF/25.3-25.6/E3-F8
+- MECH/FSF/26-26.3/E3-F8
+- MECH/FSF/26.3-26.6/E3-F8
+- MECH/FSF/26.3-29.3/G-G3
+- MECH/FSF/26.3-29.6/F.8-G
+- MECH/FSF/27-27.3/E3-F8
+- MECH/FSF/27.3-28.6/E3-F8
+- MECH/FSF/27.3-29.3/G3-H8
+- MECH/FSF/29.3-30.3/E3-F8
+- MECH/FSF/29.3-32.6/G-G3
+- MECH/FSF/3-4.6/E3-F8
+- MECH/FSF/3.3-5.3/F8-G
+- MECH/FSF/3.3-5.3/G-G3
+- MECH/FSF/5-8.6/E3-F8
+- MECH/FSF/5.3-8.3/F8-G
+- MECH/FSF/5.3-8.3/G-G3
+- MECH/FSF/6.6-7/G3-H8
+- MECH/FSF/8.3-11.3/E3-F8
+- MECH/FSF/8.3-11.3/G-G3
+- MECH/FSF/9.3-9.6, 21-23.6/E3-F8
+- MECH/Final Inspection/FSF
+- MECH/Intumescent Paint/CSF
+- MECH/Lateral Module/ CSF 14-14.3/G.3-H.8
+- MECH/Lateral Module/ CSF 22.3-22.6/E.3-F.8
+- MECH/Lateral Module/ CSF 23-23.3/G.3-H.8
+- MECH/Lateral Module/ CSF 23.3-23.6/E.3-F.8
+- MECH/Lateral Module/ CSF 5-5.3/E3-F8
+- MECH/Lateral Module/ CSF 9-9.3/G3-H8
+- MECH/Lateral Module/CSF 10-10.3/G.3-H.8
+- MECH/Lateral Module/CSF 10.3-10.6/G.3-H.8
+- MECH/Lateral Module/CSF 11-11.3/G.3-H.8
+- MECH/Lateral Module/CSF 12-12.3/G.3-H.8
+- MECH/Lateral Module/CSF 12.3-12.6/G.3-H.8
+- MECH/Lateral Module/CSF 13-13.3/G.3-H.8
+- MECH/Lateral Module/CSF 15-15.3/G.3-H.8
+- MECH/Lateral Module/CSF 15.3-15.6/G.3-H.8
+- MECH/Lateral Module/CSF 16-16.3/G.3-H.8
+- MECH/Lateral Module/CSF 16.3-16.6/G.3-H.8
+- MECH/Lateral Module/CSF 17-17.3/G.3-H.8
+- MECH/Lateral Module/CSF 17.3-17.6/G.3-H.8
+- MECH/Lateral Module/CSF 18-18.3/G.3-H.8
+- MECH/Lateral Module/CSF 19-19.3/G.3-H.8
+- MECH/Lateral Module/CSF 20-20.3/G.3-H.8
+- MECH/Lateral Module/CSF 21-21.3/G.3-H.8
+- MECH/Lateral Module/CSF 21.3-21.6/E.3-F.8
+- MECH/Lateral Module/CSF 22-22.3/E3-F8
+- MECH/Lateral Module/CSF 22-22.3/G.3-H.8
+- MECH/Lateral Module/CSF 23-23.3/E.3-F.8
+- MECH/Lateral Module/CSF 24.3-24.6/G.3-H.8
+- MECH/Lateral Module/CSF 26.3-26.6/G3-H8
+- MECH/Lateral Module/CSF 27.3-27.6
+- MECH/Lateral Module/CSF 28.3-28.6/G.3-H.8
+- MECH/Lateral Module/CSF 4.3-4.6/E3-F8
+- MECH/Lateral Module/CSF 6.3-6.6/E.3-F.8
+- MECH/Lateral Module/CSF 8-8.3/E.3-F.8
+- MECH/Lateral Module/CSF 8-8.3/G3-H8
+- MECH/Lateral Module/FSF 23.3-23.6/G3-H8
+- MECH/Main Module/ CSF 17.6-20.6/G-G.3
+- MECH/Main Module/ CSF 20.6-23.6/G-G.3
+- MECH/Main Module/ CSF 23.6-26.6/G-G.3
+- MECH/Main Module/ CSF 5.6-3.3/G-F.8
+- MECH/Main Module/ CSF 5.6-8.6/G-F.8
+- MECH/Main Module/CSF (8.6-11.6/G-F.8)
+- MECH/Main Module/CSF 29.6 - 32.6/G-G.3
+- MECH/Main Module/FSF 29.3-32.6/F8-G
+- MECH/Main Module/MCC Laydown Yard
+- MECH/Paint Touch Up/CSF
+- MECH/Primer/ FSF
+- MHW/CS/Lv1A25/44/45 Col. J-E 31-33/E24-33
+- MK Marlow Material Yard
+- MODULE CABLE AND BASKET TRAY/FAB LVL 2, G~H-11~13
+- MTR Bays - Fireproofing
+- MVSW-1F11FL-NER / L1-Electrical Room
+- Main Electric Room
+- Main electrical room fire caulk penetrations
+- Material Inspection Yard
+- Material Yard
+- Mech/Steam/CUBE19.5-D18
+- Mechanical Piping/HVAC/L3/S1,3,12
+- Mechanical/ Duct Detectors/ L7S1
+- Mechanical/ Flash Tank/ L7 - S2, S12
+- Mechanical/ Gravity Hoods/L7, L8 - S1, S2, S3, S12
+- Mechanical/ Grease Duct Insulation/ L5 & L6 - S1
+- Mechanical/AHU Duct Detectors/L7
+- Mechanical/AHU/L7
+- Mechanical/Air Separator//L7 - Penthouse
+- Mechanical/CEF/L7S1
+- Mechanical/CHW Piping/L1 - S3
+- Mechanical/Condensate Drain/L1_S1, S2, S3
+- Mechanical/Condensate Drains/L7 - S1, S2, S3
+- Mechanical/Condensate Line/L1-S2,S12
+- Mechanical/Condensate Line/L5-S1, S12
+- Mechanical/Condensate Line/L7 - S2, S12
+- Mechanical/DEFs/L7-S1
+- Mechanical/Duct Detectors/L7
+- Mechanical/Duct Detectors/LU1 - S1, S3
+- Mechanical/Duct, Insul, Label, Equip/L1-S1,2,11,12
+- Mechanical/Duct, Insul,Label, FPU,FCU,VAV,FSD/L5
+- Mechanical/Ductwork/LU1
+- Mechanical/EFs/L7-S1, S3, S11,S12
+- Mechanical/Expansion Tank/L7 - S2, S12
+- Mechanical/FCU/L1-S1,S2,S3
+- Mechanical/FPU, FCU/L1 - S12
+- Mechanical/FPUs/L4, L5
+- Mechanical/Heat Exchangers/L7-Penthouse
+- Mechanical/Insulation & Labeling/ L1S3
+- Mechanical/PCR Line/L1 - S3
+- Mechanical/Pump Condensate Line/L1 - S1, S2, S3
+- Mechanical/Refrigerant Line/L1S1
+- Mechanical/Refrigerant Line/L7S2
+- Mechanical/Refrigerant Piping/L1 - L7, S1
+- Mechanical/SEFs/L7-S1, S2, S11, S12
+- Mechanical/SMAF/L7
+- Mechanical/SPFs/L7-S1,S3,S12
+- Mechanical/Steam Condensate Pump/L7-S12
+- Mechanical/U1-S3/Duct Detectors
+- Mechanical/VAHUs/L1S3,3 Visual
+- Mechanical/VRFs/L1-S1
+- Meet Eduardo at L1 Col 9A. 713-384-1603
+- Meet Marlon Sasser at L3 Col A25 - 832-469-6138
+- Meet Marlon Sasser at L3 Col B29 - 832-469-6138
+- Meet Octavio on L4 Col 2D at 8:30
+- Meet Saul at Col B1 - 361-238-9171
+- Meet Shanira at L1 Col 20B at 8:30 am
+- Meet Weekes with Apache at col A6 (512) 658-5648
+- Meet at FIZ Col A1 Bryce M (970) 817-1097
+- Meet at FIZ Col B2, Saul T (361) 238-9171
+- Meet at FIZ L1 C3-D3, Bryce M (970) 817-1097
+- Meet at FIZ L1 Col B2 Ramiro 512-429-1741
+- Meet at FIZ L1 Col B2 Saul T
+- Meet at FIZ L1 Col B2 Travis W (850) 819 9296
+- Meet at FIZ L1 Col B2, Bryce M (970) 817-1097
+- Meet at FIZ L1 Col B2, Marlon S (832) 469-6138
+- Meet at FIZ L1 Col B2, Raffiel D (409) 293-6156
+- Meet at FIZ L1 Col B2, Saul T (361) 238-9171
+- Meet at FIZ L1 Col B2, Travis W (850) 819-9296
+- Meet at FIZ L1 Col B3, Darrin R. (337 302-1373
+- Meet at FIZ L1 Col B3, Darrin R. (337) 302-1373
+- Meet at FIZ L1 Col C2, Marlon S (832) 469-6138
+- Meet at FIZ col B2 Ramiro Ramero 512-429-1741
+- Meet at GBI Laydown, Morris D (409) 679-4682
+- Meet at L1 Col A5, Eduardo L. (713) 384-1603
+- Meet at SUE Col C9 DS , Eduardo L (713) 384-1603
+- Meet at SUE L1 B17, SK (813) 843-0579
+- Meet at SUE L1 B4, Travis W. (850) 819-9296
+- Meet at SUE L1 Col A14, Bryce M (970) 817-1097
+- Meet at SUE L1 Col A19, Bryce M (970) 817-1097
+- Meet at SUE L1 Col A32, Eduardo L (713) 384-1603
+- Meet at SUE L1 Col A5, Eduardo L (713) 384-1603
+- Meet at SUE L1 Col A7, Bryce M (970) 817-1097
+- Meet at SUE L1 Col A7, Eduardo L. (713) 384-1603
+- Meet at SUE L1 Col A7, Marlon S (832) 469-6138
+- Meet at SUE L1 Col A7, Saul T (361) 238-9171
+- Meet at SUE L1 Col B17, Bryce M (970) 817-1097
+- Meet at SUE L1 Col B17, Eduardo L (713) 384-1603
+- Meet at SUE L1 Col B17, Marlon S (832) 469-6138
+- Meet at SUE L1 Col B17, Morris D (409) 679-4682
+- Meet at SUE L1 Col B17, Saul T. (361) 238-9171
+- Meet at SUE L1 Col B17, Travis W (850) 819-9296
+- Meet at SUE L1 Col B19, Eduardo L (713) 384-1603
+- Meet at SUE L1 Col B2, Marlon S (832) 469-6138
+- Meet at SUE L1 Col B2, Travis W (850) 819 9296
+- Meet at SUE L1 Col B4, Eduardo L (713) 384-1603
+- Meet at SUE L1 Col B4, Travis W (850) 819-9296
+- Meet at SUE L1 Col B4, Weekes (512) 658-5648
+- Meet at SUE L1 Col B6, Octavio P (832) 407-6951
+- Meet at SUE L1 Col B6, SK (813) 843-0579
+- Meet at SUE L1 Col B7, SK (813) 843-0579
+- Meet at SUE L1 Col B7-B13, SK (813) 843-0579
+- Meet at SUE L1 Col C2, Marlon S (832) 469-6138
+- Meet at SUE L1 Col C3, Darrin Reeves (337) 302-137
+- Meet at SUE L1 Col C5, Mark C (380) 421-1204
+- Meet at SUE L3 Col B17, VG (409) 779-3089
+- Meet at SUE L4 Col 14, Bryce M (970) 817-1097
+- Meet at SUE L4 Col 24, Armondo L 361-688-3484
+- Meet at SUE L4 Col 6, Bryce M (970) 817-1097
+- Meet at SUE L4 Col 6, Octavio P (832) 407-6951
+- Meet at SUE L4 Col A29
+- Meet at SUE L4 Col A7, Octavtio P (832) 407-6951
+- Meet at SUE L4 Col B19, Eduardo L (713) 384-1603
+- Meet at SUE L4 Col B20
+- Meet at SUE L4 Col B6
+- Meet at SUE L4 Col B6 Venkata Galla (409) 779-3089
+- Meet at SUE L4 Col B6,
+- Meet at SUE L4 Col B6, Armando L (361) 688-3484
+- Meet at SUE L4 Col B6, Mark C (830) 421-1204
+- Meet at SUE L4 Col B6, Mark C. (830) 421-1204
+- Meet at SUE L4 Col B6, Octavio P (832) 407-6951
+- Meet at SUE L4 Col B6, Travis Webb (850) 819-9296
+- Meet at SUE L4 Col B6, Venkatta G (409) 779-3089
+- Meet at SUE L4 Col B6, Weekes (512) 658-5648
+- Meet at SUE L4 col 25, VG (409) 779-3089
+- Mezz Deck
+- Mod yard
+- Module 10B & 9A bolt up assembly and tie ins E-G/1
+- Module 11B bolt up assembly and tie ins G-H/16.2-1
+- Module 11C.N,13C fillet welds C/19;E-F/23
+- Module 11C.N,7C.1,9A fillet welds F/23;C-D/14.1/D-
+- Module 13C fillet welds A-C/18-20
+- Module 13C,11B,10B,8B,6B,9A,8A.1,7A,5A CJP & fille
+- Module 13C,9A fillet welds A-F/18-23
+- Module 1B assembly & tie ins H-K/4-6
+- Module 2C,7C,5C.1,13C,7C.1,Paint A-K/4-23
+- Module 2C.1 painted welds G-H/4-5
+- Module 4A bolt up assembly & tie ins G-D/7.2-11
+- Module 4A,7A,8A,8B CJP & fillet welds E-F/10;E-F/1
+- Module 9A CJP/fillet welds D-E/21-22
+- Moment welds entrance canopy
+- Monorail & Tank hoist installation A-B/27-30
+- Monorail bolt ups A-B/27-30
+- Monorail painted welds A-B/27-30
+- Motor Switch / L1, Sector 08
+- N CUB, Trestle
+- NA/ Unit Heater/ Level 1 Sector 3 & 24
+- NCR 0550 - SHORE D INSPECTION
+- NE CUB / Lift Station
+- NE Facade LVL 4-8 Blueskin
+- NE Penthouse Columns C-D/32-33
+- NFW(S&R)/FIZ L1 E2-F2/Marlon Sasser-1-832-469-6138
+- NFW(S)(R) LINE WELDS
+- NFW(S)(R) LINEs on rooftop col.4C-13C LOWER RACK
+- NFW(S)(R) PIPING IN MECH. ROOM
+- NFW, HCH, LCH, ST, MHW PIPING FAB - LEVEL 5
+- NFWR / OA_1G213A~D / ROOF
+- NFWR/NFP_1G1M11A-D/GCS A, OAC ROOF AREA
+- NFWR/NFP_1G1M11B/HVAC MACHINERY ROOM
+- NFWR/NFP_1G1M11C/HVAC MACHINERY ROOM
+- NFWR/NFP_1G1MM11D/HVAC MACHINERY ROOM
+- NFWS/FA_NG1M12/OAC ROOF AREA
+- NFWS/OA_1G211A-C/GCS A OAC ROOF AREA
+- NFWS/OA_1G213A-D/GCS A OAC ROOF AREA
+- NG LINE PIPE WELDS, CUB LEVEL 1, A22 EXTERIOR
+- NG MAIN/ BOILER ROOM/CUB1/LVL1/A22-C20
+- NG SYSTEM/GAS PAD ANCHORS/CUB1/LVL1/A22-A23
+- NTP Conduit / CUB L01M / [H4]
+- NW / Fab level 2, Col. J30
+- NW / GCS A BLDG ALKALI (CL 25-29 A-B)
+- NW GCS
+- NW Gas Plant & E CUB Curb & Gutter
+- NW LINE BLDG B
+- NW LINE BLDG B COL. 57A-C
+- NW LINE COL. 40-57
+- NW LINE ON COL.32
+- NW Penthouse Colums L-M/32-33
+- NW Pressure test, see linked B&K Inspection
+- NW of Gas Plant
+- NW/FAB1 Lv1 to Lv2 Col K30 to N30
+- NW/FAB1 Lv1/2 Col L~N30
+- NW/FI_1GNW11/25-29 A-B
+- NW/HYDRO TEST / 2SPOOLS// BENCH TEST/ BENCH TEST
+- NW/IWW2T_1G111A-B/GCS B (CL 30-59)
+- NW/ORP_1G111A-B/WASTE WATER ROOM
+- Natural Gas
+- Natural Gas / NA / SUW 4F DS Area
+- Natural Gas / NA / SUW 4F FIZ Area
+- Natural Gas / NA / SUW to GCS
+- Natural Gas Pipe Field Welds, Level 4: K6 to K31
+- Natural Gas Pipe Field Welds, Level 4: N1
+- Natural Gas Pressure Test
+- Natural Gas Trestles
+- Natural Gas/Carbon Steel/L2S5/L4S5 Col30-31,K-N
+- Near Infinity Laydown Yard
+- Network Conduit / SUE 3F / VCB, ECB, REC [B4]
+- North Lift Station /Force Main Line 01 PVC
+- Northwest of GCS B BLDG laydown area
+- OA
+- OAC DUCT - SUE ROOF AND IN THE SUE DS
+- OAC MECHANICAL RM(FAB116101) GL B/2 PP-1F015
+- OAC MECHANICAL RM(FAB116101) GL(1A,1C,1F,3E,4A)
+- OAC MECHANICAL RM(FAB116101) GL(1F)
+- OB1 - L7- Sectors 3 & 7
+- OB1 - Level 1 - A1/-8
+- OB1 - Level 1 - I/O Room
+- OB1 - Level 1 - Sector 02
+- OB1 - Roof
+- OB1 ELEC ROOM
+- OB1 Level 1 Main Electrical Room
+- OB1L1-L7 - NE Steam & Condensate - Visual
+- OCC L3 J/K 9.0
+- OF1101006, OF1102014, OF1103006, OF1112005 and OF1
+- OF1201004, OF1202010, OF1203005, OF1212004, OF1212
+- OF1301004, OF1302014, OF1303004, OF1312020, and OF
+- OFFICE
+- OFFICE BUILDING Comm Fiber Cable
+- OFFICE BUILDING ELECTRICAL ROOM
+- OFFICE BUILDING Raceway for Comm Fiber
+- OFFICE BUILDING Raceway for MV Cable
+- OH Raceways- Chillers
+- ORG EXH GALV RISER/ SUE C/D 31-32
+- OUTISDE AIR
+- OWW / GCS B BLDG SOLVENT (CL 30-32 C-D)
+- OWW / PIT_1G114B / CL 30-32 B-D
+- OWW / PIT_1G114E / CL 32-34 D-E
+- OWW / PIT_1G114F / CL 34-36 D-E
+- OWW(P)/ GCS A, NEW TRESTLE (26-29 A-B)
+- OWW(P)/ GCS A, NEW TRESTLE (26-29 A-B) Harness Req
+- OWW(P)/FAB1 Lv1 to Lv2 Col M17-M33
+- OWW(P)/FAB1 SUW Lv1 Col M17
+- OWW(P)/Fab1 Lv1 Col N17
+- OWW(P)/ORP_1F111/Fab1 Lv1 Col N17
+- OWW/IWW2P_1G111A~C/WASTE WATER RM
+- OWW/ORP_1F111A/B/C/FAB1 Lv1 N17
+- OWW/ORT/FAB1 LV1 COL N17
+- OWW/PIT_1G1114A/SOLVENT
+- OWW/PIT_1G1114B/SOLVENT
+- Office
+- Office Lv.2 Sector 03
+- Office, Level 7, OF1702005
+- On-Site Welder Qualification
+- Other/ Unit Heater/ CUB CL H-K, 60-61
+- Outside Air/NA/ CUB CL A-B, 24-25
+- Outside Air/NA/ Level 1
+- PAINTED WELDS G-K/8-15;D-G/11-15;E-G/15-17.1;D-E/8
+- PANEL BOARD /FAB LVL 2, (J9,J12,J13,J15,J16,J20,J2
+- PANEL BOARD/FAB LVL 2- E.5@4.6,F.6@6,E@6.5-7,F.4@7
+- PCW(s) PCW(R) FE23D
+- PGV GCS-A / A~C / 08~09
+- PGV, B~C / 2~14
+- PGV, FAB, F~G / 22~24
+- PGV, FAB, G~H / 14~16
+- PGV, FAB, H~J / 14~15,19~20
+- PGV, GCS-A, A~C / 10~14
+- PGV, GCS-A, A~C / 2~4
+- PGV, GCS-A, A~C / 4~5
+- PGV, GCS-A, B~C / 7~8
+- PIPE COATING / FAB / CSF L-02 / M.5 3 - G.5 3
+- PIPE COATING / FAB / CSF L-02 / N3 ~ G3 ~G1~M.5 1
+- PIPE COATING / FAB / CSF L-02 / N30
+- PIPE COATING / FAB / CSF L-02 / N7.6 - N12
+- PIPE COATING / FAB / FAB / FSF L-01 / N22.5 ~ N29
+- PIPE COATING / FAB / FAB L-03 / K10
+- PIPE COATING / FAB / FAB L-03 / K15
+- PIPE COATING / FAB / FAB L-03 / K24.5
+- PIPE COATING / FAB / FSF FIZ / F.4 1.4 ~ F.4 3
+- PIPE COATING / FAB / FSF FIZ / G1.6 ~ G3
+- PIPE COATING / FAB / FSF L-01 / E33 ~ E23.5
+- PIPE COATING / FAB / FSF L-01 / K1 - K3
+- PIPE COATING / FAB / FSF L-01 / K30 - L30
+- PIPE COATING / FAB / FSF L-01 / K30 ~ E33
+- PIPE COATING / FAB / FSF L-01 / K7.2 - L7.2
+- PIPE COATING / FAB / FSF L-01 / K7.2 ~ N7.2
+- PIPE COATING / FAB / FSF L-01 / L27 – K27.2
+- PIPE COATING / FAB / FSF L-01 / L27 – N27
+- PIPE COATING / FAB / FSF L-01 / M11 ~ N11.8
+- PIPE COATING / FAB / FSF L-01 / M20-K19.2
+- PIPE COATING / FAB / FSF L-01 / M21 - M25
+- PIPE COATING / FAB / FSF L-01 / M25-M27
+- PIPE COATING / FAB / FSF L-01 / M27 - N29
+- PIPE COATING / FAB / FSF L-01 / M30 - N30
+- PIPE COATING / FAB / FSF L-01 / N14 – N17
+- PIPE COATING / FAB / FSF L-01 / N17 - K17
+- PIPE COATING / FAB / FSF L-01 / N18-N18.5
+- PIPE COATING / FAB / FSF L-01 / N18.4 - L.5 18
+- PIPE COATING / FAB / FSF L-01 / N18.4 – N20
+- PIPE COATING / FAB / FSF L-01 / N21 - N21.8
+- PIPE COATING / FAB / FSF L-01 / N27 - N29.6
+- PIPE COATING / FAB / FSF L-01 / N5.5 ~ N13.8
+- PIPE COATING / FAB / FSF L-01-02 / K10
+- PIPE COATING / FAB / FSF L-01-02 / K15.4
+- PIPE COATING / FAB / FSF L-01-02 / K24.4
+- PIPE COATING / FAB / FSF L-01-04 / M20 – M21
+- PIPE COATING / FAB / FSF,CSF,FAB L-01-04 / N30~L30
+- PIPE COATING / FAB1MP-01A25 ~ FAB1MP-01A45
+- PIPE WELDS ON ROOFTOP OF BLDG A
+- PIV CONDUCTORS/SOUTHSIDE OF OFFICE AT PIV
+- PIV RACEWAY/FAB OUTSIDE EAST CL 27
+- PIV RACEWAY/FAB OUTSIDE WEST CL 27
+- PIV/OUTSIDE CUB K19
+- PL28W
+- PLUM / SD/ A 24 level 2
+- PLUM / SD/ A 42 level 2
+- PLUM / SD/ K60 level 2
+- PN2 / Fab level 2, Col. G12
+- POST GROUT POUR
+- PRACK/ / CJP Weld/ FAB1 1F - C/1-3
+- PRESSURE TEST E GCS WWL03
+- PV/FAB1/CSF/G16-E16
+- PV/FAB1/CSF/G23-E23
+- PV/FAB1/CSF/G24-E24
+- PVA(PV)/FAB1/CSF/G11-E11
+- PVA/ FAB1/CSF/G12-E12
+- PVA/ FAB1/CSF/G17-E17
+- PVA/FAB1/CSF/G15-E15
+- PVA/FAB1/CSF/G20-E20
+- PVA/FAB1/CSF/G21-E21
+- PW30P
+- PW31P
+- PW32P
+- PW33P
+- PZ-GCS-1PO-02R2-101
+- Painted Steel Framing/L2-6-North Chase Penetration
+- Panels
+- Panels / L1, Sector 03
+- Panels / L1, Sector 10
+- Panels for Panel room 204, L1, Sector 08
+- Partial system test for HPLCO2 insulation- GCS-A
+- Partial system test for insulation- GCS-A
+- Patriot Laydown Yard
+- Patriot West Yard
+- Patriot West laydown yard
+- Pavement Intermediate 6''
+- Pavement_Intermediate course
+- Pavement_Intermediate course W Gas Plant / N CR401
+- Pedestals Level 1 N.5/23-29
+- Pedestrian bridge composite metal panels
+- Phase 2 Shell
+- Pipe Rack - Erection/ 1F-(E24-32), (J31-33)
+- Pipe Rack SUE 18.6-20.3 A-B
+- Pipe Rack SUE 18.6-20.3 A-B 644' & 649'
+- Pipe Rack SUE 19-20 A-B Elev. 615-2
+- Pipe Rack SUE 8-9 A-B
+- Pipe Rack SUE 8-9 B-C Interior PR
+- Pipe Rack SUE A 19 649' Elev
+- Pipe Rack SUE Roof 17.6-20 B.5-C
+- Pipe Rack SUE Roof 19 B.8 Lvl 4A
+- Pipe Rack SUE Roof 20-26.6 C Level 4A
+- Pipe Rack SUE Roof 28-30.6 B.8
+- Pipe Rack SUE Roof 6.8.3 B.8
+- Pipe Rack SUE Roof 9.6-17.6 B.5-C
+- Pipe Rack SUW 12-14 M-N
+- Pipe Rack SUW 14-14.3 M.5-N Level 1
+- Pipe Rack SUW M 31-32 Level 2
+- Pipe Rack SUW M32 & N33 Level 1
+- Pipe Rack/ 1F (E,33)
+- Pipe Rack/ 1F FAB G-I,33 Drilling
+- Pipe Rack/ 1F FAB- E-G,33
+- Pipe Rack/ 1F FAB1 - E24
+- Pipe Rack/ 1F FIZ - A-F, 1-3
+- Pipe Rack/ 1F MAIN FAB - (E,33)
+- Pipe Rack/ Erection Inspection/ FAB 1F E-F, 24-30
+- Pipe Rack/ Erection Inspection/ FAB 2F - E24
+- Pipe Rack/ Erection/ 1F FAB - E,33
+- Pipe Rack/ FAB 1F, E-J,33
+- Pipe Rack/ FAB1 2F - D-E,24-26 / Erection
+- Pipe Rack/ Mech/ FAB 2F - E,25-27
+- Pipe Rack/ TC Bolt Skidmore/ Call 5127852901
+- Pipe shoe bolt ups C-K/4-23
+- Pipe shoe guides,slides,stoppers,shimplates welds
+- Pipe shoe welded slides C-D/4-8;E-F/4-8
+- Pipe shoe welded slides, guides, and added shoe st
+- Pipe shoe welded slides, guides, shims C-K/4-23
+- Pipe shoe welded slides, guides, shims, pedestals
+- Pipe shoe welded slides, guides, stoppers, shims C
+- Pipe shoe welded slides,guides, pedestals. Structu
+- Pipe shoe welds D-F/18-20;G/12
+- Pipe slides & guides, HSS welds G-H/12;K/10-11
+- Plum/Overhead insulation & Label/OB1-L3-S2-S12
+- Plumb/Stormwater Drainage Piping/L6/Visual
+- Plumb/Wall Hydrant & DW Piping/OB/L6-7/S1-3 Visual
+- Plumbing /Domestic water/ D1-D2/H1-H2
+- Plumbing /Storm Drains/ A12
+- Plumbing /Storm Drains/ A16
+- Plumbing /Storm Drains/ A21
+- Plumbing /Storm Drains/ A23
+- Plumbing /Storm Drains/ A26 Need Harness
+- Plumbing /Storm Drains/ A27
+- Plumbing /Storm Drains/ A31
+- Plumbing /Storm Drains/ A36
+- Plumbing /Storm Drains/ A38
+- Plumbing /Storm Drains/ A48
+- Plumbing /Storm Drains/ A52,A57,A60
+- Plumbing /Storm Drains/ B40-A44
+- Plumbing /Storm Drains/ D1 & H1
+- Plumbing /Storm Drains/ K10
+- Plumbing /Storm Drains/ K14
+- Plumbing /Storm Drains/ K15-K19 need harness
+- Plumbing /Storm Drains/ K19-30
+- Plumbing /Storm Drains/ K2 Penthouse
+- Plumbing /Storm Drains/ K22
+- Plumbing /Storm Drains/ K26
+- Plumbing /Storm Drains/ K34-K48
+- Plumbing /Storm Drains/ K5
+- Plumbing /Storm Drains/ K50-K58
+- Plumbing /Storm Drains/ Level 1 K61(need Harness)
+- Plumbing/ Sanitary Waste & Vents Lines/ L6 -S2,S12
+- Plumbing/ firestop CUB CCR
+- Plumbing/ firestop penetration / A 24 Wall 33
+- Plumbing/ firestop penetration / A24 wall 33
+- Plumbing/ firestop penetration / CUB B28
+- Plumbing/ firestop penetration / CUB ccr office
+- Plumbing/ firestop penetration / CUB level 2 A42
+- Plumbing/DMW piping/ A24 restrooms
+- Plumbing/Domestic Water/ L3S3
+- Plumbing/Domestic Water/CUB Office
+- Plumbing/Domestic Water/L1-L7
+- Plumbing/Heat Exchangers/OB1-L7-S2
+- Plumbing/Insulation & Labeling/OB1-L2 - S3
+- Plumbing/NCR-0349/OB1-L3-All Sectors
+- Plumbing/NCR-0424/OB1-L2-All Sectors
+- Plumbing/NCR-0425/OB1-L1-All Sectors
+- Plumbing/Natural Gas/OB1-L1-L5-S1
+- Plumbing/Neutral Water/OB1/L1-S3 Hydro
+- Plumbing/Neutral Water/OB1/L1-S3 Visual
+- Plumbing/RH-1/L7
+- Plumbing/Roof Hydrant Piping/L6 - S1, S3
+- Plumbing/Sanitary Cleanouts/OB1-LU1-S13
+- Plumbing/Sanitary Line/L5 - S1 & S12
+- Plumbing/Sanitary Line/L5S3 & S12
+- Plumbing/Sanitary Line/L6 - S1, S2
+- Plumbing/Sanitary Line/L6-S12
+- Plumbing/Sanitary Line/L6-S2
+- Plumbing/Sanitary Line/L6S1- S2
+- Plumbing/Sanitary Line/L6S3 & S12
+- Plumbing/Sanitary Lines/L6-S3, S12
+- Plumbing/Sanitary Pipe/OB1-L4-L7-S12
+- Plumbing/Sanitary Pipe/OB1-L4-S1
+- Plumbing/Sanitary Pipe/OB1-L4-S12
+- Plumbing/Sanitary Sewer & Vent/OB1-L3-L5-S1
+- Plumbing/Sanitary Sewer & Vent/OB1-L3-L5-S1&3
+- Plumbing/Sanitary Sewer & Vent/OB1-L3-L5-S3
+- Plumbing/Sanitary Sewer & Vent/OB1-L4-L5-S12
+- Plumbing/Sanitary Sewer & Vent/OB1-L4-L5-S3
+- Plumbing/Sanitary Sewer & Vent/OB1-L4-L6-S1
+- Plumbing/Sanitary Sewer & Vent/OB1-L4-S12
+- Plumbing/Sanitary Sewer & Vent/OB1-L5-L7-S1
+- Plumbing/Sanitary Sewer & Vent/OB1-L5-L7-S1&3
+- Plumbing/Sanitary Sewer & Vent/OB1-L5-L7-S3
+- Plumbing/Sanitary Sewer&Vent/OB1/L4/S1 Visual
+- Plumbing/Sanitary Sewer/OB1 - L4-L6 - S2
+- Plumbing/Sanitary Waste & Vent/ L6 - S2,S1
+- Plumbing/Sanitary/Ul1-S11
+- Plumbing/Storm Drain/L2-6, S3
+- Plumbing/Storm Line/OB1 - L6&7-S1,2, & 3
+- Plumbing/Storm Line/OB1 - L7-S1,2, & 3
+- Plumbing/Storm Line/OB1 - LU1-S12
+- Plumbing/Wall Hydrant and DW Pipin/OB/L1/S1 Visual
+- Potable Water
+- Power Tray Columns 14-15 C-D
+- Pre-Test Inspection / OACD / Fab Level 1 Column 24
+- Prep welds on BLDG A rooftop C column C 1-3
+- Prep welds on BLDG A rooftop C column C 1-5
+- Prep welds on BLDG A rooftop C column C 3-5
+- Prep welds on BLDG A rooftop C column C 5-9
+- Pressure test RD/ERD/Cast Iron/Lv.3 A02 Col. L10
+- Pressure test RD/ERD/Cast Iron/Lv.3 A04 Col. L21
+- Pressure test RD/ERD/Cast Iron/Lv.5 A03 Col. L17
+- Pressure test RD/ERD/Cast Iron/Lv.5A03 Col. L18-21
+- Pump Piping/Hydro-visual/CUB col 18-19 x G-K
+- RA
+- RA Duct at CRAC Units
+- RACEWAY AND BOXES/ FAB LVL 2 G8,G12
+- RACEWAY AND BOXES/ FAB LVL 2,G16,G23
+- RD & ERD/Cast Iron/L2S65 Column 31, C-D
+- RD & RD/Cast Iron/L2S65 Column 31, C-D
+- RD & RD/Cast Iron/L3 S5 Col. K31
+- RD/ERD / A-38 / LEVEL 2
+- RD/ERD /CUB1 /SECTOR 4 /COL K22, K34,
+- RD/ERD/CUB/LEVEL1/A31
+- RD/ERD/CUB/LV1/K2-K16
+- RD/ERD/CUB/LV1/K22-K46
+- REU-1F13SGB01C-B03 2DU-GSCA L01 Sector 04. A14-C17
+- RION
+- Raceway
+- Raceway / GCSA / L1M
+- Raceway / GCSB / L1, Sector 08
+- Raceway / GCSB / L1, Sector 10
+- Raceway / L1, Sector 02
+- Raceway / L1, Sector 04
+- Raceway / L1, Sector 08
+- Raceway / L1, Sector 09
+- Raceway / L1, Sector 09 & Sector 10
+- Raceway / L1M, Sector 02
+- Raceway / L1M, Sector 03
+- Raceway / L1M, Sector 04
+- Raceway / L1M, Sector 07
+- Raceway / L3, Sector 03, 04, 06
+- Raceway / L3, Sector 08
+- Raised Grounding
+- Restroom CW and V/Copper/Level 1 Sector 2 Col. N11
+- Restroom In Wall/Lv.1A64 Col. A21
+- Restroom Sanitary W & V/CI/Lv. 2-3A03 Col.N17
+- Restroom Sanitary W & V/Cast iron/L1 A01 Col. N4
+- Restroom Sanitary W & V/Cast iron/L1 S02 Col. N11
+- Restroom Sanitary W & V/Cast iron/Lv1A64 A21
+- Restroom/Copper_Cast Iron/ L1A01 N4
+- Ribbon Curb Pouring/E CUB GL 8-16 , 24-25 , 42-52
+- Roof Drain COL A-27
+- Roof Drain E FAB GL 32
+- Roof Drains and ERD insulation and labels
+- Roof Drains and ERD's GCS B Canopy North
+- Roof Drains and ERD's insulation
+- S CUB, Site Lighting raceway
+- S GCS-A
+- S Gas Plant, E BSGS
+- S Office
+- S.GAS/STS/GCS-A-FLAM ROOM TO FAB1-LEVEL 2
+- S.GAS/Spare/GCSA-Inert Room
+- S.GAS/Spare/SUW-FAB1-LEVEL 2
+- SA / SF_1U112/ CUB Level 1 CL 4-5, H-J
+- SA/RA
+- SBTA-WI-M-PRACK-FAB-0013
+- SE CUB
+- SE CUB, Polebase Raceway
+- SE FAB-1, Underground raceway
+- SE GCS-B
+- SECAI-WIR-FAB-FAB-2521
+- SECURITY/FAB LVL 2 -J/K-4,K17
+- SECURITY/FAB LVL 2,COLUMN LINE D @ 4,17,33
+- SECURITY/FAB LVL 2-K/4,K/4.6,H.8/7,K32
+- SET PANELS/ FAB LVL 2, (J4.3,H.8/6,G.8/18,H/9.6,H.
+- SEU A22
+- SFRM Substrate Inspection
+- SITE, Manhole grounding
+- SOUTH EXTERIOR WEATHERSTATION
+- ST (H) / GCS A BLDG LEVEL 1 (11-26 C-E)
+- ST(H)
+- ST(H) 24" / CUB1 / LV1M/ K6-K13
+- ST(H) Shoes/SUE L1 Scaffold, B4-B12
+- ST(H)/FI-1GST11/MEZZ 11-26 C-E
+- ST(H)/Scaffold FIZ L1 Columns B1-B4
+- ST(H)/Scaffold SUE L1 Columns B1-4, B12-Trestle
+- ST(H)/Scaffold SUE L1 Columns B12-Trestle
+- ST(H)/Scaffold SUE L1 Columns B4-B12
+- ST/32 INCH HEADER/A21-C21
+- STAIR #30, 48 & 79
+- STAIR 1 L1-L2 (E 4-5)
+- STAIR-2 (E36)
+- STAIR-2 1M (E36)
+- STEAM 24" header / cub / lv1 / k13-d19
+- STEAM Pre-Pressure Test Walk/SUE L1 B1-Trestle
+- STEEL HANDRAILS/MECH. ROOM STAGE/SUE/FAB1
+- STEEL SURFACE PREPARATION/FAB LVL 2, F20,F21,F25
+- STORM ED_ERD/Cast Iron/ Lv.3A04 Col. L26
+- STORM ED_ERD/Cast Iron/ Lv.5A04 Col. L23-26
+- STORM RD-ERD/Cast Iron/L4 A05 Column K33
+- STORM RD_ERD/Cast Iron/L1-2 S61 Column A-C 5-6
+- STORM RD_ERD/Cast Iron/L1-2 S62 Column A-C 11
+- STORM RD_ERD/Cast Iron/L1-2 S62 Column A-C14
+- STORM RD_ERD/Cast Iron/L1-2 S62 Column C- 10
+- STORM RD_ERD/Cast Iron/L1-2 S63 Column A-C15
+- STORM RD_ERD/Cast Iron/L1-2 S63 Column A-C20
+- STORM RD_ERD/Cast Iron/L1-2 S64 Column A-C22
+- STORM RD_ERD/Cast Iron/L3 S64-65 Column C 25-28
+- STORM/Cast Iron/L1S4 Columns 21-22, 26, L-K
+- STORM/Cast Iron/L1S5 Columns 28, 29, 31, L-K
+- STORM/Cast Iron/L2 S1 Column 6, L-K
+- STORM/Cast Iron/L2 S2 Column 10, L-K
+- STORM/Cast Iron/L2 S3 Columns 15,16,19, L-K
+- STORM/Cast Iron/L2 S4 Col.21,22,26, L-K
+- STORM/Cast Iron/L2S2 Column, K10
+- STORM/Cast Iron/L2S2 Column, L10
+- STORM/Cast Iron/L2S5 Col.15,16,19, L-K
+- STORM/Cast Iron/L2S5 Col.28,29,31, L-K
+- STORM/Cast Iron/L3 S1 Column L-K, 6
+- STORM/Cast Iron/L3 S2 Col K10
+- STORM/Cast Iron/L3 S2 Column L10
+- STORM/Cast Iron/L3 S3 Column 19, L-K
+- STORM/Cast Iron/L3 S3 Column L-K, 15
+- STORM/Cast Iron/L3 S3 Column L16
+- STORM/Cast Iron/L3 S4 Column 22, L-K
+- STORM/Cast Iron/L3 S4 Column L21
+- STORM/Cast Iron/L3 S4 Column L26
+- STORM/Cast Iron/L3 S5 Column L29
+- STORM/Cast Iron/L3 S5 Column, 28, L-K
+- STORM/Cast Iron/L3 S61 Column C 6-9
+- STORM/Cast Iron/L3 S62 Column C- 10
+- STORM/Cast Iron/L3 S62 Column C- 11
+- STORM/Cast Iron/L3 S62 Column C-11
+- STORM/Cast Iron/L3 S62 Column C-14
+- STORM/Cast Iron/L3 S63 Column C-15
+- STORM/Cast Iron/L3 S64 Column C-22
+- STORM/Cast Iron/L3 S64 Column D-25
+- STORM/Cast Iron/L3 S65 Column C-31
+- STORM/Cast Iron/L3 S65 Column D-31
+- STORM/Cast Iron/L3-4 S1 Column K 6-4
+- STORM/Cast Iron/L3-4 S1 Column K 8-10
+- STORM/Cast Iron/L4 A05 Column K33
+- STORM/Cast Iron/L4 A65 Column C33
+- STORM/Cast Iron/L4 S1 Column K 4-6
+- STORM/Cast Iron/L4 S2 Column K, 13-15
+- STORM/Cast Iron/L4 S2 Column K, 8-10
+- STORM/Cast Iron/L4 S3 Column K, 17-19
+- STORM/Cast Iron/L4 S4 Col. K 21-22
+- STORM/Cast Iron/L4 S4 Col. K 25-27
+- STORM/Cast Iron/L4 S5 Column K 27-28
+- STORM/Cast Iron/L4 S5 Column K 30-31
+- STORM/Cast Iron/L4 S61 Column C-D, 4-6
+- STORM/Cast Iron/L4 S62 Column C 11
+- STORM/Cast Iron/L4 S62 Column C-D, 12-14
+- STORM/Cast Iron/L4 S62 Column C-D, 8-10
+- STORM/Cast Iron/L4 S63 Column C-15
+- STORM/Cast Iron/L4 S64 Column C 25
+- STORM/Cast Iron/L4 S64 Column C-D, 20-22
+- STORM/Cast Iron/L4 S64 Column C-D, 24-25
+- STORM/Cast Iron/L4 S65 Column C 31
+- STORM/Cast Iron/L4 S65 Column C-D, 28-31
+- STORM/Cast Iron/L5 S1 Column L 4-6
+- STORM/Cast Iron/L5 S1 Column L 5
+- STORM/Cast Iron/L5 S2 Column L 13-16
+- STORM/Cast Iron/L5 S2 Column L 8-10
+- STORM/Cast Iron/L5 S3 Column L 17
+- STORM/Cast Iron/L5 S3 Column L 18-21
+- STORM/Cast Iron/L5 S4 Column L 23-26
+- STORM/Cast Iron/L5 S5 Column L 28-31
+- STORM/Cast Iron/L5 S61 Column C5-6
+- STORM/Cast Iron/L5 S62 Column C 13-15
+- STORM/Cast Iron/L5 S62 Column C 9-11
+- STORM/Cast Iron/L5 S64 Column C 23-25
+- STORM/Cast Iron/L5 S65 Column C 27-31
+- STORM/Cast Iron/Lv. 3 A02 Col. 2 L10
+- STORM/Cast Iron/Lv.5 A02 Col. L 8-10
+- STRUCTURAL STEEL WELDING
+- SUB
+- SUE / DCC / L3
+- SUE 21-22 A.1 level 1 Bathroom pit
+- SUE A22
+- SUE I/O Cable Tray
+- SUE L1 A14-Trestle
+- SUE L1 COLUMNS 5-12, Bryce Monson (970) 817-1097
+- SUE L1 Col 22-25
+- SUE L1 S61
+- SUE L1 S62
+- SUE L1 S63
+- SUE L2 S65 A-B/ 30.6-32.6 DISC 30amp setting
+- SUE L2 S65 WATERFALL CABLE TRAY
+- SUE L4 Col 13
+- SUE L4 Col 19
+- SUE L4 Col 3-6
+- SUE L4 Col 6-8.3
+- SUE L4 Cols 3-6
+- SUE L4 S61 12" CABLE TRAY
+- SUE Lev 3 GL3.A-B 1st layer
+- SUE Lev 3 GL3.A-B South wall Screw
+- SUE Lev 4 GL3.3A.5
+- SUE Lev 4 GL3.3A.5 (under MCC Room)
+- SUE Lev 4 GL3.3A.5 Bottom Shaft wall
+- SUE Level 1 A.1/21-22 Bathroom pit
+- SUE Level 2 B-C/18-19
+- SUE Level 4 B-C/5
+- SUE Level 4 B-C/5 Ramp seq. 3206
+- SUE RF S64 36" CABLE TRAY
+- SUE ROOF - EAST FA HEADER
+- SUE ROOF, 4F C - D / 06 - 12.5
+- SUE ROOF, 4F C - D / 12.5 - 16
+- SUE ROOF, 4F/ C - D / 15 - 33
+- SUE ROOF, 4F/ C - D / 16 - 31
+- SUE ROOF, 4F/ C - D / 23 - 31
+- SUE ROOF, 5F C - D / 16 - 22
+- SUE S62 12" CABLE TRAY
+- SUE S62 12" CABLE TRAY IN DUCT SHAFT
+- SUE S62 OA_416C/D, ELEC RM VFDs, IO RM
+- SUE S62 OA_416E/F, ELEC RM VFDs, IO RM
+- SUE S62 OA_417A/B, ELEC RM VFDs, IO RM
+- SUE S62 OA_417C/D ELEC RM VFDs, IO RM
+- SUE S62 OA_417C/D, ELEC RM VFDs, IO RM
+- SUE level 4 B-C/2.6
+- SUE level 4.5-6 D/28-33
+- SUE stairwells 19 & 22, 1F
+- SUE, 1F, B-C, 21-23, Nemora platform
+- SUE, level 1, A-B, 30-33
+- SUE,L1,COL B18- Marlon Sasser1-832-469-6138
+- SUE1SF-7018
+- SUPPLY AIR
+- SUPPLY AIR SUE- 1F- B-15
+- SUW 3F ELECTRICAL ROOM
+- SUW 3F M18~19
+- SUW Building L 24 ~27
+- SUW Building L 28~31
+- SUW J - LINE 3-5 LVL 4
+- SUW L1 S02 " CABLE TRAY
+- SUW L4 S01 1FNG13 PAD, IO RM
+- SUW LVL 2 S1 FTP CABLE PULL
+- SUW Level 2 - N/30
+- SUW Level 3 L/24-29, M-N/27.9
+- SUW Level 4 M.3-M.6/30-31
+- SUW Level 4 M.5 line and 31 line
+- SUW L~M24
+- SUW M18 CABLE TRAY
+- SUW S01 1FNG13 PAD, IO RM
+- SUW level 4-6 K/26-27
+- SUW level 4.5-6 K/20-K/22
+- SUW stairwells 1,2, &4, 1F
+- SUW, 3F, C, 18-19, Fire Alarm Rm
+- SUW, 3F, L-N, 19-30
+- SUW, 4F, L17-18, VOC CRT Rm
+- SUW/ Cable Tray
+- SW FAB-1
+- Sanitary Pipe Vent systems
+- Sanitary Vents
+- Sanitary drain repair for GCS B Bathroom
+- Sanitary/Hub Drains/Lv6-7 - Sector 2 & 3
+- Sector 41 LVL 3 D3-D4
+- Sector 41 LVL 3 D5-D4
+- Sector 41LVL 3 D5-D4
+- Security IT Room L4 1F FAB
+- See Comment section
+- Shaft 03 (B-C 10-14)
+- Shaft 03 (B-C 5-7)
+- Shaft 03 (B-C 7-10)
+- Shoe welds painted Module 4B,6C,9C,10B,8C.1,10C,10
+- Site Raceway
+- Site, Pole Base
+- Site, S GCS-A, W Parking Garage
+- Smock Room 2-1 Column A-C Line 3F FAB
+- Smock Room 2-1 column C-F Line 3F FA
+- Smock Room 3F Fab 3-2 C-E.6
+- Smock Room 3rd FlrFAB 3-2 Column A-C Line
+- Solvent 1 Room
+- Solvent 2 Room
+- Solvent ACQC Room
+- Solvent GCS Mezzanine
+- Solvent Piping, GCS-B to Fab1
+- Solvent Piping, GCS-B to Fab1, Level-2
+- Solvent Rm
+- South Pit M.5-N/19-20
+- Spec Gas / Unistrut Ceiling Grid / Flammable Room
+- Spec. Gas for Fab1 SUW
+- Specialty Gas Rm
+- Specialty Gas, Fab1, SUW
+- Specialty Gas, GCS-A to Fab1
+- Specialty Gas, SUW to Fab1
+- Stair #4 (Between Level 3 and 4)
+- Stair #42, 26, 30, 48 & 79
+- Stair 1 K-L/5-6
+- Stair 20 Lvl.1-2 C-D 18-19
+- Stair 20 level 1-4
+- Stair 21 level 1-4
+- Stair 3
+- Stair 4 (deck 2.75 down to deck 2.25)
+- Stair 5 (D 28-29)
+- Stair 6 Lvl3 G3
+- Stair. 22 Lvl.1-2 C-D 5-6
+- Stair.1 K-L5-6
+- Stairs 20 level 1-4
+- Standpipe (roof)/24 Hr Air/GCS-B col C-F x 34-40
+- Steam Pressure Test
+- Steam&Condens/Vis/OB1-L1-7-S1
+- Steam/Boiler room
+- Steam/Pipe/OB1- L1-L7
+- Steam/Pipe/OB1- L1-L7-S3& 2
+- Steam24"/Mechanical / Level 1 G17.5-F19.5
+- Storage Rm 109 ( L3 E14 )
+- Storm Drain Line1 STA 2+58.46
+- Storm Drain/Steel Supports/CUB A16
+- Storm Drain/Steel Supports/CUB A21, A23
+- Storm Drain/Steel Supports/CUB A31
+- Storm Drain/Steel Supports/CUB A8-A12
+- Storm Drain/Steel Supports/CUB K15
+- Storm Drain/Steel Supports/CUB K22 - K26 - C21
+- Storm Drain/Steel Supports/CUB K30, K34, C29, C35
+- Storm Drain/Steel Supports/CUB K61
+- Storm Drain/Steel Supports/CUB-K46,K42,K38,K50,K54
+- Storm RD_ERD /Cast Iron/Lv. 4 A62 Col. C-D 12-14
+- Storm RD_ERD /Cast Iron/Lv. 4 A62 Col. C-D 8-10
+- Storm/Cast Iron/L3A03 Col L-K 15/L4A02 Col. K13-15
+- Storm/Cast Iron/Lv. 4 A61 Col. A-C 1
+- Storm/Cast Iron/Lv. 5 A02 Col. L 13-16
+- Storm/Cast Iron/Lv.4 A61 A-C 1
+- Structural steel welds B-D/18-19
+- Substation E-House 1F11S and 1F11M
+- Substation E-House 1F11S and 1F11M Firestopping
+- Substation E-House 1F11S and 1F11M lashing
+- Substation E-House 1F12S and 1F12M
+- Substation E-House 1F12S and 1F12M Firestopping
+- System Ceiling Lighting - Level 3 EUV area
+- T1 FAB1 Ph1- SUE LD3
+- T16/Fab1 Lv1 SUW Col L25-M29
+- T2(IPA)/FAB1 Lv1 SUW Col L25-M29
+- T2(OVERFLOW)/FAB1 Lv1 SUW Col L25-M-29
+- T3(ArF)/Fab1 Lv1 SUW Col L25-M29
+- T3(EVU)/FAB1 Lv1 SUW Col L25-M29
+- T3(ITC)/Fab1 Lv1 SUW Col L25-M29
+- T3(THINNER)/Fab 1 Lv1 SUW Col L25-M29
+- T5(TOSZ)/FAB1 Lv1 SUW Col L25 to M29
+- T5(TOSZ)/Fab1 Lv1 SUW Col L25-M29
+- T6(NBA)/Fab1 Lv1 SUW Col L25-M29
+- T7(NEGA)/Fab1 SUW Lv1 Col L25 to M29
+- TC bolt lot testing with Skid More
+- TEMP POWER/(FAB LVL 2, J10,J25,) (FAB LVL 3, J6,J1
+- TEMPORARY POWER/(FAB lvl 2,E10, E27) (FAB LVL 3, E
+- TRAY CABLE FOR LIGHTING/FAB LVL 2, CL G.3~H.8, 19-
+- TRAY CABLE FOR LIGHTING/FAB LVL 2, G.3~H.8,8~12
+- TRAY INSP - MECH RM + CORRID - GCS-A MEZZ SEC3
+- TRAY INSPECTION - GCS-A LEVEL 1M - 17-21 TUESDAY 6
+- TRAY INSPECTION 1 PM 8/22 AT COLUMN 59
+- TRAY INSPECTION 8/14/24 AT 8 AM - GCS-B 47-50D
+- TRAY INSPECTION GCS-A AT COLUMN 28D AUG 9 AT 10:30
+- TRAY INSPECTION GCS-A L1 25-27B AUG 8TH 8 AM.
+- TRAY INSPECTION GCS-B 1M COLUMN 48-50 B AND C - WE
+- TRAY INSPECTION GCS-B AT 36 WALL - TUES 8/27 8AM
+- TRESTLE A,D,E,F
+- TRS
+- TRUSS YARD
+- TW/A22-A27/LV 1
+- Telecom Tray 39 C/ L1M, Sector 09
+- Telecom tray 36-37 D-E/ L1M, Sector 08
+- Telecom/FMCS Cable/OB1- L2-S3,12,13
+- Tepid Water pipe insulation GCS A Column 2
+- Tie down hole depth & cleanliness A-C/22-23
+- Transformers / L1, Sector 10
+- Tray inspection GCS-B sector 11-12 columns 50-56 B
+- Trench Drain NW Office
+- Trench Drain W FAB 17
+- Trench Drain W FAB GL 20
+- Trench Drain W FAB GL 23-24
+- Trestle A
+- Trestle A & B
+- Trestle A- GCS
+- Trestle A-D
+- Trestle B
+- Trestle B-GCS
+- Trestle D
+- Trestle D& E
+- Trestle D&E
+- Trestle D-E-F
+- Trestle E
+- Trestle E & F
+- Trestle F
+- Trestle J Fiber routing
+- Trestle M
+- TrestleS
+- Trestles
+- UG - L-M / 12-13.3
+- UG - L.6-N - 18 line
+- UG - L.8-N / 18 Line
+- UG L-L.3/27-27.6
+- UG L-L.5 / 13-17 Trenches
+- UG L-L.5 13-17 / Trenches
+- UG L-M / 12-13.2
+- UG L-N/12-20 Pads 1,2,3,14
+- UG L-N/26-27
+- UG L-N/28-31
+- UG L.2-M / 13-13.3 Trenches
+- UG L.5 / 17-18 Trenches
+- UG L.5-N / 17-18 Trenches
+- UG L.8-N / 18 Line Trenches
+- UG L.8-N 18Line Trenches
+- UG L12-L18
+- UG Line N/ 15-17
+- UG Line/N / 12-15
+- UG Linea N/ 12-15 Trenches
+- UG M-N / 12.5-13.3 Trenches
+- UG M-N / 13-13.3 Trenches
+- UG N12-N15 Trenches
+- UG N17- /N18
+- UNDERFLOOR GROUNDING/FAB LVL 2 G7,G11
+- UNDERFLOOR GROUNDING/FAB LVL 2-G16,G24
+- UNDERGROUND PIV RACEWAY/FAB OUTSIDE EAST Cl 6
+- UPS Disconnects / L3, Sector 03, 04, 06
+- UPW PIPING/ TEST 225/ CUB/ LEVEL 1
+- UPW PIPING/ TEST 58/ CUB/ LEVEL 1
+- UPW PROCESS PIPING/UPW PIT 3/H31/LEVEL 2 POND WALL
+- UPW RM (B-F 24-26)
+- UPW RM (C29, F29, D30)
+- UPW RM. (A-B 26 -27)
+- UPW Room
+- UPW/CHEM BOXES/CUB/A33,A31,A30
+- UPW/CUB/
+- UPW/CUB/SOUTH STAGE
+- UPW/LRRTank/FAB1 suw N-15
+- UPW/SK-2071,SK-7061/CUB/A33,A31,A30
+- UPW/SKID/CUB/1F/D-32,G-24,E-30
+- UPW/SOUTH STAGE
+- UTP CABLE PULL/ELEV MACH. RM./CUB110105
+- UTP CABLE PULL: [D16] GCS1A HUB RM-1 > CCR
+- Underground Storm Drain
+- Underground Storm Drain GCS A COL 8 Outside
+- Unistrut Ceiling Grid / Tox/Flam Room
+- Unistrut Grid / GCS-A Cor/Ox Room
+- Unistrut Grid / GCS-A Inert Room
+- VAVs-FPUs Controllers Level 02 Sector 06
+- VAVs-FPUs Controllers Level 02 Sector 08
+- VCB & ECB MB/SB / SUE 3F, S61/ FTP CABLE PULL [B4]
+- VCB, ECB, RIO Panel - Continuity / FIZ 2F / [B2]
+- VCB, ECB, RIO Panel - Torque / FIZ 2F / [B2]
+- VFDs / L1, Sector 03
+- VOC
+- VOC Exhaust Duct
+- Various/ N/A / Level 3 Sector 1
+- Vestibule (1 FL A 58)
+- Vestibule 2A Rm 180 (C-D 29)
+- Vis. Insp/Above Ceiling HVAC Insul,Label/ L2 S2,12
+- Vis. Insp/Above Ceiling HVAC Insul,Label/ L2 S2,13
+- Vis.Insp/Ab Ceiling HVAC Insul,Label/ L2 S1,2,12
+- Vis.Insp/Above Ceiling HVAC Insul,Label/ L2 S1,2
+- Vis.Insp/Above Ceiling HVAC Insul,Label/ L2-S2
+- Visual inspection of level 1 sector 2 and 12 lobby
+- W / N Gas Plant &E CR 401/ Pressure Test WWL 2,5,9
+- W FAB
+- W FAB GL 20 Sump Pit MH
+- W FAB GL 25-27 Trench Drain Rebar & Pouring
+- W FAB, Manhole grounding
+- W FAB-1
+- W FAB-1, E CUB
+- W FAB-1, Underground Raceway
+- W of Gas Plant
+- W& W laydown area
+- WAFFLE BONDING /FAB LVL 3, G3,H3,G6,F3,H30,G30
+- WAFFLE BONDING, FAB LVL 3,F27,F30,F33
+- WAFFLE BONDING, FAB,LEVEL 3, H6,F6,F12,F15,F18
+- WAFFLE BONDING, FAB,LEVEL 3, H6,F6,F12,F15,F21
+- WAFFLE BONDING/FAB LVL 3, G6,G9,G12
+- WAFFLE BONDING/LVL 3, G18,G21,G24,G30,E30,E27,E24,
+- WALL/FIRESTOPPING/CUB/1STFLOOR/J18-J19
+- WALL/FIRESTOPPING/GCS/2NDFLOOR/A27-A28
+- WAP Conduits / FAB 1F, Overall [B4]
+- WASTE WATER - PIPING - FAB1/CSF/MEZZ DECK
+- WASTE WATER - PIPING - MEZZ DECK
+- WASTE WATER / FI_1GNW11 / ALKALI
+- WASTE WATER / ORT_1G111 / GCS B, ACID
+- WASTE WATER / PIT_1G113D / CL.19-21 D-E
+- WASTE WATER / PIT_1G113I / CL 24-26 C-D
+- WASTE WATER / PIT_1G113P / CL 27-29 C-D
+- WASTE WATER / PIT_1G113P / CL. 25-27 C-D
+- WASTE WATER / PIT_1G114D / 34-36 C-D
+- WASTE WATER / PIT_1G115N / ACID (CL 51-55 D-E)
+- WASTE WATER / PIT_1G115O / ACID
+- WASTE WATER FAB1/FSF/G12-E12
+- WASTE WATER FAB1/FSF/G15-E15
+- WASTE WATER/ FAB1/CSF/G24-E24
+- WASTE WATER/ FAB1/CSF/G26-E26
+- WASTE WATER/ FAB1/CSF/G32-E32
+- WASTE WATER/ FAB1/CSF/G9-J9
+- WASTE WATER/ FAB1/FSF/G10-E10
+- WASTE WATER/ FAB1/FSF/G10-J10
+- WASTE WATER/ FAB1/FSF/G11-E11
+- WASTE WATER/ FAB1/FSF/G11-J11
+- WASTE WATER/ FAB1/FSF/G12-E12
+- WASTE WATER/ FAB1/FSF/G13-E13
+- WASTE WATER/ FAB1/FSF/G13-J13
+- WASTE WATER/ FAB1/FSF/G14-J14 & G14-E14
+- WASTE WATER/ FAB1/FSF/G14-J14&G14
+- WASTE WATER/ FAB1/FSF/G15-E15
+- WASTE WATER/ FAB1/FSF/G16-E16
+- WASTE WATER/ FAB1/FSF/G17-E17
+- WASTE WATER/ FAB1/FSF/G17-J17
+- WASTE WATER/ FAB1/FSF/G19-E19
+- WASTE WATER/ FAB1/FSF/G19-J19
+- WASTE WATER/ FAB1/FSF/G20-E20
+- WASTE WATER/ FAB1/FSF/G22-E22
+- WASTE WATER/ FAB1/FSF/G22-J22
+- WASTE WATER/ FAB1/FSF/G23-E23
+- WASTE WATER/ FAB1/FSF/G23-J23
+- WASTE WATER/ FAB1/FSF/G24-E24
+- WASTE WATER/ FAB1/FSF/G25-J25
+- WASTE WATER/ FAB1/FSF/G26-E26
+- WASTE WATER/ FAB1/FSF/G26-J26
+- WASTE WATER/ FAB1/FSF/G27-E27
+- WASTE WATER/ FAB1/FSF/G27-J27
+- WASTE WATER/ FAB1/FSF/G28-E28
+- WASTE WATER/ FAB1/FSF/G3-E3
+- WASTE WATER/ FAB1/FSF/G4-E4
+- WASTE WATER/ FAB1/FSF/G5-E5
+- WASTE WATER/ FAB1/FSF/G6-E6
+- WASTE WATER/ FAB1/FSF/G7-E7
+- WASTE WATER/ FAB1/FSF/G8-E8
+- WASTE WATER/ FAB1/FSF/G8-J8
+- WASTE WATER/ FAB1/FSF/G9-E9
+- WASTE WATER/ FAB1/FSF/G9-J9
+- WASTE WATER/ FAB1/FSF/J13-G13
+- WASTE WATER/ FAB1/FSF/J7-J10
+- WASTE WATER/ FAB1/FSF/J8-J10
+- WASTE WATER/ FAB1/FSF/J9-J12
+- WASTE WATER/ IWW2T_1G111A-B/ WASTE WATER ROOM
+- WASTE WATER/ IWW2T_1G111B/ CL 56-57 B-C
+- WASTE WATER/ IWW2T_1G111B/ WASTE WATER ROOM
+- WASTE WATER/ ORT_1G111/WASTE WATER ROOM
+- WASTE WATER/ PIT_1G113F/ ALKALI (CL. 21-26 A-B)
+- WASTE WATER/ PIT_1G113L/ ALKALI (CL. 21-26 A-B)
+- WASTE WATER/ PIT_1G113R/ ALKALI (CL. 27-29 D-E)
+- WASTE WATER/ PIT_1G114A/ CL.30-32 B-C
+- WASTE WATER/ PIT_1G114C/SOLVENT
+- WASTE WATER/ PIT_1G117B/ ACID (CL 55-58 C-D)
+- WASTE WATER/ PIT_G114E/ SOLVENT (CL 34-36 D-E)
+- WASTE WATER/1G1W11/GCS A (CL 26 A-C)
+- WASTE WATER/1GIWW21/CL 58-61 A
+- WASTE WATER/AH_1G1M15G/CL 13-16 A-B
+- WASTE WATER/CL 26-29 A-B
+- WASTE WATER/CL 58-61 A
+- WASTE WATER/FAB1/FSF/G220-E20
+- WASTE WATER/FAB1/FSF/G25-E25
+- WASTE WATER/IWW2P_1G111C/WASTE WATER ROOM
+- WASTE WATER/IWW2T_1G111A/57 B
+- WASTE WATER/IWW2T_1G111A/CL 38-39 D-E
+- WASTE WATER/IWW2T_1G111A/CL 56-58 A-B
+- WASTE WATER/IWW2T_1G111A/CL 58 A-C
+- WASTE WATER/IWW2T_1G111B/CL 56-57 B-C
+- WASTE WATER/ORT_1G111/WASTE WATER ROOM
+- WASTE WATER/PIT)1G115I/ACID
+- WASTE WATER/PIT_1G111A/B/COL. 17-21 A-B
+- WASTE WATER/PIT_1G113A/CL 17-20 C-D
+- WASTE WATER/PIT_1G113A~R/ALKALI
+- WASTE WATER/PIT_1G113B/CL 17-19 C-D
+- WASTE WATER/PIT_1G113B/CL 19-21 D-E
+- WASTE WATER/PIT_1G113C/CL 17-19 D-E
+- WASTE WATER/PIT_1G113C/CL 19-21 D-E
+- WASTE WATER/PIT_1G113E/CL 19-21 C-D
+- WASTE WATER/PIT_1G113F/CL 21-22 D-E
+- WASTE WATER/PIT_1G113G/CL 21-24 A-B
+- WASTE WATER/PIT_1G113I/ALKALI (CL 24-26 C-D)
+- WASTE WATER/PIT_1G113J/CL 21-23 C-D
+- WASTE WATER/PIT_1G113M/CL.25-29 B-C
+- WASTE WATER/PIT_1G113N/ALKALI
+- WASTE WATER/PIT_1G113O/ALKALI (CL. 25-29 D-E)
+- WASTE WATER/PIT_1G113O/CL 21-26 D-E
+- WASTE WATER/PIT_1G113Q/CL. 25-27 C-D
+- WASTE WATER/PIT_1G113R/ALKALI (CL 24-28 D-E)
+- WASTE WATER/PIT_1G115L/ACID
+- WASTE WATER/PIT_1G115M/ACID
+- WASTE WATER/PIT_1G117A/ACID
+- WASTE WATER/PIT_1G118A/CHEM
+- WEST SIDE OF GCS A BLD AT PERFORMANCE FAB AREA
+- WIR to close SECAI NCR-M-OB1_0181
+- WIRING DEVICES/FAB LVL 2 HUB ROOM 16 G-LINE
+- WIRING DEVICES/FAB LVL 2 HUB ROOM 7 (G7)
+- WW South Yard
+- WW discharge lines/Fab 1 SUW M18-19
+- WW/FAB 1 Lv1 M14/M15
+- WWL 01
+- WWL 06
+- WWL03 & WWL06 MH Vacuum & Pressure Test
+- WWL03 STA: 17+00 to 31+05 MH Vacuum Test
+- WWSE TRUSS YARD
+- WWSE Truss Laydown Yard
+- WWSE Truss Yard
+- WWSE Truss Yard Bolt Test
+- WWSE Truss laydown Yard
+- WWSE YARD
+- Waffle Pocket Grout Mock-up
+- Walkable Ceiling
+- Waste Water - Piping - FAB/FSF/G10-J10
+- Waste Water / PIT_1G114C / SOLVENT (CL 30-32 D-E)
+- Waste Water / PIT_1G117B / ACID (CL 51-55 C-D)
+- Waste Water/Piping/Fab 1 FSF J9-J13
+- Waste Water_Final Inspection
+- Wastewater Tanks/Fab1 SUW South Pit Col M13-17
+- Weld Inspection / Ultrasonic (x2) / Fab1 CSF J32
+- Welded HSS A-D/21-22
+- Welded Steam slides/guides J-K/8-11
+- Welded Steam slides/guides/stoppers K/7;K/10;K/15-
+- Welded pipe shoe slides
+- Welded pipe shoe slides & guides C-D/4-11;E-F/4-1
+- Welded pipe shoe slides D/6-9/12
+- Welded pipe shoe slides E-D/9-13
+- Welded pipe shoe slides E-G/4;J/12-16
+- Welded pipe shoe slides and guides E-F/8-10
+- Welded pipe shoe slides,guides,shims C-K/4-23
+- Welded pipe shoe slides,guides,stoppers,shims C-K/
+- Welded pipe slides F-G/13-17;C-D/4
+- Welded pipe slides, stoppers, and guides C-K/4-23
+- Welded pipe slides,guides,shoes,shims C-K/4-23
+- Welded pipe slides/guides/stoppers C-K/4-23
+- Welded shoe slides & HSS steel E-D/21;F-G/6-9
+- Welded shoe slides,guides,and shims. Welded HSS su
+- Welded shoe slides/guides A-K/4-23
+- Welded slides, guides, stoppers, stop lugs K/13;K/
+- Welded steel & slides C-K/4-23
+- Welder Qual Test 1/4, 3/4, 1 for David Morales
+- West Atrium
+- West FAB 17-15 Column G-J Line
+- West Yard
+- Won Door Frame Furdowns level 3
+- XXXXX
+- Y Strainers Visual Inspection - Level 7 GL A1x(-4)
+- YT-WI-A-FAB-CRW-Re-0934
+- YT-WI-A-FAB-DWL-0510
+- YT-WI-A-FAB-DWL-0511
+- YT-WI-A-FAB-DWL-0592
+- YT-WI-A-FAB-DWL-0899
+- YT-WI-A-FAB-DWL-2207
+- YT-WI-A-FAB-DWL-2313
+- YT-WI-A-FAB-DWL-2506
+- YT-WI-A-FAB-FPS-0233
+- YT-WI-A-FAB-SS-0902
+- YT-WI-A-FAB-SS-1157
+- YT-WI-A-FAB-SS-1493
+- [C4] Firestopping /1-1/2" & 2" conduit / CUB BCR1
+- [CPMS] FC-WI-E-FIRE-CUB-0143
+- _ Level 3 G-H/1-2
+- city water tank / CWT_1U111B / A - CUB-1 CLUMN 16
+- col 28 row A mezz dk
+- col 37 row D mezz dk
+- col 39 row B and C
+- electrical panel rm mezz dk
+- elevator 20 level 2 to 4
+- elevator 22 level 1 to penthouse
+- evel 1 F/22-22.3 EXTERIOR AND INTERIOR (NS)
+- evel 1 L/4 Elevator 1A E Wall
+- evel 1 SUW L/4 Elevator 1A E Wall W Face
+- evel 2 25.3C.2-D-N/C.2-D/26,C.2/25.3-26 S, D/25.3-
+- evel 2 FAB H.5-H.8/33 Interior (bottom half only)
+- evel 2 FAB J-K/33 Exterior
+- evel 2 M/30 PEN#30
+- evel 2 SUW K.7/17-17.2 E,W Face
+- evel 3 SUE B.5-C/32 N Face (under mezzanine )
+- evel 4 D-E/20-32 Topping Blockouts
+- evel 4 SUE B.5-C/5-6
+- evel 4 SUE D-E/33 Interior Parapet S Wall
+- expansion joint Level 1 A1-4
+- fire alarm/ conduit and boxes / CUB
+- fire alarm/ conduit and boxes / gcs
+- hole Depth and cleanliness inspection J/14;F-G/15
+- levcel 4 SUE B/2.8-3.1
+- level 1 A (26,27,27.6,28,29,29.3)
+- level 1 A (5,6,13,20,25,30,32)
+- level 1 A-B/5
+- level 1 A-B5
+- level 1 A-C/25 (North face)
+- level 1 A/26(N,S),27 (N,S),27.6,28(N),29(NW),29.3(
+- level 1 A/26(N,S),27 (N,S),27.6,28(N),29(NW),29.3(S)
+- level 1 B (5,13,30)
+- level 1 C-D /11-11.9; 12.3-12.8
+- level 1 C-D /11-12; 12-13
+- level 1 C-D /13-17
+- level 1 C-D/19-20
+- level 1 C-D/20-21; 21-22
+- level 1 C-D/26-27
+- level 1 C/32 goalpost
+- level 1 Ceiling C-D 11-12
+- level 1 Ceiling C-D 6-11
+- level 1 Ceiling C-D/11-12
+- level 1 Ceiling C-D/6-11
+- level 1 D/18-33
+- level 1 K & L/19
+- level 1 L (5,6,7,8,9,10,11,17)
+- level 1 L/19
+- level 1 L/21 (NW)
+- level 1 L/21( NW)
+- level 1 M (11,18)
+- level 1 N/21
+- level 1 Stair 1,3,4
+- level 1 Stair 3 & 4
+- level 2 C (20)
+- level 2 C (25,29)
+- level 2 C/30,31
+- level 2 Ceiling D, west side only 23-33
+- level 2 Ceiling, D-E/ 17-23
+- level 2 K/L 19.5-22.5
+- level 2 L (17,18,)
+- level 2 L (31, N)
+- level 2 L /31(N)
+- level 2 L/10-11.3; 11.6-17
+- level 2 L/17(ES), 18(EN)
+- level 2 L/4-5.6
+- level 2 ceiling M-M.5/3-3.3
+- level 2,GL:A-B/33;Level 3 GL:C/24-25.2
+- level 2:M-L/33-32 ELV 5 Level 3:L/6-10; 12-16; K/19-21; N/27-29; 30-33
+- level 3 4E D/E 22-28
+- level 3 4E J/k, 28-33
+- level 3 C (26,33)
+- level 3 C-D/26-28
+- level 3 C/26 NORTH SIDE
+- level 3 C/26 SOUTH SIDE
+- level 3 C/28 W Face
+- level 3 Ceiling K-L, 19-23 & 24-27
+- level 3 FAB J/4-4.7 W Face 2 doors
+- level 3 H.8-G. 3 /21-22
+- level 3 K/19-23
+- level 3 K2/2
+- level 3 M (9)
+- level 3 M/9
+- level 3 SUE D-E/5 S Face
+- level 3 ceiling J-J.2/17-18
+- level 3 ceiling K-line 18-22
+- level 3 sector 62 B/8.3-10 Torquing bus bars
+- level 3 sector 64 B/22.6-24 torquig bus bars
+- level 3 sector 64 B/22.6-24 torquing bus bars
+- level 4 FIZ A-D/1
+- level 4 FIZ D-E.3/1-3 (inside OAC)
+- level 4 FIZ D-E.5/1
+- level 4 FIZ D-E/1-3 (inside OAC)
+- level 4 FIZ E-E.5/1
+- level 4 FIZ E-E.5/1-3
+- level 4 FIZ E-F.2/1-2
+- level 4 FIZ E-F/1-2
+- level 4 FIZ E.3-F.2/1-3
+- level 4 FIZ F.2-F.6/1-2
+- level 4 FIZ H-H.5/3
+- level 4 FIZ K-N/1-2
+- level 4 FIZ K-N/1; 2.5, N/1-3
+- level 4 J/20-30
+- level 4 SUE B.5/24-25
+- level 4 SUE C/5-7
+- level 4 SUE OAC A-C/7
+- level 4 SUW L-M/17.5-18.5
+- level 4 SUW L-M/18-21
+- level 4 SUW L-M/19-21
+- level 4 SUW L.5-N/18-20
+- level 4 SUW M-N/18-21, N/22-23
+- level 4 SUW M-N/19
+- level 4 SUW M/21-22
+- level 4 SUW N/16-17.5,19.5-21.5
+- level 4 SUW N/18-19, 20-23
+- level 4 SUW N/18-19,M-N/18-21
+- level 4 SUW N/20-21
+- level 4 SUW N/20-23
+- level 4 SUW N/21.5-22.5
+- level 4 Wall C/5-7
+- level 4-6 SUE C/27-31
+- level 4-6 SUW K/17-19
+- level 4-6 SUW K/17-20
+- level 4-6 SUW K/26-27
+- level 4-6 SUW L/24-28
+- level 4-6 SUW L/26-28
+- level 4-6 SUW L/28-29
+- level 4C SUE A-C/31-33
+- level 4C/19 expansion joint North side
+- level 4E SUE D/29-27
+- level 4E SUE D/33-30
+- level 5 & 6 D/11-18
+- level 5 & 6 K-L/2.7-4
+- level 6 A-B/5
+- level 6 penthouse L-N/2.7-5
+- level three fire caulk penetrations
+- level2/m27.5-30/k-l32-33 /level1c-d18-19
+- mechanical/ firestop penetration/ D28
+- ost
+- refrigerant/ firestop penetration / CUB D2, J1-J2,
+- see attached plan
+- specgas/ firestop / D14
+- stairs #4 (deck 2.25 down to deck 1.75)
+- structural steel
+- tray inspection - GCS-B MCC room 48 - 8 AM.
+- vel 3 F.4-F.8/1 Soffit
+- waste water GCS A BLDG (CL 19-21)
+- welded Pipe slides J-H/11-12;J-G/15-16;J-H/13-15
+- welder qualification test for David Morales
+- west of FAB
+- west of fab
+- …00000000
+
+## LABOR
+
+## TBM

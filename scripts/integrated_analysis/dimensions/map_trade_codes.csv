@@ -1,0 +1,71 @@
+source,source_code,trade_id,trade_code,notes
+P6,TOPPING,1,CONCRETE,Concrete topping slabs
+P6,SOMD,1,CONCRETE,Slab on metal deck
+P6,FRP,1,CONCRETE,Fiber reinforced polymer/concrete
+P6,03 CONC,1,CONCRETE,General concrete
+P6,CIP WALL,1,CONCRETE,Cast-in-place walls
+P6,RATSLAB,1,CONCRETE,Rat slab
+P6,Elevated slabs,1,CONCRETE,Elevated concrete slabs
+P6,Elevated slabs-1,1,CONCRETE,Elevated concrete slabs
+P6,Cure,1,CONCRETE,Concrete curing
+P6,CRC,1,CONCRETE,Concrete repair/coating
+P6,03 Dril,1,CONCRETE,Drilled piers
+P6,DS/AD,2,STEEL,Detailing steel / additional steel
+P6,Decking,2,STEEL,Metal decking
+P6,05 Steel Erect,2,STEEL,Steel erection
+P6,05 Steel Fab,2,STEEL,Steel fabrication
+P6,MISC STEEL,2,STEEL,Miscellaneous steel
+P6,Truss Erect,2,STEEL,Truss erection
+P6,STAIRS,2,STEEL,Metal stairs
+P6,07 Roofing,3,ROOFING,Roofing
+P6,07 WATERPROOF,3,ROOFING,Waterproofing
+P6,07 EIFS,3,ROOFING,EIFS exterior insulation
+P6,DRYWALL,4,DRYWALL,Drywall installation
+P6,CFMF,4,DRYWALL,Cold-formed metal framing
+P6,ARCH,5,FINISHES,Architectural finishes
+P6,FLOORING,5,FINISHES,Flooring
+P6,DOORS,5,FINISHES,Doors and hardware
+P6,DOORS-1,5,FINISHES,Doors phase 1
+P6,DOORS-2,5,FINISHES,Doors phase 2
+P6,EXP CONTROL,5,FINISHES,Expansion control joints
+P6,MISCELLANEOUS,5,FINISHES,Miscellaneous finishes
+P6,FIREPROOFING,6,FIREPROOF,Fireproofing SFRM
+P6,UG FIRE-PLUMB,6,FIREPROOF,Underground fire protection
+P6,MEP,7,MEP,MEP general
+P6,16 - U/G ELECT,7,MEP,Underground electrical
+P6,15 - PLUMBING,7,MEP,Plumbing
+P6,INSULATION,8,INSULATION,Insulation
+P6,Excavate,9,EARTHWORK,Excavation
+P6,BACKFILL,9,EARTHWORK,Backfill
+P6,03 PC FAB,10,PRECAST,Precast fabrication
+P6,03 PC Erect,10,PRECAST,Precast erection
+P6,03 PRECAST,10,PRECAST,Precast general
+P6,SKIN,11,PANELS,Metal panels skin
+P6,Owner,12,GENERAL,Owner activities
+P6,MILE,12,GENERAL,Milestones
+P6,Yates,12,GENERAL,GC activities
+P6,01 Towers,12,GENERAL,Tower cranes
+P6,PreAssemble,12,GENERAL,Pre-assembly
+P6,Main,12,GENERAL,Main activities
+LABOR,03 - Concrete,1,CONCRETE,CSI Division 03
+LABOR,05 - Metals,2,STEEL,CSI Division 05
+LABOR,07 - Thermal and,3,ROOFING,CSI Division 07 thermal/moisture
+LABOR,09 - Finishes,5,FINISHES,CSI Division 09
+LABOR,04 - Masonry,1,CONCRETE,Masonry/grout work
+LABOR,22 - Plumbing,7,MEP,CSI Division 22
+LABOR,31 - Earthwork,9,EARTHWORK,CSI Division 31
+LABOR,01 - General,12,GENERAL,CSI Division 01
+LABOR,11 - Equipment,12,GENERAL,Equipment installation
+QUALITY,CIP,1,CONCRETE,Cast-in-place concrete
+QUALITY,STL,2,STEEL,Structural steel
+QUALITY,ROF,3,ROOFING,Roofing
+QUALITY,WPF,3,ROOFING,Waterproofing
+QUALITY,DRY,4,DRYWALL,Drywall
+QUALITY,FRM,4,DRYWALL,Framing
+QUALITY,FIN,5,FINISHES,Finishes
+QUALITY,DOR,5,FINISHES,Doors
+QUALITY,FIR,6,FIREPROOF,Fire protection
+QUALITY,MEP,7,MEP,MEP systems
+QUALITY,INS,8,INSULATION,Insulation
+QUALITY,ELV,7,MEP,Elevators
+QUALITY,STR_INT,2,STEEL,Interior stairs (metal)

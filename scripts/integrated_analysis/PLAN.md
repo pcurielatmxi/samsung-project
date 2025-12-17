@@ -1,8 +1,9 @@
 # Integrated Analysis - Phase 2 Plan
 
 **Created:** 2025-12-17
-**Status:** Draft - Pending Approval
+**Status:** In Progress
 **Purpose:** Define dimension tables and mapping tables to enable cross-dataset analysis
+**Updated:** 2025-12-17 - Implemented dim_trade, dim_company, map_company_aliases
 
 ---
 
@@ -166,11 +167,12 @@ Master table of companies with alias resolution.
 | canonical_name | STRING | Standardized company name |
 | short_code | STRING | Abbreviation (e.g., "BERG", "BAKER") |
 | tier | ENUM | 'OWNER', 'GC', 'T1_SUB', 'T2_SUB' |
-| primary_trade_id | INT | FK to dim_trade |
-| aliases | JSON | Array of known name variations |
+| primary_trade_id | INT | FK to dim_trade (single primary trade per company) |
 | notes | STRING | Additional context |
 
-**Estimated rows:** ~30-40 companies
+**Design Decision:** Each company has ONE primary trade. Analysis showed most subcontractors are concentrated in a single trade when using broad categories. Multi-trade appearances (e.g., Berg with concrete/drywall) occur when GC (Yates) assigns work - excluded from analysis since Yates is the GC.
+
+**Status:** ✅ Implemented - see `dimensions/dim_company.csv` (30 companies)
 
 ### 2. `dim_location`
 
@@ -195,46 +197,43 @@ Standardized location hierarchy at Building + Level granularity.
 - GCSA/GCSB: GCS Buildings A & B
 - OB1/OB2: Office Buildings
 
-**Estimated rows:** ~50-60 locations
+**Status:** ✅ Implemented - see `dimensions/dim_location.csv` (57 locations)
 
 ### 3. `dim_trade`
 
-Trade/work type classification.
+Trade/work type classification using **broad categories** that facilitate 1:many company-trade relationships.
 
 | Column | Type | Description |
 |--------|------|-------------|
 | trade_id | INT | Primary key |
-| trade_code | STRING | Standard code (CSI-based) |
+| trade_code | STRING | Standard code |
 | trade_name | STRING | Display name |
-| category | STRING | High-level category |
-| phase | STRING | Typical project phase (STR, ENC, INT, COM) |
+| phase | STRING | Typical project phase (STR, ENC, INT, ADM) |
+| csi_division | STRING | Related CSI division(s) |
+| description | STRING | Work types included |
 
-**Categories:**
-- Concrete (03)
-- Steel (05)
-- Waterproofing/Roofing (07)
-- Doors/Glazing (08)
-- Finishes/Drywall (09)
-- MEP (22-26)
-- Fire Protection (21)
+**Trade Categories (12):**
 
-**Estimated rows:** ~20-25 trades
+| ID | Code | Name | Phase | CSI | Work Types |
+|----|------|------|-------|-----|------------|
+| 1 | CONCRETE | Concrete | STR | 03 | CIP, topping, SOG, elevated slabs |
+| 2 | STEEL | Structural Steel | STR | 05 | Erection, decking, misc steel |
+| 3 | ROOFING | Roofing & Waterproofing | ENC | 07 | Roofing, waterproofing, EIFS |
+| 4 | DRYWALL | Drywall & Framing | INT | 09 | Metal stud, gypsum board |
+| 5 | FINISHES | Architectural Finishes | INT | 09 | Paint, flooring, tile, doors |
+| 6 | FIREPROOF | Fire Protection | INT | 07 | SFRM, firestop, fire caulk |
+| 7 | MEP | MEP Systems | INT | 22-26 | Mechanical, electrical, plumbing |
+| 8 | INSULATION | Insulation | INT | 07 | Thermal, pipe insulation |
+| 9 | EARTHWORK | Earthwork & Foundations | STR | 31 | Excavation, backfill, piers |
+| 10 | PRECAST | Precast Concrete | STR | 03 | Precast panels, erection |
+| 11 | PANELS | Metal Panels & Cladding | ENC | 07 | Wall panels, IMP, skin |
+| 12 | GENERAL | General Conditions | ADM | 01 | GC, owner activities |
 
-### 4. `dim_time`
+**Status:** ✅ Implemented - see `dimensions/dim_trade.csv` and `dimensions/map_trade_codes.csv`
 
-Calendar dimension for time-series analysis.
+### 4. `dim_time` - NOT IMPLEMENTED
 
-| Column | Type | Description |
-|--------|------|-------------|
-| date_id | DATE | Primary key |
-| year | INT | Year |
-| month | INT | Month (1-12) |
-| week | INT | ISO week number |
-| quarter | INT | Quarter (1-4) |
-| period | STRING | Analysis period label |
-| is_weekend | BOOL | Weekend flag |
-
-**Estimated rows:** ~1,500 (4+ years of dates)
+> **Note:** Time dimension deferred. Standard date fields in source data are sufficient for current analysis needs. Can be added later if calendar-based aggregations require special handling (fiscal periods, project phases, etc.).
 
 ---
 
@@ -246,12 +245,13 @@ Resolves source-specific company names to canonical IDs.
 
 | Column | Type | Description |
 |--------|------|-------------|
-| alias | STRING | Company name as it appears in source |
 | source | STRING | Source system (TBM, LABOR, PS, QUALITY, P6) |
+| alias | STRING | Company name as it appears in source |
 | company_id | INT | FK to dim_company |
 | confidence | FLOAT | Match confidence (1.0 = exact, 0.8 = fuzzy) |
+| notes | STRING | Additional context |
 
-**Estimated rows:** ~100-150 aliases
+**Status:** ✅ Implemented - see `mappings/map_company_aliases.csv` (~90 aliases)
 
 ### 2. `map_company_location`
 
@@ -280,56 +280,57 @@ Resolves source-specific location references to standardized IDs.
 | location_id | STRING | FK to dim_location |
 | extraction_rule | STRING | How this mapping was derived |
 
-**Estimated rows:** ~200-300 mappings
+**Status:** ✅ Implemented - see `mappings/map_location_codes.csv` (~65 mappings)
 
 ---
 
 ## Implementation Plan
 
-### Phase 2.1: Foundation (Week 1)
+### Phase 2.1: Foundation
 
-1. **Create folder structure**
+1. **Create folder structure** ✅ DONE
    ```
    scripts/integrated_analysis/
    ├── PLAN.md (this document)
    ├── CLAUDE.md (usage instructions)
    ├── dimensions/
-   │   ├── build_dim_company.py
-   │   ├── build_dim_location.py
-   │   ├── build_dim_trade.py
-   │   └── build_dim_time.py
+   │   ├── dim_company.csv         ✅
+   │   ├── dim_location.csv        ✅
+   │   ├── dim_trade.csv           ✅
+   │   └── map_trade_codes.csv     ✅
    ├── mappings/
-   │   ├── build_company_aliases.py
-   │   ├── build_company_location.py
-   │   └── build_location_codes.py
+   │   ├── map_company_aliases.csv ✅
+   │   ├── map_company_location.csv ⏳
+   │   └── map_location_codes.csv  ✅
    └── validate/
-       └── validate_coverage.py
+       └── validate_coverage.py    ⏳
    ```
 
-2. **Build `dim_company`**
+2. **Build `dim_company`** ✅ DONE
    - Extract unique company names from all sources
    - Manual curation of canonical names and aliases
-   - Associate primary trades
+   - Associate primary trades (using 12 broad categories)
 
-3. **Build `dim_location`**
-   - Define building + level combinations
-   - Create normalization rules for source variations
+3. **Build `dim_location`** ✅ DONE
+   - 57 building + level combinations
+   - Buildings: FAB, SUE, SUW, SUP, FIZ, CUB, GCS, GCSA, GCSB, OB1, OB2, SITE
+   - Levels: UG, B1, 1F-6F, ROOF
 
-### Phase 2.2: Mapping Tables (Week 2)
+### Phase 2.2: Mapping Tables
 
-4. **Build `map_company_aliases`**
-   - Automated fuzzy matching + manual review
+4. **Build `map_company_aliases`** ✅ DONE
    - Source-specific alias registration
+   - ~90 aliases across P6, LABOR, PS, QUALITY, TBM
 
-5. **Build `map_company_location`**
+5. **Build `map_company_location`** ⏳ NEXT
    - Extract from P6 (Z-SUB + Z-BLDG)
    - Extract from Quality (Contractor + Location)
    - Extract from TBM (direct)
    - Merge with period awareness
 
-6. **Build `map_location_codes`**
-   - Document source-specific location formats
-   - Create extraction rules
+6. **Build `map_location_codes`** ✅ DONE
+   - ~65 mappings for TBM, QUALITY, P6 source formats
+   - Normalization rules for level naming (L1→1F, RF→ROOF)
 
 ### Phase 2.3: Validation & Integration (Week 3)
 
@@ -347,23 +348,25 @@ Resolves source-specific location references to standardized IDs.
 
 ## Output Files
 
-All outputs will be stored in the derived data directory:
+Dimension and mapping files are stored in the repository under `scripts/integrated_analysis/`:
 
 ```
-data/derived/integrated_analysis/
+scripts/integrated_analysis/
 ├── dimensions/
-│   ├── dim_company.csv
-│   ├── dim_location.csv
-│   ├── dim_trade.csv
-│   └── dim_time.csv
+│   ├── dim_company.csv        ✅ Implemented (30 companies)
+│   ├── dim_location.csv       ✅ Implemented (57 locations)
+│   ├── dim_trade.csv          ✅ Implemented (12 trades)
+│   └── map_trade_codes.csv    ✅ Implemented (~70 mappings)
 ├── mappings/
-│   ├── map_company_aliases.csv
-│   ├── map_company_location.csv
-│   └── map_location_codes.csv
+│   ├── map_company_aliases.csv    ✅ Implemented (~90 aliases)
+│   ├── map_company_location.csv   ⏳ Pending
+│   └── map_location_codes.csv     ✅ Implemented (~65 mappings)
 └── validation/
-    ├── coverage_report.csv
-    └── unmapped_entities.csv
+    ├── coverage_report.csv    ⏳ Pending
+    └── unmapped_entities.csv  ⏳ Pending
 ```
+
+Note: These are **derived** data files (include assumptions/curation). Per project data traceability guidelines, outputs to external data directory would go to `data/derived/integrated_analysis/`.
 
 ---
 
@@ -395,7 +398,8 @@ data/derived/integrated_analysis/
 
 3. **Confidence thresholds:** What minimum confidence should be required for location inference to be used in analysis?
 
-4. **Trade association:** Should companies be associated with a single primary trade or multiple trades with percentages?
+4. ~~**Trade association:** Should companies be associated with a single primary trade or multiple trades with percentages?~~
+   - **RESOLVED:** Single primary trade per company. Broad trade categories (12 total) allow clean 1:many relationships.
 
 ---
 
@@ -456,5 +460,6 @@ Based on analysis, the following companies appear across sources:
 
 ---
 
-*Document Version: 1.0*
+*Document Version: 1.2*
 *Last Updated: 2025-12-17*
+*Changes: Added dim_location (57 locations) and map_location_codes (~65 mappings). Only map_company_location remains pending.*

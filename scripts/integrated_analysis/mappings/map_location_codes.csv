@@ -1,0 +1,65 @@
+source,source_code,location_id,extraction_rule,notes
+TBM,FAB-1F,FAB-1F,direct,TBM Building-Level format
+TBM,FAB-2F,FAB-2F,direct,TBM Building-Level format
+TBM,FAB-3F,FAB-3F,direct,TBM Building-Level format
+TBM,FAB-4F,FAB-4F,direct,TBM Building-Level format
+TBM,FAB-5F,FAB-5F,direct,TBM Building-Level format
+TBM,FAB-6F,FAB-6F,direct,TBM Building-Level format
+TBM,FAB-ROOF,FAB-ROOF,direct,TBM Building-Level format
+TBM,SUP-1F,SUP-1F,direct,TBM uses SUP generic
+TBM,SUP-2F,SUP-2F,direct,TBM uses SUP generic
+TBM,SUP-3F,SUP-3F,direct,TBM uses SUP generic
+TBM,SUP-4F,SUP-4F,direct,TBM uses SUP generic
+TBM,SUP-ROOF,SUP-ROOF,direct,TBM uses SUP generic
+TBM,CUB-1F,CUB-1F,direct,TBM Building-Level format
+TBM,CUB-2F,CUB-2F,direct,TBM Building-Level format
+TBM,CUB-3F,CUB-3F,direct,TBM Building-Level format
+TBM,FIZ-1F,FIZ-1F,direct,TBM Building-Level format
+TBM,FIZ-2F,FIZ-2F,direct,TBM Building-Level format
+TBM,FIZ-3F,FIZ-3F,direct,TBM Building-Level format
+QUALITY,FAB,FAB-1F,building_only,Quality building without level - defaults to 1F
+QUALITY,FAB-L1,FAB-1F,transform,Quality L1 -> 1F
+QUALITY,FAB-L2,FAB-2F,transform,Quality L2 -> 2F
+QUALITY,FAB-L3,FAB-3F,transform,Quality L3 -> 3F
+QUALITY,FAB-L4,FAB-4F,transform,Quality L4 -> 4F
+QUALITY,FAB-L5,FAB-5F,transform,Quality L5 -> 5F
+QUALITY,FAB-L6,FAB-6F,transform,Quality L6 -> 6F
+QUALITY,FAB-RF,FAB-ROOF,transform,Quality RF -> ROOF
+QUALITY,SUE,SUE-1F,building_only,Quality building without level - defaults to 1F
+QUALITY,SUE-L1,SUE-1F,transform,Quality L1 -> 1F
+QUALITY,SUE-L2,SUE-2F,transform,Quality L2 -> 2F
+QUALITY,SUE-L3,SUE-3F,transform,Quality L3 -> 3F
+QUALITY,SUE-L4,SUE-4F,transform,Quality L4 -> 4F
+QUALITY,SUW,SUW-1F,building_only,Quality building without level - defaults to 1F
+QUALITY,SUW-L1,SUW-1F,transform,Quality L1 -> 1F
+QUALITY,SUW-L2,SUW-2F,transform,Quality L2 -> 2F
+QUALITY,SUW-L3,SUW-3F,transform,Quality L3 -> 3F
+QUALITY,SUW-L4,SUW-4F,transform,Quality L4 -> 4F
+QUALITY,CUB,CUB-1F,building_only,Quality building without level
+QUALITY,CUB-L1,CUB-1F,transform,Quality L1 -> 1F
+QUALITY,CUB-L2,CUB-2F,transform,Quality L2 -> 2F
+QUALITY,CUB-L3,CUB-3F,transform,Quality L3 -> 3F
+QUALITY,FIZ,FIZ-1F,building_only,Quality building without level
+QUALITY,GCS,GCS-1F,building_only,Quality building without level
+P6,FAB,FAB-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
+P6,FAB+1F,FAB-1F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FAB+2F,FAB-2F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FAB+3F,FAB-3F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FAB+4F,FAB-4F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FAB+5F,FAB-5F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FAB+6F,FAB-6F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FAB+ROOF,FAB-ROOF,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,SUP,SUP-1F,z_bldg_only,P6 uses SUP (generic support)
+P6,SUP+1F,SUP-1F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,SUP+2F,SUP-2F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,SUP+3F,SUP-3F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,SUP+4F,SUP-4F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,SUP+ROOF,SUP-ROOF,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,CUB,CUB-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
+P6,CUB+1F,CUB-1F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,CUB+2F,CUB-2F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,CUB+3F,CUB-3F,z_bldg_level,P6 Z-BLDG + Z-LEVEL combined
+P6,FIZ,FIZ-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
+P6,GCS,GCS-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
+P6,OB1,OB1-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
+P6,OB2,OB2-1F,z_bldg_only,P6 Z-BLDG without Z-LEVEL
