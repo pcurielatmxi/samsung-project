@@ -7,6 +7,58 @@ description: Create MXI-branded PowerPoint presentations for Samsung Taylor FAB1
 
 Create professional PowerPoint presentations for the Samsung Taylor FAB1 delay analysis project.
 
+## CRITICAL: Data Traceability Requirements
+
+**Every claim in a presentation MUST be verifiable and traceable to source data.**
+
+### Rules
+
+1. **No Assumptions as Facts** - Never present percentages or metrics unless derived from actual data analysis. Label estimates, projections, or interpretations explicitly.
+
+2. **Data Source References** - Every slide with quantitative data must cite its source. Include filename and any filters/date ranges applied.
+
+3. **Show Your Numbers** - When presenting metrics, include the underlying counts or values that produced them. Percentages should show the numerator and denominator.
+
+4. **Facts vs Interpretations** - Distinguish between what the data shows (fact) and what it may imply (interpretation). Use cautious language for interpretations: "suggests", "appears correlated with", "may indicate".
+
+5. **Provide Context** - When comparing subsets of data, show how they relate to the whole. Include totals, date ranges, and sample sizes to give the audience proper context.
+
+6. **Reproducible Analysis** - Document the methodology so results can be verified. Include file paths, sheet names, column filters, and date ranges used.
+
+7. **Reference Source Systems** - When citing data, reference the original source systems and raw files that the customer is familiar with (e.g., "ProjectSight export", "Yates WIR Log", "P6 Schedule"). Avoid referencing MXI internal file names or processed datasets that the customer may not recognize.
+
+## Data Visualization Guidelines
+
+### Table Formatting for Numeric Data
+
+When presenting tables with numeric data, use visual formatting to aid comprehension:
+
+1. **Conditional Formatting** - Use color to highlight values:
+   - Red/orange for high-risk or negative values (failures, delays, cost overruns)
+   - Green for positive values (pass rates, on-time completion)
+   - Gray for neutral or baseline values
+
+2. **In-Cell Bar Charts** - For columns with comparable numeric values, consider adding horizontal bars proportional to the value to create a visual comparison.
+
+3. **Icons and Indicators** - Use symbols to quickly convey status:
+   - ▲/▼ for trends (up/down)
+   - ●/○ for pass/fail or complete/incomplete
+   - ⚠ for warnings or items needing attention
+
+4. **Percentage Context** - When showing percentages, include the base count (e.g., "15.2% (25/164)") so readers understand the sample size.
+
+5. **Comparison Columns** - When comparing data sources, include a "Gap" or "Delta" column to highlight differences explicitly.
+
+### Color Coding Standards
+
+| Use Case | Color | RGB |
+|----------|-------|-----|
+| Negative/Failure/Risk | Alert Red | (192, 0, 0) |
+| Positive/Success | Success Green | (0, 128, 0) |
+| Warning/Caution | Yellow | (255, 192, 0) |
+| Neutral/Baseline | MXI Gray | (89, 89, 89) |
+| Highlight/Emphasis | MXI Blue | (0, 112, 192) |
+
 ## Quick Start (Recommended)
 
 Use the `MXIPresentation` helper class which automatically includes logos and branding:
