@@ -59,7 +59,7 @@ Learnings and gotchas from parsing each data source.
 
 ## Primavera P6 (XER Files)
 
-**Script:** `scripts/batch_process_xer.py`
+**Script:** `scripts/primavera/process/batch_process_xer.py`
 
 ### Schedule Types
 Two distinct schedule perspectives with ~4% task overlap:

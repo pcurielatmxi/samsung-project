@@ -7,17 +7,17 @@ context including WBS, activity codes (area, level, building, contractor, etc.),
 and all date fields.
 
 Usage:
-    python scripts/process_xer_to_csv.py <input_xer_file> [output_csv_file]
+    python scripts/primavera/process/process_xer_to_csv.py <input_xer_file> [output_csv_file]
 
 Examples:
     # Process with auto-generated output filename
-    python scripts/process_xer_to_csv.py data/raw/xer/project.xer
+    python scripts/primavera/process/process_xer_to_csv.py data/raw/xer/project.xer
 
     # Process with specific output filename
-    python scripts/process_xer_to_csv.py data/raw/xer/project.xer data/primavera/processed/tasks.csv
+    python scripts/primavera/process/process_xer_to_csv.py data/raw/xer/project.xer data/primavera/processed/tasks.csv
 
     # Process all XER files in a directory
-    python scripts/process_xer_to_csv.py data/raw/xer/*.xer
+    python scripts/primavera/process/process_xer_to_csv.py data/raw/xer/*.xer
 """
 
 import sys

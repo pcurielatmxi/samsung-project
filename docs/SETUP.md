@@ -44,7 +44,7 @@ pytest
 
 ```bash
 # Process all XER files from manifest
-python scripts/batch_process_xer.py
+python scripts/primavera/process/batch_process_xer.py
 
 # Validate manifest
 python scripts/validate_xer_manifest.py
@@ -101,7 +101,7 @@ python scripts/validate_xer_manifest.py --fix
 
 ```bash
 # Process XER files
-python scripts/batch_process_xer.py
+python scripts/primavera/process/batch_process_xer.py
 
 # Filter tasks
 python scripts/filter_tasks.py data/primavera/processed/task.csv --keyword "drywall"

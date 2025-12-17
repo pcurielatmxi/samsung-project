@@ -41,7 +41,7 @@ cp .env.example .env
 
 ```bash
 # Process all Primavera XER files
-python scripts/batch_process_xer.py
+python scripts/primavera/process/batch_process_xer.py
 
 # Output: data/primavera/processed/*.csv
 ```
