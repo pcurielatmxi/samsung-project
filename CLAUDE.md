@@ -101,6 +101,7 @@ External data (not in repo) follows traceability classification:
 
 - **Settings:** `src/config/settings.py` - All path constants
 - **Environment:** `.env` file with `WINDOWS_DATA_DIR` path
+- **Python Environment:** Use the existing `.venv` virtual environment for all Python scripts and installations. Activate with `source .venv/bin/activate`
 
 ## Analysis Objectives
 
