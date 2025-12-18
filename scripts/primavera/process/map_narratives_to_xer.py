@@ -14,6 +14,19 @@ Confidence Levels:
 - NONE: Date extracted but no XER match within 7 days
 - NO_DATE: Could not extract date from filename
 
+Document Types:
+- schedule_narrative: Direct schedule narratives (most reliable dates)
+- milestone_variance: Variance reports (date usually 1 day after schedule)
+- review_response: SECAI review/response docs (date may be review date)
+- schedule_export: Full schedule exports by area/trade
+- expert_report: Litigation expert reports
+- other: Uncategorized documents
+
+Date Reliability:
+- RELIABLE: Filename date = Schedule data date
+- OFFSET: Filename date offset from schedule (e.g., variance reports)
+- REVIEW_NEEDED: Date semantics unclear, may need manual verification
+
 Usage:
     python map_narratives_to_xer.py [--max-days N]
 """
@@ -58,6 +71,31 @@ DATE_PATTERNS = [
     (r'^(\d{1,2})\.(\d{1,2})\.(\d{2})(?!\d)',
      lambda m: (2000 + int(m.group(3)), int(m.group(1)), int(m.group(2)))),
 ]
+
+
+def classify_document(filename: str) -> tuple[str, str, str]:
+    """Classify document type and determine date reliability.
+
+    Args:
+        filename: The filename to classify
+
+    Returns:
+        Tuple of (document_type, date_reliability, notes)
+    """
+    fname_lower = filename.lower()
+
+    if 'expert report' in fname_lower or 'preliminary expert' in fname_lower:
+        return 'expert_report', 'REVIEW_NEEDED', 'Litigation document - verify schedule references'
+    elif 'variance report' in fname_lower or 'milestone variance' in fname_lower:
+        return 'milestone_variance', 'OFFSET', 'Report date usually 1 day after schedule DD'
+    elif 'review' in fname_lower or 'response' in fname_lower or 'comment' in fname_lower:
+        return 'review_response', 'REVIEW_NEEDED', 'Review/response date - schedule DD may differ'
+    elif 'full schedule' in fname_lower:
+        return 'schedule_export', 'RELIABLE', 'Schedule data export'
+    elif 'narrative' in fname_lower:
+        return 'schedule_narrative', 'RELIABLE', 'Filename date = Schedule DD'
+    else:
+        return 'other', 'REVIEW_NEEDED', 'Document type unclear'
 
 
 def extract_date_from_filename(filename: str) -> datetime | None:
@@ -161,6 +199,7 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
             continue
 
         narrative_date = extract_date_from_filename(f.name)
+        doc_type, date_reliability, notes = classify_document(f.name)
 
         if narrative_date:
             xer_match, days_diff, confidence = find_closest_xer(
@@ -172,7 +211,10 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
                 'xer_file': xer_match or '',
                 'xer_date': xer_dates.get(xer_match, datetime(1900,1,1)).strftime('%Y-%m-%d') if xer_match else '',
                 'days_diff': days_diff if days_diff is not None else '',
-                'confidence': confidence
+                'confidence': confidence,
+                'document_type': doc_type,
+                'date_reliability': date_reliability,
+                'notes': notes
             })
         else:
             mappings.append({
@@ -181,7 +223,10 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
                 'xer_file': '',
                 'xer_date': '',
                 'days_diff': '',
-                'confidence': 'NO_DATE'
+                'confidence': 'NO_DATE',
+                'document_type': doc_type,
+                'date_reliability': date_reliability,
+                'notes': notes
             })
 
     return mappings
@@ -194,7 +239,10 @@ def write_mapping_csv(mappings: list[dict], output_path: Path) -> None:
         mappings: List of mapping dictionaries
         output_path: Path to output CSV
     """
-    fieldnames = ['narrative_file', 'narrative_date', 'xer_file', 'xer_date', 'days_diff', 'confidence']
+    fieldnames = [
+        'narrative_file', 'narrative_date', 'xer_file', 'xer_date',
+        'days_diff', 'confidence', 'document_type', 'date_reliability', 'notes'
+    ]
 
     with open(output_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -205,12 +253,22 @@ def write_mapping_csv(mappings: list[dict], output_path: Path) -> None:
 def print_summary(mappings: list[dict]) -> None:
     """Print mapping summary statistics."""
     by_conf = {}
+    by_type = {}
+    by_reliability = {}
+
     for m in mappings:
         conf = m['confidence']
         by_conf[conf] = by_conf.get(conf, 0) + 1
 
+        doc_type = m.get('document_type', 'unknown')
+        by_type[doc_type] = by_type.get(doc_type, 0) + 1
+
+        reliability = m.get('date_reliability', 'unknown')
+        by_reliability[reliability] = by_reliability.get(reliability, 0) + 1
+
     print("\nMapping Summary:")
     print("-" * 40)
+    print("By Confidence:")
     for conf in ['HIGH', 'MEDIUM', 'LOW', 'NONE', 'NO_DATE']:
         count = by_conf.get(conf, 0)
         pct = count / len(mappings) * 100
@@ -221,6 +279,20 @@ def print_summary(mappings: list[dict]) -> None:
     print(f"  Total narratives: {len(mappings)}")
     print(f"  Matched:          {matched}")
     print(f"  Match rate:       {matched/len(mappings)*100:.1f}%")
+
+    print("\nBy Document Type:")
+    print("-" * 40)
+    for dtype in ['schedule_narrative', 'milestone_variance', 'review_response',
+                  'schedule_export', 'expert_report', 'other']:
+        count = by_type.get(dtype, 0)
+        if count > 0:
+            print(f"  {dtype:20}: {count:3}")
+
+    print("\nBy Date Reliability:")
+    print("-" * 40)
+    for rel in ['RELIABLE', 'OFFSET', 'REVIEW_NEEDED']:
+        count = by_reliability.get(rel, 0)
+        print(f"  {rel:15}: {count:3}")
 
 
 def print_unmatched(mappings: list[dict]) -> None:
