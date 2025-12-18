@@ -5,7 +5,9 @@ Extract Narrative Documents to Markdown (Simple/Fast version)
 Converts PDF, DOCX, and XLSX files from primavera_narratives to markdown format.
 Uses pymupdf for fast PDF extraction. No table parsing - just text extraction.
 
-Output: processed/primavera_narratives/{original_filename}.md
+Processes files recursively in subfolders, maintaining folder structure in output.
+
+Output: processed/primavera_narratives/{subfolder}/{original_filename}.md
 """
 
 import sys
@@ -85,47 +87,70 @@ def extract_xlsx_to_markdown(xlsx_path: Path) -> str:
     return "\n".join(parts)
 
 
+def get_all_files_recursive(directory: Path) -> list[Path]:
+    """Get all files recursively from directory and subdirectories."""
+    all_files = []
+    for item in sorted(directory.iterdir()):
+        if item.is_file():
+            all_files.append(item)
+        elif item.is_dir():
+            all_files.extend(get_all_files_recursive(item))
+    return all_files
+
+
 def process_all_narratives(verbose: bool = True) -> dict:
-    """Process all narrative files."""
+    """Process all narrative files, including subfolders."""
     PROCESSED_NARRATIVES_DIR.mkdir(parents=True, exist_ok=True)
 
     results = {'success': [], 'failed': [], 'skipped': []}
-    all_files = sorted(RAW_NARRATIVES_DIR.iterdir())
+
+    # Get all files recursively
+    all_files = get_all_files_recursive(RAW_NARRATIVES_DIR)
 
     if verbose:
         print(f"Extracting narratives to markdown")
         print(f"Input: {RAW_NARRATIVES_DIR}")
         print(f"Output: {PROCESSED_NARRATIVES_DIR}")
-        print(f"Files: {len(all_files)}")
+        print(f"Total files (including subfolders): {len(all_files)}")
         print()
 
-    for f in all_files:
-        if not f.is_file():
-            continue
+    current_folder = None
 
+    for f in all_files:
         suffix = f.suffix.lower()
-        out = PROCESSED_NARRATIVES_DIR / f"{f.stem}.md"
+
+        # Calculate relative path to maintain subfolder structure
+        rel_path = f.relative_to(RAW_NARRATIVES_DIR)
+        out_dir = PROCESSED_NARRATIVES_DIR / rel_path.parent
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out = out_dir / f"{f.stem}.md"
+
+        # Print folder header when entering new subfolder
+        folder = str(rel_path.parent) if rel_path.parent != Path('.') else '(root)'
+        if folder != current_folder:
+            current_folder = folder
+            print(f"\n=== {folder} ===")
 
         try:
             if suffix == '.pdf':
-                print(f"  [PDF] {f.name[:60]}")
+                print(f"  [PDF] {f.name[:55]}")
                 content = extract_pdf_to_markdown(f)
             elif suffix == '.docx':
-                print(f"  [DOCX] {f.name[:60]}")
+                print(f"  [DOCX] {f.name[:55]}")
                 content = extract_docx_to_markdown(f)
             elif suffix == '.xlsx':
-                print(f"  [XLSX] {f.name[:60]}")
+                print(f"  [XLSX] {f.name[:55]}")
                 content = extract_xlsx_to_markdown(f)
             else:
-                results['skipped'].append(f.name)
+                results['skipped'].append(str(rel_path))
                 continue
 
             out.write_text(content, encoding='utf-8')
-            results['success'].append(f.name)
+            results['success'].append(str(rel_path))
 
         except Exception as e:
             print(f"    ERROR: {e}")
-            results['failed'].append((f.name, str(e)))
+            results['failed'].append((str(rel_path), str(e)))
 
     print(f"\nDone: {len(results['success'])} success, {len(results['failed'])} failed, {len(results['skipped'])} skipped")
     return results
