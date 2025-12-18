@@ -1,0 +1,104 @@
+task_code,task_name,scope_category,duration_days,scope_desc,building_desc,level_desc
+CN.BB31.ST.1200,COLUMN CRACK REPAIR - SURFACE PREP & AMATECH REBAR INSTALL - 1st Priority,New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1210,"COLUMN CRACK REPAIR FORM, SATURATION & SIKA 211 INJECTION- 1ST Priority",New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1220,"COLUMN CRACK REPAIR - INSTALL FORM , CURE & REMOVE FORM - 1st Priority",New Scope - Remediation/Rework,14.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1230,"COLUMN CRACK REPAIR- PREP, PRIME & LAY CFRP - 1st Priority",New Scope - Remediation/Rework,1.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1240,"COLUMN CRACK REPAIR - PULL TEST, REPAIR PULL TEST & PAINT - 1st Priority - B3 - GL 23-27 - L2",New Scope - Remediation/Rework,5.0,Finishes,Multiple Buildings,Level 2
+CN.BB31.ST.1250,COLUMN CRACK REPAIR - SURFACE PREP & AMATECH REBAR INSTALL - 2nd Priority,New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1260,"COLUMN CRACK REPAIR FORM, SATURATION & SIKA 211 INJECTION- 2nd Priority",New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1270,"COLUMN CRACK REPAIR - INSTALL FORM , CURE & REMOVE FORM- 2nd Priority",New Scope - Remediation/Rework,14.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1290,"COLUMN CRACK REPAIR- PREP, PRIME & LAY CFRP - 2nd Priority",New Scope - Remediation/Rework,1.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1300,"COLUMN CRACK REPAIR - PULL TEST, REPAIR PULL TEST & PAINT- 2nd Priority",New Scope - Remediation/Rework,5.0,Finishes,Project-Wide,Project-Wide
+CN.BB31.ST.1310,COLUMN CRACK REPAIR - SURFACE PREP & AMATECH REBAR INSTALL - 3rd Priority,New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1320,"COLUMN CRACK REPAIR FORM, SATURATION & SIKA 211 INJECTION- 3rd Priority",New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1330,"COLUMN CRACK REPAIR - INSTALL FORM , CURE & REMOVE FORM- 3rdPriority",New Scope - Remediation/Rework,14.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1340,"COLUMN CRACK REPAIR- PREP, PRIME & LAY CFRP - 3rd Priority",New Scope - Remediation/Rework,1.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1350,"COLUMN CRACK REPAIR - PULL TEST, REPAIR PULL TEST & PAINT - 3rd Priority - B2 - GL 21-24 - L2",New Scope - Remediation/Rework,5.0,Finishes,Multiple Buildings,Level 2
+CN.BB31.ST.1360,COLUMN CRACK REPAIR - SURFACE PREP & AMATECH REBAR INSTALL - 4th Priority,New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1370,"COLUMN CRACK REPAIR FORM, SATURATION & SIKA 211 INJECTION- 4th Priority",New Scope - Remediation/Rework,2.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1380,"COLUMN CRACK REPAIR - INSTALL FORM , CURE & REMOVE FORM- 4thPriority",New Scope - Remediation/Rework,10.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1390,"COLUMN CRACK REPAIR- PREP, PRIME & LAY CFRP - 4th Priority",New Scope - Remediation/Rework,1.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1400,"COLUMN CRACK REPAIR - PULL TEST, REPAIR PULL TEST & PAINT- 4thPriority",New Scope - Remediation/Rework,4.0,Finishes,Project-Wide,Project-Wide
+CN.BB31.ST.1410,COLUMN CRACK REPAIR - SURFACE PREP & AMATECH REBAR INSTALL - 5th Priority,New Scope - Remediation/Rework,3.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1420,"COLUMN CRACK REPAIR FORM, SATURATION & SIKA 211 INJECTION- 5th Priority",New Scope - Remediation/Rework,3.0,Tracking/Recovery,Project-Wide,Project-Wide
+CN.BB31.ST.1430,"COLUMN CRACK REPAIR - INSTALL FORM , CURE & REMOVE FORM- 5thPriority",New Scope - Remediation/Rework,14.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1440,"COLUMN CRACK REPAIR- PREP, PRIME & LAY CFRP - 5th Priority",New Scope - Remediation/Rework,2.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1450,"COLUMN CRACK REPAIR - PULL TEST, REPAIR PULL TEST & PAINT - 5th Priority - A2 - GL 15-12 - L2",New Scope - Remediation/Rework,7.5,Finishes,Multiple Buildings,Level 2
+CN.BB31.ST.1460,WAFFLE SLAB CRACK REPAIR - 3rd,New Scope - Remediation/Rework,7.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1470,WAFFLE SLAB CRACK REPAIR - 2nd Priority,New Scope - Remediation/Rework,7.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1480,WAFFLE SLAB CRACK REPAIR - 5th Priority - A2 - GL 15-12 - L2,New Scope - Remediation/Rework,7.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.BB31.ST.1490,WAFFLE SLAB CRACK REPAIR - 4th Priority,New Scope - Remediation/Rework,5.0,Cast-in-Place,Project-Wide,Project-Wide
+CN.BB31.ST.1280,WAFFLE SLAB CRACK REPAIR - 1st Priority,New Scope - Remediation/Rework,7.0,Cast-in-Place,Project-Wide,Project-Wide
+MS.ALL.MS.1140,YATES - INSULATED METAL PANELS COMPLETE - EAST,New Scope - IMP Panels,0.0,Panels,Project-Wide,Project-Wide
+MS.ALL.MS.5400,YATES - INSULATED METAL PANELS COMPLETE - WEST,New Scope - IMP Panels,0.0,Panels,Project-Wide,Project-Wide
+CN.SEB1.10860,REWORK - REMOVE IMP - GL 5 & 31 - L4 - N PARAPET ROOF,New Scope - IMP Panels,2.5,Roofing,Multiple Buildings,Level 4
+CN.AB1.ST.1180,PH1-WAFFLE COATING complete (L2&3) - A1 GL 18-15,New Scope - Remediation/Rework,1.25,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB1.ST.1220,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - A1,New Scope - Remediation/Rework,5.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.1840,PH1-WAFFLE COATING (L3) TEMPERATURE REMIDIATION - A1 - E4- GL 18-10 - EAST TOP,New Scope - Remediation/Rework,20.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.1850,PH1-WAFFLE COATING (L3) TEMPERATURE REMIDIATION - A1- W4- GL 18-10 - WEST TOP,New Scope - Remediation/Rework,11.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.1970,PH1-WAFFLE COATING (L2) TEMPERATURE REMIDIATION - A1- E4- GL 18-10 - CENTER (SG3),New Scope - Remediation/Rework,59.625,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB1.ST.2010,PH1-WAFFLE COATING (L3) TEMPERATURE REMIDIATION - A1- W4- GL 10-8 - WEST TOP,New Scope - Remediation/Rework,9.25,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.2040,PH1-WAFFLE COATING (L2) TEMPERATURE REMIDIATION - A1 - E4- GL 18-10 - EAST BOTTOM (S2b),New Scope - Remediation/Rework,19.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB1.ST.2030,PH1-WAFFLE COATING (L2) TEMPERATURE REMIDIATION - A1- W4- GL 18-8 - WEST BOTTOM (S5b),New Scope - Remediation/Rework,47.625,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB2.ST.1170,PH1-WAFFLE COATING- (L2&3) - A2 GL 14-10,New Scope - Remediation/Rework,1.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB2.ST.1070,PH1-WAFFLE EPOXY COATING (1st Coat in Yard(L3) - A2,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB3.ST.1170,PH1-WAFFLE COATING (L2&3) - A3 GL 6-10,New Scope - Remediation/Rework,1.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB3.ST.1070,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - A3,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB3.ST.2240,PH1-WAFFLE RAKER COATING (L2&3) - A3 GL 18-10 WEST (R3W),New Scope - Remediation/Rework,8.625,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB3.ST.2250,PH1-WAFFLE RAKER COATING (L2&3) - A3 GL 18-10 EAST (R3E),New Scope - Remediation/Rework,13.75,Cast-in-Place,Multiple Buildings,Level 2
+CN.A4.ST.1120,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - A4,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1250,PH1-WAFFLE COATING (Bottom and Top)(L3) - A5 GL 6-3,New Scope - Remediation/Rework,1.25,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1280,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - A5,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1380,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - A5 GL 3-10 - W1- CENTER (SG4),New Scope - Remediation/Rework,27.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB5.ST.1850,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - A5 GL 3-9 - W1- WEST TOP & BOTTOM,New Scope - Remediation/Rework,9.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1860,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - A5 GL 3-10 - E1- EAST TOP & BOTTOM,New Scope - Remediation/Rework,9.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1880,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - A5 GL 3-7 - W1- WEST TOP (S3),New Scope - Remediation/Rework,37.75,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1890,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - A5 GL 3-7 - E1- EAST TOP (S4),New Scope - Remediation/Rework,44.25,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1900,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - A5 GL 3-8 - W1- WEST BOTTOM (Mez (a),New Scope - Remediation/Rework,48.125,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB5.ST.1910,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - A5 GL 3-10 - E1- EAST BOTTOM (S4a),New Scope - Remediation/Rework,50.75,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB5.ST.1930,PH1-WAFFLE RAKER COATING - (L2) - A5 GL 3-10 WEST (R4W),New Scope - Remediation/Rework,8.625,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB5.ST.1940,PH1-WAFFLE RAKER COATING - (L2) - A5 GL 3-10 EAST (R4E),New Scope - Remediation/Rework,12.875,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB1.ST.1190,PH1-WAFFLE COATING (Bottom and Top) (L2&3) - B1 GL 18-26,New Scope - Remediation/Rework,1.25,Cast-in-Place,Multiple Buildings,Level 2
+xN.AB1.ST.1080,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - B1,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.1230,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - B1 - W5- GL 18-26 WEST BOTTOM,New Scope - Remediation/Rework,20.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.1990,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - B1- W5 GL 21-27 WEST TOP (S2),New Scope - Remediation/Rework,24.25,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.2000,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - B1- E5- GL 19-26 EAST TOP (S1),New Scope - Remediation/Rework,25.25,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB1.ST.2020,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - B1- E5- GL 18-26 CENTER (SG2),New Scope - Remediation/Rework,10.5,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB1.ST.2050,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - B1- E5- GL 18-26 EAST BOTTOM (S1a),New Scope - Remediation/Rework,19.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB1.ST.2060,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - B1- W5 GL 18-26 WEST BOTTOM (S3c),New Scope - Remediation/Rework,20.875,Cast-in-Place,Multiple Buildings,Level 2
+xN.AB2.ST.1080,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - B2,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB3.ST.1180,PH1-WAFFLE COATING (Bottom and Top) (L2&3) - B3 GL 22-26,New Scope - Remediation/Rework,1.0,Cast-in-Place,Multiple Buildings,Level 2
+xN.AB3.ST.1080,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - B3,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB3.ST.2260,PH1-WAFFLE RAKER COATING - (L2&3) - B3 GL 18-26 WEST (R2W),New Scope - Remediation/Rework,13.625,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB3.ST.2270,PH1-WAFFLE RAKER COATING - (L2&3) - B3 GL 18-26 EAST (R2E),New Scope - Remediation/Rework,20.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB4.ST.1260,PH1-WAFFLE COATING (Bottom and Top)(L2&3) - B4 - GL 27-33,New Scope - Remediation/Rework,0.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB4.ST.1070,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - B4,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB4.ST.1390,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - B4 - E7- GL 26-33 - CENTER (SG1),New Scope - Remediation/Rework,12.0,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB4.ST.1840,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L3) - B4 - E7- GL 26-33 - EAST TOP,New Scope - Remediation/Rework,13.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB5.ST.1870,PH1-WAFFLE COATING TEMPERATURE REMIDIATION(L3) - B5 - W7- GL 27-33 - WEST TOP (S2),New Scope - Remediation/Rework,21.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB4.ST.1850,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - B4 - E7- GL 26-33 - EAST BOTTOM,New Scope - Remediation/Rework,14.5,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB5.ST.1920,PH1-WAFFLE COATING TEMPERATURE REMIDIATION (L2) - B5 - W7- GL 26-33 - WEST BOTTOM (S6c),New Scope - Remediation/Rework,45.25,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB4.ST.1860,PH1-WAFFLE RAKER COATING - B4 - GL 26-33 - WEST (R1W) - L2,New Scope - Remediation/Rework,9.5,Cast-in-Place,Multiple Buildings,Level 2
+CN.AB4.ST.1870,PH1-WAFFLE RAKER COATING - B4 - GL 26-33 - EAST (R1E) - L2,New Scope - Remediation/Rework,10.25,Cast-in-Place,Multiple Buildings,Level 2
+xN.AB5.ST.1080,PH1-WAFFLE EPOXY COATING (1st Coat in Yard) (L3) - B5,New Scope - Remediation/Rework,10.0,Cast-in-Place,Multiple Buildings,Level 3
+CN.AB3.ST.2430,KOVACH - INSULATED METAL PANEL - GL 33 - A/33 EXTENSION,New Scope - IMP Panels,0.0,Panels,Multiple Buildings,Multiple Levels
+CN.AB.AR.1120,SET/ FIX ANCHOR BOLTS - SWA-1,New Scope - Remediation/Rework,2.0,Structural Steel,Support West,Multiple Levels
+CN.AB.AR.1520,SET/ FIX ANCHOR BOLTS - SWB-1 - L1,New Scope - Remediation/Rework,2.0,Structural Steel,Support West,Level 1
+CN.SWB4.1310,SET/ FIX ANCHOR BOLTS - SWB-4-L1,New Scope - Remediation/Rework,6.0,Structural Steel,Support West,Level 1
+CN.SWB4.6740,FRP SOMD AT STAIR 50 - L3 GL 27-30 K LINE (HELD BY EMBED FIX FROM TINDALL UNTIL 6/24),New Scope - Remediation/Rework,5.0,Cast-in-Place,Unknown,Level 3
+CN.SEA1.2970,PH1- SET/ FIX ANCHOR BOLTS - SEA-1-L1,New Scope - Remediation/Rework,3.0,Structural Steel,Support East,Level 1
+A1300,REPAIR WATERPROOF MEMBRANE,New Scope - Remediation/Rework,2.0,Roofing,Project-Wide,Project-Wide
+CN.SEA2.1300,PH1- SET/ FIX ANCHOR BOLTS - SEA-2-L1,New Scope - Remediation/Rework,3.0,Structural Steel,Support East,Level 1
+SEA2.MOCKUP50,SECAI INSPECT IMP MOCKUP - SEA2 - GL 15-14 - C-E,New Scope - IMP Panels,1.0,Fabrication,Support East,Multiple Levels
+CN.SEA3.1450,PH1- SET/ FIX ANCHOR BOLTS - SEA3 - GL 13-9 - L1 - C-A,New Scope - Remediation/Rework,2.0,Structural Steel,Support East,Level 1
+CN.SEB1.1280,PH1- IMPACT SET/ FIX ANCHOR BOLTS - SEB-1-L1,New Scope - Remediation/Rework,2.0,Structural Steel,Support East,Level 1
+CN.SEB2.1280,"REMAINING CLADDING STEEL, DETAILING AND INSPECTION FOR INSULATED METAL PANELS - SEA5 A LINE [SUP EXTERIOR WALL] GL 23-",New Scope - IMP Panels,9.75,Structural Steel,Support East,Multiple Levels
+PC.RFI765,"PRECAST COLUMN - Repair/ Load Test - Recast - (GL15 - E,J,F,G,H) - (Delivery impacted by Base Plate)",New Scope - Remediation/Rework,10.0,Structural Steel,Multiple Buildings,Multiple Levels
+PC.WAF1220,OFFSITE WAFFLE COATING MOBILIZE SETUP,New Scope - Remediation/Rework,3.0,Cast-in-Place,Project-Wide,Project-Wide
+PC.WAF1230,WAFFLE COATING MOCK UP SPRAY,New Scope - Remediation/Rework,3.0,Cast-in-Place,Project-Wide,Project-Wide
+IMP1000,PH1 - EXPECTED RELEASE OF IMP PANELS,New Scope - IMP Panels,0.0,Panels,Project-Wide,Project-Wide
+IMP1010,PH1 - ENGINEERING & SHOPS OF IMP PANELS - PREPERATION,New Scope - IMP Panels,109.0,Design,Project-Wide,Project-Wide
+IMP1030,PH1 - FABRICATION & MATERIAL DELIVERY - IMP PANELS,New Scope - IMP Panels,53.75,Fabrication,Project-Wide,Project-Wide
+IMP1020,PH1 - ENGINEERING & SHOPS OF IMP PANELS - SECAI APPROVAL,New Scope - IMP Panels,10.0,Submittals,Project-Wide,Project-Wide
+PC.NCR.SUE,"TINDAL FABRICATION ERROR FIX - GL 16-19 GIRDERS - RG 540,545,515,516,RB 606",New Scope - Remediation/Rework,9.0,Fabrication,Multiple Buildings,Multiple Levels
+CN.BB5.ST.1440,"RFI 10571 LACKING DESIGN DETAIL - DISCUSSIONS W SECAI SAMOO (need IMP, fram removed) - GL 33 - L4E TROUGH PARAPET - EAST",New Scope - IMP Panels,5.0,Submittals,Multiple Buildings,Multiple Levels
