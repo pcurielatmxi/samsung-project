@@ -1,6 +1,6 @@
 # Primavera Scripts
 
-**Last Updated:** 2025-12-17
+**Last Updated:** 2025-12-18
 
 ## Purpose
 
@@ -11,9 +11,17 @@ Parse and analyze YATES Primavera P6 schedule exports (XER files).
 ```
 primavera/
 ├── process/    # XER parsing -> processed/primavera/
-└── derive/     # Task taxonomy, WBS enrichment -> derived/primavera/
-    └── task_taxonomy/  # Modular taxonomy inference system
+├── derive/     # Task taxonomy, WBS enrichment -> derived/primavera/
+│   └── task_taxonomy/  # Modular taxonomy inference system
+├── analyze/    # Schedule analysis scripts (planned)
+└── docs/       # Analysis documentation
 ```
+
+## Planning Documents
+
+| Document | Description |
+|----------|-------------|
+| [Schedule Slippage Analysis](docs/schedule_slippage_analysis.md) | Plan for analyzing schedule slippage using milestone and task-level tracking across 72 schedule versions |
 
 ## Key Scripts
 
@@ -132,3 +140,38 @@ Inferred Taxonomy:
 ## Documentation
 
 See [docs/SOURCES.md](../../docs/SOURCES.md) for XER field mapping.
+
+---
+
+## Schedule Slippage Analysis
+
+### Context
+
+The YATES schedule lacks a true baseline. Schedule slippage must be assessed by comparing across 72 schedule versions (Oct 2022 - Nov 2025).
+
+### Key Data Characteristics
+
+| Metric | Value |
+|--------|-------|
+| Schedule versions | 72 |
+| Task growth | 843 → 12,433 (14.7x) |
+| Persistent tasks | 759 (90% of original) |
+| Milestones (original) | 47 |
+| Milestones (latest) | 137 (39 persistent) |
+| Project completion slip | ~32 months |
+
+### Recommended Approach
+
+1. **Milestone-level** (Phase 1): Track 39 persistent milestones - stable, meaningful completion points
+2. **Critical path** (Phase 2): Track tasks with float <= 0 version-by-version
+3. **Task-level** (Phase 3): Track 759 persistent tasks for detailed attribution
+4. **Attribution** (Phase 4): Correlate with weekly reports for root cause analysis
+
+### Key Findings
+
+- Task-level analysis adds value: within-WBS variance (4.7d) is 5x larger than between-WBS variance (1.0d)
+- 88% of added milestones are decomposition/coordination, not new scope
+- Critical path persistence is 73% between consecutive versions
+- Major slippage periods: Nov 2022, Oct-Nov 2023, Jan-Feb 2024, Jun 2024, Sep 2025
+
+See [Schedule Slippage Analysis Plan](docs/schedule_slippage_analysis.md) for full details.
