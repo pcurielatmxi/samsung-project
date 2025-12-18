@@ -73,6 +73,17 @@ DATE_PATTERNS = [
 ]
 
 
+def get_all_files_recursive(directory: Path) -> list[Path]:
+    """Get all files recursively from directory and subdirectories."""
+    all_files = []
+    for item in sorted(directory.iterdir()):
+        if item.is_file():
+            all_files.append(item)
+        elif item.is_dir():
+            all_files.extend(get_all_files_recursive(item))
+    return all_files
+
+
 def classify_document(filename: str) -> tuple[str, str, str]:
     """Classify document type and determine date reliability.
 
@@ -191,12 +202,16 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
     xer_dates = load_xer_dates(MANIFEST_PATH)
     print(f"Loaded {len(xer_dates)} XER files with dates")
 
-    # Process narratives
+    # Process narratives recursively
+    all_files = get_all_files_recursive(NARRATIVES_RAW_DIR)
+    print(f"Found {len(all_files)} files (including subfolders)")
+
     mappings = []
 
-    for f in sorted(NARRATIVES_RAW_DIR.iterdir()):
-        if not f.is_file():
-            continue
+    for f in all_files:
+        # Calculate relative path for subfolder tracking
+        rel_path = f.relative_to(NARRATIVES_RAW_DIR)
+        subfolder = str(rel_path.parent) if rel_path.parent != Path('.') else ''
 
         narrative_date = extract_date_from_filename(f.name)
         doc_type, date_reliability, notes = classify_document(f.name)
@@ -206,6 +221,7 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
                 narrative_date, xer_dates, max_days
             )
             mappings.append({
+                'subfolder': subfolder,
                 'narrative_file': f.name,
                 'narrative_date': narrative_date.strftime('%Y-%m-%d'),
                 'xer_file': xer_match or '',
@@ -218,6 +234,7 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
             })
         else:
             mappings.append({
+                'subfolder': subfolder,
                 'narrative_file': f.name,
                 'narrative_date': '',
                 'xer_file': '',
@@ -240,7 +257,7 @@ def write_mapping_csv(mappings: list[dict], output_path: Path) -> None:
         output_path: Path to output CSV
     """
     fieldnames = [
-        'narrative_file', 'narrative_date', 'xer_file', 'xer_date',
+        'subfolder', 'narrative_file', 'narrative_date', 'xer_file', 'xer_date',
         'days_diff', 'confidence', 'document_type', 'date_reliability', 'notes'
     ]
 
