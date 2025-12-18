@@ -67,44 +67,63 @@ SCOPE_PATTERNS = [
 FAILURE_CATEGORIES = [
     # Time-based failures (check first - very specific)
     (r'72.?hour|72.?hr|72 hour', '72-Hour Deadline Exceeded'),
+
     # Process/administrative issues
-    (r'process.*(noncompli|violation)|not follow.*(process|procedure)|inspection process', 'Inspection Process Violation'),
-    (r'submittal.*(not|reject)|not.*approv|approval.*not|shop drawing.*not', 'Submittal/Approval Issues'),
-    (r'no.*(seci|cm).*inspection|no cm\b', 'Missing CM Inspection'),
-    (r'\bncr\b|stop.?work', 'NCR/Stop Work'),
-    (r'see attach|attached.*report|msr-fsr report', 'See Attached Report'),
-    # Work quality issues
-    (r'missing|incomplete|not complete|not finished', 'Missing/Incomplete Work'),
+    (r'process.*(noncompli|violation)|not follow.*(process|procedure)|inspection process|wir.*same day|not given.*hour|wir.*change|make a new wir|wir.*need.*create|wir.*place.*fail', 'Inspection Process Violation'),
+    (r'submittal.*(not|reject)|not.*approv|approval.*not|shop drawing.*not|please provide.*submittal', 'Submittal/Approval Issues'),
+    (r'no.*(seci|cm).*inspection|no cm\b|no documentation.*uploaded|no.*seci.*cm', 'Missing CM Inspection'),
+    (r'document|photo|not provided|not uploaded|cover sheet|not signed|blank.*missing.*document|missing.*most.*document|missing required document|please provide.*picture|legible.*drawing|requesting.*drawing|see.*attached.*report', 'Documentation Issues'),
+    (r'not.*attached|attachment.*missing|redline.*drawing|drawing.*upload|please see.*attached|attched', 'Documentation Issues'),
+    (r'coversheet.*match|building.*name.*match|package.*name.*reflect', 'Documentation Issues'),
+
+    # Work quality issues - GENERAL (broad, kept because high value count)
+    (r'missing.*work|incomplete.*work|(?<!of\s)missing(?!\s*(document|inspection|cm))|not complete|not finish|installation.*not complete', 'Missing/Incomplete Work'),
     (r'contaminat|debris|dirt|dust|clean', 'Contamination/Debris'),
-    (r'damage|crack|dent|broken|bare metal', 'Damage/Defect'),
-    (r'scratch|foreign material|defect.*found', 'Surface Defects'),
-    (r'runs|drips|sags|overspray|missed area', 'Coating Defects'),
-    # Installation issues
-    (r'screw|fastener|bolt|nail|torque', 'Screw/Fastener Issues'),
-    (r'weld|undercut|arc mark|slag', 'Welding Defects'),
-    (r'level|align|plumb|sagging|bowing|orientation', 'Alignment/Level Issues'),
-    (r'frame|framing|stud|track', 'Framing Issues'),
-    (r'\bbent\b|kinked|deform', 'Bent/Deformed Material'),
-    (r'loose.*hardware|hardware.*loose', 'Loose Hardware'),
-    (r'backpitch|slope|pitch', 'Slope/Pitch Issues'),
-    # Design/drawing issues
-    (r'deviat|does not match.*design|design.*change|not.*per.*spec', 'Design Deviation'),
-    (r'not per drawing|incorrect|wrong|does not match', 'Drawing/Spec Mismatch'),
-    (r'equipment.*not|panel.*not.*match|breaker.*not|device.*not', 'Equipment Mismatch'),
+
+    # Work quality issues - MATERIAL DEFECTS
+    (r'bare metal|bare bolt|rust|improper.*prep|surface.*not.*prep|not.*properly.*prep|primed.*substrate', 'Surface Prep/Coating'),
+    (r'damage|crack|dent|broken|scratch|foreign material|defect.*found', 'Damage/Defect'),
+    (r'runs|drips|sags|overspray|missed area|coating.*not.*accept', 'Coating/Paint Defect'),
+
+    # Installation issues - Specific defects
+    (r'screw|fastener|bolt|nail|torque|megger.*test', 'Screw/Fastener Issues'),
+    (r'weld|undercut|arc mark|slag|bad weld', 'Installation Defect'),
+    (r'improper.*spacing|wrong.*spacing|incorrect.*spacing|stacking|cables.*pressed|tray.*not.*support|conduit.*block', 'Installation Defect'),
+    (r'wrong.*type|incorrect.*type|wrong.*box|wrong.*track|wrong.*depth|wrong.*detail', 'Installation Defect'),
+    (r'not.*flush|incorrect.*detail|deviation|drilling|knocking.*hole', 'Installation Defect'),
+    (r'wrong.*segment|wrong.*support|improper.*clamp|incorrect.*clamp', 'Installation Defect'),
+    (r'cables.*being in.*raceway|cables.*installed.*before|cables pulled to', 'Installation Defect'),
+    (r'frame.*not.*design|not doing.*job|not installed|installation.*NOT|panel.*NOT installed|nonconform', 'Installation Defect'),
+    (r'caulk|seal|patch', 'Installation Defect'),
+    (r'level|align|plumb|sagging|bowing|orientation|slope|pitch|backpitch', 'Alignment/Level Issues'),
+    (r'framing.*incomplete|missing.*screw|missing.*bracket|missing.*stud|wrong.*stud', 'Framing Defect'),
+    (r'\bbent\b|kinked|deform|damage(?!.*prep)', 'Installation Defect'),
+    (r'loose.*hardware|hardware.*loose', 'Installation Defect'),
+    (r'checklist.*not.*pass|did not pass|face beam|failed at.*lb', 'Installation Defect'),
+
+    # Design/drawing issues (consolidated)
+    (r'drawing.*not.*match|not per drawing|incorrect.*drawing|design.*change|design.*deviat|deviation.*design', 'Specification Non-Compliance'),
+    (r'does not meet.*spec|not.*per.*spec|spec.*violation|wrong.*per.*spec|not.*per.*code|requirement', 'Specification Non-Compliance'),
+    (r'required.*depth|depth.*less than|depth.*specification', 'Specification Non-Compliance'),
+    (r'termination.*tag|term.*point|cable.*schedule|termination.*match', 'Specification Non-Compliance'),
+    (r'ul.*detail|emergency.*light|red dot|work.*space.*clearance', 'Specification Non-Compliance'),
+    (r'code|violation|safety|unrelated.*picture|legible', 'Code/Spec Violation'),
+    (r'equipment.*not|panel.*not.*match|breaker.*not|device.*not|mismatch|wrong.*panel', 'Specification Non-Compliance'),
+
     # Test failures
-    (r'pressure.*(test|loss|fail)|test.*pressure|leak|head test', 'Pressure/Leak Test Failure'),
-    # Process issues
-    (r'document|photo|not provided|not uploaded|cover sheet|not signed', 'Documentation Issues'),
-    (r'never showed|no.show|not available|no scissor|waited|no one from', 'No-Show/Access Issues'),
-    (r'no one.*behalf|subcontractor.*left|crew left', 'Subcontractor No-Show'),
-    (r'ceiling.*not.*remov|unable to see|no.*access|could not.*access', 'Access/Visibility Issues'),
-    (r'layer.*before.*inspect|before.*was inspect|sequence', 'Sequence/Order Violation'),
-    (r'not ready|pending|still needs', 'Not Ready for Inspection'),
-    (r'code|violation|specification', 'Code/Spec Violation'),
-    # Specific trade issues
-    (r'fire caulk|caulk|firestop|fireproof', 'Fire Protection Issues'),
-    (r'surface prep|rust|coating|paint|primer', 'Surface Prep/Coating'),
-    (r'cable|tray|raceway|ground|conduit', 'Electrical/Cable Issues'),
+    (r'pressure.*(test|loss|fail)|test.*pressure|leak|head test|hydro.*test|density.*test', 'Test Failure'),
+    (r'meg.*report|witnessing.*point|initial.*setting', 'Test Failure'),
+
+    # Access/No-show/Prerequisites
+    (r'no scissor|no access|could not.*access|unable to see|ceiling.*not.*remov', 'Access/Visibility Issue'),
+    (r'never showed|no.show|not available|no one from|left.*site|crew.*left|subcontractor.*left|not show|no one.*behaf|no.*subcontractor.*on site|no one showed up', 'No-Show/Crew Not Available'),
+    (r'layer.*before.*inspect|before.*was inspect|sequence|not completed.*because|not finished.*because', 'Work Sequence Issue'),
+    (r'not ready|pending|still needs|not acceptable|will not accept|too many.*wrong', 'Work Not Ready'),
+
+    # Trade-specific issues (kept due to reasonable value count)
+    (r'electrical.*metallic|emt(?!\s*approved)|cable.*not.*bond|cable.*spec|conduit.*spec|ground|grounding.*electrode|panelboard|pull.*box|fiber.*optic|conductor.*megger', 'Electrical/Cable Issue'),
+    (r'fire caulk|firestop|fire.*proof', 'Fire Protection Issue'),
+    (r'plumb|drainage|drain|water|hydro|hub.*drain', 'Plumbing/Drainage Issue'),
 ]
 
 
@@ -335,6 +354,10 @@ def categorize_failure_reason(text: str) -> Optional[str]:
         return None
 
     text_lower = str(text).lower()
+
+    # Strip common prefixes that hide the real reason
+    # e.g., "MSR-FSR Fail" or "SECAI/FST Fail" or "SECAI Fail"
+    text_lower = re.sub(r'^(msr-?fsr\s+fail|secai/?fst\s+fail|secai\s+fail|msr\s+fail|fst\s+fail|failed?[:\s]+)', '', text_lower)
 
     for pattern, category in FAILURE_CATEGORIES:
         if re.search(pattern, text_lower):
