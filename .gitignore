@@ -143,3 +143,4 @@ playwright-screenshots/
 # Git
 .git/
 .gitmodules
+data/derived/
