@@ -76,7 +76,8 @@ samsung-project/
 │   ├── tbm/                     # TBM Excel parsing
 │   ├── projectsight/            # ProjectSight export processing
 │   ├── quality/                 # Quality record processing
-│   └── integrated_analysis/     # Phase 2 - cross-source integration
+│   ├── integrated_analysis/     # Phase 2 - cross-source integration
+│   └── document_processor/      # Batch document-to-JSON extraction tool
 ├── src/
 │   ├── config/settings.py       # Path configuration
 │   └── classifiers/             # WBS taxonomy classifier
@@ -118,3 +119,37 @@ All analysis must maintain traceability to source documents:
 - `derived/` data includes assumptions (document methodology)
 
 See [.claude/skills/mxi-powerpoint/SKILL.md](.claude/skills/mxi-powerpoint/SKILL.md) for presentation data traceability requirements.
+
+---
+
+## Tools
+
+### Document Processor (Batch Unstructured → Structured)
+
+**Location:** [scripts/document_processor/](scripts/document_processor/)
+
+A CLI tool for batch processing unstructured documents (PDF, Word, text) into structured JSON using Claude Code in non-interactive mode.
+
+**Features:**
+- Multi-format parsing (PDF via PyMuPDF, DOCX via python-docx, TXT/MD)
+- Concurrent processing with configurable parallelism
+- Idempotency (`--skip-existing` flag)
+- Automatic skip for documents exceeding token limit (default: 100K)
+- Rate limit handling with exponential backoff
+- Error rate monitoring (aborts if >50% failure after 10 files)
+- Subdirectory preservation in output structure
+- Full source filepath in output metadata
+
+**Usage:**
+```bash
+python scripts/document_processor/process_documents.py \
+  -i /path/to/documents \
+  -o /path/to/output \
+  -p "Your extraction prompt" \
+  --schema schema.json \      # Optional JSON schema
+  --model sonnet \            # sonnet, opus, or haiku
+  --concurrency 5 \           # Parallel limit
+  --skip-existing             # Idempotency
+```
+
+**Output:** Each document produces `{filename}.json` with metadata and structured content.
