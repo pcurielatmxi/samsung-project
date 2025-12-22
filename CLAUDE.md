@@ -76,6 +76,7 @@ samsung-project/
 │   ├── tbm/                     # TBM Excel parsing
 │   ├── projectsight/            # ProjectSight export processing
 │   ├── quality/                 # Quality record processing
+│   ├── raba/                    # RABA quality inspection scraper
 │   ├── integrated_analysis/     # Phase 2 - cross-source integration
 │   └── document_processor/      # Batch document-to-JSON extraction tool
 ├── src/
@@ -153,3 +154,44 @@ python scripts/document_processor/process_documents.py \
 ```
 
 **Output:** Each document produces `{filename}.json` with metadata and structured content.
+
+### RABA Quality Reports Scraper
+
+**Location:** [scripts/raba/process/scrape_raba_reports.py](scripts/raba/process/scrape_raba_reports.py)
+
+A Playwright-based automation tool for downloading quality inspection reports from the RABA (RKCI Celvis) system. Downloads daily batch PDFs containing all inspection reports for each date.
+
+**Features:**
+- Automated login with credentials from `.env`
+- Daily batch downloads - selects all reports for a date and downloads as single PDF
+- Idempotent operation via `manifest.json` tracking
+- Empty date tracking (dates with no reports marked in manifest to avoid retries)
+- Resume capability - skips already downloaded dates
+- `--force` flag to re-download specific dates
+
+**Output Structure:**
+```
+{WINDOWS_DATA_DIR}/raw/raba/
+├── daily/
+│   ├── 2023-06-01.pdf    # All reports for June 1, 2023
+│   ├── 2023-06-02.pdf    # All reports for June 2, 2023
+│   └── ...
+└── manifest.json          # Download tracking
+```
+
+**Usage:**
+```bash
+# Download date range
+python scripts/raba/process/scrape_raba_reports.py --start 2023-06-01 --end 2023-06-30
+
+# Force re-download
+python scripts/raba/process/scrape_raba_reports.py --start 2023-06-01 --end 2023-06-01 --force
+
+# Non-headless mode for debugging
+python scripts/raba/process/scrape_raba_reports.py --start 2023-06-01 --end 2023-06-01 --no-headless
+```
+
+**Environment Variables (`.env`):**
+- `RABA_BASE_URL` - Login URL
+- `RABA_USERNAME` - Login username
+- `RABA_PASSWORD` - Login password

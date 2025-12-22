@@ -138,6 +138,22 @@ class Settings:
     PROJECTSIGHT_DERIVED_DIR = DERIVED_DATA_DIR / 'projectsight'
     PROJECTSIGHT_ANALYSIS_DIR = ANALYSIS_DIR / 'projectsight'
 
+    # ============================================================================
+    # Source-specific paths: RABA (quality inspection reports)
+    # ============================================================================
+    RABA_RAW_DIR = RAW_DATA_DIR / 'raba'
+    RABA_PROCESSED_DIR = PROCESSED_DATA_DIR / 'raba'
+    RABA_DERIVED_DIR = DERIVED_DATA_DIR / 'raba'
+    RABA_ANALYSIS_DIR = ANALYSIS_DIR / 'raba'
+
+    # ============================================================================
+    # Source-specific paths: PSI (quality inspection reports)
+    # ============================================================================
+    PSI_RAW_DIR = RAW_DATA_DIR / 'psi'
+    PSI_PROCESSED_DIR = PROCESSED_DATA_DIR / 'psi'
+    PSI_DERIVED_DIR = DERIVED_DATA_DIR / 'psi'
+    PSI_ANALYSIS_DIR = ANALYSIS_DIR / 'psi'
+
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 
@@ -208,7 +224,7 @@ class Settings:
         print("  derived   = includes assumptions/inference (NOT fully traceable)")
         print()
 
-        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight']
+        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi']
         for source in sources:
             raw_attr = f"{source.upper()}_RAW_DIR"
             proc_attr = f"{source.upper()}_PROCESSED_DIR"
@@ -258,6 +274,16 @@ class Settings:
             cls.PROJECTSIGHT_PROCESSED_DIR,
             cls.PROJECTSIGHT_DERIVED_DIR,
             cls.PROJECTSIGHT_ANALYSIS_DIR,
+            # RABA
+            cls.RABA_RAW_DIR,
+            cls.RABA_PROCESSED_DIR,
+            cls.RABA_DERIVED_DIR,
+            cls.RABA_ANALYSIS_DIR,
+            # PSI
+            cls.PSI_RAW_DIR,
+            cls.PSI_PROCESSED_DIR,
+            cls.PSI_DERIVED_DIR,
+            cls.PSI_ANALYSIS_DIR,
         ]
         for dir_path in dirs_to_create:
             dir_path.mkdir(parents=True, exist_ok=True)
