@@ -12,12 +12,22 @@ The script:
 4. Saves PDFs to raw/raba/daily/{YYYY-MM-DD}.pdf
 5. Maintains a manifest.json tracking downloaded dates (including empty dates)
 
+Parallel Mode:
+    The script supports parallel processing with --workers N. Each worker:
+    - Runs its own browser instance
+    - Processes one month at a time
+    - When a month completes, picks up the next unprocessed month
+    - Uses file-based locking to coordinate month assignments
+
 Usage:
     # Download all days from project start to now
     python scripts/raba/process/scrape_raba_reports.py
 
     # Download specific date range
     python scripts/raba/process/scrape_raba_reports.py --start-date 2022-05-01 --end-date 2022-06-30
+
+    # Parallel mode with 4 workers (processes 4 months concurrently)
+    python scripts/raba/process/scrape_raba_reports.py --workers 4
 
     # Force re-download of existing days
     python scripts/raba/process/scrape_raba_reports.py --force
@@ -34,10 +44,13 @@ import re
 import sys
 import json
 import time
+import fcntl
 import logging
 import argparse
 import tempfile
 import shutil
+import multiprocessing
+from calendar import monthrange
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -92,6 +105,163 @@ def generate_dates(start_date: datetime, end_date: datetime) -> List[datetime]:
         dates.append(current)
         current += timedelta(days=1)
     return dates
+
+
+def generate_months(start_date: datetime, end_date: datetime) -> List[Tuple[str, datetime, datetime]]:
+    """Generate list of months between start and end dates.
+
+    Returns:
+        List of tuples: (month_key, month_start, month_end)
+        - month_key: YYYY-MM format string
+        - month_start: First day of month (or start_date if partial)
+        - month_end: Last day of month (or end_date if partial)
+    """
+    months = []
+    current = start_date.replace(day=1)
+
+    while current <= end_date:
+        month_key = current.strftime('%Y-%m')
+
+        # Calculate month boundaries
+        _, last_day = monthrange(current.year, current.month)
+        month_start = max(current, start_date)
+        month_end = min(current.replace(day=last_day), end_date)
+
+        months.append((month_key, month_start, month_end))
+
+        # Move to next month
+        if current.month == 12:
+            current = current.replace(year=current.year + 1, month=1)
+        else:
+            current = current.replace(month=current.month + 1)
+
+    return months
+
+
+class MonthAssignmentManager:
+    """Manages month assignments across parallel workers using file-based locking."""
+
+    def __init__(self, assignment_file: Path):
+        self.assignment_file = assignment_file
+        self.lock_file = assignment_file.with_suffix('.lock')
+
+    def _load_assignments(self) -> dict:
+        """Load current assignments from file."""
+        if self.assignment_file.exists():
+            try:
+                with open(self.assignment_file, 'r') as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, IOError):
+                pass
+        return {'assigned': {}, 'completed': [], 'failed': []}
+
+    def _save_assignments(self, data: dict):
+        """Save assignments to file."""
+        atomic_json_save(data, self.assignment_file)
+
+    def claim_month(self, worker_id: str, available_months: List[str],
+                    retry_failed: bool = True) -> Optional[str]:
+        """Try to claim an unassigned month for this worker.
+
+        Args:
+            worker_id: Unique identifier for this worker
+            available_months: List of month keys (YYYY-MM) to consider
+            retry_failed: If True, also claim months that previously failed
+
+        Returns:
+            Month key if claimed, None if no months available
+        """
+        # Use file locking for coordination
+        with open(self.lock_file, 'w') as lock_f:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            try:
+                data = self._load_assignments()
+
+                # Find first unassigned, uncompleted month
+                for month_key in available_months:
+                    is_assigned = month_key in data['assigned']
+                    is_completed = month_key in data['completed']
+                    is_failed = month_key in data['failed']
+
+                    # Skip if assigned or completed
+                    if is_assigned or is_completed:
+                        continue
+
+                    # Skip failed unless retry_failed is True
+                    if is_failed and not retry_failed:
+                        continue
+
+                    # Claim it (remove from failed if retrying)
+                    if is_failed:
+                        data['failed'].remove(month_key)
+
+                    data['assigned'][month_key] = {
+                        'worker_id': worker_id,
+                        'started_at': datetime.now().isoformat(),
+                        'is_retry': is_failed
+                    }
+                    self._save_assignments(data)
+                    return month_key
+
+                return None
+            finally:
+                fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+    def mark_completed(self, month_key: str, worker_id: str):
+        """Mark a month as completed."""
+        with open(self.lock_file, 'w') as lock_f:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            try:
+                data = self._load_assignments()
+                if month_key in data['assigned']:
+                    del data['assigned'][month_key]
+                if month_key not in data['completed']:
+                    data['completed'].append(month_key)
+                self._save_assignments(data)
+            finally:
+                fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+    def mark_failed(self, month_key: str, worker_id: str, error: str):
+        """Mark a month as failed."""
+        with open(self.lock_file, 'w') as lock_f:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            try:
+                data = self._load_assignments()
+                if month_key in data['assigned']:
+                    del data['assigned'][month_key]
+                if month_key not in data['failed']:
+                    data['failed'].append(month_key)
+                self._save_assignments(data)
+            finally:
+                fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+    def release_assignment(self, month_key: str, worker_id: str):
+        """Release a month assignment (e.g., on worker crash recovery)."""
+        with open(self.lock_file, 'w') as lock_f:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            try:
+                data = self._load_assignments()
+                if month_key in data['assigned']:
+                    del data['assigned'][month_key]
+                self._save_assignments(data)
+            finally:
+                fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+    def get_status(self) -> dict:
+        """Get current assignment status."""
+        with open(self.lock_file, 'w') as lock_f:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            try:
+                return self._load_assignments()
+            finally:
+                fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+    def reset(self):
+        """Reset all assignments (use with caution)."""
+        if self.assignment_file.exists():
+            self.assignment_file.unlink()
+        if self.lock_file.exists():
+            self.lock_file.unlink()
 
 
 def atomic_json_save(data: dict, output_file: Path):
@@ -528,6 +698,267 @@ class RABAScraper:
         return manifest
 
 
+def worker_process(worker_id: str, months_info: List[Tuple[str, datetime, datetime]],
+                   output_dir: Path, manifest_file: Path, assignment_file: Path,
+                   headless: bool, force: bool, verbose: bool, retry_failed: bool = True):
+    """Worker process that processes months one at a time.
+
+    Each worker:
+    1. Claims an unassigned month from the assignment manager
+    2. Processes all dates in that month
+    3. Marks the month as completed
+    4. Repeats until no more months available
+    """
+    # Setup worker-specific logging
+    log_file = output_dir.parent / f'scraper_worker_{worker_id}.log'
+    worker_logger = logging.getLogger(f'raba_scraper.worker.{worker_id}')
+    worker_logger.handlers.clear()
+    worker_logger.setLevel(logging.DEBUG)
+
+    file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
+    file_handler.setLevel(logging.DEBUG)
+    file_formatter = logging.Formatter(
+        f'%(asctime)s | W{worker_id} | %(levelname)-8s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    file_handler.setFormatter(file_formatter)
+    worker_logger.addHandler(file_handler)
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.DEBUG if verbose else logging.INFO)
+    console_formatter = logging.Formatter(f'[W{worker_id}] %(message)s')
+    console_handler.setFormatter(console_formatter)
+    worker_logger.addHandler(console_handler)
+
+    # Build month lookup
+    month_lookup = {m[0]: (m[1], m[2]) for m in months_info}
+    month_keys = [m[0] for m in months_info]
+
+    assignment_mgr = MonthAssignmentManager(assignment_file)
+    months_processed = 0
+
+    worker_logger.info(f"Worker {worker_id} starting")
+
+    try:
+        with RABAScraper(headless=headless, download_dir=output_dir) as scraper:
+            # Login once
+            if not scraper.login():
+                worker_logger.error("Login failed!")
+                return
+
+            if not scraper.navigate_to_reports():
+                worker_logger.error("Failed to navigate to reports page!")
+                return
+
+            if not scraper.select_project():
+                worker_logger.error("Failed to select project!")
+                return
+
+            # Process months until none available
+            while True:
+                # Try to claim a month
+                month_key = assignment_mgr.claim_month(worker_id, month_keys, retry_failed=retry_failed)
+
+                if month_key is None:
+                    worker_logger.info("No more months available - worker done")
+                    break
+
+                month_start, month_end = month_lookup[month_key]
+                dates = generate_dates(month_start, month_end)
+
+                worker_logger.info(f"Processing {month_key}: {len(dates)} days "
+                                   f"({month_start.strftime('%Y-%m-%d')} to {month_end.strftime('%Y-%m-%d')})")
+
+                try:
+                    # Load manifest (with file locking for thread safety)
+                    manifest = load_manifest_locked(manifest_file)
+
+                    # Process all dates in this month
+                    downloaded = 0
+                    empty = 0
+                    errors = 0
+                    skipped = 0
+
+                    for i, date in enumerate(dates):
+                        date_str = date.strftime('%Y-%m-%d')
+
+                        result = scraper.extract_date(date, output_dir, manifest, force)
+
+                        if result is None:
+                            skipped += 1
+                            continue
+
+                        # Update manifest with result (locked)
+                        update_manifest_locked(manifest_file, date_str, result)
+
+                        if result['status'] == 'success':
+                            downloaded += 1
+                        elif result['status'] == 'empty':
+                            empty += 1
+                        elif result['status'] == 'error':
+                            errors += 1
+
+                        # Brief delay between dates
+                        time.sleep(1)
+
+                    worker_logger.info(f"Month {month_key} complete: "
+                                       f"{downloaded} downloaded, {empty} empty, "
+                                       f"{skipped} skipped, {errors} errors")
+
+                    assignment_mgr.mark_completed(month_key, worker_id)
+                    months_processed += 1
+
+                except Exception as e:
+                    worker_logger.error(f"Error processing month {month_key}: {e}")
+                    import traceback
+                    worker_logger.error(traceback.format_exc())
+                    assignment_mgr.mark_failed(month_key, worker_id, str(e))
+
+    except Exception as e:
+        worker_logger.error(f"Worker fatal error: {e}")
+        import traceback
+        worker_logger.error(traceback.format_exc())
+
+    worker_logger.info(f"Worker {worker_id} finished - processed {months_processed} months")
+
+
+def load_manifest_locked(manifest_file: Path) -> dict:
+    """Load manifest with file locking."""
+    lock_file = manifest_file.with_suffix('.manifest.lock')
+
+    with open(lock_file, 'w') as lock_f:
+        fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+        try:
+            return load_manifest(manifest_file)
+        finally:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+
+def update_manifest_locked(manifest_file: Path, date_str: str, result: dict):
+    """Update manifest with a single date result, using file locking."""
+    lock_file = manifest_file.with_suffix('.manifest.lock')
+
+    with open(lock_file, 'w') as lock_f:
+        fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+        try:
+            manifest = load_manifest(manifest_file)
+            manifest['dates'][date_str] = result
+            manifest['last_updated'] = datetime.now().isoformat()
+
+            # Update summary
+            manifest['summary'] = {
+                'total_dates_processed': len([d for d in manifest.get('dates', {}).values()
+                                              if d.get('status') in ('success', 'empty')]),
+                'dates_with_reports': len([d for d in manifest.get('dates', {}).values()
+                                           if d.get('status') == 'success']),
+                'empty_dates': len([d for d in manifest.get('dates', {}).values()
+                                    if d.get('status') == 'empty']),
+                'error_dates': len([d for d in manifest.get('dates', {}).values()
+                                    if d.get('status') == 'error']),
+            }
+
+            atomic_json_save(manifest, manifest_file)
+        finally:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+
+def run_parallel(num_workers: int, start_date: datetime, end_date: datetime,
+                 output_dir: Path, manifest_file: Path, headless: bool,
+                 force: bool, verbose: bool, reset_assignments: bool = False,
+                 skip_failed: bool = False):
+    """Run the scraper in parallel mode with multiple workers."""
+    # Generate months
+    months = generate_months(start_date, end_date)
+    month_keys = [m[0] for m in months]
+
+    logger.info("=" * 60)
+    logger.info("RABA Quality Reports Scraper (Parallel Mode)")
+    logger.info("=" * 60)
+    logger.info(f"Date range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+    logger.info(f"Total months: {len(months)}")
+    logger.info(f"Workers: {num_workers}")
+    logger.info(f"Output directory: {output_dir}")
+    logger.info("")
+    logger.info("Months to process:")
+    for month_key, m_start, m_end in months:
+        days = (m_end - m_start).days + 1
+        logger.info(f"  {month_key}: {days} days ({m_start.strftime('%Y-%m-%d')} to {m_end.strftime('%Y-%m-%d')})")
+
+    # Setup assignment file
+    assignment_file = output_dir.parent / 'parallel_assignments.json'
+
+    if reset_assignments:
+        logger.info("Resetting month assignments...")
+        mgr = MonthAssignmentManager(assignment_file)
+        mgr.reset()
+
+    # Show current assignment status
+    mgr = MonthAssignmentManager(assignment_file)
+    status = mgr.get_status()
+    if status['completed']:
+        logger.info(f"\nAlready completed months: {len(status['completed'])}")
+        for m in sorted(status['completed']):
+            logger.info(f"  {m}")
+    if status['failed']:
+        logger.info(f"\nFailed months: {len(status['failed'])}")
+        for m in sorted(status['failed']):
+            logger.info(f"  {m}")
+
+    # Calculate remaining (failed months will be retried automatically)
+    remaining_new = [m for m in month_keys
+                     if m not in status['completed'] and m not in status['failed']]
+    remaining_retry = [m for m in month_keys
+                       if m in status['failed']]
+    total_remaining = len(remaining_new) + len(remaining_retry)
+
+    logger.info(f"\nMonths remaining: {total_remaining} ({len(remaining_new)} new, {len(remaining_retry)} retry)")
+
+    if total_remaining == 0:
+        logger.info("All months already processed!")
+        return 0
+
+    if remaining_retry:
+        logger.info(f"Failed months to retry: {remaining_retry}")
+        logger.info("(Previously downloaded dates within failed months will be skipped)")
+
+    # Start worker processes
+    logger.info(f"\nStarting {num_workers} worker processes...")
+
+    retry_failed = not skip_failed  # Invert the flag for clarity
+
+    processes = []
+    for i in range(num_workers):
+        worker_id = str(i + 1)
+        p = multiprocessing.Process(
+            target=worker_process,
+            args=(worker_id, months, output_dir, manifest_file, assignment_file,
+                  headless, force, verbose, retry_failed)
+        )
+        p.start()
+        processes.append(p)
+        logger.info(f"Started worker {worker_id} (PID: {p.pid})")
+        time.sleep(2)  # Stagger worker starts to avoid login collisions
+
+    # Wait for all workers to complete
+    logger.info("\nWaiting for workers to complete...")
+    for p in processes:
+        p.join()
+
+    # Final status
+    status = mgr.get_status()
+    logger.info("\n" + "=" * 60)
+    logger.info("Parallel Processing Complete")
+    logger.info("=" * 60)
+    logger.info(f"Completed months: {len(status['completed'])}")
+    logger.info(f"Failed months: {len(status['failed'])}")
+
+    if status['failed']:
+        logger.warning(f"Failed months: {status['failed']}")
+        return 1
+
+    return 0
+
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description='Scrape RABA quality inspection reports')
@@ -545,6 +976,12 @@ def main():
                         help='Output directory path')
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Show DEBUG level output')
+    parser.add_argument('--workers', '-w', type=int, default=1,
+                        help='Number of parallel workers (default: 1 = sequential mode)')
+    parser.add_argument('--reset-assignments', action='store_true',
+                        help='Reset parallel month assignments (use with --workers)')
+    parser.add_argument('--skip-failed', action='store_true',
+                        help='Skip previously failed months instead of retrying them')
     args = parser.parse_args()
 
     # Parse dates
@@ -566,6 +1003,44 @@ def main():
 
     # Load manifest
     manifest_file = output_dir.parent / 'manifest.json'
+
+    # Check for parallel mode
+    if args.workers > 1:
+        if args.dry_run:
+            # Show parallel plan without running
+            months = generate_months(start_date, end_date)
+            manifest = load_manifest(manifest_file)
+            logger.info("=" * 60)
+            logger.info("RABA Quality Reports Scraper (Parallel Mode - DRY RUN)")
+            logger.info("=" * 60)
+            logger.info(f"Date range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+            logger.info(f"Total months: {len(months)}")
+            logger.info(f"Workers: {args.workers}")
+            logger.info("")
+            for month_key, m_start, m_end in months:
+                days = (m_end - m_start).days + 1
+                dates_in_month = generate_dates(m_start, m_end)
+                pending = sum(1 for d in dates_in_month
+                              if manifest.get('dates', {}).get(d.strftime('%Y-%m-%d'), {}).get('status')
+                              not in ('success', 'empty') or args.force)
+                logger.info(f"  {month_key}: {days} days total, {pending} pending")
+            return 0
+
+        # Parallel mode - process by months with multiple workers
+        return run_parallel(
+            num_workers=args.workers,
+            start_date=start_date,
+            end_date=end_date,
+            output_dir=output_dir,
+            manifest_file=manifest_file,
+            headless=args.headless,
+            force=args.force,
+            verbose=args.verbose,
+            reset_assignments=args.reset_assignments,
+            skip_failed=args.skip_failed
+        )
+
+    # Sequential mode (original behavior)
     manifest = load_manifest(manifest_file)
 
     # Generate dates to process
