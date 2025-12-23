@@ -223,6 +223,9 @@ class ReportContent:
     # Category 5: Key findings (calculated bullet points)
     key_findings: list
 
+    # Task details for chart generation
+    task_details: list = field(default_factory=list)
+
     # Narrative placeholders - to be filled by Claude
     narratives: dict = field(default_factory=dict)
 
@@ -581,6 +584,18 @@ def process_fieldwire_data(target_date: str, contractors: list, contractor_group
     # Key findings
     key_findings = build_key_findings(contractor_metrics, idle_observations, zero_verification, high_verification, lpi)
 
+    # Task details for chart
+    task_details = []
+    for task in location_tasks:
+        if task.tbm_manpower > 0 or task.total_verified > 0:
+            task_details.append({
+                'company': task.company,
+                'location': task.gridpoint,
+                'level': task.level if task.level and task.level != 'nan' else '',
+                'planned': task.tbm_manpower,
+                'actual': task.total_verified,
+            })
+
     # Format date
     if len(target_date) == 8:
         parts = target_date.split('-')
@@ -623,6 +638,7 @@ def process_fieldwire_data(target_date: str, contractors: list, contractor_group
         idle_summary_by_contractor=idle_summary,
         high_verification_locations=[asdict(h) for h in high_verification],
         key_findings=key_findings,
+        task_details=task_details,
 
         narratives={},
     )
