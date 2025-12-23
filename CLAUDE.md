@@ -124,6 +124,48 @@ All analysis must maintain traceability to source documents:
 
 See [.claude/skills/mxi-powerpoint/SKILL.md](.claude/skills/mxi-powerpoint/SKILL.md) for presentation data traceability requirements.
 
+## Quality Data Architecture
+
+Quality inspection data is central to the project's rework and delay analysis. Three complementary data sources provide different views of the same inspection events:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                      QUALITY DATA SOURCES                           │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  QC Logs (CPMS)              RABA (RKCI Celvis)    PSI (Const Hive) │
+│  ════════════════            ═════════════════     ════════════════ │
+│  Master tracking list        3rd-party QC firm    3rd-party QC firm│
+│  61K+ inspection requests    9K+ inspection recs  6K+ field reports│
+│                                                                     │
+│  ┌─────────────────┐         ┌──────────────┐     ┌──────────────┐ │
+│  │ • IR Number     │         │ • Full PDF   │     │ • Full PDF   │ │
+│  │ • Date/Time     │  ───►   │ • Photos     │     │ • Photos     │ │
+│  │ • Status        │  Detail │ • Signatures │     │ • Checklists │ │
+│  │ • Template      │  View   │ • Findings   │     │ • Findings   │ │
+│  │ • Location      │         │ • Defects    │     │ • Defects    │ │
+│  │ • Failure reason│         └──────────────┘     └──────────────┘ │
+│  └─────────────────┘                                                │
+│        List View                    Detail Views                    │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│  RELATIONSHIP: QC Logs tracks ALL inspection requests from ALL     │
+│  contractors. RABA and PSI contain the actual inspection reports   │
+│  with photos, signatures, and detailed findings. Some QC Log       │
+│  entries reference PSI via "Duplicate of ProjectSight#XXXX".       │
+├─────────────────────────────────────────────────────────────────────┤
+│  CONTRACTOR COVERAGE (from QC Logs IR Number prefixes):            │
+│  • YT (Yates): 15K records        • SECAI: 2K records              │
+│  • AG/ABR (Austin Bridge): 4K     • 50+ subcontractors: 40K        │
+├─────────────────────────────────────────────────────────────────────┤
+│  USE CASES:                                                         │
+│  • QC Logs → Volume trends, pass/fail rates, contractor metrics    │
+│  • RABA/PSI → Defect details, root cause analysis, photo evidence  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Insight:** QC Logs provides the "what happened" summary (pass/fail, counts, dates), while RABA/PSI provide the "why it happened" evidence (detailed PDF reports with photos and findings).
+
 ---
 
 ## Tools
