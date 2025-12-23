@@ -27,8 +27,24 @@ Usage:
     # Idempotent mode - skip already extracted reports (run multiple times safely)
     python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 0
 
+    # Extract only new reports since last scrape (auto-detects last scraped date)
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 0
+
+    # Extract reports within a specific date range
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --from-date 2024-01-01 --to-date 2024-12-31
+
     # On Linux with Xvfb (virtual display)
     xvfb-run -a python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
+
+Command-line Arguments:
+    --limit N              Limit number of reports to extract (0 = all, default: 10)
+    --skip-existing        Skip already-extracted reports (idempotent mode)
+    --from-date DATE       Start date for extraction (YYYY-MM-DD or MM/DD/YYYY)
+                           Defaults to day after last scraped date if not specified
+    --to-date DATE         End date for extraction (YYYY-MM-DD, MM/DD/YYYY, or "today")
+                           Default: today
+    --headless             Run in headless mode
+    --output-dir PATH      Custom output directory
 
 Environment Variables (from .env):
     PROJECTSIGHT_USERNAME - Login email
@@ -46,7 +62,7 @@ import sys
 import json
 import time
 import argparse
-from datetime import datetime
+from datetime import datetime, date
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dotenv import load_dotenv
@@ -956,7 +972,8 @@ def create_scraper():
             return report_data
 
         def extract_all_reports(self, limit: Optional[int] = None, skip_dates: Optional[set] = None,
-                                  on_record_extracted: Optional[callable] = None) -> List[Dict]:
+                                  on_record_extracted: Optional[callable] = None, from_date: Optional[date] = None,
+                                  to_date: Optional[date] = None) -> List[Dict]:
             """Extract all reports using Next record navigation.
 
             Args:
@@ -1012,7 +1029,80 @@ def create_scraper():
 
                 return reports
 
-            # No skip_dates - extract all from start
+            # No skip_dates - extract all, but with date range filtering applied upfront
+            # If we have a date range, find first report and use Next navigation
+            if from_date or to_date:
+                print(f"Extracting only reports within date range ({from_date.strftime('%Y-%m-%d') if from_date else 'earliest'} to {to_date.strftime('%Y-%m-%d')})")
+                print(f"Finding first report with date >= {from_date.strftime('%Y-%m-%d') if from_date else 'any'}")
+
+                # Generate list of target dates to know when to stop
+                target_dates = set()
+                if from_date and to_date:
+                    from datetime import timedelta
+                    current = from_date
+                    while current <= to_date:
+                        # Format: M/D/YYYY no leading zeros
+                        target_dates.add(f"{current.month}/{current.day}/{current.year}")
+                        current += timedelta(days=1)
+
+                print(f"Will extract reports for {len(target_dates)} days")
+
+                # Find first report in date range
+                first_target_date = f"{from_date.month}/{from_date.day}/{from_date.year}" if from_date else None
+                print(f"Finding first report for {first_target_date}...")
+
+                if not self.click_report_by_date(first_target_date):
+                    print(f"No report found for {first_target_date}")
+                    return reports
+
+                # Extract first report
+                report = self.extract_current_report()
+                if report:
+                    reports.append(report)
+                    print(f"  Extracted: {report.get('reportDate', 'unknown')}")
+                    if on_record_extracted:
+                        on_record_extracted(report, reports)
+
+                # Continue with Next record navigation while in date range
+                extracted_count = 1
+                while True:
+                    if not self.click_next_record():
+                        print(f"  Reached end of reports")
+                        break
+
+                    time.sleep(0.5)  # Wait for content to load
+
+                    report = self.extract_current_report()
+                    if not report:
+                        break
+
+                    report_date = report.get('reportDate', '')
+                    normalized = normalize_date(report_date)
+
+                    # Check if we're still in the target date range
+                    if normalized:
+                        try:
+                            parts = normalized.split('/')
+                            if len(parts) == 3:
+                                month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+                                report_obj_date = date(year, month, day)
+
+                                # Stop if we've passed the end date
+                                if to_date and report_obj_date > to_date:
+                                    print(f"  Passed end date ({to_date.strftime('%Y-%m-%d')}), stopping")
+                                    break
+                        except (ValueError, TypeError):
+                            pass
+
+                    reports.append(report)
+                    extracted_count += 1
+                    print(f"  Extracted {extracted_count}: {report.get('reportDate', 'unknown')}")
+                    if on_record_extracted:
+                        on_record_extracted(report, reports)
+
+                return reports
+
+            # No date range - extract all from start
             extract_count = total_count
             if limit and limit > 0:
                 extract_count = min(limit, total_count)
@@ -1120,6 +1210,68 @@ def get_extracted_dates(reports_dir: Path) -> set:
     return extracted_dates
 
 
+def get_last_scraped_date(reports_dir: Path) -> Optional[date]:
+    """Get the most recent date that has been scraped.
+
+    Returns the latest date found in the reports directory, or None if no reports exist.
+    """
+    if not reports_dir.exists():
+        return None
+
+    latest_date = None
+    for json_file in reports_dir.glob('*.json'):
+        # Extract date from filename (format: YYYY-MM-DD.json)
+        date_str = json_file.stem  # e.g., "2024-12-31"
+        try:
+            parts = date_str.split('-')
+            if len(parts) == 3:
+                year, month, day = parts
+                file_date = date(int(year), int(month), int(day))
+                if latest_date is None or file_date > latest_date:
+                    latest_date = file_date
+        except:
+            pass
+
+    return latest_date
+
+
+def parse_date_arg(date_str: str) -> Optional[date]:
+    """Parse date string in various formats: YYYY-MM-DD, MM/DD/YYYY, today, or yesterday.
+
+    Returns a date object or None if parsing fails.
+    """
+    if not date_str:
+        return None
+
+    # Handle 'today' keyword
+    if date_str.lower() == 'today':
+        return datetime.now().date()
+
+    # Handle 'yesterday' keyword
+    if date_str.lower() == 'yesterday':
+        from datetime import timedelta
+        return datetime.now().date() - timedelta(days=1)
+
+    # Try YYYY-MM-DD format
+    try:
+        return datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        pass
+
+    # Try MM/DD/YYYY format
+    try:
+        return datetime.strptime(date_str, '%m/%d/%Y').date()
+    except ValueError:
+        pass
+
+    return None
+
+
+def date_to_normalized_string(d: date) -> str:
+    """Convert date object to normalized string format (M/D/YYYY, no leading zeros)."""
+    return f"{d.month}/{d.day}/{d.year}"
+
+
 def save_report_to_file(report: dict, reports_dir: Path) -> Path:
     """Save a single report to its own JSON file.
 
@@ -1181,6 +1333,10 @@ def main():
     parser.add_argument('--output-dir', type=str, default=None, help='Output directory for individual report files')
     parser.add_argument('--skip-existing', action='store_true',
                         help='Skip reports that have already been extracted (idempotent mode)')
+    parser.add_argument('--from-date', type=str, default=None,
+                        help='Start date for extraction (YYYY-MM-DD or MM/DD/YYYY). Defaults to day after last scraped date.')
+    parser.add_argument('--to-date', type=str, default='yesterday',
+                        help='End date for extraction (YYYY-MM-DD, MM/DD/YYYY, "today", or "yesterday"). Default: yesterday')
     args = parser.parse_args()
 
     # Check headless setting from env
@@ -1192,6 +1348,10 @@ def main():
     print(f"Headless mode: {headless}")
     print(f"Record limit: {args.limit}")
     print(f"Skip existing: {args.skip_existing}")
+    if args.from_date:
+        print(f"From date: {args.from_date}")
+    if args.to_date:
+        print(f"To date: {args.to_date}")
 
     # Create output path using project settings
     try:
@@ -1210,12 +1370,83 @@ def main():
 
     print(f"Output directory: {reports_dir}")
 
+    # Parse date range arguments
+    to_date = parse_date_arg(args.to_date)
+    if not to_date:
+        print(f"Error: Could not parse --to-date: {args.to_date}")
+        return 1
+
+    # Auto-detect from_date if not specified
+    from_date = None
+    if args.from_date:
+        from_date = parse_date_arg(args.from_date)
+        if not from_date:
+            print(f"Error: Could not parse --from-date: {args.from_date}")
+            return 1
+    else:
+        # Auto-detect: start from 14 days ago (to always capture recent updates)
+        # This ensures we redownload the last 14 days to catch any changes
+        from datetime import timedelta
+        from_date = datetime.now().date() - timedelta(days=14)
+        print(f"Auto-detected from-date (14 days ago): {from_date.strftime('%Y-%m-%d')}")
+
     # Get already-extracted dates from individual files
     extracted_dates = set()
     if args.skip_existing:
         extracted_dates = get_extracted_dates(reports_dir)
         if extracted_dates:
             print(f"  Found {len(extracted_dates)} already-extracted reports")
+
+    # Always redownload last 14 days (to capture any updates)
+    # Remove any dates from extracted_dates that are within the last 14 days
+    from datetime import timedelta
+    today = datetime.now().date()
+    fourteen_days_ago = today - timedelta(days=14)
+
+    dates_to_redownload = set()
+    for date_str in list(extracted_dates):
+        try:
+            # Parse normalized date format (M/D/YYYY)
+            parts = date_str.split('/')
+            if len(parts) == 3:
+                month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+                report_date = date(year, month, day)
+
+                # Mark for redownload if within last 14 days
+                if report_date >= fourteen_days_ago:
+                    dates_to_redownload.add(date_str)
+        except (ValueError, TypeError):
+            pass
+
+    if dates_to_redownload:
+        print(f"  Will redownload {len(dates_to_redownload)} reports from last 14 days (to capture updates)")
+        extracted_dates -= dates_to_redownload
+
+    # If date range is specified, filter extracted_dates to only those in range
+    if from_date or to_date:
+        print(f"Filtering reports to date range: {from_date.strftime('%Y-%m-%d') if from_date else 'earliest'} to {to_date.strftime('%Y-%m-%d')}")
+        filtered_extracted = set()
+        for date_str in extracted_dates:
+            try:
+                # Parse normalized date format (M/D/YYYY)
+                parts = date_str.split('/')
+                if len(parts) == 3:
+                    month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+                    report_date = date(year, month, day)
+
+                    # Check if report is within the date range
+                    if from_date and report_date < from_date:
+                        continue
+                    if to_date and report_date > to_date:
+                        continue
+
+                    filtered_extracted.add(date_str)
+            except (ValueError, TypeError):
+                pass
+
+        extracted_dates = filtered_extracted
+        if extracted_dates:
+            print(f"  {len(extracted_dates)} older reports outside 14-day window (will skip these)")
 
     # Create and run scraper
     ScraperClass = create_scraper()
@@ -1229,13 +1460,35 @@ def main():
     def save_report_immediately(new_report, all_new_reports):
         """Save each report to its own JSON file immediately after extraction.
 
-        Skips saving if the report date already exists as a file (idempotent).
+        Skips saving if:
+        1. The report date already exists as a file (idempotent mode)
+        2. The report date is outside the specified date range
         """
         nonlocal extracted_count, skipped_count
 
         # Check if this report date already exists (normalize for comparison)
         report_date = new_report.get('reportDate', '')
         normalized = normalize_date(report_date)
+
+        # Check date range filter
+        if from_date or to_date:
+            try:
+                parts = normalized.split('/')
+                if len(parts) == 3:
+                    month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+                    report_obj_date = date(year, month, day)
+
+                    if from_date and report_obj_date < from_date:
+                        skipped_count += 1
+                        print(f"    Skipping (before date range): {report_date}")
+                        return
+                    if to_date and report_obj_date > to_date:
+                        skipped_count += 1
+                        print(f"    Skipping (after date range): {report_date}")
+                        return
+            except (ValueError, TypeError):
+                pass
+
         if args.skip_existing and normalized in extracted_dates:
             skipped_count += 1
             print(f"    Skipping (already exists): {report_date}")
@@ -1263,7 +1516,9 @@ def main():
         reports = scraper.extract_all_reports(
             limit=args.limit,
             skip_dates=extracted_dates if args.skip_existing else None,
-            on_record_extracted=save_report_immediately
+            on_record_extracted=save_report_immediately,
+            from_date=from_date,
+            to_date=to_date
         )
 
         # Final summary

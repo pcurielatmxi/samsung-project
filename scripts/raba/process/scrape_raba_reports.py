@@ -263,6 +263,27 @@ class MonthAssignmentManager:
         if self.lock_file.exists():
             self.lock_file.unlink()
 
+    def release_stale_assignments(self):
+        """Release all currently assigned months (for crash recovery).
+
+        When the script starts, any months marked as 'assigned' are stale
+        because no workers are currently running. This releases them so
+        they can be picked up by new workers.
+        """
+        with open(self.lock_file, 'w') as lock_f:
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            try:
+                data = self._load_assignments()
+                stale_count = len(data['assigned'])
+                if stale_count > 0:
+                    stale_months = list(data['assigned'].keys())
+                    data['assigned'] = {}
+                    self._save_assignments(data)
+                    return stale_months
+                return []
+            finally:
+                fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
 
 def atomic_json_save(data: dict, output_file: Path):
     """Save JSON data atomically using temp file and rename."""
@@ -887,13 +908,20 @@ def run_parallel(num_workers: int, start_date: datetime, end_date: datetime,
     # Setup assignment file
     assignment_file = output_dir.parent / 'parallel_assignments.json'
 
+    mgr = MonthAssignmentManager(assignment_file)
+
     if reset_assignments:
         logger.info("Resetting month assignments...")
-        mgr = MonthAssignmentManager(assignment_file)
         mgr.reset()
+    else:
+        # Release any stale assignments from previous crashed runs
+        stale = mgr.release_stale_assignments()
+        if stale:
+            logger.info(f"Released {len(stale)} stale month assignments from previous run:")
+            for m in sorted(stale):
+                logger.info(f"  {m} (will be retried)")
 
     # Show current assignment status
-    mgr = MonthAssignmentManager(assignment_file)
     status = mgr.get_status()
     if status['completed']:
         logger.info(f"\nAlready completed months: {len(status['completed'])}")
