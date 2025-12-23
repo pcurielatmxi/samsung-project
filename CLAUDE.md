@@ -195,3 +195,56 @@ python scripts/raba/process/scrape_raba_reports.py --start 2023-06-01 --end 2023
 - `RABA_BASE_URL` - Login URL
 - `RABA_USERNAME` - Login username
 - `RABA_PASSWORD` - Login password
+
+### PSI Quality Reports Scraper
+
+**Location:** [scripts/psi/process/scrape_psi_reports.py](scripts/psi/process/scrape_psi_reports.py)
+
+A Playwright-based automation tool for downloading quality inspection reports from the PSI (Construction Hive) system. Downloads individual PDF reports with metadata tracking.
+
+**Features:**
+- Automated login with credentials from `.env`
+- Pagination handling (10 documents per page)
+- Individual PDF downloads with metadata extraction
+- Idempotent operation via `manifest.json` tracking by document UUID
+- Resume capability via `--start-offset` parameter
+- `--force` flag to re-download existing documents
+- `--dry-run` mode to preview what would be downloaded
+- `--headless` mode for background operation
+
+**Output Structure:**
+```
+{WINDOWS_DATA_DIR}/raw/psi/
+├── reports/
+│   ├── DFR_0306103-9671-O1.pdf    # Individual report PDFs
+│   ├── DFR_0306103-9670-O1.pdf
+│   └── ...
+├── manifest.json                   # Download tracking with metadata
+└── scraper.log                     # Execution log
+```
+
+**Usage:**
+```bash
+# Download all documents (6309 total)
+python scripts/psi/process/scrape_psi_reports.py
+
+# Download with limit
+python scripts/psi/process/scrape_psi_reports.py --limit 100
+
+# Resume from specific offset
+python scripts/psi/process/scrape_psi_reports.py --start-offset 500
+
+# Run in headless mode
+python scripts/psi/process/scrape_psi_reports.py --headless
+
+# Force re-download existing files
+python scripts/psi/process/scrape_psi_reports.py --force
+
+# Dry run (show what would be downloaded)
+python scripts/psi/process/scrape_psi_reports.py --dry-run
+```
+
+**Environment Variables (`.env`):**
+- `PSI_BASE_URL` - Base URL (default: https://www.constructionhive.com/)
+- `PSI_USERNAME` - Login email
+- `PSI_PASSWORD` - Login password
