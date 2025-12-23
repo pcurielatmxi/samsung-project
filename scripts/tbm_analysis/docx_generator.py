@@ -14,8 +14,10 @@ Usage:
 import argparse
 import io
 import json
+import requests
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -93,6 +95,19 @@ def set_table_borders(table, color: str = '000000', size: int = 4):
         tbl.insert(0, tbl_pr)
 
 
+def download_image(url: str, timeout: int = 10) -> Optional[io.BytesIO]:
+    """Download image from URL and return as BytesIO buffer."""
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code == 200:
+            buf = io.BytesIO(response.content)
+            buf.seek(0)
+            return buf
+    except Exception as e:
+        print(f"  Warning: Could not download image: {e}")
+    return None
+
+
 # =============================================================================
 # DOCUMENT BUILDER
 # =============================================================================
@@ -162,7 +177,7 @@ class TBMReportBuilder:
         p = self.doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = p.add_run('Document Control • Project Management • Field Services')
-        run.font.size = Pt(10)
+        run.font.size = Pt(11)
         run.font.color.rgb = Colors.DARK_GRAY
 
         # Spacer before title
@@ -222,17 +237,16 @@ class TBMReportBuilder:
             cell.text = h
             cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             cell.paragraphs[0].runs[0].font.bold = True
-            cell.paragraphs[0].runs[0].font.size = Pt(9)
+            cell.paragraphs[0].runs[0].font.size = Pt(11)
             add_cell_shading(cell, 'D9D9D9')
 
-            # Value row - gray background with red text
+            # Value row - no fill, red text
             cell = table.rows[1].cells[i]
             cell.text = v
             cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             cell.paragraphs[0].runs[0].font.size = Pt(14)
             cell.paragraphs[0].runs[0].font.bold = True
             cell.paragraphs[0].runs[0].font.color.rgb = Colors.CRITICAL_RED
-            add_cell_shading(cell, 'D9D9D9')
 
         # Spacer before date
         p = self.doc.add_paragraph()
@@ -253,7 +267,7 @@ class TBMReportBuilder:
         p = self.doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = p.add_run('Boots to Bytes')
-        run.font.size = Pt(10)
+        run.font.size = Pt(11)
         run.font.italic = True
 
         # Spacer
@@ -264,7 +278,7 @@ class TBMReportBuilder:
         p = self.doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = p.add_run('CONFIDENTIAL - FOR INTERNAL USE ONLY')
-        run.font.size = Pt(9)
+        run.font.size = Pt(11)
         run.font.bold = True
         run.font.color.rgb = Colors.CRITICAL_RED
 
@@ -280,17 +294,23 @@ class TBMReportBuilder:
         run.font.bold = True
         run.font.color.rgb = Colors.PRIMARY_BLUE
 
-        self.doc.add_paragraph()
+        # Spacer after title
+        p = self.doc.add_paragraph()
+        set_spacing(p, before=12)
 
         # KPI cards (2 rows × 3 cols)
         self._add_kpi_cards()
 
-        self.doc.add_paragraph()
+        # Spacer before TBM Summary
+        p = self.doc.add_paragraph()
+        set_spacing(p, before=18)
 
         # TBM Summary
         self._add_tbm_summary_section()
 
-        self.doc.add_paragraph()
+        # Spacer before chart
+        p = self.doc.add_paragraph()
+        set_spacing(p, before=18)
 
         # Bar chart - Planned vs Actual by location
         self._add_chart()
@@ -360,7 +380,7 @@ class TBMReportBuilder:
             cell = table1.rows[0].cells[i]
             cell.text = title
             cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            cell.paragraphs[0].runs[0].font.size = Pt(9)
+            cell.paragraphs[0].runs[0].font.size = Pt(11)
             cell.paragraphs[0].runs[0].font.bold = True
             add_cell_shading(cell, 'D9D9D9')
 
@@ -377,7 +397,7 @@ class TBMReportBuilder:
             cell = table1.rows[2].cells[i]
             cell.text = note
             cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            cell.paragraphs[0].runs[0].font.size = Pt(8)
+            cell.paragraphs[0].runs[0].font.size = Pt(11)
 
         # Row 2 KPIs
         self.doc.add_paragraph()
@@ -401,7 +421,7 @@ class TBMReportBuilder:
             cell = table2.rows[0].cells[i]
             cell.text = title
             cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            cell.paragraphs[0].runs[0].font.size = Pt(9)
+            cell.paragraphs[0].runs[0].font.size = Pt(11)
             cell.paragraphs[0].runs[0].font.bold = True
             add_cell_shading(cell, 'D9D9D9')
 
@@ -418,7 +438,7 @@ class TBMReportBuilder:
             cell = table2.rows[2].cells[i]
             cell.text = note
             cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            cell.paragraphs[0].runs[0].font.size = Pt(8)
+            cell.paragraphs[0].runs[0].font.size = Pt(11)
 
     def _add_tbm_summary_section(self):
         """Build TBM Summary table."""
@@ -438,7 +458,7 @@ class TBMReportBuilder:
             cell = table.rows[0].cells[i]
             cell.text = h
             cell.paragraphs[0].runs[0].font.bold = True
-            cell.paragraphs[0].runs[0].font.size = Pt(10)
+            cell.paragraphs[0].runs[0].font.size = Pt(11)
             add_cell_shading(cell, 'D9D9D9')
 
         # Data rows
@@ -504,7 +524,7 @@ class TBMReportBuilder:
         if not chart_data:
             return
 
-        # Create figure
+        # Create figure with higher resolution
         fig, ax = plt.subplots(figsize=(10, 5))
 
         locations = [f"{d['location']}" for d in chart_data]
@@ -518,12 +538,13 @@ class TBMReportBuilder:
         bars1 = ax.bar([i - width/2 for i in x], planned, width, label='Planned per TBM', color='#1E3A5F')
         bars2 = ax.bar([i + width/2 for i in x], actual, width, label='Actual per TBM', color='#C41E3A')
 
-        ax.set_ylabel('Workers')
+        ax.set_ylabel('Workers', fontsize=11)
         ax.set_xticks(x)
-        ax.set_xticklabels(locations, rotation=45, ha='right', fontsize=7)
-        ax.legend()
+        ax.set_xticklabels(locations, rotation=45, ha='right', fontsize=9)
+        ax.legend(fontsize=10)
+        ax.tick_params(axis='y', labelsize=10)
 
-        # Add contractor labels at bottom
+        # Add contractor labels at bottom and find group boundaries
         contractors = [d['contractor'] for d in chart_data]
         prev_contractor = None
         contractor_starts = []
@@ -532,8 +553,15 @@ class TBMReportBuilder:
                 contractor_starts.append((i, c))
                 prev_contractor = c
 
+        # Add vertical separator lines between contractor groups
+        for idx, (start_idx, contractor) in enumerate(contractor_starts):
+            if idx > 0:
+                # Add vertical line at boundary between contractors
+                # Line position is 0.5 before the start of the new contractor
+                ax.axvline(x=start_idx - 0.5, color='#888888', linestyle='--', linewidth=1.5, alpha=0.7)
+
         # Add contractor group labels
-        for start_idx, contractor in contractor_starts:
+        for idx, (start_idx, contractor) in enumerate(contractor_starts):
             # Find end of this contractor's data
             end_idx = start_idx
             for j in range(start_idx, len(contractors)):
@@ -542,14 +570,14 @@ class TBMReportBuilder:
                 else:
                     break
             mid = (start_idx + end_idx) / 2
-            ax.text(mid, -0.15, contractor, ha='center', va='top',
-                    transform=ax.get_xaxis_transform(), fontsize=9, fontweight='bold')
+            ax.text(mid, -0.18, contractor, ha='center', va='top',
+                    transform=ax.get_xaxis_transform(), fontsize=11, fontweight='bold')
 
         plt.tight_layout()
 
-        # Save to bytes buffer
+        # Save to bytes buffer with higher DPI for better resolution
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+        plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
         buf.seek(0)
         plt.close(fig)
 
@@ -602,7 +630,7 @@ class TBMReportBuilder:
 
         p = cell.paragraphs[0]
         run = p.add_run(text)
-        run.font.size = Pt(9)
+        run.font.size = Pt(11)
         run.font.italic = True
         run.font.color.rgb = Colors.DARK_GRAY
 
@@ -611,46 +639,189 @@ class TBMReportBuilder:
         self._add_category_header(1, 'TBM Planning & Documentation Performance')
 
         narratives = self.content.get('narratives', {}).get('cat1', {})
-        opening = narratives.get('opening', f"TBM verification shows {self.content['lpi']:.0f}% overall accuracy.")
+
+        # Opening narrative
+        better_contractor = max(self.content['contractor_metrics'], key=lambda x: x['accuracy'])
+        opening = narratives.get('opening',
+            f"TBM verification shows improved performance with {self.content['lpi']:.0f}% overall accuracy. "
+            f"{better_contractor['name']} continues to outperform in workforce documentation.")
 
         p = self.doc.add_paragraph()
         p.add_run(opening)
+
+        self.doc.add_paragraph()
+
+        # Calculate unaccounted workers
+        total_planned = self.content['total_planned']
+        total_verified = self.content['total_verified']
+        unaccounted = total_planned - total_verified
+        unaccounted_pct = (unaccounted / total_planned * 100) if total_planned > 0 else 0
+
+        # Unaccounted workers alert
+        self._add_alert_box(
+            f"{unaccounted:.0f} OF {total_planned:.0f} WORKERS ({unaccounted_pct:.0f}%) UNACCOUNTED - Documentation gap persists but improving",
+            'FADBD8', Colors.CRITICAL_RED
+        )
+
+        self.doc.add_paragraph()
+
+        # TBM Timing Issue alert (if timing data available)
+        tbm_received = self.content.get('tbm_received_time', '1:22 PM')
+        workers_departing = self.content.get('workers_departing_time', '2:30 PM')
+        self._add_alert_box(
+            f"TBM TIMING ISSUE: TBM received at {tbm_received} with workers leaving at {workers_departing} - insufficient time for proper analysis",
+            'FDEBD0', Colors.WARNING_ORANGE
+        )
+
+        # Subheader 1.1
+        self._add_subheader('1.1 TBM Submission Timing Impact')
+
+        # Timing narrative
+        timing_narrative = self.content.get('narratives', {}).get('cat1', {}).get('timing_narrative',
+            f"The Yates TBM was received by MXI at {tbm_received} on {self.content['report_date_formatted']}. "
+            f"Some workers began cutting short and leaving the site by {workers_departing}, providing MXI field verification team with only approximately 1 hour to "
+            f"review the TBM, plan verification routes, and conduct field observations.")
+        p = self.doc.add_paragraph()
+        p.add_run(timing_narrative)
+
+        self.doc.add_paragraph()
+
+        # Timing constraint explanation
+        total_locations = self.content['total_locations']
+        total_workers = self.content['total_planned']
+        verification_window = self.content.get('verification_window_minutes', 68)
+        minutes_per_location = verification_window / total_locations if total_locations > 0 else 0
+
+        constraint_text = (
+            f"This timing constraint significantly impacts verification accuracy. MXI cannot effectively verify {total_workers:.0f} "
+            f"committed workers across {total_locations} locations in {verification_window} minutes. Late TBM submission combined with early worker "
+            f"departure creates a systemic verification gap that undermines the entire TBM process.")
+        self._add_observation_box(constraint_text)
+
+        self.doc.add_paragraph()
+
+        # Event timing table
+        table = self.doc.add_table(rows=6, cols=3)
+        set_table_borders(table)
+
+        headers = ['Event', 'Time', 'Impact']
+        for i, h in enumerate(headers):
+            cell = table.rows[0].cells[i]
+            cell.text = h
+            cell.paragraphs[0].runs[0].font.bold = True
+            add_cell_shading(cell, 'D9D9D9')
+
+        timing_rows = [
+            ('TBM Received', tbm_received, 'Late submission'),
+            ('Workers Departing', workers_departing, f'{verification_window} minutes available'),
+            ('Total Locations', str(total_locations), f'{minutes_per_location:.1f} min per location'),
+            ('Total Workers', f'{total_workers:.0f}', f'{verification_window * 60 / total_workers:.0f} seconds per worker' if total_workers > 0 else 'N/A'),
+            ('Verification Window', f'{verification_window} minutes', 'INSUFFICIENT'),
+        ]
+
+        for idx, (event, time, impact) in enumerate(timing_rows, 1):
+            table.rows[idx].cells[0].text = event
+            table.rows[idx].cells[1].text = time
+            table.rows[idx].cells[2].text = impact
+            # Highlight insufficient
+            if 'INSUFFICIENT' in impact:
+                table.rows[idx].cells[2].paragraphs[0].runs[0].font.bold = True
+                table.rows[idx].cells[2].paragraphs[0].runs[0].font.color.rgb = Colors.CRITICAL_RED
+
+        self.doc.add_paragraph()
+
+        # Operational Impact paragraph
+        p = self.doc.add_paragraph()
+        run = p.add_run('OPERATIONAL IMPACT: ')
+        run.font.bold = True
+        p.add_run(
+            f"The {verification_window}-minute verification window makes comprehensive verification "
+            f"mathematically impossible. With {total_locations} locations to verify, MXI has an average of {minutes_per_location:.1f} minutes per location - "
+            f"insufficient time to walk to location, observe workers, document findings, and move to next area.")
+
+        self.doc.add_paragraph()
+
+        # Contractor accountability table
+        metrics = self.content['contractor_metrics']
+        table = self.doc.add_table(rows=len(metrics) + 2, cols=5)
+        set_table_borders(table)
+
+        headers = ['Contractor', 'Planned', 'Verified', 'Unaccounted', '% Unaccounted']
+        for i, h in enumerate(headers):
+            cell = table.rows[0].cells[i]
+            cell.text = h
+            cell.paragraphs[0].runs[0].font.bold = True
+            add_cell_shading(cell, 'D9D9D9')
+
+        for idx, m in enumerate(metrics, 1):
+            unacct = m['total_planned'] - m['total_verified']
+            unacct_pct = (unacct / m['total_planned'] * 100) if m['total_planned'] > 0 else 0
+
+            table.rows[idx].cells[0].text = m['name']
+            table.rows[idx].cells[1].text = f"{m['total_planned']:.0f}"
+            table.rows[idx].cells[2].text = f"{m['total_verified']:.0f}"
+            table.rows[idx].cells[3].text = f"{unacct:.0f}"
+            table.rows[idx].cells[4].text = f"{unacct_pct:.0f}%"
+
+        # Total row
+        total_idx = len(metrics) + 1
+        table.rows[total_idx].cells[0].text = 'TOTAL'
+        table.rows[total_idx].cells[1].text = f"{total_planned:.0f}"
+        table.rows[total_idx].cells[2].text = f"{total_verified:.0f}"
+        table.rows[total_idx].cells[3].text = f"{unaccounted:.0f}"
+        table.rows[total_idx].cells[4].text = f"{unaccounted_pct:.0f}%"
+        for cell in table.rows[total_idx].cells:
+            cell.paragraphs[0].runs[0].font.bold = True
 
     def _add_category_2(self):
         """Category 2: Zero Verification Locations."""
         self._add_category_header(2, 'Zero Verification Locations')
 
         narratives = self.content.get('narratives', {}).get('cat2', {})
-        intro = narratives.get('intro', 'The following locations had TBM commitments but zero field verification.')
+        intro = narratives.get('intro',
+            'The following locations had TBM commitments but zero field verification. This represents planning/documentation gaps.')
 
         p = self.doc.add_paragraph()
         p.add_run(intro)
 
         self.doc.add_paragraph()
 
-        # Alert box
-        count = self.content['zero_verification_count']
-        self._add_alert_box(f"{count} LOCATIONS WITH 0% VERIFICATION")
-
-        # Group by contractor
+        # Calculate total unverified workers from zero verification locations
         zero_locs = self.content['zero_verification_locations']
-        contractors = set(z['company'] for z in zero_locs)
+        total_zero_workers = sum(z['tbm_planned'] for z in zero_locs)
+        count = self.content['zero_verification_count']
 
-        for contractor in contractors:
+        # Alert box with worker count
+        self._add_alert_box(
+            f"{count} LOCATIONS WITH 0% VERIFICATION - {total_zero_workers:.0f} workers unaccounted (documentation gap, NO COST)",
+            'FADBD8', Colors.CRITICAL_RED
+        )
+
+        # Group by contractor with numbered subheaders
+        contractors = []
+        for z in zero_locs:
+            if z['company'] not in contractors:
+                contractors.append(z['company'])
+
+        for sub_num, contractor in enumerate(contractors, 1):
             contractor_locs = [z for z in zero_locs if z['company'] == contractor]
             total_workers = sum(z['tbm_planned'] for z in contractor_locs)
 
-            self._add_subheader(f"{contractor} - Zero Verification ({len(contractor_locs)} locations, {total_workers:.0f} workers)")
+            self._add_subheader(f"2.{sub_num} {contractor} - Zero Verification ({len(contractor_locs)} locations, {total_workers:.0f} workers)")
 
-            # Table
+            # Table with borders
             table = self.doc.add_table(rows=len(contractor_locs) + 1, cols=4)
+            set_table_borders(table)
+
             headers = ['Floor', 'Location', 'TBM', 'Verified']
             for i, h in enumerate(headers):
-                table.rows[0].cells[i].text = h
-                table.rows[0].cells[i].paragraphs[0].runs[0].font.bold = True
+                cell = table.rows[0].cells[i]
+                cell.text = h
+                cell.paragraphs[0].runs[0].font.bold = True
+                add_cell_shading(cell, 'D9D9D9')
 
             for idx, loc in enumerate(contractor_locs, 1):
-                table.rows[idx].cells[0].text = loc['floor']
+                table.rows[idx].cells[0].text = loc['floor'] if loc['floor'] else '-'
                 table.rows[idx].cells[1].text = loc['location']
                 table.rows[idx].cells[2].text = f"{loc['tbm_planned']:.0f}"
                 table.rows[idx].cells[3].text = '0'
@@ -711,15 +882,34 @@ class TBMReportBuilder:
                 run.font.bold = True
                 p.add_run(obs['analysis'])
 
+                # Photos - embed first photo if available
+                photo_urls = obs.get('photo_urls', [])
+                if photo_urls:
+                    self.doc.add_paragraph()
+                    # Download and embed first photo (limit to 1 per observation)
+                    for url in photo_urls[:1]:
+                        print(f"  Downloading photo for task {obs['task_id']}...")
+                        img_buf = download_image(url)
+                        if img_buf:
+                            try:
+                                self.doc.add_picture(img_buf, width=Inches(4.0))
+                                img_buf.close()
+                            except Exception as e:
+                                print(f"    Warning: Could not embed image: {e}")
+
         # Cost summary table
         self._add_subheader('Idle Time Cost Summary')
         summary = self.content['idle_summary_by_contractor']
 
         table = self.doc.add_table(rows=len(summary) + 2, cols=4)
+        set_table_borders(table)
+
         headers = ['Contractor', 'Observations', 'Worker-Hours', f'Cost @ ${self.content["labor_rate"]}/hr']
         for i, h in enumerate(headers):
-            table.rows[0].cells[i].text = h
-            table.rows[0].cells[i].paragraphs[0].runs[0].font.bold = True
+            cell = table.rows[0].cells[i]
+            cell.text = h
+            cell.paragraphs[0].runs[0].font.bold = True
+            add_cell_shading(cell, 'D9D9D9')
 
         for idx, s in enumerate(summary, 1):
             table.rows[idx].cells[0].text = s['contractor']
@@ -752,10 +942,14 @@ class TBMReportBuilder:
         high_locs = self.content['high_verification_locations']
         if high_locs:
             table = self.doc.add_table(rows=len(high_locs) + 1, cols=5)
+            set_table_borders(table)
+
             headers = ['Contractor', 'Location', 'TBM', 'Verified', 'Accuracy']
             for i, h in enumerate(headers):
-                table.rows[0].cells[i].text = h
-                table.rows[0].cells[i].paragraphs[0].runs[0].font.bold = True
+                cell = table.rows[0].cells[i]
+                cell.text = h
+                cell.paragraphs[0].runs[0].font.bold = True
+                add_cell_shading(cell, 'D9D9D9')
 
             for idx, loc in enumerate(high_locs, 1):
                 table.rows[idx].cells[0].text = loc['company']
@@ -763,7 +957,9 @@ class TBMReportBuilder:
                 table.rows[idx].cells[2].text = f"{loc['tbm_planned']:.0f}"
                 table.rows[idx].cells[3].text = f"{loc['verified']:.0f}"
                 table.rows[idx].cells[4].text = f"{loc['accuracy']:.0f}%"
-                add_cell_shading(table.rows[idx].cells[4], 'C6EFCE')
+                # Green font for high accuracy instead of background
+                table.rows[idx].cells[4].paragraphs[0].runs[0].font.color.rgb = Colors.SUCCESS_GREEN
+                table.rows[idx].cells[4].paragraphs[0].runs[0].font.bold = True
 
         self.doc.add_paragraph()
 
@@ -771,7 +967,7 @@ class TBMReportBuilder:
         p = self.doc.add_paragraph()
         run = p.add_run(note)
         run.font.italic = True
-        run.font.size = Pt(9)
+        run.font.size = Pt(11)
 
     def _add_category_5(self):
         """Category 5: Key Findings."""
@@ -788,6 +984,8 @@ class TBMReportBuilder:
             self._add_subheader(f"{m['name']} Performance")
 
             table = self.doc.add_table(rows=7, cols=2)
+            set_table_borders(table)
+
             metrics = [
                 ('Total Tasks', str(m['total_tasks'])),
                 ('Total Planned', f"{m['total_planned']:.0f}"),
@@ -801,6 +999,7 @@ class TBMReportBuilder:
             for idx, (label, value) in enumerate(metrics):
                 table.rows[idx].cells[0].text = label
                 table.rows[idx].cells[0].paragraphs[0].runs[0].font.bold = True
+                add_cell_shading(table.rows[idx].cells[0], 'D9D9D9')
                 table.rows[idx].cells[1].text = value
 
     def _add_category_7(self):
@@ -809,23 +1008,38 @@ class TBMReportBuilder:
 
         narratives = self.content.get('narratives', {}).get('cat7', {})
 
+        # Default root cause based on actual data
+        default_root_cause = (
+            f"The low verification rates documented in this report ({self.content['lpi']:.0f}% overall, "
+            f"{self.content['zero_verification_count']} locations with 0% verification) may be partially "
+            f"attributable to verification time constraints."
+        )
+
         self._add_subheader('7.1 Root Cause Analysis')
-        root_cause = narratives.get('root_cause', f"The verification rates ({self.content['lpi']:.0f}%) may be affected by timing constraints.")
+        root_cause = narratives.get('root_cause', default_root_cause)
         p = self.doc.add_paragraph()
         p.add_run(root_cause)
 
         self._add_subheader('7.2 Impact on Report Accuracy')
-        caveats = narratives.get('caveats', [
-            'Unverified locations may reflect time constraints',
-            'Idle observations limited to accessible areas',
-        ])
+        default_caveats = [
+            'Unverified locations may reflect time constraints, not actual absence',
+            'Idle time observations limited to accessible areas',
+            'Some high-verification locations may indicate concentrated verification',
+            'Zero-verification locations may be due to inability to reach remote areas in time',
+            'Actual contractor performance may be better than reported metrics suggest',
+        ]
+        caveats = narratives.get('caveats', default_caveats)
         for caveat in caveats:
             self.doc.add_paragraph(caveat, style='List Bullet')
 
         self._add_subheader('7.3 Required Process Improvements')
-        improvements = narratives.get('improvements', [
-            'TBM submission deadline: 8:00 AM daily',
-        ])
+        default_improvements = [
+            'TBM submission deadline: 8:00 AM daily (provides 6+ hour verification window)',
+            'Minimum verification window: 6 hours from TBM receipt to worker departure',
+            'Worker commitment: If in TBM, workers must remain on site until 4:00 PM minimum',
+            'Real-time updates: Contractors must notify MXI immediately of schedule changes',
+        ]
+        improvements = narratives.get('improvements', default_improvements)
         for imp in improvements:
             self.doc.add_paragraph(imp, style='List Bullet')
 
@@ -835,13 +1049,30 @@ class TBMReportBuilder:
 
         narratives = self.content.get('narratives', {}).get('cat8', {})
 
+        # Build default issues from actual data
+        zero_rate = self.content['zero_verification_rate']
+        idle_cost = self.content['idle_time_cost']
+        default_issues = [
+            f"TBM Documentation: {zero_rate:.0f}% of locations show zero verification",
+            f"Idle time represents actual quantifiable waste (${idle_cost:,.0f}/day)",
+        ]
+
         self._add_subheader('8.1 Primary Issues')
-        issues = narratives.get('issues', ['TBM documentation gaps identified'])
+        issues = narratives.get('issues', default_issues)
         for issue in issues:
             self.doc.add_paragraph(issue, style='List Bullet')
 
+        # Build default recommendations
+        monthly_proj = self.content['monthly_projection']
+        default_recommendations = [
+            'CRITICAL: Require TBM submission by 8:00 AM to allow proper verification planning',
+            'Establish minimum notice period: 6 hours between TBM submission and verification requirement',
+            'Enhance TBM updates: Real-time location updates when workers reassigned',
+            f'Continue monitoring idle time: ${monthly_proj:.0f}K monthly projection requires mitigation',
+        ]
+
         self._add_subheader('8.2 Recommendations')
-        recommendations = narratives.get('recommendations', ['Improve TBM submission timing'])
+        recommendations = narratives.get('recommendations', default_recommendations)
         for rec in recommendations:
             p = self.doc.add_paragraph(style='List Bullet')
             if rec.startswith('CRITICAL:'):

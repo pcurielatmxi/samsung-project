@@ -80,6 +80,7 @@ class FieldwireTask:
     tbm_manpower: float
     observations: list
     checklist: ChecklistStatus
+    photo_urls: list = field(default_factory=list)
 
     @property
     def total_verified(self) -> float:
@@ -152,6 +153,7 @@ class IdleObservation:
     inspector: str
     observation_text: str
     analysis: str
+    photo_urls: list = field(default_factory=list)
 
 
 @dataclass
@@ -288,6 +290,21 @@ def extract_observations(row: dict) -> list:
     return observations
 
 
+def extract_photo_urls(row: dict) -> list:
+    """Extract photo URLs from Message columns containing HYPERLINK formulas."""
+    photo_urls = []
+    url_pattern = r'https://[^\s"]+\.(?:jpeg|jpg|png|gif)'
+
+    for i in range(1, 63):
+        col = f'Message{i}'
+        val = str(row.get(col, ''))
+        if val and val != 'nan' and 'HYPERLINK' in val:
+            urls = re.findall(url_pattern, val, re.IGNORECASE)
+            photo_urls.extend(urls)
+
+    return photo_urls
+
+
 def extract_checklist(row: dict) -> ChecklistStatus:
     """Extract checklist status from row."""
     status = ChecklistStatus()
@@ -356,6 +373,7 @@ def parse_fieldwire_csv(csv_path: Path, target_date: str, contractors: list) -> 
             tbm_manpower=parse_float(row_dict.get('TBMManpower')),
             observations=extract_observations(row_dict),
             checklist=extract_checklist(row_dict),
+            photo_urls=extract_photo_urls(row_dict),
         )
         tasks.append(task)
 
@@ -450,6 +468,7 @@ def build_idle_observations(tasks: list) -> list:
             inspector=inspector,
             observation_text=obs_text,
             analysis=analysis,
+            photo_urls=task.photo_urls,
         ))
 
     return observations
