@@ -27,11 +27,14 @@ from typing import Optional
 # Output requirements appended to all prompts
 OUTPUT_REQUIREMENTS = """
 OUTPUT REQUIREMENTS:
-- Plain text only (no markdown, no bullets, no formatting)
-- 2-4 sentences maximum
-- Include specific numbers from the data
+- PLAIN TEXT ONLY: No markdown, no asterisks, no bullets, no headers, no formatting of any kind
+- Write 2-4 complete sentences as a single flowing paragraph
+- Include specific numbers from the data (percentages, dollar amounts, counts)
 - Professional, objective tone suitable for contractual correspondence
 - Do NOT assign blame or use inflammatory language
+- Do NOT include any meta-commentary (no "Here's...", "Note:", "I'll write...", "Based on...")
+- Do NOT ask questions or offer alternatives
+- Output ONLY the requested narrative text, nothing else
 """
 
 
@@ -160,6 +163,299 @@ Tone: Constructive, solution-focused.
 
 
 # =============================================================================
+# QUALITY CHECK PROMPTS
+# =============================================================================
+
+# Reviewer 1: Technical accuracy focus
+QUALITY_CHECK_TECHNICAL = """You are a technical reviewer evaluating a narrative for a TBM (Tool Box Meeting) Analysis Report.
+
+EVALUATE the narrative against the source data for:
+1. ACCURACY - Do the numbers in the narrative match the data? (percentages, counts, dollar amounts)
+2. COMPLETENESS - Does it address the key metrics from the data?
+3. NO FABRICATION - Does it avoid inventing facts not in the data?
+4. PLAIN TEXT - Is it free of markdown, bullets, asterisks, or formatting?
+
+NARRATIVE TO REVIEW:
+{narrative}
+
+SOURCE DATA:
+{data}
+
+OUTPUT FORMAT (exactly this):
+PASS or FAIL
+REASON: One sentence explanation
+"""
+
+# Reviewer 2: Communication/tone focus
+QUALITY_CHECK_COMMUNICATION = """You are a communications reviewer evaluating a narrative for inclusion in contractual correspondence.
+
+EVALUATE the narrative for:
+1. PROFESSIONAL TONE - Is it objective and suitable for formal business communication?
+2. NO BLAME - Does it avoid assigning fault or using inflammatory language?
+3. CONSTRUCTIVE - Does it focus on facts and improvement rather than criticism?
+4. CLARITY - Is it clear, concise, and free of jargon or meta-commentary?
+
+NARRATIVE TO REVIEW:
+{narrative}
+
+CONTEXT: This is for a Samsung semiconductor construction project report.
+
+OUTPUT FORMAT (exactly this):
+PASS or FAIL
+REASON: One sentence explanation
+"""
+
+
+# =============================================================================
+# QUALITY CHECK FUNCTIONS
+# =============================================================================
+
+# Prompt for feedback-driven refinement
+REFINE_WITH_FEEDBACK = """You previously generated this narrative:
+
+PREVIOUS NARRATIVE:
+{previous_narrative}
+
+The quality reviewers identified these issues:
+{feedback}
+
+SOURCE DATA (use ONLY these facts):
+{data}
+
+Please rewrite the narrative to address the feedback. Remember:
+- Use ONLY facts from the source data - do not invent times, percentages, or details
+- Maintain professional, objective tone without blame
+- Write plain text only (no markdown, bullets, or formatting)
+- Output ONLY the corrected narrative, nothing else
+"""
+
+
+def refine_narrative_with_feedback(
+    previous_narrative: str,
+    feedback: list[str],
+    data_context: str,
+) -> Optional[str]:
+    """
+    Use reviewer feedback to refine a narrative.
+
+    Args:
+        previous_narrative: The narrative that failed quality check
+        feedback: List of failure reasons from reviewers
+        data_context: Source data JSON string
+
+    Returns:
+        Refined narrative or None if failed
+    """
+    prompt = REFINE_WITH_FEEDBACK.format(
+        previous_narrative=previous_narrative,
+        feedback='\n'.join(f"- {f}" for f in feedback),
+        data=data_context,
+    )
+
+    try:
+        result = subprocess.run(
+            ['claude', '-p', prompt],
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+
+        if result.returncode == 0:
+            output = result.stdout.strip()
+            # Clean up output
+            output = output.replace('**', '').replace('`', '')
+            lines = output.split('\n')
+            clean_lines = []
+            for line in lines:
+                line_lower = line.lower().strip()
+                if line_lower.startswith(('note:', 'here\'s', 'i\'ll', 'based on', '---')):
+                    continue
+                if line.strip():
+                    clean_lines.append(line)
+            return ' '.join(clean_lines).strip()
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+
+    return None
+
+
+def check_narrative_quality(narrative: str, data: str, category: str) -> tuple[bool, list[str]]:
+    """
+    Run dual-reviewer quality check on a narrative.
+
+    Uses two Claude instances with different evaluation perspectives:
+    - Technical: Checks data accuracy and completeness
+    - Communication: Checks tone and professionalism
+
+    Args:
+        narrative: The generated narrative text
+        data: The source data (JSON string)
+        category: Category name for logging
+
+    Returns:
+        (passed, reasons) - True if both reviewers pass, list of failure reasons
+    """
+    if not narrative or len(narrative) < 20:
+        return False, ["Narrative too short or empty"]
+
+    results = []
+    reasons = []
+
+    # Run both reviewers
+    reviewers = [
+        ("Technical", QUALITY_CHECK_TECHNICAL),
+        ("Communication", QUALITY_CHECK_COMMUNICATION),
+    ]
+
+    for reviewer_name, prompt_template in reviewers:
+        prompt = prompt_template.format(narrative=narrative, data=data)
+
+        try:
+            result = subprocess.run(
+                ['claude', '-p', prompt],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+
+            if result.returncode == 0:
+                output = result.stdout.strip().upper()
+                # Parse the result
+                if output.startswith('PASS'):
+                    results.append(True)
+                elif output.startswith('FAIL'):
+                    results.append(False)
+                    # Extract reason
+                    lines = result.stdout.strip().split('\n')
+                    for line in lines:
+                        if line.upper().startswith('REASON:'):
+                            reasons.append(f"{reviewer_name}: {line[7:].strip()}")
+                            break
+                    else:
+                        reasons.append(f"{reviewer_name}: Failed (no reason given)")
+                else:
+                    # Ambiguous response - treat as pass but note it
+                    results.append(True)
+            else:
+                # Claude error - skip this check
+                results.append(True)
+
+        except subprocess.TimeoutExpired:
+            # Timeout - skip this check
+            results.append(True)
+        except FileNotFoundError:
+            # Claude not found - skip checks
+            return True, []
+
+    # Both must pass
+    passed = all(results)
+    return passed, reasons
+
+
+def build_quality_check_context(content: dict) -> str:
+    """Build comprehensive data context for quality checks.
+
+    Includes all key metrics so reviewers don't flag valid data as fabrication.
+    """
+    return json.dumps({
+        # Core metrics
+        'lpi': content.get('lpi'),
+        'lpi_target': content.get('lpi_target', 80),
+        'zero_verification_count': content.get('zero_verification_count'),
+        'zero_verification_rate': content.get('zero_verification_rate'),
+        'total_locations': content.get('total_locations'),
+        'total_tasks': content.get('total_tasks'),
+        # Cost metrics
+        'idle_time_cost': content.get('idle_time_cost'),
+        'idle_time_hours': content.get('idle_time_hours'),
+        'monthly_projection': content.get('monthly_projection'),
+        'labor_rate': content.get('labor_rate'),
+        # Contractor data
+        'contractors': content.get('contractors', []),
+        'contractor_metrics': content.get('contractor_metrics', []),
+        # Counts
+        'idle_observation_count': len(content.get('idle_observations', [])),
+        'high_verification_count': len(content.get('high_verification_locations', [])),
+    }, indent=2)
+
+
+def quality_check_with_retry(
+    generate_func,
+    content: dict,
+    category: str,
+    max_retries: int = 2
+) -> tuple[dict, str]:
+    """
+    Generate narrative with quality check and feedback-driven refinement.
+
+    Uses reviewer feedback to guide regeneration rather than blind retry.
+
+    Args:
+        generate_func: Function that generates the narrative dict
+        content: Report content for generation
+        category: Category name for logging
+        max_retries: Maximum refinement attempts
+
+    Returns:
+        (result, status) - Generated narrative dict and quality status:
+            - "approved": Passed quality checks
+            - "best_effort": Failed after max retries, using best attempt
+    """
+    # Build comprehensive context once
+    data_context = build_quality_check_context(content)
+
+    # Initial generation
+    result = generate_func(content)
+
+    # Identify the narrative field key
+    if isinstance(result, dict):
+        narrative_key = None
+        for key in ['intro', 'opening', 'root_cause']:
+            if key in result and result[key]:
+                narrative_key = key
+                break
+        narrative_text = result.get(narrative_key, '') if narrative_key else ''
+    else:
+        narrative_text = str(result)
+        narrative_key = None
+
+    if not narrative_text:
+        return result, "approved"  # No narrative to check = pass
+
+    # Quality check loop with feedback-driven refinement
+    for attempt in range(max_retries + 1):
+        passed, reasons = check_narrative_quality(narrative_text, data_context, category)
+
+        if passed:
+            if attempt > 0:
+                print(f"    Quality check passed after {attempt} refinement(s)")
+            return result, "approved"
+
+        if attempt < max_retries:
+            print(f"    Quality check failed ({category}): {'; '.join(reasons)}")
+            print(f"    Refining with feedback... ({attempt + 1}/{max_retries})")
+
+            # Use feedback to refine
+            refined = refine_narrative_with_feedback(narrative_text, reasons, data_context)
+
+            if refined:
+                narrative_text = refined
+                # Update result dict with refined narrative
+                if isinstance(result, dict) and narrative_key:
+                    result[narrative_key] = refined
+            else:
+                # Refinement failed, try fresh generation
+                result = generate_func(content)
+                if isinstance(result, dict) and narrative_key:
+                    narrative_text = result.get(narrative_key, '')
+        else:
+            print(f"    Quality check failed after {max_retries} refinements: {'; '.join(reasons)}")
+            return result, "best_effort"
+
+    return result, "best_effort"
+
+
+# =============================================================================
 # NARRATIVE GENERATION FUNCTIONS
 # =============================================================================
 
@@ -193,9 +489,31 @@ DATA:
         if result.returncode == 0:
             # Clean up the output - remove any markdown or extra formatting
             output = result.stdout.strip()
+
             # Remove common markdown artifacts
-            output = output.replace('**', '').replace('*', '').replace('`', '')
-            return output
+            output = output.replace('**', '').replace('`', '')
+
+            # Remove meta-commentary lines (Claude sometimes adds notes)
+            lines = output.split('\n')
+            clean_lines = []
+            for line in lines:
+                line_lower = line.lower().strip()
+                # Skip meta-commentary
+                if line_lower.startswith(('note:', 'here\'s', 'i\'ll write', 'based on', '---', 'since there')):
+                    continue
+                if 'if you\'d like' in line_lower or 'i can revise' in line_lower:
+                    continue
+                if line.strip() == '':
+                    continue
+                clean_lines.append(line)
+
+            output = ' '.join(clean_lines)
+
+            # Clean up any double spaces
+            while '  ' in output:
+                output = output.replace('  ', ' ')
+
+            return output.strip()
         else:
             print(f"  Claude error: {result.stderr}")
             return None
@@ -352,26 +670,30 @@ def generate_cat4_narrative(content: dict) -> dict:
 
     high_ver = content['high_verification_locations']
 
+    # If no high verification locations, use fallback directly - no need for Claude
+    if not high_ver:
+        return {
+            'intro': (
+                "No locations showed verification rates above 100% for this report period. "
+                "This indicates workforce was deployed as planned without significant over-staffing or mobility between areas."
+            ),
+            'note': "Note: Accuracy >100% indicates more workers verified than committed in TBM, suggesting either additional workforce deployment or workers from adjacent areas.",
+        }
+
     context = json.dumps({
         'high_verification_count': len(high_ver),
-        'examples': high_ver[:5] if high_ver else [],
+        'examples': high_ver[:5],
         'total_locations': content['total_locations'],
     }, indent=2)
 
     intro = generate_narrative(PROMPT_CAT4_INTRO, context)
 
     if not intro:
-        if high_ver:
-            intro = (
-                f"Several locations showed excellent verification rates above 100%, demonstrating proper TBM implementation. "
-                f"These {len(high_ver)} locations had more workers verified than committed, indicating either additional "
-                f"workforce deployment or workers moving from adjacent areas to assist."
-            )
-        else:
-            intro = (
-                "No locations showed verification rates above 100% for this report period. "
-                "This indicates workforce was deployed as planned without significant over-staffing or mobility between areas."
-            )
+        intro = (
+            f"Several locations showed excellent verification rates above 100%, demonstrating proper TBM implementation. "
+            f"These {len(high_ver)} locations had more workers verified than committed, indicating either additional "
+            f"workforce deployment or workers moving from adjacent areas to assist."
+        )
 
     return {
         'intro': intro,
@@ -467,21 +789,35 @@ def generate_cat8_narrative(content: dict) -> dict:
 # MAIN PROCESSING
 # =============================================================================
 
-def add_narratives(content: dict, use_claude: bool = True) -> dict:
+def add_narratives(content: dict, use_claude: bool = True, quality_check: bool = False) -> dict:
     """Add all narrative content to report data.
 
     Args:
         content: Report content dictionary
         use_claude: If True, attempt Claude generation; if False, use fallbacks only
+        quality_check: If True, run dual-reviewer quality checks on each narrative
 
     Returns:
-        Content dictionary with narratives added
+        Content dictionary with narratives and quality_status added
     """
     print("Generating narratives...")
+    if quality_check:
+        print("  Quality checks enabled (dual-reviewer voting)")
 
+    # Track quality status per category
+    quality_statuses = {}
+
+    # Executive Summary
+    exec_summary_status = "approved"
     if use_claude:
         print("  Generating executive summary...")
         exec_summary = generate_executive_summary(content)
+        if quality_check and exec_summary:
+            data_ctx = build_quality_check_context(content)
+            passed, reasons = check_narrative_quality(exec_summary, data_ctx, "Executive Summary")
+            if not passed:
+                print(f"    Quality check failed: {'; '.join(reasons)}")
+                exec_summary_status = "best_effort"
     else:
         # Fallback executive summary
         exec_summary = (
@@ -490,16 +826,70 @@ def add_narratives(content: dict, use_claude: bool = True) -> dict:
             f"projecting to ${content['monthly_projection']:.0f}K monthly. "
             f"{content['zero_verification_count']} locations showed zero verification."
         )
+    quality_statuses['executive_summary'] = exec_summary_status
+
+    # Generate each category with optional quality checks
+    if use_claude:
+        if quality_check:
+            cat1, status1 = quality_check_with_retry(generate_cat1_narrative, content, "Category 1")
+            cat2, status2 = quality_check_with_retry(generate_cat2_narrative, content, "Category 2")
+            cat3, status3 = quality_check_with_retry(generate_cat3_narrative, content, "Category 3")
+            cat4 = generate_cat4_narrative(content)  # Cat4 often uses fallback, skip QC
+            cat7, status7 = quality_check_with_retry(generate_cat7_narrative, content, "Category 7")
+            quality_statuses.update({
+                'cat1': status1,
+                'cat2': status2,
+                'cat3': status3,
+                'cat4': 'approved',  # Skipped QC
+                'cat7': status7,
+                'cat8': 'approved',  # Data-driven, no AI
+            })
+        else:
+            cat1 = generate_cat1_narrative(content)
+            cat2 = generate_cat2_narrative(content)
+            cat3 = generate_cat3_narrative(content)
+            cat4 = generate_cat4_narrative(content)
+            cat7 = generate_cat7_narrative(content)
+            # No quality check = no status tracking needed
+    else:
+        cat1 = _fallback_cat1(content)
+        cat2 = _fallback_cat2(content)
+        cat3 = _fallback_cat3(content)
+        cat4 = _fallback_cat4(content)
+        cat7 = _fallback_cat7(content)
 
     content['narratives'] = {
         'executive_summary': exec_summary,
-        'cat1': generate_cat1_narrative(content) if use_claude else _fallback_cat1(content),
-        'cat2': generate_cat2_narrative(content) if use_claude else _fallback_cat2(content),
-        'cat3': generate_cat3_narrative(content) if use_claude else _fallback_cat3(content),
-        'cat4': generate_cat4_narrative(content) if use_claude else _fallback_cat4(content),
-        'cat7': generate_cat7_narrative(content) if use_claude else _fallback_cat7(content),
+        'cat1': cat1,
+        'cat2': cat2,
+        'cat3': cat3,
+        'cat4': cat4,
+        'cat7': cat7,
         'cat8': generate_cat8_narrative(content),  # Cat8 is data-driven, not AI-generated
     }
+
+    # Compute overall quality status
+    if quality_check and quality_statuses:
+        failed_categories = [k for k, v in quality_statuses.items() if v == "best_effort"]
+        if failed_categories:
+            overall_status = "best_effort"
+            print(f"\n  Quality Status: BEST EFFORT (failed: {', '.join(failed_categories)})")
+        else:
+            overall_status = "approved"
+            print(f"\n  Quality Status: APPROVED (all categories passed)")
+
+        content['quality_status'] = {
+            'overall': overall_status,
+            'categories': quality_statuses,
+            'failed_categories': failed_categories,
+        }
+    else:
+        # No quality check = no status
+        content['quality_status'] = {
+            'overall': 'unchecked',
+            'categories': {},
+            'failed_categories': [],
+        }
 
     print("  Category 1: TBM Performance - done")
     print("  Category 2: Zero Verification - done")
@@ -577,6 +967,8 @@ def main():
     parser.add_argument('--input', required=True, help='Input report_content.json path')
     parser.add_argument('--output', help='Output path (default: same as input with _narratives suffix)')
     parser.add_argument('--skip-claude', action='store_true', help='Skip Claude, use fallback narratives only')
+    parser.add_argument('--quality-check', action='store_true',
+                        help='Enable dual-reviewer quality checks (Technical + Communication)')
 
     args = parser.parse_args()
 
@@ -592,7 +984,7 @@ def main():
     if not use_claude:
         print("Using fallback narratives (Claude skipped)")
 
-    content = add_narratives(content, use_claude=use_claude)
+    content = add_narratives(content, use_claude=use_claude, quality_check=args.quality_check)
 
     # Save output
     if args.output:

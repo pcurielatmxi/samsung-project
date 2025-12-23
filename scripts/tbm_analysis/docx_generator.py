@@ -1097,6 +1097,27 @@ class TBMReportBuilder:
 # CLI
 # =============================================================================
 
+def get_quality_status_prefix(content: dict) -> str:
+    """Get filename prefix based on quality status.
+
+    Returns:
+        - "[QC-APPROVED]" if all narratives passed quality checks
+        - "[QC-BEST-EFFORT]" if some narratives failed after max retries
+        - "[GENERATED]" if quality checks were not run
+    """
+    quality_status = content.get('quality_status', {})
+    overall = quality_status.get('overall', 'unchecked')
+
+    if overall == 'approved':
+        return "[QC-APPROVED]"
+    elif overall == 'best_effort':
+        failed = quality_status.get('failed_categories', [])
+        # Include count of failed categories in prefix
+        return f"[QC-BEST-EFFORT-{len(failed)}]"
+    else:
+        return "[GENERATED]"
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generate TBM Analysis DOCX')
     parser.add_argument('--input', required=True, help='Input JSON path')
@@ -1126,10 +1147,21 @@ def main():
             except:
                 date_fmt = date_str
 
-        output_path = input_path.parent / f"[GENERATED] MXI - {group} TBM Analysis - {date_fmt}.docx"
+        # Get quality status prefix
+        prefix = get_quality_status_prefix(content)
+        output_path = input_path.parent / f"{prefix} MXI - {group} TBM Analysis - {date_fmt}.docx"
 
     # Build report
     print(f"Generating: {output_path}")
+
+    # Show quality status if available
+    quality_status = content.get('quality_status', {})
+    if quality_status.get('overall') == 'best_effort':
+        failed = quality_status.get('failed_categories', [])
+        print(f"  Quality Status: BEST EFFORT (failed: {', '.join(failed)})")
+    elif quality_status.get('overall') == 'approved':
+        print(f"  Quality Status: APPROVED")
+
     builder = TBMReportBuilder(content)
     builder.build(str(output_path))
     print(f"Done: {output_path}")

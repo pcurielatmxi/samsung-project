@@ -497,6 +497,11 @@ python scripts/tbm_analysis/tbm_data_processor.py \
 python scripts/tbm_analysis/narrative_generator.py \
     --input "/path/to/report_content.json"
 
+# Step 2b: Add narratives WITH quality checks (recommended for production)
+python scripts/tbm_analysis/narrative_generator.py \
+    --input "/path/to/report_content.json" \
+    --quality-check
+
 # Step 3: Generate DOCX
 python scripts/tbm_analysis/docx_generator.py \
     --input "/path/to/report_content_with_narratives.json"
@@ -507,6 +512,13 @@ python scripts/tbm_analysis/docx_generator.py \
 # Process data and generate DOCX directly
 python scripts/tbm_analysis/tbm_data_processor.py --date 12-19-25 --contractors "Berg,MK Marlow"
 python scripts/tbm_analysis/docx_generator.py --input "/path/to/report_content.json"
+```
+
+**Production workflow (with quality checks):**
+```bash
+python scripts/tbm_analysis/tbm_data_processor.py --date 12-19-25 --contractors "Berg,MK Marlow"
+python scripts/tbm_analysis/narrative_generator.py --input "/path/to/report_content.json" --quality-check
+python scripts/tbm_analysis/docx_generator.py --input "/path/to/report_content_with_narratives.json"
 ```
 
 ### Claude Code Integration
@@ -528,12 +540,38 @@ Each category has:
 - Context data (JSON) from the report content
 - A fallback template if Claude fails
 
+### Quality Check System
+
+When `--quality-check` is enabled, each AI-generated narrative goes through a dual-reviewer voting system:
+
+**Reviewers:**
+1. **Technical Reviewer** - Validates data accuracy, completeness, no fabrication
+2. **Communication Reviewer** - Validates professional tone, no blame, constructive framing
+
+**Flow:**
+1. Generate narrative with Claude
+2. Run both reviewers on the narrative
+3. If both pass → approved
+4. If either fails → use feedback to refine (up to 2 retries)
+5. After max retries, mark as "best_effort" and continue
+
+**Quality Status:**
+The `quality_status` dict in the JSON tracks:
+- `overall`: "approved", "best_effort", or "unchecked"
+- `categories`: per-category status mapping
+- `failed_categories`: list of categories that failed after max retries
+
 ### Output Files
 
 Each report run produces:
 - `report_content.json` - Deterministic data from Fieldwire
-- `report_content_with_narratives.json` - With AI-generated text
-- `MXI - {Contractor} TBM Analysis - MM.DD.YY.docx` - Final report
+- `report_content_with_narratives.json` - With AI-generated text and quality_status
+- `{prefix} MXI - {Contractor} TBM Analysis - MM.DD.YY.docx` - Final report
+
+**Filename Prefixes:**
+- `[QC-APPROVED]` - All narratives passed quality checks
+- `[QC-BEST-EFFORT-N]` - N categories failed after max retries
+- `[GENERATED]` - Quality checks were not run
 
 ## Next Steps (Future Enhancements)
 
