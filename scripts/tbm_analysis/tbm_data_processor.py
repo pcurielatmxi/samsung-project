@@ -266,45 +266,46 @@ def extract_gridpoint(tier1, title: str) -> str:
     return tier1_str if tier1_str and tier1_str != 'nan' else 'Unknown'
 
 
-# Changelog patterns to filter out (these are system-generated, not field narratives)
-CHANGELOG_PATTERNS = [
-    'Changed title to',
-    'Changed status to',
-    'Changed Direct Manpower to',
-    'Changed Indirect Manpower to',
-    'Changed TBM Manpower to',
-    'Changed Activity Name to',
-    'Changed location to',
-    'Changed category to',
-    'Changed Company to',
-    'Changed plan to',
-    'Changed end date to',
-    'Changed start date to',
-    'Changed Scope Category to',
-    'Set Direct Manpower to',
-    'Set Indirect Manpower to',
-    'Set TBM Manpower to',
-    'Set Company to',
-    'Removed value from',
-    'Added tag',
+# Changelog action verbs to filter out (these are system-generated, not field narratives)
+# Any message content starting with these verbs is a changelog entry
+CHANGELOG_VERBS = [
+    'Changed ',      # Changed title to, Changed Level to, Changed Company to, etc.
+    'Set ',          # Set Direct Manpower to, Set Company to, etc.
+    'Removed ',      # Removed value from, Removed tag, etc.
+    'Added tag',     # Added tag X
+    'Created ',      # Created task, Created at, etc.
+    'Moved ',        # Moved to, Moved from, etc.
+    'Assigned ',     # Assigned to, Assigned user, etc.
+    'Unassigned ',   # Unassigned from, etc.
+    'Deleted ',      # Deleted X
+    'Completed ',    # Completed task, etc.
+    'Reopened ',     # Reopened task, etc.
 ]
 
 
 def is_changelog_message(text: str) -> bool:
-    """Check if a message is a changelog entry (not a field narrative)."""
+    """Check if a message is a changelog entry (not a field narrative).
+
+    Changelog entries are system-generated messages that track changes to task
+    properties (title, status, manpower values, etc.). These are NOT field
+    observations and should be filtered out.
+
+    Field narratives are actual inspector observations describing what was seen
+    in the field (worker counts, activities, idle time, etc.).
+    """
     # Check for photo hyperlinks
     if 'HYPERLINK' in text:
         return True
 
-    # Extract the content after the inspector name
+    # Extract the content after the inspector name (format: "Inspector Name: content")
     if ': ' in text:
         content = text.split(': ', 1)[1] if len(text.split(': ', 1)) > 1 else text
     else:
         content = text
 
-    # Check against changelog patterns
-    for pattern in CHANGELOG_PATTERNS:
-        if content.startswith(pattern):
+    # Check if content starts with any changelog verb
+    for verb in CHANGELOG_VERBS:
+        if content.startswith(verb):
             return True
 
     return False
