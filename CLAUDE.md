@@ -12,7 +12,7 @@
 
 **Status:** Complete
 
-Established data pipelines for 8 primary sources:
+Established data pipelines for 9 primary sources:
 
 | Source | Purpose | Records | Status |
 |--------|---------|---------|--------|
@@ -23,6 +23,7 @@ Established data pipelines for 8 primary sources:
 | Quality Records | Inspections (Yates WIR + SECAI IR) | 37K inspections | ✅ Processed |
 | RABA | Quality inspections (RKCI Celvis) | 995+ daily batches | ✅ Scraped |
 | PSI | Quality inspections (Construction Hive) | 6,309 reports | ✅ Scraped |
+| QC Logs | Inspection request tracking (CPMS exports) | 61K+ records, 141 files | 📁 Raw |
 | Fieldwire | Punch lists, field tasks | TBD | 🔄 In Progress |
 
 **Key Deliverables:**
@@ -250,3 +251,46 @@ python scripts/psi/process/scrape_psi_reports.py --dry-run
 - `PSI_BASE_URL` - Base URL (default: https://www.constructionhive.com/)
 - `PSI_USERNAME` - Login email
 - `PSI_PASSWORD` - Login password
+
+### QC Logs (CPMS Inspection Tracking)
+
+**Location:** `{WINDOWS_DATA_DIR}/raw/qc_logs/`
+
+Excel exports from CPMS (Construction Project Management System) tracking all inspection requests across contractors. This is a consolidated view of inspection activity that complements the individual inspection reports from RABA and PSI.
+
+**Data Structure:**
+```
+qc_logs/
+├── DAILY INSPECTION REQUESTS/     # 141 daily snapshot files
+│   ├── QA_QC Inspections 12-23-25 Official.xlsx
+│   └── ...
+└── MASTER LIST/                   # Cumulative logs by discipline
+    ├── 12172025_USA T1 Project_Inspection and Test Log.xlsx
+    └── 06112024_USA T1 Project_Inspection and Test Log.xlsm
+```
+
+**Daily Inspection Requests (61K+ records):**
+| Column | Description |
+|--------|-------------|
+| Date | Inspection date |
+| Time | Inspection time |
+| Number | Sequential ID |
+| IR Number | Inspection Request ID (prefix indicates contractor: YT=Yates, AG=Austin Bridge, SECAI, ABR) |
+| Status | Accepted, Failure, Open, VOID, Re-Inspection Required, etc. |
+| Template | Inspection type (759 unique types) |
+| System / Equip/ Location | Location description |
+| Inspector | Inspector name |
+
+**Master List (by discipline: ARCH, MECH, ELEC):**
+Additional fields include: Author Company, Module, Reasons for failure, Week, Year, ITP
+
+**Key Metrics:**
+- Status distribution: ~88% Accepted, ~3% Failure, ~3% Open, ~3% VOID
+- Date range: 2023-02 through 2025-12
+- Contractors: Yates (YT), Austin Bridge (AG), SECAI, ABR
+
+**Use Cases:**
+- Inspection volume trends over time
+- Failure rate analysis by template/discipline
+- Contractor performance comparison
+- Re-inspection tracking and rework quantification
