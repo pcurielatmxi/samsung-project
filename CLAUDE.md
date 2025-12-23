@@ -12,7 +12,7 @@
 
 **Status:** Complete
 
-Established data pipelines for 6 primary sources:
+Established data pipelines for 8 primary sources:
 
 | Source | Purpose | Records | Status |
 |--------|---------|---------|--------|
@@ -21,6 +21,8 @@ Established data pipelines for 6 primary sources:
 | TBM Daily Plans | Daily work activities by crew | 13.5K entries | ✅ Processed |
 | ProjectSight | Daily reports, labor hours | 857K labor entries | ✅ Processed |
 | Quality Records | Inspections (Yates WIR + SECAI IR) | 37K inspections | ✅ Processed |
+| RABA | Quality inspections (RKCI Celvis) | 995+ daily batches | ✅ Scraped |
+| PSI | Quality inspections (Construction Hive) | 6,309 reports | ✅ Scraped |
 | Fieldwire | Punch lists, field tasks | TBD | 🔄 In Progress |
 
 **Key Deliverables:**
