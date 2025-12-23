@@ -266,18 +266,65 @@ def extract_gridpoint(tier1, title: str) -> str:
     return tier1_str if tier1_str and tier1_str != 'nan' else 'Unknown'
 
 
+# Changelog patterns to filter out (these are system-generated, not field narratives)
+CHANGELOG_PATTERNS = [
+    'Changed title to',
+    'Changed status to',
+    'Changed Direct Manpower to',
+    'Changed Indirect Manpower to',
+    'Changed TBM Manpower to',
+    'Changed Activity Name to',
+    'Changed location to',
+    'Changed category to',
+    'Changed Company to',
+    'Changed plan to',
+    'Changed end date to',
+    'Changed start date to',
+    'Changed Scope Category to',
+    'Set Direct Manpower to',
+    'Set Indirect Manpower to',
+    'Set TBM Manpower to',
+    'Set Company to',
+    'Removed value from',
+    'Added tag',
+]
+
+
+def is_changelog_message(text: str) -> bool:
+    """Check if a message is a changelog entry (not a field narrative)."""
+    # Check for photo hyperlinks
+    if 'HYPERLINK' in text:
+        return True
+
+    # Extract the content after the inspector name
+    if ': ' in text:
+        content = text.split(': ', 1)[1] if len(text.split(': ', 1)) > 1 else text
+    else:
+        content = text
+
+    # Check against changelog patterns
+    for pattern in CHANGELOG_PATTERNS:
+        if content.startswith(pattern):
+            return True
+
+    return False
+
+
 def extract_observations(row: dict) -> list:
-    """Extract inspector observations from Message columns."""
+    """Extract inspector observations from Message columns.
+
+    Filters out changelog entries (Changed title to, Set Manpower to, etc.)
+    and keeps only actual field narratives from inspectors.
+    """
     observations = []
     for i in range(1, 63):
         col = f'Message{i}'
         val = str(row.get(col, ''))
         if val and val != 'nan' and len(val) > 10:
-            # Skip system messages
-            if 'HYPERLINK' in val:
+            # Skip changelog and system messages
+            if is_changelog_message(val):
                 continue
-            if val.startswith(('Changed ', 'Set ', 'Removed ', 'Added tag')):
-                continue
+
             # Extract inspector name and message
             if ': ' in val:
                 parts = val.split(': ', 1)
