@@ -23,14 +23,45 @@ from io import BytesIO
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+env_file = Path(__file__).parent.parent.parent.parent.parent / '.env'
+if env_file.exists():
+    load_dotenv(env_file)
+
+
+def _windows_to_wsl_path(windows_path: str) -> Path:
+    """Convert Windows path to WSL2 path."""
+    if not windows_path:
+        return None
+    normalized = windows_path.replace('\\', '/')
+    if normalized.startswith('/'):
+        return Path(normalized)
+    if len(normalized) >= 2 and normalized[1] == ':':
+        drive_letter = normalized[0].lower()
+        rest_of_path = normalized[2:].lstrip('/')
+        return Path(f'/mnt/{drive_letter}/{rest_of_path}')
+    return Path(normalized)
+
+
+def _get_ui_dir() -> Path:
+    """Get the UI directory from environment or fallback."""
+    windows_data_dir = os.getenv('WINDOWS_DATA_DIR', '')
+    if windows_data_dir:
+        data_path = _windows_to_wsl_path(windows_data_dir)
+        # UI is sibling to Data directory
+        return data_path.parent / "UI"
+    # Fallback for when WINDOWS_DATA_DIR is not set
+    return Path("/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/UI")
 
 
 # =============================================================================
-# MXI Asset Paths (OneDrive)
+# MXI Asset Paths (OneDrive - derived from WINDOWS_DATA_DIR env var)
 # =============================================================================
 class MXIAssets:
     """Paths to MXI brand assets."""
-    BASE_DIR = Path("/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/UI")
+    BASE_DIR = _get_ui_dir()
 
     # Logos
     LOGO_TRANSPARENT = BASE_DIR / "MXI Logo - Transparent.png"
@@ -699,7 +730,13 @@ class MXIPresentation:
             output_dir: Output directory (defaults to OneDrive presentations folder)
         """
         if output_dir is None:
-            output_dir = "/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Presentations"
+            # Use WINDOWS_DATA_DIR to derive presentations folder (sibling to Data)
+            windows_data_dir = os.getenv('WINDOWS_DATA_DIR', '')
+            if windows_data_dir:
+                data_path = _windows_to_wsl_path(windows_data_dir)
+                output_dir = str(data_path.parent / "Presentations")
+            else:
+                output_dir = "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Presentations"
 
         # Create directory if it doesn't exist
         Path(output_dir).mkdir(parents=True, exist_ok=True)
