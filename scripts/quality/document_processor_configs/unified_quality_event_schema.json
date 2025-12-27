@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unified Quality Event Schema",
+  "description": "Universal schema for both RABA test reports and PSI field inspections",
+  "type": "object",
+  "properties": {
+    "event_metadata": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "description": "Unique identifier (RABA report number or PSI DFR number)"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": ["Laboratory Test", "Field Inspection"],
+          "description": "Type of quality event"
+        },
+        "source_system": {
+          "type": "string",
+          "enum": ["RABA", "PSI"],
+          "description": "System that generated this record"
+        },
+        "event_date": {
+          "type": "string",
+          "description": "Date of test or inspection (YYYY-MM-DD)"
+        },
+        "report_date": {
+          "type": "string",
+          "description": "Date report was issued (YYYY-MM-DD)"
+        },
+        "discipline": {
+          "type": "string",
+          "description": "Craft/discipline (Concrete, Steel, Mechanical, Electrical, Architectural, Fireproofing, etc.)"
+        },
+        "activity_type": {
+          "type": "string",
+          "description": "What was tested/inspected (e.g., 'Compressive Strength Test', 'Paint Touch Up Inspection', 'Framing Inspection')"
+        }
+      },
+      "required": ["event_id", "event_type", "source_system", "event_date", "discipline", "activity_type"]
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "location_description": {
+          "type": "string",
+          "description": "Full location description"
+        },
+        "location_code": {
+          "type": "string",
+          "description": "Location code if available"
+        },
+        "building": {
+          "type": "string",
+          "description": "Building identifier (e.g., 'FAB', 'FAB1')"
+        },
+        "level": {
+          "type": "string",
+          "description": "Level/floor (e.g., 'Level 4', 'Level 6')"
+        },
+        "grid_reference": {
+          "type": "string",
+          "description": "Grid line reference (e.g., 'C/25-27', 'L-N/5')"
+        }
+      },
+      "required": ["location_description"]
+    },
+    "parties": {
+      "type": "object",
+      "properties": {
+        "contractor": {
+          "type": "string",
+          "description": "Contractor who performed the work (Yates, SECAI, Berg, subcontractor)"
+        },
+        "inspector_company": {
+          "type": "string",
+          "description": "RABA or PSI"
+        },
+        "inspector_name": {
+          "type": "string",
+          "description": "Name of technician/inspector"
+        },
+        "material_supplier": {
+          "type": "string",
+          "description": "Supplier of materials (if applicable)"
+        }
+      },
+      "required": ["contractor", "inspector_company"]
+    },
+    "overall_result": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["Passed", "Failed", "Re-Inspection Required", "Accepted", "Rejected"],
+          "description": "Overall pass/fail status"
+        },
+        "total_items_checked": {
+          "type": "integer",
+          "description": "Total number of specimens tested or items inspected"
+        },
+        "items_passed": {
+          "type": "integer",
+          "description": "Number that passed"
+        },
+        "items_failed": {
+          "type": "integer",
+          "description": "Number that failed"
+        },
+        "corrected_during_event": {
+          "type": "boolean",
+          "description": "Whether failures were corrected immediately (PSI) or requires follow-up"
+        }
+      },
+      "required": ["status"]
+    },
+    "findings": {
+      "type": "array",
+      "description": "Individual test results (RABA) or deficiencies (PSI)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "description": "Specimen ID or deficiency identifier"
+          },
+          "finding_type": {
+            "type": "string",
+            "enum": ["Test Result", "Deficiency"],
+            "description": "Whether this is a quantitative test or qualitative deficiency"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what was tested/inspected or deficiency found"
+          },
+          "result_type": {
+            "type": "string",
+            "enum": ["Numeric", "Categorical", "Pass/Fail"],
+            "description": "Type of result"
+          },
+          "result_value": {
+            "type": ["number", "string"],
+            "description": "Test result value or deficiency status"
+          },
+          "result_unit": {
+            "type": "string",
+            "description": "Unit of measurement (psi, inches, mils, etc.)"
+          },
+          "specification_value": {
+            "type": ["number", "string"],
+            "description": "Required value per specification"
+          },
+          "passed": {
+            "type": "boolean",
+            "description": "Whether this individual finding passed/failed"
+          },
+          "failure_reason": {
+            "type": "string",
+            "description": "Reason for failure if applicable"
+          },
+          "test_parameters": {
+            "type": "object",
+            "description": "Additional test-specific data (RABA: age, load, area; PSI: N/A)",
+            "additionalProperties": true
+          },
+          "deficiency_classification": {
+            "type": "object",
+            "description": "Deficiency categorization (PSI only)",
+            "properties": {
+              "deficiency_type": {
+                "type": "string",
+                "enum": ["Missing Item", "Improper Installation", "Damaged Material", "Out of Tolerance", "Code Violation", "Cleanliness", "Incomplete Work", "Other"],
+                "description": "Category of deficiency"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["Critical", "Major", "Minor"],
+                "description": "Severity level"
+              }
+            }
+          },
+          "root_cause": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": ["Material", "Workmanship", "Design/Coordination", "Environmental", "Predecessor Work", "Mixed", "Unknown"],
+                "description": "Root cause category"
+              },
+              "responsible_party": {
+                "type": "string",
+                "description": "Who is responsible for the issue"
+              },
+              "contributing_factors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of contributing factors"
+              }
+            }
+          }
+        },
+        "required": ["finding_type", "description", "passed"]
+      }
+    },
+    "material_traceability": {
+      "type": "object",
+      "properties": {
+        "batch_number": {
+          "type": "string",
+          "description": "Batch, lot, or heat number"
+        },
+        "placement_date": {
+          "type": "string",
+          "description": "When material was placed/installed (YYYY-MM-DD)"
+        },
+        "material_specifications": {
+          "type": "object",
+          "description": "Material properties",
+          "additionalProperties": true
+        }
+      }
+    },
+    "environmental_context": {
+      "type": "object",
+      "properties": {
+        "weather_conditions": {
+          "type": "string",
+          "description": "Weather during placement or inspection"
+        }
+      }
+    },
+    "follow_up": {
+      "type": "object",
+      "properties": {
+        "requires_reinspection": {
+          "type": "boolean",
+          "description": "Whether re-inspection is required"
+        },
+        "reinspection_date": {
+          "type": "string",
+          "description": "Date of re-inspection if performed (YYYY-MM-DD)"
+        },
+        "reinspection_status": {
+          "type": "string",
+          "enum": ["Accepted", "Rejected", "Pending"],
+          "description": "Result of re-inspection"
+        }
+      }
+    },
+    "source_document": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "description": "Original PDF filename"
+        },
+        "filepath": {
+          "type": "string",
+          "description": "Full path to source document"
+        }
+      },
+      "required": ["filename"]
+    }
+  },
+  "required": ["event_metadata", "location", "parties", "overall_result", "findings", "source_document"]
+}

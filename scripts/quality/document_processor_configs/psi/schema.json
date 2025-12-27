@@ -1,0 +1,322 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PSI Daily Field Report Schema",
+  "description": "Schema for Professional Services Industries (PSI) Daily Field Reports for quality inspections",
+  "type": "object",
+  "properties": {
+    "report_metadata": {
+      "type": "object",
+      "properties": {
+        "report_number": {
+          "type": "string",
+          "description": "DFR report number (e.g., 'DFR:0306103-100-O1')"
+        },
+        "issue_number": {
+          "type": "integer",
+          "description": "Issue number of the report"
+        },
+        "date_of_issue": {
+          "type": "string",
+          "description": "Date report was issued (format: YYYY-MM-DD)"
+        },
+        "reviewed_by": {
+          "type": "string",
+          "description": "Name of reviewer/approver"
+        },
+        "reviewer_title": {
+          "type": "string",
+          "description": "Title of reviewer (e.g., 'Special Project Manager')"
+        }
+      },
+      "required": ["report_number", "date_of_issue"]
+    },
+    "inspection_details": {
+      "type": "object",
+      "properties": {
+        "test_date": {
+          "type": "string",
+          "description": "Date of inspection/test (format: YYYY-MM-DD)"
+        },
+        "time_arrived": {
+          "type": "string",
+          "description": "Time inspector arrived (format: HH:MM AM/PM)"
+        },
+        "time_departed": {
+          "type": "string",
+          "description": "Time inspector departed (format: HH:MM AM/PM)"
+        },
+        "inspection_number": {
+          "type": "string",
+          "description": "Internal inspection tracking number"
+        },
+        "contractor": {
+          "type": "string",
+          "description": "Contractor being inspected (e.g., 'Yates', 'Berg', 'SECAI')"
+        },
+        "weather": {
+          "type": "string",
+          "description": "Weather conditions during inspection"
+        },
+        "equipment_used": {
+          "type": "string",
+          "description": "Equipment used for observation (e.g., 'Boom lift', 'Visual Inspection')"
+        },
+        "building_permit_number": {
+          "type": "string",
+          "description": "Building permit number"
+        },
+        "location": {
+          "type": "string",
+          "description": "Specific location of inspection (e.g., 'Taylor FAB1', 'FAB 1 Level 6 L-N/5', 'LEVEL 4-6 C/25-27')"
+        }
+      },
+      "required": ["test_date", "contractor", "location"]
+    },
+    "inspection_type": {
+      "type": "object",
+      "properties": {
+        "primary_type": {
+          "type": "string",
+          "description": "Primary type of inspection (e.g., 'Paint Touch Up', 'Framing/Bottom plate Inspection', 'Visual Inspection')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of what was inspected"
+        },
+        "referenced_documents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Referenced documents (e.g., 'WIR', drawings, specifications)"
+        }
+      },
+      "required": ["primary_type"]
+    },
+    "work_inspection_request": {
+      "type": "object",
+      "description": "Work Inspection Request details (if included in report)",
+      "properties": {
+        "project": {
+          "type": "string",
+          "description": "Project identifier (e.g., 'Taylor FAB1 PJT')"
+        },
+        "ir_number": {
+          "type": "string",
+          "description": "Inspection Request number (e.g., 'YT-WI-A-FAB-SS-0018')"
+        },
+        "drawing_number": {
+          "type": "string",
+          "description": "Associated drawing number"
+        },
+        "discipline": {
+          "type": "string",
+          "enum": ["Arch", "Elec", "Mech", "Civil", "Structural"],
+          "description": "Discipline of work being inspected"
+        },
+        "inspection_location": {
+          "type": "string",
+          "description": "Location from WIR (e.g., 'LEVEL 4-6 C/25-27')"
+        },
+        "request_date": {
+          "type": "string",
+          "description": "Date inspection was requested (format: YYYY-MM-DD)"
+        },
+        "inspection_date": {
+          "type": "string",
+          "description": "Date inspection was performed (format: YYYY-MM-DD)"
+        },
+        "inspection_item": {
+          "type": "string",
+          "description": "Item being inspected (e.g., 'Paint Touch Up bolts, welds, and bentplates')"
+        },
+        "requested_by_company": {
+          "type": "string",
+          "description": "Company that requested inspection (e.g., 'YATES')"
+        },
+        "requested_by_person": {
+          "type": "string",
+          "description": "Person who requested inspection"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Highlighted Drawing", "Inspection Checklist", "Test Reports", "Calibration Certs", "Photos", "Others"]
+          },
+          "description": "Attachments included with WIR"
+        }
+      }
+    },
+    "inspection_result": {
+      "type": "object",
+      "properties": {
+        "first_inspection": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "Date of first inspection (format: YYYY-MM-DD)"
+            },
+            "result": {
+              "type": "string",
+              "enum": ["Inspected", "Re-Inspection Required", "Accepted", "Rejected"],
+              "description": "Result of first inspection"
+            },
+            "comment": {
+              "type": "string",
+              "description": "Comments from first inspection"
+            }
+          }
+        },
+        "second_inspection": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "Date of re-inspection (format: YYYY-MM-DD)"
+            },
+            "result": {
+              "type": "string",
+              "enum": ["Accepted", "Rejected", "Re-Inspection Required"],
+              "description": "Result of re-inspection"
+            },
+            "comment": {
+              "type": "string",
+              "description": "Comments from re-inspection"
+            }
+          }
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Completed Punch List", "Finalized test reports", "Photos", "Others"]
+          },
+          "description": "Attachments included with inspection result"
+        },
+        "inspected_by_prime": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "Prime contractor company (e.g., 'SECAI')"
+            },
+            "person": {
+              "type": "string",
+              "description": "Inspector name"
+            }
+          }
+        },
+        "inspected_by_third_party": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "Third party QA/QC company (e.g., 'PSI')"
+            },
+            "person": {
+              "type": "string",
+              "description": "Inspector name"
+            }
+          }
+        },
+        "owner_representative": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "Owner company"
+            },
+            "person": {
+              "type": "string",
+              "description": "Owner representative name"
+            }
+          }
+        }
+      },
+      "required": ["first_inspection"]
+    },
+    "observations_remarks": {
+      "type": "string",
+      "description": "Detailed observations and remarks from the inspection"
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": ["Passed", "Failed", "Re-Inspection Required", "Pending"],
+      "description": "Overall pass/fail status of inspection"
+    },
+    "comments_exceptions": {
+      "type": "string",
+      "description": "Additional comments or exceptions noted"
+    },
+    "deficiencies": {
+      "type": "array",
+      "description": "List of deficiencies found during inspection",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of deficiency"
+          },
+          "location": {
+            "type": "string",
+            "description": "Specific location of deficiency"
+          },
+          "corrected_during_inspection": {
+            "type": "boolean",
+            "description": "Whether deficiency was fixed during the inspection"
+          },
+          "deficiency_type": {
+            "type": "string",
+            "enum": ["Missing Item", "Improper Installation", "Damaged Material", "Out of Tolerance", "Code Violation", "Cleanliness", "Incomplete Work", "Other"],
+            "description": "Category of deficiency"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["Critical", "Major", "Minor"],
+            "description": "Severity level of deficiency if indicated"
+          },
+          "responsible_party": {
+            "type": "string",
+            "description": "Party responsible for the deficiency if identified (e.g., specific subcontractor, previous trade)"
+          },
+          "root_cause_category": {
+            "type": "string",
+            "enum": ["Material", "Workmanship", "Design/Coordination", "Predecessor Work", "Environmental", "Unknown"],
+            "description": "Root cause category inferred from deficiency description"
+          }
+        },
+        "required": ["description"]
+      }
+    },
+    "photos": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "description": "Number of photos included in report"
+        },
+        "has_photos": {
+          "type": "boolean",
+          "description": "Whether report includes photos"
+        }
+      }
+    },
+    "acknowledged_by": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "description": "Company acknowledging the report"
+        },
+        "representing": {
+          "type": "string",
+          "description": "Who the acknowledging party represents"
+        }
+      }
+    }
+  },
+  "required": ["report_metadata", "inspection_details", "inspection_type", "inspection_result", "overall_status"]
+}

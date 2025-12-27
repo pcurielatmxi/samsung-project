@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RABA Quality Test Report Schema",
+  "description": "Flexible schema for RABA Kistner quality test reports across multiple crafts and test types",
+  "type": "object",
+  "properties": {
+    "report_metadata": {
+      "type": "object",
+      "properties": {
+        "report_date": {
+          "type": "string",
+          "description": "Date the report was issued (format: YYYY-MM-DD)"
+        },
+        "project_name": {
+          "type": "string",
+          "description": "Project name (e.g., 'Samsung Taylor - FAB1 Project')"
+        },
+        "assignment_number": {
+          "type": "string",
+          "description": "Assignment number from RABA"
+        },
+        "project_number": {
+          "type": "string",
+          "description": "Project number"
+        },
+        "laboratory": {
+          "type": "string",
+          "description": "Testing laboratory name"
+        },
+        "test_type": {
+          "type": "string",
+          "description": "Type of test performed (e.g., 'Compressive Strength Test', 'Soil Compaction Test', 'Rebar Inspection', 'Welding Inspection', 'Fireproofing Thickness', etc.)"
+        },
+        "craft": {
+          "type": "string",
+          "description": "Craft/discipline (e.g., 'Concrete', 'Steel', 'Mechanical', 'Electrical', 'Architectural', 'Fireproofing')"
+        }
+      },
+      "required": ["report_date", "project_name", "test_type"]
+    },
+    "test_sets": {
+      "type": "array",
+      "description": "Array of test sets or inspection records - structure varies by test type",
+      "items": {
+        "type": "object",
+        "properties": {
+          "set_number": {
+            "type": "string",
+            "description": "Set identifier (e.g., 'Set 1 of 28', 'Sample A', 'Location 1')"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location being tested/inspected (e.g., 'FAB Drilled Piers', 'Level 4 Column Line A', 'Building 2 East Wall')"
+          },
+          "location_code": {
+            "type": "string",
+            "description": "Location code if provided (e.g., 'D132', 'D138', 'A/1-2')"
+          },
+          "test_date": {
+            "type": "string",
+            "description": "Date test was performed or material was placed (format: YYYY-MM-DD)"
+          },
+          "test_time": {
+            "type": "string",
+            "description": "Time test was performed (format: HH:MM)"
+          },
+          "contractor": {
+            "type": "string",
+            "description": "Contractor who performed the work being tested (e.g., 'Yates', 'SECAI', 'Austin Bridge', subcontractor name)"
+          },
+          "technician": {
+            "type": "string",
+            "description": "Name of technician who performed tests"
+          },
+          "material_supplier": {
+            "type": "string",
+            "description": "Supplier name (concrete, steel, fireproofing, etc.)"
+          },
+          "batch_number": {
+            "type": "string",
+            "description": "Batch, lot, or heat number for material traceability"
+          },
+          "material_specifications": {
+            "type": "object",
+            "description": "Material specifications - fields vary by material type (concrete: slump, air content; steel: grade, heat number; etc.)",
+            "additionalProperties": true
+          },
+          "test_results": {
+            "type": "array",
+            "description": "Individual test results - structure varies by test type",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sample_id": {
+                  "type": "string",
+                  "description": "Sample/specimen identifier"
+                },
+                "test_date": {
+                  "type": "string",
+                  "description": "Date this sample was tested (format: YYYY-MM-DD)"
+                },
+                "test_parameters": {
+                  "type": "object",
+                  "description": "Test-specific measurements and results - fully flexible structure",
+                  "additionalProperties": true
+                },
+                "result_value": {
+                  "type": ["number", "string"],
+                  "description": "Primary result value (e.g., strength in psi, thickness in inches, pass/fail)"
+                },
+                "result_unit": {
+                  "type": "string",
+                  "description": "Unit of measurement for result_value (e.g., 'psi', 'inches', 'mils', '%')"
+                },
+                "specification_value": {
+                  "type": ["number", "string"],
+                  "description": "Required/design value per specification"
+                },
+                "percent_of_specification": {
+                  "type": "number",
+                  "description": "Percentage of specification/design value achieved"
+                },
+                "passed": {
+                  "type": "boolean",
+                  "description": "Whether result met acceptance criteria"
+                },
+                "failure_reason": {
+                  "type": "string",
+                  "description": "If failed, the reason for failure extracted from notes/remarks (e.g., 'Low strength - insufficient curing time', 'Excessive porosity', 'Below minimum thickness')"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Notes specific to this result (e.g., fracture type, visual observations)"
+                }
+              },
+              "required": ["result_value"]
+            }
+          },
+          "weather_conditions": {
+            "type": "string",
+            "description": "Weather conditions during placement/installation if noted (relevant for concrete, coatings)"
+          },
+          "root_cause_indicators": {
+            "type": "object",
+            "description": "Indicators for root cause analysis extracted from remarks and test data",
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": ["Material", "Workmanship", "Design", "Environmental", "Mixed", "Unknown"],
+                "description": "Primary failure category if test failed"
+              },
+              "contributing_factors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of contributing factors mentioned (e.g., 'Cold weather', 'Improper mixing', 'Inadequate coverage', 'Delayed testing')"
+              }
+            }
+          },
+          "remarks": {
+            "type": "string",
+            "description": "Any special remarks or notes about this test set"
+          }
+        },
+        "required": ["location", "test_date", "test_results"]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_sets": {
+          "type": "integer",
+          "description": "Total number of test sets in this report"
+        },
+        "total_specimens": {
+          "type": "integer",
+          "description": "Total number of specimens tested"
+        },
+        "pass_fail_summary": {
+          "type": "object",
+          "properties": {
+            "passed": {
+              "type": "integer",
+              "description": "Number of specimens that passed"
+            },
+            "failed": {
+              "type": "integer",
+              "description": "Number of specimens that failed"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["report_metadata", "test_sets"]
+}
