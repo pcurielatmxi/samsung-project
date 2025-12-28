@@ -241,6 +241,58 @@ python scripts/raba/process/scrape_raba_reports.py --start 2023-06-01 --end 2023
 - `RABA_USERNAME` - Login username
 - `RABA_PASSWORD` - Login password
 
+### RABA Individual Reports Scraper (Recommended)
+
+**Location:** [scripts/raba/process/scrape_raba_individual.py](scripts/raba/process/scrape_raba_individual.py)
+
+An improved Playwright-based automation tool that downloads RABA reports as individual PDFs (one per inspection assignment). This approach is preferred over the batch scraper because:
+- No need to split multi-report batch PDFs afterward
+- Works for days with only 1 report (batch button unavailable in RABA UI)
+- Each PDF is named by assignment number for direct processing
+- Handles pagination for months with many reports
+
+**Features:**
+- Automated login with credentials from `.env`
+- Month-by-month processing with pagination support
+- Individual PDF downloads named by assignment number (e.g., `A22-016871.pdf`)
+- Idempotent operation via `manifest.json` tracking each report
+- Resume capability - skips already downloaded reports
+- `--force` flag to re-download existing files
+- `--limit` flag for testing (limits total downloads)
+
+**Output Structure:**
+```
+{WINDOWS_DATA_DIR}/raw/raba/
+├── individual/
+│   ├── A22-016104.pdf    # Individual inspection report
+│   ├── A22-016105.pdf
+│   ├── A22-016871.pdf
+│   └── ...
+└── individual_manifest.json   # Download tracking with metadata per report
+```
+
+**Usage:**
+```bash
+# Download all reports from project start (May 2022) to now
+python scripts/raba/process/scrape_raba_individual.py
+
+# Download specific date range
+python scripts/raba/process/scrape_raba_individual.py --start-date 2022-06-01 --end-date 2022-06-30
+
+# Test with limit
+python scripts/raba/process/scrape_raba_individual.py --limit 10
+
+# Force re-download
+python scripts/raba/process/scrape_raba_individual.py --start-date 2022-06-01 --end-date 2022-06-30 --force
+
+# Run headless (for background operation)
+python scripts/raba/process/scrape_raba_individual.py --headless
+```
+
+**Environment Variables (`.env`):**
+- `RABA_USERNAME` - Login username
+- `RABA_PASSWORD` - Login password
+
 ### PSI Quality Reports Scraper
 
 **Location:** [scripts/psi/process/scrape_psi_reports.py](scripts/psi/process/scrape_psi_reports.py)
