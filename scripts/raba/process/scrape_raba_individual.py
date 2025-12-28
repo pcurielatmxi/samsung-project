@@ -276,6 +276,40 @@ class RABAIndividualScraper:
             logger.error(f"Navigation error: {e}")
             return False
 
+    def recover_page_state(self) -> bool:
+        """Recover from a corrupted page state by navigating back to reports page.
+
+        Call this when a download error leaves the page in a bad state.
+        Returns True if recovery was successful.
+        """
+        try:
+            logger.info("Attempting page state recovery...")
+
+            # Close any extra tabs/popups that might be open
+            try:
+                pages = self.context.pages
+                if len(pages) > 1:
+                    for p in pages[1:]:
+                        try:
+                            p.close()
+                        except Exception:
+                            pass
+                    logger.info(f"Closed {len(pages) - 1} extra tab(s)")
+            except Exception:
+                pass
+
+            # Navigate back to reports page
+            if self.navigate_to_reports():
+                logger.info("Page state recovered successfully")
+                return True
+            else:
+                logger.error("Failed to recover page state")
+                return False
+
+        except Exception as e:
+            logger.error(f"Recovery failed: {e}")
+            return False
+
     def select_project(self) -> bool:
         """Select the Samsung Taylor FAB1 project."""
         try:
@@ -499,15 +533,41 @@ class RABAIndividualScraper:
                 logger.error(f"Popup did not open for {assignment_number}: {popup_err}")
                 return False
 
-            # Wait for page to load
+            # Wait for page to load and get a valid URL
             time.sleep(2)
 
-            # Get the PDF URL
+            # Get the PDF URL - wait for it to be a real URL (not about:blank)
             pdf_url = new_page.url
-            logger.debug(f"PDF URL for {assignment_number}: {pdf_url}")
+            retries = 0
+            while (not pdf_url or pdf_url == 'about:blank') and retries < 10:
+                time.sleep(0.5)
+                pdf_url = new_page.url
+                retries += 1
 
-            # Fetch the PDF
+            logger.info(f"PDF URL for {assignment_number}: {pdf_url}")
+
+            if not pdf_url or pdf_url == 'about:blank':
+                logger.error(f"Could not get valid PDF URL for {assignment_number}")
+                new_page.close()
+                return False
+
+            # Fetch the PDF using the popup page directly instead of a separate request
             try:
+                # Try getting content directly from the page if it's a blob or data URL
+                if pdf_url.startswith('blob:') or pdf_url.startswith('data:'):
+                    logger.info(f"Detected blob/data URL, trying alternate download method")
+                    # Use page.pdf() to capture the content if it's rendered
+                    try:
+                        pdf_bytes = new_page.pdf()
+                        with open(output_path, 'wb') as f:
+                            f.write(pdf_bytes)
+                        new_page.close()
+                        if output_path.exists() and output_path.stat().st_size > 0:
+                            logger.info(f"Downloaded via page.pdf(): {assignment_number}.pdf ({output_path.stat().st_size:,} bytes)")
+                            return True
+                    except Exception as pdf_err:
+                        logger.warning(f"page.pdf() failed: {pdf_err}")
+
                 response = self.context.request.get(pdf_url)
                 if response.status != 200:
                     logger.error(f"HTTP error {response.status} fetching PDF for {assignment_number}")
@@ -550,14 +610,19 @@ class RABAIndividualScraper:
 
     def download_reports_on_current_page(self, output_dir: Path, manifest: dict,
                                           manifest_file: Path, force: bool = False,
-                                          limit: int = None) -> Tuple[int, int, int, bool]:
+                                          limit: int = None,
+                                          month_start: datetime = None,
+                                          month_end: datetime = None) -> Tuple[int, int, int, bool, bool]:
         """Download all reports visible on the current page.
 
-        Returns tuple of (downloaded_count, skipped_count, error_count, limit_reached)
+        Returns tuple of (downloaded_count, skipped_count, error_count, limit_reached, needs_recovery)
+        The needs_recovery flag indicates the page state is corrupted and caller should recover.
         """
         downloaded = 0
         skipped = 0
         errors = 0
+        consecutive_errors = 0
+        max_consecutive_errors = 3  # Trigger recovery after 3 consecutive errors
 
         # Get reports on current page
         reports = self.get_current_page_reports()
@@ -571,13 +636,14 @@ class RABAIndividualScraper:
                                      if r.get('status') == 'success'])
                 if total_success >= limit:
                     logger.info(f"Reached limit of {limit} reports")
-                    return (downloaded, skipped, errors, True)
+                    return (downloaded, skipped, errors, True, False)
 
             # Check if already downloaded (idempotency)
             existing = manifest.get('reports', {}).get(assignment)
             if existing and existing.get('status') == 'success' and not force:
                 logger.debug(f"  {assignment}: Skipping (already downloaded)")
                 skipped += 1
+                consecutive_errors = 0  # Reset on skip (page is working)
                 continue
 
             # Download
@@ -590,10 +656,21 @@ class RABAIndividualScraper:
                 report.file_size = output_path.stat().st_size
                 report.downloaded_at = datetime.now().isoformat()
                 downloaded += 1
+                consecutive_errors = 0  # Reset on success
             else:
                 report.status = 'error'
                 report.error = 'Download failed'
                 errors += 1
+                consecutive_errors += 1
+
+                # Check if we need to recover
+                if consecutive_errors >= max_consecutive_errors:
+                    logger.warning(f"Hit {consecutive_errors} consecutive errors, triggering recovery")
+                    # Update manifest before recovery
+                    manifest['reports'][assignment] = asdict(report)
+                    manifest['last_updated'] = datetime.now().isoformat()
+                    atomic_json_save(manifest, manifest_file)
+                    return (downloaded, skipped, errors, False, True)  # needs_recovery=True
 
             # Update manifest immediately (for resume support)
             manifest['reports'][assignment] = asdict(report)
@@ -603,7 +680,7 @@ class RABAIndividualScraper:
             # Brief delay between downloads
             time.sleep(1)
 
-        return (downloaded, skipped, errors, False)
+        return (downloaded, skipped, errors, False, False)
 
     def extract_month(self, month_key: str, month_start: datetime, month_end: datetime,
                       output_dir: Path, manifest: dict, manifest_file: Path,
@@ -649,12 +726,16 @@ class RABAIndividualScraper:
 
             # Process reports page by page
             page_num = 1
+            recovery_attempts = 0
+            max_recovery_attempts = 3
+
             while True:
                 logger.info(f"  Page {page_num}: Processing...")
 
                 # Download reports on current page
-                page_dl, page_skip, page_err, limit_reached = self.download_reports_on_current_page(
-                    output_dir, manifest, manifest_file, force=force, limit=limit
+                page_dl, page_skip, page_err, limit_reached, needs_recovery = self.download_reports_on_current_page(
+                    output_dir, manifest, manifest_file, force=force, limit=limit,
+                    month_start=month_start, month_end=month_end
                 )
                 downloaded += page_dl
                 skipped += page_skip
@@ -663,6 +744,36 @@ class RABAIndividualScraper:
                 if limit_reached:
                     logger.info(f"Limit reached during page {page_num}")
                     break
+
+                # Handle recovery if needed
+                if needs_recovery:
+                    recovery_attempts += 1
+                    if recovery_attempts > max_recovery_attempts:
+                        logger.error(f"Max recovery attempts ({max_recovery_attempts}) reached, aborting month")
+                        break
+
+                    logger.info(f"Recovery attempt {recovery_attempts}/{max_recovery_attempts}")
+                    if self.recover_page_state():
+                        # Re-search and navigate back to where we were
+                        if not self.set_date_range(month_start, month_end):
+                            logger.error("Failed to re-set date range after recovery")
+                            break
+                        new_count = self.search_reports()
+                        if new_count <= 0:
+                            logger.error("Failed to re-search after recovery")
+                            break
+                        # Navigate to current page
+                        for p in range(1, page_num):
+                            next_p = self.page.locator(f'a:has-text("{p + 1}")').first
+                            if next_p.count() > 0:
+                                next_p.click()
+                                self.page.wait_for_load_state('networkidle', timeout=30000)
+                                time.sleep(1)
+                        logger.info(f"Recovered and returned to page {page_num}")
+                        continue  # Retry current page
+                    else:
+                        logger.error("Recovery failed, aborting month")
+                        break
 
                 # Check for next page link
                 next_link = None
