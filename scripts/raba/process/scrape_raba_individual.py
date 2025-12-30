@@ -554,6 +554,16 @@ class RABAIndividualScraper:
                     logger.debug(f"Popup load state wait: {load_err}")
 
             except Exception as popup_err:
+                # Check if error was rendered on main page instead of popup
+                try:
+                    main_content = self.page.content()
+                    if 'Internal Error' in main_content or 'Sorry' in main_content:
+                        logger.warning(f"Server error for {assignment_number}: Internal Error on main page, skipping")
+                        # Need to recover - navigate back to reports page
+                        self.recover_page_state()
+                        return 'skip'
+                except Exception:
+                    pass
                 logger.error(f"Popup did not open for {assignment_number}: {popup_err}")
                 return False
 
@@ -586,6 +596,16 @@ class RABAIndividualScraper:
                 new_page.close()
                 return False
 
+            # Check if the popup shows an error page instead of a PDF
+            try:
+                page_content = new_page.content()
+                if 'Internal Error' in page_content or 'Sorry' in page_content:
+                    logger.warning(f"Server error for {assignment_number}: Internal Error page detected, skipping")
+                    new_page.close()
+                    return 'skip'  # Special return value to mark as skipped, not error
+            except Exception:
+                pass  # If we can't check content, continue with download attempt
+
             # Fetch the PDF using the popup page directly instead of a separate request
             try:
                 # Try getting content directly from the page if it's a blob or data URL
@@ -610,6 +630,12 @@ class RABAIndividualScraper:
                     return False
 
                 pdf_bytes = response.body()
+
+                # Check if response is actually a PDF (not an HTML error page)
+                if pdf_bytes[:4] != b'%PDF' and b'Internal Error' in pdf_bytes:
+                    logger.warning(f"Server error for {assignment_number}: Got error page instead of PDF, skipping")
+                    new_page.close()
+                    return 'skip'
 
                 with open(output_path, 'wb') as f:
                     f.write(pdf_bytes)
@@ -673,25 +699,41 @@ class RABAIndividualScraper:
                     logger.info(f"Reached limit of {limit} reports")
                     return (downloaded, skipped, errors, True, False)
 
-            # Check if already downloaded (idempotency)
+            # Check if already downloaded or permanently failed (idempotency)
             existing = manifest.get('reports', {}).get(assignment)
-            if existing and existing.get('status') == 'success' and not force:
-                logger.debug(f"  {assignment}: Skipping (already downloaded)")
-                skipped += 1
-                consecutive_errors = 0  # Reset on skip (page is working)
-                continue
+            if existing and not force:
+                if existing.get('status') == 'success':
+                    logger.debug(f"  {assignment}: Skipping (already downloaded)")
+                    skipped += 1
+                    consecutive_errors = 0  # Reset on skip (page is working)
+                    continue
+                elif existing.get('status') == 'server_error':
+                    logger.debug(f"  {assignment}: Skipping (server error - won't retry)")
+                    skipped += 1
+                    consecutive_errors = 0
+                    continue
 
             # Download
             output_path = output_dir / f"{assignment}.pdf"
             logger.info(f"  Downloading {assignment}...")
 
-            if self.download_individual_report(assignment, output_path):
+            download_result = self.download_individual_report(assignment, output_path)
+
+            if download_result == True:
                 report.status = 'success'
                 report.file = f"{assignment}.pdf"
                 report.file_size = output_path.stat().st_size
                 report.downloaded_at = datetime.now().isoformat()
                 downloaded += 1
                 consecutive_errors = 0  # Reset on success
+            elif download_result == 'skip':
+                # Server error (Internal Error page) - mark as skipped, not error
+                report.status = 'server_error'
+                report.error = 'Server returned Internal Error page'
+                report.downloaded_at = datetime.now().isoformat()
+                skipped += 1  # Count as skipped, not error
+                consecutive_errors = 0  # Don't count server errors as consecutive failures
+                logger.info(f"  {assignment}: Marked as server_error (will not retry)")
             else:
                 report.status = 'error'
                 report.error = 'Download failed'
@@ -1033,8 +1075,7 @@ Parallel Processing Examples:
                         help='Start date (YYYY-MM-DD), default: 2022-05-01')
     parser.add_argument('--end-date', type=str, default=None,
                         help='End date (YYYY-MM-DD), default: today')
-    parser.add_argument('--headless', action='store_true',
-                        help='Run in headless mode')
+    # Note: Headless mode removed - causes URL capture issues with popups
     parser.add_argument('--force', action='store_true',
                         help='Force re-download of existing files')
     parser.add_argument('--dry-run', action='store_true',
