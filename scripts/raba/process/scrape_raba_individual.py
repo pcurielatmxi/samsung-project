@@ -1149,7 +1149,7 @@ Parallel Processing Examples:
     else:
         logger.info(f"Processing all {len(months)} months")
     logger.info(f"Output directory: {output_dir}")
-    logger.info(f"Headless mode: {args.headless}")
+    logger.info(f"Headless mode: False")
     logger.info(f"Force re-download: {args.force}")
     logger.info(f"Limit: {args.limit or 'None'}")
 
@@ -1157,7 +1157,7 @@ Parallel Processing Examples:
         logger.info("\n--- DRY RUN MODE ---\n")
 
     try:
-        with RABAIndividualScraper(headless=args.headless, download_dir=output_dir) as scraper:
+        with RABAIndividualScraper(headless=False, download_dir=output_dir) as scraper:
             # Login
             if not scraper.login():
                 logger.error("Login failed!")
