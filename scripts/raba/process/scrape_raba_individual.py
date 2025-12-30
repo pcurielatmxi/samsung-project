@@ -169,7 +169,8 @@ def load_manifest(manifest_file: Path) -> dict:
         'project': PROJECT_CODE,
         'created_at': datetime.now().isoformat(),
         'reports': {},  # Track each report by assignment number
-        'dates_processed': []  # Track which dates have been fully scanned
+        'dates_processed': [],  # Legacy - kept for backward compatibility
+        'month_status': {}  # Track month status: 'complete', 'partial', 'error'
     }
 
     if manifest_file.exists():
@@ -181,6 +182,21 @@ def load_manifest(manifest_file: Path) -> dict:
                     manifest['reports'] = {}
                 if 'dates_processed' not in manifest:
                     manifest['dates_processed'] = []
+                if 'month_status' not in manifest:
+                    manifest['month_status'] = {}
+
+                # Migrate old months_processed list to month_status dict
+                # Assume old entries were complete (best effort migration)
+                if 'months_processed' in manifest and isinstance(manifest.get('months_processed'), list):
+                    for month_key in manifest['months_processed']:
+                        if month_key not in manifest['month_status']:
+                            # Check month_stats to determine actual status
+                            month_stats = manifest.get('month_stats', {}).get(month_key, {})
+                            errors = month_stats.get('errors', 0)
+                            if errors > 0:
+                                manifest['month_status'][month_key] = 'partial'
+                            else:
+                                manifest['month_status'][month_key] = 'complete'
         except (json.JSONDecodeError, IOError):
             pass
 
@@ -529,25 +545,44 @@ class RABAIndividualScraper:
                 with self.page.expect_popup(timeout=timeout) as popup_info:
                     batch_btn.click()
                 new_page = popup_info.value
+
+                # Wait for the popup to finish its initial navigation
+                # This is crucial - the popup opens with about:blank then redirects
+                try:
+                    new_page.wait_for_load_state('domcontentloaded', timeout=30000)
+                except Exception as load_err:
+                    logger.debug(f"Popup load state wait: {load_err}")
+
             except Exception as popup_err:
                 logger.error(f"Popup did not open for {assignment_number}: {popup_err}")
                 return False
 
-            # Wait for page to load and get a valid URL
-            time.sleep(2)
+            # Additional wait for page to stabilize
+            time.sleep(1)
 
-            # Get the PDF URL - wait for it to be a real URL (not about:blank)
+            def is_valid_pdf_url(url: str) -> bool:
+                """Check if URL is a valid HTTP(S) URL for PDF download."""
+                if not url:
+                    return False
+                if url in ('about:blank', ':', 'about:srcdoc'):
+                    return False
+                # Must be a proper HTTP(S) URL
+                return url.startswith('http://') or url.startswith('https://')
+
+            # Get the PDF URL - wait for it to be a real HTTP(S) URL
             pdf_url = new_page.url
             retries = 0
-            while (not pdf_url or pdf_url == 'about:blank') and retries < 10:
+            while not is_valid_pdf_url(pdf_url) and retries < 15:
                 time.sleep(0.5)
                 pdf_url = new_page.url
                 retries += 1
+                if retries % 5 == 0:
+                    logger.debug(f"Waiting for valid URL (attempt {retries}): current='{pdf_url}'")
 
             logger.info(f"PDF URL for {assignment_number}: {pdf_url}")
 
-            if not pdf_url or pdf_url == 'about:blank':
-                logger.error(f"Could not get valid PDF URL for {assignment_number}")
+            if not is_valid_pdf_url(pdf_url):
+                logger.error(f"Could not get valid PDF URL for {assignment_number} (got: '{pdf_url}')")
                 new_page.close()
                 return False
 
@@ -707,19 +742,25 @@ class RABAIndividualScraper:
             expected_count = record_count if record_count > 0 else 0
 
             if record_count == 0:
-                logger.info(f"{month_key}: No records")
-                # Mark month as processed even if empty
+                logger.info(f"{month_key}: No records - marking complete")
+                # Mark month as complete (empty month is complete)
+                manifest.setdefault('month_status', {})[month_key] = 'complete'
+                manifest.setdefault('month_stats', {})[month_key] = {
+                    'expected': 0, 'downloaded': 0, 'skipped': 0, 'errors': 0
+                }
+                # Legacy: also update months_processed list
                 if month_key not in manifest.get('months_processed', []):
                     manifest.setdefault('months_processed', []).append(month_key)
-                    # Track expected count for this month
-                    manifest.setdefault('month_stats', {})[month_key] = {
-                        'expected': 0, 'downloaded': 0, 'skipped': 0, 'errors': 0
-                    }
-                    atomic_json_save(manifest, manifest_file)
+                atomic_json_save(manifest, manifest_file)
                 return (0, 0, 0, 0)
 
             if record_count < 0:
-                logger.error(f"{month_key}: Search failed")
+                logger.error(f"{month_key}: Search failed - marking as error")
+                manifest.setdefault('month_status', {})[month_key] = 'error'
+                manifest.setdefault('month_stats', {})[month_key] = {
+                    'expected': 0, 'downloaded': 0, 'skipped': 0, 'errors': 1, 'search_failed': True
+                }
+                atomic_json_save(manifest, manifest_file)
                 return (0, 0, 1, 0)
 
             logger.info(f"{month_key}: Found {record_count} reports, processing page by page...")
@@ -809,10 +850,6 @@ class RABAIndividualScraper:
                     logger.warning("Reached page limit (100)")
                     break
 
-            # Mark month as processed and track stats
-            if month_key not in manifest.get('months_processed', []):
-                manifest.setdefault('months_processed', []).append(month_key)
-
             # Track month stats (expected vs actual)
             manifest.setdefault('month_stats', {})[month_key] = {
                 'expected': expected_count,
@@ -821,14 +858,34 @@ class RABAIndividualScraper:
                 'errors': errors,
                 'total_processed': downloaded + skipped + errors
             }
+
+            # Determine month status based on results
+            # - 'complete': all expected reports downloaded (no errors)
+            # - 'partial': some reports downloaded but errors occurred
+            # - 'error': couldn't process the month at all
+            actual_success = downloaded + skipped
+            if errors == 0 and actual_success >= expected_count:
+                month_status = 'complete'
+            elif downloaded > 0 or skipped > 0:
+                month_status = 'partial'
+            else:
+                month_status = 'error'
+
+            manifest.setdefault('month_status', {})[month_key] = month_status
+
+            # Legacy: also update months_processed list for backward compatibility
+            if month_key not in manifest.get('months_processed', []):
+                manifest.setdefault('months_processed', []).append(month_key)
+
             atomic_json_save(manifest, manifest_file)
 
-            # Log with expected vs actual comparison
-            actual = downloaded + skipped
-            if actual != expected_count:
-                logger.warning(f"{month_key}: Expected {expected_count}, got {actual} (Downloaded {downloaded}, Skipped {skipped}, Errors {errors})")
+            # Log with expected vs actual comparison and status
+            if month_status == 'complete':
+                logger.info(f"{month_key}: COMPLETE - {expected_count} reports (Downloaded {downloaded}, Skipped {skipped})")
+            elif month_status == 'partial':
+                logger.warning(f"{month_key}: PARTIAL - Expected {expected_count}, got {actual_success} (Downloaded {downloaded}, Skipped {skipped}, Errors {errors})")
             else:
-                logger.info(f"{month_key}: {expected_count} reports - Downloaded {downloaded}, Skipped {skipped}, Errors {errors}")
+                logger.error(f"{month_key}: ERROR - Failed to process month")
 
             return (downloaded, skipped, errors, expected_count)
 
@@ -850,13 +907,20 @@ class RABAIndividualScraper:
         total_expected = 0
 
         for i, (month_key, month_start, month_end) in enumerate(months):
-            # Skip already processed months (unless force)
-            if not force and month_key in manifest.get('months_processed', []):
+            # Check month status - only skip if 'complete' (unless force)
+            month_status = manifest.get('month_status', {}).get(month_key, None)
+            month_stats = manifest.get('month_stats', {}).get(month_key, {})
+
+            if not force and month_status == 'complete':
                 # Add existing month's expected count to total
-                month_stats = manifest.get('month_stats', {}).get(month_key, {})
                 total_expected += month_stats.get('expected', 0)
-                logger.info(f"[{i+1}/{total_months}] {month_key}: Skipping (already processed)")
+                logger.info(f"[{i+1}/{total_months}] {month_key}: Skipping (complete)")
                 continue
+
+            # Log if retrying a partial month
+            if month_status == 'partial':
+                prev_errors = month_stats.get('errors', 0)
+                logger.info(f"[{i+1}/{total_months}] {month_key}: Retrying (partial - {prev_errors} previous errors)")
 
             logger.info(f"\n[{i+1}/{total_months}] Processing {month_key} "
                         f"({month_start.strftime('%Y-%m-%d')} to {month_end.strftime('%Y-%m-%d')})")
@@ -883,6 +947,7 @@ class RABAIndividualScraper:
 
             # Update manifest summary with expected vs actual tracking
             month_stats = manifest.get('month_stats', {})
+            month_statuses = manifest.get('month_status', {})
             manifest['summary'] = {
                 'total_expected': sum(m.get('expected', 0) for m in month_stats.values()),
                 'total_reports': len(manifest.get('reports', {})),
@@ -890,7 +955,10 @@ class RABAIndividualScraper:
                                              if r.get('status') == 'success']),
                 'errors': len([r for r in manifest.get('reports', {}).values()
                                if r.get('status') == 'error']),
-                'months_processed': len(manifest.get('months_processed', []))
+                'months_complete': len([s for s in month_statuses.values() if s == 'complete']),
+                'months_partial': len([s for s in month_statuses.values() if s == 'partial']),
+                'months_error': len([s for s in month_statuses.values() if s == 'error']),
+                'months_processed': len(manifest.get('months_processed', []))  # Legacy
             }
             atomic_json_save(manifest, manifest_file)
 
@@ -905,10 +973,18 @@ class RABAIndividualScraper:
             time.sleep(2)
 
         # Final summary with expected vs actual
+        month_statuses = manifest.get('month_status', {})
+        complete_count = len([s for s in month_statuses.values() if s == 'complete'])
+        partial_count = len([s for s in month_statuses.values() if s == 'partial'])
+        error_count = len([s for s in month_statuses.values() if s == 'error'])
+
         logger.info("\n" + "=" * 50)
         logger.info("Extraction Summary")
         logger.info("=" * 50)
         logger.info(f"Total months:    {total_months}")
+        logger.info(f"  Complete:      {complete_count}")
+        logger.info(f"  Partial:       {partial_count}")
+        logger.info(f"  Error:         {error_count}")
         logger.info(f"Expected:        {total_expected}")
         logger.info(f"Downloaded:      {total_downloaded}")
         logger.info(f"Skipped:         {total_skipped}")
@@ -920,20 +996,17 @@ class RABAIndividualScraper:
             discrepancy = total_expected - actual_processed
             logger.warning(f"DISCREPANCY: Expected {total_expected}, processed {actual_processed} (difference: {discrepancy})")
 
-            # Show which months have discrepancies
-            month_stats = manifest.get('month_stats', {})
-            discrepant_months = []
-            for month, stats in month_stats.items():
-                expected = stats.get('expected', 0)
-                processed = stats.get('downloaded', 0) + stats.get('skipped', 0)
-                if expected != processed:
-                    discrepant_months.append(f"  {month}: expected {expected}, got {processed}")
-            if discrepant_months:
-                logger.warning("Months with discrepancies:")
-                for dm in discrepant_months[:10]:  # Show first 10
-                    logger.warning(dm)
-                if len(discrepant_months) > 10:
-                    logger.warning(f"  ... and {len(discrepant_months) - 10} more")
+        # Show months that need attention (partial or error status)
+        if partial_count > 0 or error_count > 0:
+            logger.warning("\nMonths needing attention:")
+            for month, status in sorted(month_statuses.items()):
+                if status in ('partial', 'error'):
+                    stats = manifest.get('month_stats', {}).get(month, {})
+                    expected = stats.get('expected', 0)
+                    downloaded = stats.get('downloaded', 0)
+                    errors = stats.get('errors', 0)
+                    logger.warning(f"  {month} [{status.upper()}]: expected {expected}, downloaded {downloaded}, errors {errors}")
+            logger.info("\nRe-run the script to retry failed months (successfully downloaded reports will be skipped)")
 
         return manifest
 
