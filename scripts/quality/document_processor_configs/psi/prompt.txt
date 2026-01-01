@@ -1,106 +1,42 @@
-You are extracting data from a PSI (Professional Services Industries) Daily Field Report for quality inspections on the Samsung Taylor FAB1 project.
+Extract STRUCTURED DATA from this PSI Daily Field Report. Be CONCISE - do not quote verbatim text.
 
-PSI performs field inspections across all construction crafts and disciplines. Inspection types include but are not limited to:
-- **Structural Steel**: Paint touch-up, welding, bolts, connection inspections
-- **Concrete**: Formwork, rebar placement, post-pour inspections
-- **Architectural**: Framing, drywall, bottom plates, wall assemblies
-- **Mechanical/Electrical**: Rough-in, equipment placement, penetrations
-- **Fireproofing**: Application thickness, coverage
-- **Site Work**: Grading, utilities, drainage
+OUTPUT REQUIREMENTS:
+- Keep response under 1500 tokens
+- Summarize, don't quote
+- Use short field values
 
-These are standardized Daily Field Reports that document visual inspections and quality control activities performed by third-party inspectors.
+EXTRACT:
 
-REPORT STRUCTURE:
-1. **Report Metadata**: Report number (DFR format), issue date, reviewer
-2. **Inspection Details**: Date, time, location, contractor, weather, equipment
-3. **Inspection Type**: What was being inspected
-4. **Work Inspection Request (WIR)**: Formal inspection request details (if included)
-5. **Inspection Results**: First inspection and potential re-inspection results
-6. **Observations/Remarks**: Detailed findings and deficiencies
-7. **Photos**: Visual documentation
-8. **Overall Status**: Pass/Fail/Re-Inspection Required
+1. **report_metadata**:
+   - report_number (e.g., "DFR:0306103-100-O1")
+   - date_of_issue (YYYY-MM-DD)
 
-IMPORTANT INSTRUCTIONS:
+2. **inspection_details**:
+   - test_date (YYYY-MM-DD)
+   - contractor (company name only: "Yates", "SECAI", "Berg", etc.)
+   - location (building + level + grid, e.g., "FAB1 L4 D/13-17")
 
-1. **Report Identification**:
-   - Extract the DFR report number (e.g., "DFR:0306103-100-O1")
-   - Extract issue number and date of issue
+3. **inspection_type**:
+   - primary_type (short: "Paint Touch Up", "Framing", "Drywall", etc.)
 
-2. **Inspection Details**:
-   - Test date and arrival/departure times
-   - Contractor being inspected (Yates, Berg, SECAI, etc.)
-   - Specific location - be as precise as possible (e.g., "FAB 1 Level 6 L-N/5", "LEVEL 4-6 C/25-27")
-   - Weather and equipment used
+4. **wir_details** (if present):
+   - ir_number
+   - discipline ("Arch", "Mech", "Elec", "Struct", "Civil")
 
-3. **Inspection Type**:
-   - Extract the primary inspection type (e.g., "Paint Touch Up", "Framing/Bottom plate Inspection")
-   - Include detailed description if provided
-   - List any referenced documents (WIR, drawings, specifications)
+5. **inspection_result**:
+   - first_inspection: {date, result: "Passed"/"Failed"/"Re-Inspection Required"}
+   - second_inspection (if exists): {date, result}
 
-4. **Work Inspection Request (WIR)**:
-   - If the report includes a WIR section, extract ALL fields:
-     - Project identifier
-     - IR Number (Inspection Request number - often starts with YT-, SECAI-, etc.)
-     - Drawing number
-     - Discipline (Arch, Elec, Mech, Civil, Structural)
-     - Request date and inspection date
-     - Inspection item description
-     - Requested by (company and person)
-     - Attachments (checkboxes for drawings, checklists, photos, etc.)
+6. **deficiencies** (array, max 5 entries):
+   - deficiency_type ("Missing Item", "Improper Installation", "Damaged", "Out of Tolerance", "Incomplete", "Other")
+   - corrected_during_inspection (true/false)
+   - root_cause_category ("Workmanship", "Material", "Design", "Predecessor", "Unknown")
 
-5. **Inspection Results**:
-   - **First Inspection**: Extract date, result (Inspected, Re-Inspection Required, Accepted, Rejected), and comments
-   - **Second Inspection (Re-inspection)**: If present, extract date, result (Accepted, Rejected), and comments
-   - Extract inspector names and companies:
-     - Prime contractor inspector (usually SECAI)
-     - Third party inspector (PSI)
-     - Owner representative (if signed)
-   - List attachments (Photos, Completed Punch List, etc.)
+7. **overall_status**: "Passed" or "Failed" or "Re-Inspection Required"
 
-6. **Observations and Deficiencies**:
-   - Extract all observations and remarks
-   - If specific deficiencies are listed, create entries in the `deficiencies` array with:
-     - **description**: Description of the deficiency
-     - **location**: Location (if more specific than the overall inspection location)
-     - **corrected_during_inspection**: Whether it was corrected during the inspection
-     - **deficiency_type**: Classify into: Missing Item, Improper Installation, Damaged Material, Out of Tolerance, Code Violation, Cleanliness, Incomplete Work, or Other
-     - **severity**: If the report indicates urgency or criticality, classify as Critical, Major, or Minor
-     - **responsible_party**: If the report indicates who is responsible (e.g., "previous trade left debris", "framing contractor"), extract it
-     - **root_cause_category**: Infer the root cause:
-       * "Material" - defective or wrong materials
-       * "Workmanship" - installation errors, quality of work issues
-       * "Design/Coordination" - design conflicts, lack of coordination between trades
-       * "Predecessor Work" - issues caused by previous trade's work
-       * "Environmental" - weather, site conditions
-       * "Unknown" - insufficient information to determine
-   - Example: "No bottom plate near column L5" would be:
-     * deficiency_type: "Missing Item"
-     * root_cause_category: "Workmanship"
-   - Example: "Paint overspray on adjacent surfaces" would be:
-     * deficiency_type: "Cleanliness"
-     * root_cause_category: "Workmanship"
-   - Example: "The area inspected and all deficiencies were fixed during inspection" indicates deficiencies were corrected (corrected_during_inspection: true)
+8. **photos**: {has_photos: true/false, count: N}
 
-7. **Overall Status**:
-   - Extract the overall pass/fail status from "Comments / Exceptions" section
-   - Common values: "Passed", "Failed", "Re-Inspection Required"
-   - If status says "Passed" and remarks indicate deficiencies were fixed during inspection, still mark as "Passed"
-
-8. **Photos**:
-   - Count the number of photo pages in the document
-   - Set `has_photos: true` if photos are present
-   - Photos are usually on separate pages showing site conditions
-
-9. **Date Formats**: Convert all dates to YYYY-MM-DD format.
-
-10. **Missing Data**: If a field is not present in the document, omit it from the JSON rather than guessing or using null values.
-
-11. **Acknowledged By**: Extract the company acknowledging the report and who they represent.
-
-12. **Contextual Understanding**:
-    - These are third-party quality control reports
-    - PSI inspectors verify work performed by contractors (Yates, Berg, SECAI, etc.)
-    - "Re-Inspection Required" typically means deficiencies must be corrected before acceptance
-    - Some reports show corrections made during the inspection itself (immediate compliance)
-
-Extract all data according to the provided JSON schema and ensure accuracy in text extraction, dates, and status determinations.
+RULES:
+- Omit empty/missing fields
+- No long descriptions - 10 words max per field
+- Combine similar deficiencies

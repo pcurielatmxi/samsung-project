@@ -28,8 +28,10 @@ from typing import Optional, List, Dict, Any
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from parsers import parse_pdf, parse_docx, parse_text
+from parsers import parse_pdf, parse_pdf_pages, parse_docx, parse_text
 from claude_client import ClaudeClient, ClaudeResponse
+from chunked_processor import ChunkedDocumentProcessor, result_to_dict
+from chunking import analyze_pages, compute_chunks
 from utils.logging_config import setup_logging
 from utils.tokens import estimate_tokens, is_document_too_large, get_token_stats
 
@@ -126,6 +128,16 @@ class DocumentProcessor:
             max_retries=max_retries,
         )
 
+        # Chunked processor for large PDFs
+        self.chunked_processor = ChunkedDocumentProcessor(
+            client=self.client,
+            user_prompt=prompt,
+            user_schema=schema,
+            max_tokens=max_tokens,
+            target_chunk_tokens=30_000,  # Target ~30K tokens per chunk
+            overlap_pages=2,
+        )
+
         # Track skipped files for user notification
         self.skipped_large_files: List[Path] = []
         self.error_files: List[tuple[Path, str]] = []
@@ -174,8 +186,13 @@ class DocumentProcessor:
             logger.info(f"Processing: {task.relative_path}")
 
             try:
-                # Parse document
                 ext = file_path.suffix.lower()
+
+                # For PDFs, use chunked processing
+                if ext == ".pdf":
+                    return await self._process_pdf(task)
+
+                # For other formats, use simple processing
                 parser = SUPPORTED_EXTENSIONS.get(ext)
                 if not parser:
                     logger.warning(f"Unsupported format: {file_path}")
@@ -184,7 +201,7 @@ class DocumentProcessor:
 
                 content = parser(file_path)
 
-                # Check token limit
+                # Check token limit for non-PDF files
                 token_count = estimate_tokens(content)
                 if token_count > self.max_tokens:
                     logger.warning(
@@ -193,9 +210,9 @@ class DocumentProcessor:
                     )
                     self.skipped_large_files.append(file_path)
                     self.stats.skipped_too_large += 1
-                    return True  # Not an error, just skipped
+                    return True
 
-                # Analyze with Claude
+                # Analyze with Claude (non-PDF)
                 response = await self.client.analyze_document(
                     content=content,
                     prompt=self.prompt,
@@ -208,7 +225,7 @@ class DocumentProcessor:
                     self.error_files.append((file_path, response.error or "Unknown error"))
                     return False
 
-                # Build output
+                # Build output (legacy format for non-PDF)
                 output = self._build_output(task, response, content)
 
                 # Write output
@@ -230,6 +247,65 @@ class DocumentProcessor:
                 logger.error(f"Error processing {task.relative_path}: {e}")
                 self.error_files.append((file_path, str(e)))
                 return False
+
+    async def _process_pdf(self, task: FileTask) -> bool:
+        """
+        Process a PDF file using chunked processing.
+
+        Returns:
+            True if successful, False if error
+        """
+        file_path = task.source_path
+
+        try:
+            # Parse PDF into pages
+            pages = parse_pdf_pages(file_path)
+
+            if not pages:
+                logger.warning(f"No pages extracted from {task.relative_path}")
+                self.stats.skipped_unsupported += 1
+                return True
+
+            # Process with chunked processor
+            result = await self.chunked_processor.process_document(
+                pages=pages,
+                file_path=file_path,
+            )
+
+            if not result.success:
+                logger.error(f"Analysis failed: {task.relative_path} - {result.error}")
+                self.error_files.append((file_path, result.error or "Unknown error"))
+                return False
+
+            # Convert to output format
+            output = result_to_dict(result)
+
+            # Write output
+            task.output_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(task.output_path, "w", encoding="utf-8") as f:
+                json.dump(output, f, indent=2, ensure_ascii=False)
+
+            # Update stats from all chunks
+            total_cost = sum(
+                c.chunk_metadata.get("cost_usd", 0) for c in result.chunks
+            )
+            total_duration = sum(
+                c.chunk_metadata.get("duration_ms", 0) for c in result.chunks
+            )
+            self.stats.total_cost_usd += total_cost
+            self.stats.total_duration_ms += total_duration
+
+            chunks_info = f"{len(result.chunks)} chunk{'s' if len(result.chunks) > 1 else ''}"
+            logger.info(
+                f"Completed: {task.relative_path} "
+                f"({chunks_info}, ${total_cost:.4f}, {total_duration}ms)"
+            )
+            return True
+
+        except Exception as e:
+            logger.error(f"Error processing PDF {task.relative_path}: {e}")
+            self.error_files.append((file_path, str(e)))
+            return False
 
     def _build_output(
         self,
@@ -351,17 +427,24 @@ class DocumentProcessor:
                 logger.error(f"  - {f}: {err}")
 
 
-def load_schema(schema_path: Optional[str]) -> Optional[dict]:
+def load_schema(schema_path: str) -> dict:
     """Load JSON schema from file."""
-    if not schema_path:
-        return None
-
     path = Path(schema_path)
     if not path.exists():
         raise FileNotFoundError(f"Schema file not found: {schema_path}")
 
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_prompt(prompt_path: str) -> str:
+    """Load prompt from file."""
+    path = Path(prompt_path)
+    if not path.exists():
+        raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read().strip()
 
 
 def main():
@@ -371,14 +454,17 @@ def main():
         epilog="""
 Examples:
   # Basic usage
-  python process_documents.py -i ./docs -o ./output -p "Extract key entities"
+  python process_documents.py -i ./docs -o ./output \\
+      --prompt-file prompt.txt --schema schema.json
 
-  # With schema and concurrency
-  python process_documents.py -i ./docs -o ./output -p "Extract..." \\
-      --schema schema.json --concurrency 10 --skip-existing
+  # With concurrency and skip existing
+  python process_documents.py -i ./docs -o ./output \\
+      --prompt-file prompt.txt --schema schema.json \\
+      --concurrency 10 --skip-existing
 
   # With specific model
-  python process_documents.py -i ./docs -o ./output -p "Analyze..." \\
+  python process_documents.py -i ./docs -o ./output \\
+      --prompt-file prompt.txt --schema schema.json \\
       --model opus --timeout 600
         """,
     )
@@ -394,12 +480,13 @@ Examples:
         help="Output directory for JSON results",
     )
     parser.add_argument(
-        "-p", "--prompt",
+        "--prompt-file",
         required=True,
-        help="Prompt for document analysis",
+        help="Path to prompt file for document analysis",
     )
     parser.add_argument(
         "--schema",
+        required=True,
         help="Path to JSON schema file for expected output structure",
     )
     parser.add_argument(
@@ -453,11 +540,26 @@ Examples:
     log_path = Path(args.log_file) if args.log_file else None
     setup_logging(log_file=log_path, verbose=args.verbose)
 
-    # Load schema if provided
+    # Load prompt from file
+    try:
+        prompt = load_prompt(args.prompt_file)
+    except Exception as e:
+        logger.error(f"Failed to load prompt file: {e}")
+        sys.exit(1)
+
+    if not prompt:
+        logger.error("Prompt file is empty.")
+        sys.exit(1)
+
+    # Load schema from file
     try:
         schema = load_schema(args.schema)
     except Exception as e:
         logger.error(f"Failed to load schema: {e}")
+        sys.exit(1)
+
+    if not schema:
+        logger.error("Schema file is empty or invalid.")
         sys.exit(1)
 
     # Validate directories
@@ -473,7 +575,7 @@ Examples:
     processor = DocumentProcessor(
         input_dir=input_dir,
         output_dir=output_dir,
-        prompt=args.prompt,
+        prompt=prompt,
         schema=schema,
         model=args.model,
         concurrency=args.concurrency,

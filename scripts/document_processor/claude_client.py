@@ -50,7 +50,7 @@ class ClaudeClient:
         self,
         content: str,
         prompt: str,
-        schema: Optional[dict] = None,
+        schema: dict,
         file_path: Optional[Path] = None,
     ) -> ClaudeResponse:
         """
@@ -59,14 +59,23 @@ class ClaudeClient:
         Args:
             content: Document text content
             prompt: Analysis prompt
-            schema: Optional JSON schema for output
+            schema: JSON schema for output (required, enforced via --json-schema)
             file_path: Optional source file path for context
 
         Returns:
             ClaudeResponse with analysis results
+
+        Raises:
+            ValueError: If schema is not provided
         """
+        if not schema:
+            raise ValueError("JSON schema is required for document analysis")
+
         # Build the full prompt
         full_prompt = self._build_prompt(content, prompt, schema, file_path)
+
+        # Store schema for use in _execute_claude
+        self._current_schema = schema
 
         # Execute with retry logic
         try:
@@ -92,10 +101,13 @@ class ClaudeClient:
         self,
         content: str,
         prompt: str,
-        schema: Optional[dict],
+        schema: dict,
         file_path: Optional[Path],
     ) -> str:
-        """Build the full prompt for Claude."""
+        """Build the full prompt for Claude.
+
+        Note: Schema is enforced via --json-schema CLI flag, not in prompt text.
+        """
         parts = []
 
         # Add file context if provided
@@ -106,12 +118,6 @@ class ClaudeClient:
         # Add the user's prompt
         parts.append(prompt)
         parts.append("")
-
-        # Add schema instructions if provided
-        if schema:
-            parts.append("Output your response as valid JSON matching this schema:")
-            parts.append(f"```json\n{json.dumps(schema, indent=2)}\n```")
-            parts.append("")
 
         # Add the document content
         parts.append("Document content:")
@@ -125,22 +131,28 @@ class ClaudeClient:
         """Execute Claude Code subprocess."""
         cmd = [
             "claude",
-            "-p", prompt,
+            "-p", "-",  # Read prompt from stdin
             "--output-format", "json",
             "--model", self.model,
         ]
 
+        # Add --json-schema if schema is provided for structured output
+        if self._current_schema:
+            schema_str = json.dumps(self._current_schema)
+            cmd.extend(["--json-schema", schema_str])
+
         try:
-            # Run subprocess asynchronously
+            # Run subprocess asynchronously with stdin for prompt
             process = await asyncio.create_subprocess_exec(
                 *cmd,
+                stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
 
             try:
                 stdout, stderr = await asyncio.wait_for(
-                    process.communicate(),
+                    process.communicate(input=prompt.encode("utf-8")),
                     timeout=self.timeout,
                 )
             except asyncio.TimeoutError:
@@ -170,11 +182,15 @@ class ClaudeClient:
                     raise RateLimitError(f"Rate limit: {error_msg}")
                 raise RetryableError(f"Claude error: {error_msg}")
 
-            # Extract result
-            result_text = response_data.get("result", "")
-
-            # Try to parse result as JSON if it looks like JSON
-            parsed_result = self._try_parse_json(result_text)
+            # Extract structured_output (from --json-schema enforcement)
+            structured_output = response_data.get("structured_output")
+            if structured_output is None:
+                # Fallback to parsing result text if structured_output not present
+                result_text = response_data.get("result", "")
+                parsed_result = self._try_parse_json(result_text)
+                logger.warning("No structured_output in response, falling back to text parsing")
+            else:
+                parsed_result = structured_output
 
             return ClaudeResponse(
                 success=True,

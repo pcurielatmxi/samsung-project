@@ -109,7 +109,7 @@
                   "description": "Primary result value (e.g., strength in psi, thickness in inches, pass/fail)"
                 },
                 "result_unit": {
-                  "type": "string",
+                  "type": ["string", "null"],
                   "description": "Unit of measurement for result_value (e.g., 'psi', 'inches', 'mils', '%')"
                 },
                 "specification_value": {

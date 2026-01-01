@@ -1,86 +1,40 @@
-You are extracting data from a RABA Kistner quality test report for the Samsung Taylor FAB1 project.
+Extract STRUCTURED DATA from this RABA quality test report. Be CONCISE - do not quote verbatim text.
 
-RABA performs various types of quality testing across multiple construction crafts. Test types include but are not limited to:
-- **Concrete**: Compressive strength, slump, air content, placement verification
-- **Soil/Earthwork**: Compaction tests, moisture content, density
-- **Structural Steel**: Welding inspections, bolt tension, coating thickness
-- **Fireproofing**: Thickness measurements, adhesion tests
-- **Rebar**: Placement verification, spacing, cover
-- **Other Materials**: Masonry, grout, specialized coatings
+OUTPUT REQUIREMENTS:
+- Keep response under 2000 tokens
+- Summarize, don't quote
+- Use short field values
+- For reports with many test sets, summarize into fewer entries
 
-The reports typically contain multiple test sets or locations, where each set represents tests performed at a specific location or on specific materials.
+EXTRACT:
 
-EXTRACTION APPROACH:
-1. **Identify Test Type**: Determine what type of test this report covers (look at title, headers, test parameters)
-2. **Extract Test-Specific Data**: Based on the test type, extract relevant measurements and parameters
-3. **Use Flexible Structure**: The `test_parameters` and `material_specifications` fields accept any test-specific data as key-value pairs
+1. **report_metadata**:
+   - report_date (YYYY-MM-DD)
+   - assignment_number
+   - test_type (short name: "Compressive Strength", "Soil Compaction", "Fireproofing Thickness", etc.)
+   - craft ("Concrete", "Soil", "Steel", "Fireproofing", etc.)
 
-IMPORTANT INSTRUCTIONS:
+2. **test_sets** (LIMIT to 10 entries max - combine similar locations):
+   - location (building + level + grid, e.g., "FAB1 L4 A-C/15-20")
+   - location_code (grid reference only)
+   - test_date (YYYY-MM-DD)
+   - contractor (company name only)
+   - material_supplier (company name only)
+   - batch_number
+   - test_results: Array of results with ONLY:
+     - result_value (number or "Pass"/"Fail")
+     - result_unit ("psi", "pcf", "%", etc.)
+     - specification_value
+     - passed (true/false)
+   - For large test sets, provide ONE summary result with count in notes
 
-1. **Test Type and Craft**: In the `report_metadata`, identify both the specific test type and the craft/discipline. Examples:
-   - Test type: "Compressive Strength Test", Craft: "Concrete"
-   - Test type: "Welding Visual Inspection", Craft: "Steel"
-   - Test type: "Fireproofing Thickness", Craft: "Fireproofing"
+3. **summary**:
+   - total_sets (integer)
+   - total_specimens (integer)
+   - pass_fail_summary: {passed: N, failed: N}
 
-2. **Test Sets**: Each report typically contains multiple sets or locations. Extract ALL sets from the document.
-
-3. **Location Information**: Carefully extract the location being tested:
-   - General area (e.g., "FAB Drilled Piers", "Level 4 East Wall", "Foundation Section A")
-   - Specific location codes (e.g., "D132", "D138", "A/1-2", "Grid Line E/5")
-   - Building/module references
-
-4. **Material Specifications**: Use the `material_specifications` object to capture test-specific initial properties:
-   - Concrete: `{"slump": "6 inches", "unit_weight": "150 pcf", "air_content": "5%", "design_strength_psi": 4000}`
-   - Steel: `{"grade": "A992", "heat_number": "H12345", "weld_procedure": "WPS-101"}`
-   - Fireproofing: `{"product": "Monokote", "specified_thickness": "2 inches", "application_date": "2024-01-15"}`
-
-5. **Test Results**: For each individual test/sample, use the `test_parameters` object to capture ALL test-specific measurements:
-   - Concrete: `{"age_days": 28, "load_lbs": 88000, "area_sq_in": 28.27, "fracture_type": "Cone"}`
-   - Fireproofing: `{"reading_number": 1, "thickness_mils": 750, "location_description": "North face column"}`
-   - Welding: `{"weld_id": "W-123", "weld_length_ft": 10, "defect_type": "Porosity", "defect_size": "1/8 inch"}`
-
-6. **Primary Result**: Always populate `result_value` and `result_unit` with the main measurement:
-   - Compressive strength: `result_value: 4500, result_unit: "psi"`
-   - Thickness: `result_value: 2.1, result_unit: "inches"`
-   - Pass/Fail visual: `result_value: "Pass", result_unit: null`
-
-7. **Pass/Fail Determination**: Set `passed: true/false` based on whether the result meets acceptance criteria. Compare `result_value` to `specification_value` when available.
-
-8. **Date Formats**: Convert all dates to YYYY-MM-DD format.
-
-9. **Missing Data**: If a field is not present in the document, omit it from the JSON rather than guessing or using null values.
-
-10. **Summary Statistics**: Calculate the total number of sets, total results/specimens, and pass/fail counts across the entire document.
-
-11. **Technician Names**: Extract technician names when provided.
-
-12. **Special Notes**: Include any remarks, notes, or special conditions in the `remarks` field at the test set level or `notes` field at the individual result level.
-
-13. **Contractor Information**: Extract the contractor who performed the work being tested. Look for:
-    - Contractor name in headers or project information
-    - Company names associated with the work location
-    - References to who placed/installed the material being tested
-
-14. **Batch/Lot Traceability**: Extract batch numbers, lot numbers, or heat numbers for material traceability and correlation with supplier quality issues.
-
-15. **Root Cause Analysis Fields**:
-    - **failure_reason**: For any failed test, extract the specific reason from remarks (e.g., "Low strength - insufficient curing time", "Thickness below minimum")
-    - **root_cause_indicators.category**: Classify failures into:
-      * "Material" - defective materials, wrong mix, supplier issues
-      * "Workmanship" - improper installation, application errors, technique issues
-      * "Design" - specification problems, inadequate design
-      * "Environmental" - weather, temperature, site conditions
-      * "Mixed" - multiple contributing factors
-      * "Unknown" - insufficient information
-    - **root_cause_indicators.contributing_factors**: Extract specific factors mentioned in remarks (e.g., ["Cold weather during placement", "Delayed testing beyond 28 days"])
-    - **weather_conditions**: If weather is mentioned as affecting the work, extract it
-
-16. **Root Cause Inference Guidelines**:
-    - If strength is low and remarks mention "cold weather" or temperature → Environmental
-    - If thickness is inadequate → likely Workmanship
-    - If multiple specimens from same batch fail → likely Material
-    - If fracture type is abnormal → could indicate Material or Workmanship
-    - If report mentions "improper mixing", "inadequate coverage", "insufficient compaction" → Workmanship
-    - If report mentions "below specification grade", "wrong material delivered" → Material
-
-Extract all data according to the provided JSON schema. The schema is designed to be flexible - use the `additionalProperties: true` fields (`material_specifications` and `test_parameters`) to capture any test-specific data that doesn't fit the standard fields.
+RULES:
+- Omit empty/missing fields
+- No long text in notes/remarks - use 10 words max
+- Combine multiple specimens from same location into one test_set
+- For reports with 50+ specimens, summarize by location groups
