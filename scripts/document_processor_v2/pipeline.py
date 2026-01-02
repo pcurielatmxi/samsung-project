@@ -21,8 +21,9 @@ import json
 import os
 import sys
 import tempfile
+import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import List, Optional, Literal
 
@@ -134,6 +135,41 @@ def write_error_file(path: Path, source_file: Path, stage: str, error: str, retr
         "retryable": retryable,
     }
     write_json_atomic(path, data)
+
+
+def format_time(seconds: float) -> str:
+    """Format seconds to human-readable time."""
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    elif seconds < 3600:
+        minutes = seconds / 60
+        return f"{minutes:.1f}m"
+    else:
+        hours = seconds / 3600
+        return f"{hours:.1f}h"
+
+
+def print_progress(stage: str, processed: int, total: int, success: int, failed: int, elapsed: float) -> None:
+    """Print progress bar and statistics."""
+    pct = (processed / total * 100) if total > 0 else 0
+    error_rate = (failed / processed * 100) if processed > 0 else 0
+    speed = processed / elapsed if elapsed > 0 else 0
+
+    # Calculate ETA
+    remaining = total - processed
+    if speed > 0:
+        eta_seconds = remaining / speed
+        eta_str = format_time(eta_seconds)
+    else:
+        eta_str = "calculating..."
+
+    # Progress bar (40 chars)
+    filled = int(pct / 2.5)
+    bar = "█" * filled + "░" * (40 - filled)
+
+    print(f"[{stage}] {bar} {pct:6.1f}% | {processed:5d}/{total:5d} | "
+          f"✓{success:5d} ✗{failed:4d} ({error_rate:5.1f}%) | "
+          f"Speed: {speed:5.1f}f/s | ETA: {eta_str:>8s} | Elapsed: {format_time(elapsed)}")
 
 
 async def process_stage1(task: FileTask, config: PipelineConfig) -> bool:
@@ -437,12 +473,13 @@ async def run_pipeline(
         print(f"\n{'=' * 60}")
         print("STAGE 1: Gemini Extraction")
         print(f"{'=' * 60}")
+        print()
 
+        stage1_start_time = time.time()
         semaphore = asyncio.Semaphore(config.concurrency)
 
         async def process_with_semaphore(task: FileTask) -> bool:
             async with semaphore:
-                print(f"[S1] Processing: {task.relative_path}")
                 return await process_stage1(task, config)
 
         results = await asyncio.gather(
@@ -453,33 +490,43 @@ async def run_pipeline(
         for task, result in zip(stage1_tasks, results):
             stats["stage1"]["processed"] += 1
             if isinstance(result, Exception):
-                print(f"[S1] ERROR: {task.relative_path} - {result}")
                 stats["stage1"]["failed"] += 1
             elif result:
-                print(f"[S1] OK: {task.relative_path}")
                 stats["stage1"]["success"] += 1
                 # Add to stage2 tasks if running both stages
                 if stage == "both" and task not in stage2_tasks:
                     stage2_tasks.append(task)
             else:
-                print(f"[S1] FAILED: {task.relative_path}")
                 stats["stage1"]["failed"] += 1
+
+            # Update progress every file
+            elapsed = time.time() - stage1_start_time
+            print_progress(
+                "S1",
+                stats["stage1"]["processed"],
+                len(stage1_tasks),
+                stats["stage1"]["success"],
+                stats["stage1"]["failed"],
+                elapsed,
+            )
+
+        print()  # Blank line after stage
 
     # Process Stage 2
     if stage2_tasks:
-        print(f"\n{'=' * 60}")
-        print("STAGE 2: Claude Formatting")
         print(f"{'=' * 60}")
+        print("STAGE 2: Gemini Formatting")
+        print(f"{'=' * 60}")
+        print()
 
+        stage2_start_time = time.time()
         semaphore = asyncio.Semaphore(config.concurrency)
 
         async def process_with_semaphore(task: FileTask) -> bool:
             async with semaphore:
                 # Double-check stage 1 is complete
                 if task.stage1_status() != "completed":
-                    print(f"[S2] BLOCKED: {task.relative_path} (Stage 1 not complete)")
                     return False
-                print(f"[S2] Processing: {task.relative_path}")
                 return await process_stage2(task, config)
 
         results = await asyncio.gather(
@@ -490,21 +537,43 @@ async def run_pipeline(
         for task, result in zip(stage2_tasks, results):
             stats["stage2"]["processed"] += 1
             if isinstance(result, Exception):
-                print(f"[S2] ERROR: {task.relative_path} - {result}")
                 stats["stage2"]["failed"] += 1
             elif result:
-                print(f"[S2] OK: {task.relative_path}")
                 stats["stage2"]["success"] += 1
             else:
-                print(f"[S2] FAILED: {task.relative_path}")
                 stats["stage2"]["failed"] += 1
 
+            # Update progress every file
+            elapsed = time.time() - stage2_start_time
+            print_progress(
+                "S2",
+                stats["stage2"]["processed"],
+                len(stage2_tasks),
+                stats["stage2"]["success"],
+                stats["stage2"]["failed"],
+                elapsed,
+            )
+
+        print()  # Blank line after stage
+
     # Print summary
-    print(f"\n{'=' * 60}")
-    print("SUMMARY")
     print(f"{'=' * 60}")
-    print(f"Stage 1: {stats['stage1']['success']}/{stats['stage1']['processed']} succeeded")
-    print(f"Stage 2: {stats['stage2']['success']}/{stats['stage2']['processed']} succeeded")
+    print("FINAL SUMMARY")
+    print(f"{'=' * 60}")
+
+    if stats['stage1']['processed'] > 0:
+        s1_success_rate = stats['stage1']['success'] / stats['stage1']['processed'] * 100
+        print(f"Stage 1 (Extraction): {stats['stage1']['success']}/{stats['stage1']['processed']} succeeded ({s1_success_rate:.1f}%)")
+        print(f"  └─ Failures: {stats['stage1']['failed']}")
+
+    if stats['stage2']['processed'] > 0:
+        s2_success_rate = stats['stage2']['success'] / stats['stage2']['processed'] * 100
+        print(f"Stage 2 (Formatting): {stats['stage2']['success']}/{stats['stage2']['processed']} succeeded ({s2_success_rate:.1f}%)")
+        print(f"  └─ Failures: {stats['stage2']['failed']}")
+
+    total_files = stats['stage1']['processed'] + stats['stage2']['processed']
+    if total_files == 0:
+        print("No files processed")
 
     return stats
 
@@ -546,6 +615,7 @@ def main():
     )
 
     args = parser.parse_args()
+    main_start_time = time.time()
 
     # Load and validate config
     try:
@@ -567,6 +637,12 @@ def main():
             limit=args.limit,
             dry_run=args.dry_run,
         ))
+
+        # Print total elapsed time
+        if not stats.get("dry_run"):
+            total_elapsed = time.time() - main_start_time
+            print(f"Total elapsed time: {format_time(total_elapsed)}")
+
     except KeyboardInterrupt:
         print("\nInterrupted by user")
         sys.exit(130)
