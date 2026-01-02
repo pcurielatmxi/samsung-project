@@ -477,38 +477,43 @@ async def run_pipeline(
 
         stage1_start_time = time.time()
         semaphore = asyncio.Semaphore(config.concurrency)
+        stage1_results = {}
 
-        async def process_with_semaphore(task: FileTask) -> bool:
+        async def process_with_semaphore(idx: int, task: FileTask) -> tuple:
             async with semaphore:
-                return await process_stage1(task, config)
+                result = await process_stage1(task, config)
+                stage1_results[idx] = result
+                # Print progress immediately when task completes
+                elapsed = time.time() - stage1_start_time
+                success_count = sum(1 for r in stage1_results.values() if r is True)
+                failed_count = sum(1 for r in stage1_results.values() if r is False)
+                print_progress(
+                    "S1",
+                    len(stage1_results),
+                    len(stage1_tasks),
+                    success_count,
+                    failed_count,
+                    elapsed,
+                )
+                return idx, result
 
         results = await asyncio.gather(
-            *[process_with_semaphore(t) for t in stage1_tasks],
+            *[process_with_semaphore(i, t) for i, t in enumerate(stage1_tasks)],
             return_exceptions=True,
         )
 
-        for task, result in zip(stage1_tasks, results):
-            stats["stage1"]["processed"] += 1
-            if isinstance(result, Exception):
-                stats["stage1"]["failed"] += 1
-            elif result:
+        for idx, result in results:
+            if not isinstance(result, tuple):
+                continue  # Skip exception cases
+            _, task_result = result
+            if task_result:
                 stats["stage1"]["success"] += 1
                 # Add to stage2 tasks if running both stages
-                if stage == "both" and task not in stage2_tasks:
-                    stage2_tasks.append(task)
+                if stage == "both" and stage1_tasks[idx] not in stage2_tasks:
+                    stage2_tasks.append(stage1_tasks[idx])
             else:
                 stats["stage1"]["failed"] += 1
-
-            # Update progress every file
-            elapsed = time.time() - stage1_start_time
-            print_progress(
-                "S1",
-                stats["stage1"]["processed"],
-                len(stage1_tasks),
-                stats["stage1"]["success"],
-                stats["stage1"]["failed"],
-                elapsed,
-            )
+            stats["stage1"]["processed"] += 1
 
         print(flush=True)  # Blank line after stage
 
@@ -521,38 +526,44 @@ async def run_pipeline(
 
         stage2_start_time = time.time()
         semaphore = asyncio.Semaphore(config.concurrency)
+        stage2_results = {}
 
-        async def process_with_semaphore(task: FileTask) -> bool:
+        async def process_with_semaphore(idx: int, task: FileTask) -> tuple:
             async with semaphore:
                 # Double-check stage 1 is complete
                 if task.stage1_status() != "completed":
-                    return False
-                return await process_stage2(task, config)
+                    stage2_results[idx] = False
+                    return idx, False
+                result = await process_stage2(task, config)
+                stage2_results[idx] = result
+                # Print progress immediately when task completes
+                elapsed = time.time() - stage2_start_time
+                success_count = sum(1 for r in stage2_results.values() if r is True)
+                failed_count = sum(1 for r in stage2_results.values() if r is False)
+                print_progress(
+                    "S2",
+                    len(stage2_results),
+                    len(stage2_tasks),
+                    success_count,
+                    failed_count,
+                    elapsed,
+                )
+                return idx, result
 
         results = await asyncio.gather(
-            *[process_with_semaphore(t) for t in stage2_tasks],
+            *[process_with_semaphore(i, t) for i, t in enumerate(stage2_tasks)],
             return_exceptions=True,
         )
 
-        for task, result in zip(stage2_tasks, results):
-            stats["stage2"]["processed"] += 1
-            if isinstance(result, Exception):
-                stats["stage2"]["failed"] += 1
-            elif result:
+        for idx, result in results:
+            if not isinstance(result, tuple):
+                continue  # Skip exception cases
+            _, task_result = result
+            if task_result:
                 stats["stage2"]["success"] += 1
             else:
                 stats["stage2"]["failed"] += 1
-
-            # Update progress every file
-            elapsed = time.time() - stage2_start_time
-            print_progress(
-                "S2",
-                stats["stage2"]["processed"],
-                len(stage2_tasks),
-                stats["stage2"]["success"],
-                stats["stage2"]["failed"],
-                elapsed,
-            )
+            stats["stage2"]["processed"] += 1
 
         print(flush=True)  # Blank line after stage
 
