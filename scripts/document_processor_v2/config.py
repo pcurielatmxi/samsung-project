@@ -164,36 +164,36 @@ def load_config(config_dir: str | Path) -> PipelineConfig:
 
 def print_config(config: PipelineConfig) -> None:
     """Print configuration summary."""
-    print("=" * 60)
-    print("Pipeline Configuration")
-    print("=" * 60)
-    print(f"Config dir:  {config.config_dir}")
-    print(f"Input dir:   {config.input_dir}")
-    print(f"Output dir:  {config.output_dir}")
-    print(f"Concurrency: {config.concurrency}")
-    print(f"Extensions:  {config.file_extensions}")
-    print()
-    print("Stage 1 (Extract):")
-    print(f"  Model:  {config.stage1.model}")
-    print(f"  Prompt: {config.stage1.prompt[:80]}...")
-    print()
-    print("Stage 2 (Format):")
-    print(f"  Model:  {config.stage2.model}")
-    print(f"  Prompt: {config.stage2.prompt[:80]}...")
-    print(f"  Schema: {len(config.stage2.schema.get('properties', {}))} properties")
-    print("=" * 60)
+    print("=" * 60, flush=True)
+    print("Pipeline Configuration", flush=True)
+    print("=" * 60, flush=True)
+    print(f"Config dir:  {config.config_dir}", flush=True)
+    print(f"Input dir:   {config.input_dir}", flush=True)
+    print(f"Output dir:  {config.output_dir}", flush=True)
+    print(f"Concurrency: {config.concurrency}", flush=True)
+    print(f"Extensions:  {config.file_extensions}", flush=True)
+    print(flush=True)
+    print("Stage 1 (Extract):", flush=True)
+    print(f"  Model:  {config.stage1.model}", flush=True)
+    print(f"  Prompt: {config.stage1.prompt[:80]}...", flush=True)
+    print(flush=True)
+    print("Stage 2 (Format):", flush=True)
+    print(f"  Model:  {config.stage2.model}", flush=True)
+    print(f"  Prompt: {config.stage2.prompt[:80]}...", flush=True)
+    print(f"  Schema: {len(config.stage2.schema.get('properties', {}))} properties", flush=True)
+    print("=" * 60, flush=True)
 
 
 if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python config.py <config_dir>")
+        print("Usage: python config.py <config_dir>", flush=True)
         sys.exit(1)
 
     try:
         config = load_config(sys.argv[1])
         print_config(config)
     except (FileNotFoundError, ConfigValidationError) as e:
-        print(f"ERROR: {e}")
+        print(f"ERROR: {e}", flush=True)
         sys.exit(1)
