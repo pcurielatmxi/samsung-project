@@ -7,8 +7,13 @@ Rules:
 - For outcome: use exactly "PASS", "FAIL", or "PARTIAL" (PARTIAL = some tests passed, some failed)
 - For arrays (issues, parties_involved), use empty array [] if none found
 - Quote failure reasons and issues directly from the document when possible
-- Be precise with dates (YYYY-MM-DD format)
 - For location: capture ALL location details exactly as stated (building, level, area, grid, coordinates, etc.)
+
+Standardization rules (IMPORTANT - follow exactly):
+- Dates: ALWAYS use YYYY-MM-DD format (e.g., "2022-08-09", NOT "08/09/2022")
+- failure_reason: Use null if outcome is PASS (not "N/A", "Not applicable", or "None")
+- corrective_action: Use null if no corrective action mentioned (not "No", "None", or "N/A")
+- reinspection_required: Use true, false, or null only (not strings)
 
 Field mapping:
 - report_date: The report or test date in YYYY-MM-DD format
