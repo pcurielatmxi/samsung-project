@@ -1,40 +1,18 @@
-Extract STRUCTURED DATA from this RABA quality test report. Be CONCISE - do not quote verbatim text.
+Extract key information from this RABA quality test report.
 
-OUTPUT REQUIREMENTS:
-- Keep response under 2000 tokens
-- Summarize, don't quote
-- Use short field values
-- For reports with many test sets, summarize into fewer entries
+REQUIRED:
+- passed: Did ALL tests pass? (true/false)
 
-EXTRACT:
+OPTIONAL (include if found):
+- assignment_number: RABA assignment number (e.g., "A22-016871")
+- report_date: Date (YYYY-MM-DD)
+- test_type: Type of test (e.g., "Compressive Strength", "Soil Compaction")
+- location: Building + level + grid (e.g., "FAB1 L4 D/13-17")
+- failure_reason: Why tests failed (if any failed)
+- contractor: Contractor/subcontractor name
+- material_supplier: Material supplier name
+- total_tests: Total number of tests/specimens
+- tests_passed: Count of passed tests
+- tests_failed: Count of failed tests
 
-1. **report_metadata**:
-   - report_date (YYYY-MM-DD)
-   - assignment_number
-   - test_type (short name: "Compressive Strength", "Soil Compaction", "Fireproofing Thickness", etc.)
-   - craft ("Concrete", "Soil", "Steel", "Fireproofing", etc.)
-
-2. **test_sets** (LIMIT to 10 entries max - combine similar locations):
-   - location (building + level + grid, e.g., "FAB1 L4 A-C/15-20")
-   - location_code (grid reference only)
-   - test_date (YYYY-MM-DD)
-   - contractor (company name only)
-   - material_supplier (company name only)
-   - batch_number
-   - test_results: Array of results with ONLY:
-     - result_value (number or "Pass"/"Fail")
-     - result_unit ("psi", "pcf", "%", etc.)
-     - specification_value
-     - passed (true/false)
-   - For large test sets, provide ONE summary result with count in notes
-
-3. **summary**:
-   - total_sets (integer)
-   - total_specimens (integer)
-   - pass_fail_summary: {passed: N, failed: N}
-
-RULES:
-- Omit empty/missing fields
-- No long text in notes/remarks - use 10 words max
-- Combine multiple specimens from same location into one test_set
-- For reports with 50+ specimens, summarize by location groups
+Be concise. Use null for missing optional fields.
