@@ -169,7 +169,7 @@ def print_progress(stage: str, processed: int, total: int, success: int, failed:
 
     print(f"[{stage}] {bar} {pct:6.1f}% | {processed:5d}/{total:5d} | "
           f"✓{success:5d} ✗{failed:4d} ({error_rate:5.1f}%) | "
-          f"Speed: {speed:5.1f}f/s | ETA: {eta_str:>8s} | Elapsed: {format_time(elapsed)}")
+          f"Speed: {speed:5.1f}f/s | ETA: {eta_str:>8s} | Elapsed: {format_time(elapsed)}", flush=True)
 
 
 async def process_stage1(task: FileTask, config: PipelineConfig) -> bool:
@@ -412,11 +412,11 @@ async def run_pipeline(
     """
     # Discover files
     tasks = discover_files(config)
-    print(f"Discovered {len(tasks)} input files")
+    print(f"Discovered {len(tasks)} input files", flush=True)
 
     if limit:
         tasks = tasks[:limit]
-        print(f"Limited to {limit} files")
+        print(f"Limited to {limit} files", flush=True)
 
     # Collect tasks for each stage
     stage1_tasks = []
@@ -444,23 +444,23 @@ async def run_pipeline(
             elif s2_status == "pending":
                 stage2_tasks.append(task)
 
-    print(f"Stage 1 tasks: {len(stage1_tasks)}")
-    print(f"Stage 2 tasks: {len(stage2_tasks)}")
+    print(f"Stage 1 tasks: {len(stage1_tasks)}", flush=True)
+    print(f"Stage 2 tasks: {len(stage2_tasks)}", flush=True)
 
     if dry_run:
-        print("\n[DRY RUN] Would process:")
+        print("\n[DRY RUN] Would process:", flush=True)
         if stage1_tasks:
-            print("\nStage 1:")
+            print("\nStage 1:", flush=True)
             for t in stage1_tasks[:10]:
-                print(f"  {t.relative_path}")
+                print(f"  {t.relative_path}", flush=True)
             if len(stage1_tasks) > 10:
-                print(f"  ... and {len(stage1_tasks) - 10} more")
+                print(f"  ... and {len(stage1_tasks) - 10} more", flush=True)
         if stage2_tasks:
-            print("\nStage 2:")
+            print("\nStage 2:", flush=True)
             for t in stage2_tasks[:10]:
-                print(f"  {t.relative_path}")
+                print(f"  {t.relative_path}", flush=True)
             if len(stage2_tasks) > 10:
-                print(f"  ... and {len(stage2_tasks) - 10} more")
+                print(f"  ... and {len(stage2_tasks) - 10} more", flush=True)
         return {"dry_run": True}
 
     stats = {
@@ -470,10 +470,10 @@ async def run_pipeline(
 
     # Process Stage 1
     if stage1_tasks:
-        print(f"\n{'=' * 60}")
-        print("STAGE 1: Gemini Extraction")
-        print(f"{'=' * 60}")
-        print()
+        print(f"\n{'=' * 60}", flush=True)
+        print("STAGE 1: Gemini Extraction", flush=True)
+        print(f"{'=' * 60}", flush=True)
+        print(flush=True)
 
         stage1_start_time = time.time()
         semaphore = asyncio.Semaphore(config.concurrency)
@@ -510,14 +510,14 @@ async def run_pipeline(
                 elapsed,
             )
 
-        print()  # Blank line after stage
+        print(flush=True)  # Blank line after stage
 
     # Process Stage 2
     if stage2_tasks:
-        print(f"{'=' * 60}")
-        print("STAGE 2: Gemini Formatting")
-        print(f"{'=' * 60}")
-        print()
+        print(f"{'=' * 60}", flush=True)
+        print("STAGE 2: Gemini Formatting", flush=True)
+        print(f"{'=' * 60}", flush=True)
+        print(flush=True)
 
         stage2_start_time = time.time()
         semaphore = asyncio.Semaphore(config.concurrency)
@@ -554,26 +554,26 @@ async def run_pipeline(
                 elapsed,
             )
 
-        print()  # Blank line after stage
+        print(flush=True)  # Blank line after stage
 
     # Print summary
-    print(f"{'=' * 60}")
-    print("FINAL SUMMARY")
-    print(f"{'=' * 60}")
+    print(f"{'=' * 60}", flush=True)
+    print("FINAL SUMMARY", flush=True)
+    print(f"{'=' * 60}", flush=True)
 
     if stats['stage1']['processed'] > 0:
         s1_success_rate = stats['stage1']['success'] / stats['stage1']['processed'] * 100
-        print(f"Stage 1 (Extraction): {stats['stage1']['success']}/{stats['stage1']['processed']} succeeded ({s1_success_rate:.1f}%)")
-        print(f"  └─ Failures: {stats['stage1']['failed']}")
+        print(f"Stage 1 (Extraction): {stats['stage1']['success']}/{stats['stage1']['processed']} succeeded ({s1_success_rate:.1f}%)", flush=True)
+        print(f"  └─ Failures: {stats['stage1']['failed']}", flush=True)
 
     if stats['stage2']['processed'] > 0:
         s2_success_rate = stats['stage2']['success'] / stats['stage2']['processed'] * 100
-        print(f"Stage 2 (Formatting): {stats['stage2']['success']}/{stats['stage2']['processed']} succeeded ({s2_success_rate:.1f}%)")
-        print(f"  └─ Failures: {stats['stage2']['failed']}")
+        print(f"Stage 2 (Formatting): {stats['stage2']['success']}/{stats['stage2']['processed']} succeeded ({s2_success_rate:.1f}%)", flush=True)
+        print(f"  └─ Failures: {stats['stage2']['failed']}", flush=True)
 
     total_files = stats['stage1']['processed'] + stats['stage2']['processed']
     if total_files == 0:
-        print("No files processed")
+        print("No files processed", flush=True)
 
     return stats
 
@@ -641,13 +641,13 @@ def main():
         # Print total elapsed time
         if not stats.get("dry_run"):
             total_elapsed = time.time() - main_start_time
-            print(f"Total elapsed time: {format_time(total_elapsed)}")
+            print(f"Total elapsed time: {format_time(total_elapsed)}", flush=True)
 
     except KeyboardInterrupt:
-        print("\nInterrupted by user")
+        print("\nInterrupted by user", flush=True)
         sys.exit(130)
     except Exception as e:
-        print(f"ERROR: {e}")
+        print(f"ERROR: {e}", flush=True)
         sys.exit(1)
 
 
