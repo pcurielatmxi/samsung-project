@@ -149,7 +149,26 @@ def format_time(seconds: float) -> str:
         return f"{hours:.1f}h"
 
 
-def print_progress(stage: str, processed: int, total: int, success: int, failed: int, elapsed: float) -> None:
+def calculate_gemini_cost(prompt_tokens: int, output_tokens: int, model: str = "gemini-3-flash-preview") -> float:
+    """
+    Calculate cost for Gemini API usage.
+
+    Pricing (as of 2024):
+    - gemini-3-flash-preview: $0.50 per 1M input tokens, $3.00 per 1M output tokens
+    """
+    if model == "gemini-3-flash-preview":
+        input_cost = (prompt_tokens / 1_000_000) * 0.50
+        output_cost = (output_tokens / 1_000_000) * 3.00
+    else:
+        # Default to flash pricing if unknown
+        input_cost = (prompt_tokens / 1_000_000) * 0.50
+        output_cost = (output_tokens / 1_000_000) * 3.00
+
+    return input_cost + output_cost
+
+
+def print_progress(stage: str, processed: int, total: int, success: int, failed: int, elapsed: float,
+                   prompt_tokens: int = 0, output_tokens: int = 0, model: str = "gemini-3-flash-preview") -> None:
     """Print progress bar and statistics."""
     pct = (processed / total * 100) if total > 0 else 0
     error_rate = (failed / processed * 100) if processed > 0 else 0
@@ -167,8 +186,12 @@ def print_progress(stage: str, processed: int, total: int, success: int, failed:
     filled = int(pct / 2.5)
     bar = "█" * filled + "░" * (40 - filled)
 
+    # Calculate cost
+    cost = calculate_gemini_cost(prompt_tokens, output_tokens, model)
+
     print(f"[{stage}] {bar} {pct:6.1f}% | {processed:5d}/{total:5d} | "
           f"✓{success:5d} ✗{failed:4d} ({error_rate:5.1f}%) | "
+          f"Tokens: {prompt_tokens:8d}p {output_tokens:8d}o | Cost: ${cost:7.4f} | "
           f"Speed: {speed:5.1f}f/s | ETA: {eta_str:>8s} | Elapsed: {format_time(elapsed)}", flush=True)
 
 
@@ -464,8 +487,8 @@ async def run_pipeline(
         return {"dry_run": True}
 
     stats = {
-        "stage1": {"processed": 0, "success": 0, "failed": 0},
-        "stage2": {"processed": 0, "success": 0, "failed": 0},
+        "stage1": {"processed": 0, "success": 0, "failed": 0, "prompt_tokens": 0, "output_tokens": 0, "cost": 0.0},
+        "stage2": {"processed": 0, "success": 0, "failed": 0, "prompt_tokens": 0, "output_tokens": 0, "cost": 0.0},
     }
 
     # Process Stage 1
@@ -483,10 +506,30 @@ async def run_pipeline(
             async with semaphore:
                 result = await process_stage1(task, config)
                 stage1_results[idx] = result
+
+                # Extract token usage from output file if available
+                if result and task.extract_output.exists():
+                    try:
+                        with open(task.extract_output, "r", encoding="utf-8") as f:
+                            extract_data = json.load(f)
+                            extract_usage = extract_data.get("metadata", {}).get("usage", {})
+                            if extract_usage:
+                                stats["stage1"]["prompt_tokens"] += extract_usage.get("prompt_tokens", 0)
+                                stats["stage1"]["output_tokens"] += extract_usage.get("output_tokens", 0)
+                    except Exception:
+                        pass  # Silently skip if we can't extract tokens
+
                 # Print progress immediately when task completes
                 elapsed = time.time() - stage1_start_time
                 success_count = sum(1 for r in stage1_results.values() if r is True)
                 failed_count = sum(1 for r in stage1_results.values() if r is False)
+
+                stats["stage1"]["cost"] = calculate_gemini_cost(
+                    stats["stage1"]["prompt_tokens"],
+                    stats["stage1"]["output_tokens"],
+                    config.stage1.model
+                )
+
                 print_progress(
                     "S1",
                     len(stage1_results),
@@ -494,6 +537,9 @@ async def run_pipeline(
                     success_count,
                     failed_count,
                     elapsed,
+                    stats["stage1"]["prompt_tokens"],
+                    stats["stage1"]["output_tokens"],
+                    config.stage1.model,
                 )
                 return idx, result
 
@@ -536,10 +582,30 @@ async def run_pipeline(
                     return idx, False
                 result = await process_stage2(task, config)
                 stage2_results[idx] = result
+
+                # Extract token usage from format output file if available
+                if result and task.format_output.exists():
+                    try:
+                        with open(task.format_output, "r", encoding="utf-8") as f:
+                            format_data = json.load(f)
+                            format_usage = format_data.get("metadata", {}).get("usage", {})
+                            if format_usage:
+                                stats["stage2"]["prompt_tokens"] += format_usage.get("prompt_tokens", 0)
+                                stats["stage2"]["output_tokens"] += format_usage.get("output_tokens", 0)
+                    except Exception:
+                        pass  # Silently skip if we can't extract tokens
+
                 # Print progress immediately when task completes
                 elapsed = time.time() - stage2_start_time
                 success_count = sum(1 for r in stage2_results.values() if r is True)
                 failed_count = sum(1 for r in stage2_results.values() if r is False)
+
+                stats["stage2"]["cost"] = calculate_gemini_cost(
+                    stats["stage2"]["prompt_tokens"],
+                    stats["stage2"]["output_tokens"],
+                    config.stage2.model
+                )
+
                 print_progress(
                     "S2",
                     len(stage2_results),
@@ -547,6 +613,9 @@ async def run_pipeline(
                     success_count,
                     failed_count,
                     elapsed,
+                    stats["stage2"]["prompt_tokens"],
+                    stats["stage2"]["output_tokens"],
+                    config.stage2.model,
                 )
                 return idx, result
 
@@ -572,19 +641,30 @@ async def run_pipeline(
     print("FINAL SUMMARY", flush=True)
     print(f"{'=' * 60}", flush=True)
 
+    total_cost = 0.0
+
     if stats['stage1']['processed'] > 0:
         s1_success_rate = stats['stage1']['success'] / stats['stage1']['processed'] * 100
         print(f"Stage 1 (Extraction): {stats['stage1']['success']}/{stats['stage1']['processed']} succeeded ({s1_success_rate:.1f}%)", flush=True)
         print(f"  └─ Failures: {stats['stage1']['failed']}", flush=True)
+        print(f"  └─ Tokens: {stats['stage1']['prompt_tokens']:,} prompt + {stats['stage1']['output_tokens']:,} output = {stats['stage1']['prompt_tokens'] + stats['stage1']['output_tokens']:,} total", flush=True)
+        print(f"  └─ Cost: ${stats['stage1']['cost']:.4f}", flush=True)
+        total_cost += stats['stage1']['cost']
 
     if stats['stage2']['processed'] > 0:
         s2_success_rate = stats['stage2']['success'] / stats['stage2']['processed'] * 100
         print(f"Stage 2 (Formatting): {stats['stage2']['success']}/{stats['stage2']['processed']} succeeded ({s2_success_rate:.1f}%)", flush=True)
         print(f"  └─ Failures: {stats['stage2']['failed']}", flush=True)
+        print(f"  └─ Tokens: {stats['stage2']['prompt_tokens']:,} prompt + {stats['stage2']['output_tokens']:,} output = {stats['stage2']['prompt_tokens'] + stats['stage2']['output_tokens']:,} total", flush=True)
+        print(f"  └─ Cost: ${stats['stage2']['cost']:.4f}", flush=True)
+        total_cost += stats['stage2']['cost']
 
     total_files = stats['stage1']['processed'] + stats['stage2']['processed']
     if total_files == 0:
         print("No files processed", flush=True)
+    else:
+        print(flush=True)
+        print(f"Total Cost: ${total_cost:.4f}", flush=True)
 
     return stats
 
