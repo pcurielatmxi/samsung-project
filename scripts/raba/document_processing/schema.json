@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RABA Quality Test Report",
+  "type": "object",
+  "properties": {
+    "assignment_number": {
+      "type": "string",
+      "description": "RABA assignment number (e.g., 'A22-016871')"
+    },
+    "report_date": {
+      "type": "string",
+      "description": "Report date (YYYY-MM-DD)"
+    },
+    "test_type": {
+      "type": "string",
+      "description": "Type of test (e.g., 'Compressive Strength', 'Soil Compaction')"
+    },
+    "location": {
+      "type": ["string", "null"],
+      "description": "Location (building + level + grid)"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Whether all tests passed"
+    },
+    "failure_reason": {
+      "type": ["string", "null"],
+      "description": "Reason for failure if applicable"
+    },
+    "contractor": {
+      "type": ["string", "null"],
+      "description": "Contractor/subcontractor name if mentioned"
+    },
+    "material_supplier": {
+      "type": ["string", "null"],
+      "description": "Material supplier if mentioned"
+    },
+    "total_tests": {
+      "type": ["integer", "null"],
+      "description": "Total number of tests/specimens"
+    },
+    "tests_passed": {
+      "type": ["integer", "null"],
+      "description": "Number of tests that passed"
+    },
+    "tests_failed": {
+      "type": ["integer", "null"],
+      "description": "Number of tests that failed"
+    }
+  },
+  "required": ["assignment_number", "test_type", "passed"]
+}

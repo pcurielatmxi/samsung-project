@@ -1,0 +1,15 @@
+Analyze this PSI Daily Field Report and extract all relevant information.
+
+Include the following if found:
+- Report number (e.g., DFR:0306103-100-O1)
+- Report date
+- Type of inspection performed
+- Location (building, level, grid coordinates)
+- Inspection result (pass/fail)
+- Any failure reasons or deficiencies noted
+- Contractor or subcontractor name
+- Number of deficiencies found
+- Whether re-inspection is required
+- Any other significant observations or findings
+
+Be thorough but concise. Extract factual information directly from the document.

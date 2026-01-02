@@ -1,0 +1,15 @@
+{
+  "input_dir": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports",
+  "output_dir": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/processed/psi/v2",
+  "stage1": {
+    "model": "gemini-3-flash-preview",
+    "prompt_file": "extract_prompt.txt"
+  },
+  "stage2": {
+    "model": "haiku",
+    "prompt_file": "format_prompt.txt",
+    "schema_file": "schema.json"
+  },
+  "concurrency": 5,
+  "file_extensions": [".pdf"]
+}

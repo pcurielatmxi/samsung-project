@@ -1,0 +1,15 @@
+Analyze this RABA quality inspection/test report and extract all relevant information.
+
+Include the following if found:
+- Assignment number (e.g., A22-016871)
+- Report date
+- Type of test or inspection performed
+- Location (building, level, grid coordinates)
+- Test results and whether they passed or failed
+- Any failure reasons or deficiencies noted
+- Contractor or subcontractor name
+- Material supplier name
+- Number of tests/specimens and pass/fail counts
+- Any other significant observations or findings
+
+Be thorough but concise. Extract factual information directly from the document.

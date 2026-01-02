@@ -1,0 +1,14 @@
+Format the extracted PSI Daily Field Report information into the required JSON structure.
+
+Rules:
+- report_number: DFR report number (e.g., "DFR:0306103-100-O1")
+- report_date: Format as YYYY-MM-DD
+- inspection_type: Type of inspection (e.g., "Paint Touch Up", "Framing", "Drywall")
+- location: Building + level + grid if available (e.g., "FAB1 L4 D/13-17")
+- passed: true if inspection passed, false if failed
+- failure_reason: Brief explanation if inspection failed, null otherwise
+- contractor: Contractor name if mentioned, null otherwise
+- deficiency_count: Number of deficiencies as integer, null if not specified
+- reinspection_required: true/false if specified, null otherwise
+
+Use null for any field where information is not available in the extracted content.

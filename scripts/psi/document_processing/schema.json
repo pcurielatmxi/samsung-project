@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PSI Daily Field Report",
+  "type": "object",
+  "properties": {
+    "report_number": {
+      "type": "string",
+      "description": "DFR report number (e.g., 'DFR:0306103-100-O1')"
+    },
+    "report_date": {
+      "type": "string",
+      "description": "Date of report (YYYY-MM-DD)"
+    },
+    "inspection_type": {
+      "type": "string",
+      "description": "Type of inspection (e.g., 'Paint Touch Up', 'Framing', 'Drywall')"
+    },
+    "location": {
+      "type": ["string", "null"],
+      "description": "Location (building + level + grid)"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Whether inspection passed"
+    },
+    "failure_reason": {
+      "type": ["string", "null"],
+      "description": "Reason for failure if applicable"
+    },
+    "contractor": {
+      "type": ["string", "null"],
+      "description": "Contractor/subcontractor name if mentioned"
+    },
+    "deficiency_count": {
+      "type": ["integer", "null"],
+      "description": "Number of deficiencies found"
+    },
+    "reinspection_required": {
+      "type": ["boolean", "null"],
+      "description": "Whether re-inspection is required"
+    }
+  },
+  "required": ["report_number", "inspection_type", "passed"]
+}
