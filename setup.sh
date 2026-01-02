@@ -118,3 +118,7 @@ echo ""
 echo "To process XER files:"
 echo "  python scripts/batch_process_xer.py"
 echo ""
+
+# Step 10: Install Gemini CLI
+npm install -g @google/gemini-cli
+echo "   Gemini CLI installed"
