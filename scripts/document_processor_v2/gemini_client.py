@@ -7,15 +7,32 @@ Uses google-genai library to process PDFs with optional structured output.
 import json
 import os
 from pathlib import Path
-from typing import Optional, Any, Union
+from typing import Optional, Any, Union, Tuple
 from dataclasses import dataclass
 
+import fitz  # PyMuPDF
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
 # Load environment variables from .env
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
+
+# Gemini limits
+MAX_FILE_SIZE_MB = 50
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+MAX_PAGES = 1000
+
+
+@dataclass
+class DocumentInfo:
+    """Information about a document for validation."""
+    filepath: Path
+    file_size_bytes: int
+    file_size_mb: float
+    page_count: int
+    is_valid: bool
+    error: Optional[str] = None
 
 
 @dataclass
@@ -26,6 +43,66 @@ class GeminiResponse:
     error: Optional[str]
     model: str
     usage: Optional[dict] = None
+    doc_info: Optional[DocumentInfo] = None
+
+
+def get_document_info(filepath: Union[str, Path]) -> DocumentInfo:
+    """
+    Get document information and validate against Gemini limits.
+
+    Args:
+        filepath: Path to PDF file
+
+    Returns:
+        DocumentInfo with size, page count, and validation status
+    """
+    filepath = Path(filepath)
+
+    if not filepath.exists():
+        return DocumentInfo(
+            filepath=filepath,
+            file_size_bytes=0,
+            file_size_mb=0.0,
+            page_count=0,
+            is_valid=False,
+            error=f"File not found: {filepath}",
+        )
+
+    # Get file size
+    file_size_bytes = filepath.stat().st_size
+    file_size_mb = file_size_bytes / (1024 * 1024)
+
+    # Get page count for PDFs
+    page_count = 0
+    if filepath.suffix.lower() == ".pdf":
+        try:
+            with fitz.open(filepath) as doc:
+                page_count = len(doc)
+        except Exception as e:
+            return DocumentInfo(
+                filepath=filepath,
+                file_size_bytes=file_size_bytes,
+                file_size_mb=file_size_mb,
+                page_count=0,
+                is_valid=False,
+                error=f"Failed to read PDF: {e}",
+            )
+
+    # Validate against limits
+    errors = []
+    if file_size_bytes > MAX_FILE_SIZE_BYTES:
+        errors.append(f"File size {file_size_mb:.1f}MB exceeds {MAX_FILE_SIZE_MB}MB limit")
+    if page_count > MAX_PAGES:
+        errors.append(f"Page count {page_count} exceeds {MAX_PAGES} page limit")
+
+    return DocumentInfo(
+        filepath=filepath,
+        file_size_bytes=file_size_bytes,
+        file_size_mb=file_size_mb,
+        page_count=page_count,
+        is_valid=len(errors) == 0,
+        error="; ".join(errors) if errors else None,
+    )
 
 
 def process_document(
@@ -48,12 +125,15 @@ def process_document(
     """
     filepath = Path(filepath)
 
-    if not filepath.exists():
+    # Validate document
+    doc_info = get_document_info(filepath)
+    if not doc_info.is_valid:
         return GeminiResponse(
             success=False,
             result=None,
-            error=f"File not found: {filepath}",
+            error=doc_info.error,
             model=model,
+            doc_info=doc_info,
         )
 
     # Initialize client with API key
@@ -130,6 +210,7 @@ def process_document(
             error=None,
             model=model,
             usage=usage,
+            doc_info=doc_info,
         )
 
     except Exception as e:
@@ -138,6 +219,7 @@ def process_document(
             result=None,
             error=str(e),
             model=model,
+            doc_info=doc_info,
         )
 
 
@@ -164,6 +246,8 @@ if __name__ == "__main__":
     if response.success:
         print("SUCCESS")
         print(f"Model: {response.model}")
+        if response.doc_info:
+            print(f"Document: {response.doc_info.file_size_mb:.2f}MB, {response.doc_info.page_count} pages")
         if response.usage:
             print(f"Usage: {response.usage}")
         print("-" * 60)
@@ -171,3 +255,5 @@ if __name__ == "__main__":
     else:
         print("FAILED")
         print(f"Error: {response.error}")
+        if response.doc_info:
+            print(f"Document: {response.doc_info.file_size_mb:.2f}MB, {response.doc_info.page_count} pages")
