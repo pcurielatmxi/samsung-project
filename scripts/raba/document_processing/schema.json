@@ -1,52 +1,86 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "RABA Quality Test Report",
+  "title": "RABA Quality Test Report - Analytics",
   "type": "object",
   "properties": {
-    "assignment_number": {
-      "type": "string",
-      "description": "RABA assignment number (e.g., 'A22-016871')"
-    },
     "report_date": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "Report date (YYYY-MM-DD)"
     },
     "test_type": {
       "type": "string",
-      "description": "Type of test (e.g., 'Compressive Strength', 'Soil Compaction')"
+      "description": "Type of test (e.g., 'Compressive Strength', 'Soil Compaction', 'Concrete Testing')"
     },
     "location": {
       "type": ["string", "null"],
-      "description": "Location (building + level + grid)"
+      "description": "Location (project, building, area, grid coordinates)"
     },
-    "passed": {
-      "type": "boolean",
-      "description": "Whether all tests passed"
+    "summary": {
+      "type": "string",
+      "description": "Brief summary of the document and test performed"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "PARTIAL"],
+      "description": "Test outcome: PASS (all passed), FAIL (all/any critical failed), PARTIAL (mixed results)"
     },
     "failure_reason": {
       "type": ["string", "null"],
-      "description": "Reason for failure if applicable"
+      "description": "Primary reason for failure, quoted from document if available"
     },
-    "contractor": {
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the issue or deficiency"
+          },
+          "severity": {
+            "type": ["string", "null"],
+            "description": "Severity level if stated (e.g., 'critical', 'minor')"
+          }
+        },
+        "required": ["description"]
+      },
+      "description": "List of issues, deficiencies, or non-conformances found"
+    },
+    "parties_involved": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the party"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role (e.g., 'contractor', 'subcontractor', 'supplier', 'inspector', 'testing_company')"
+          }
+        },
+        "required": ["name", "role"]
+      },
+      "description": "List of parties involved in the inspection/test"
+    },
+    "reinspection_required": {
+      "type": ["boolean", "null"],
+      "description": "Whether re-inspection or re-testing is required"
+    },
+    "corrective_action": {
       "type": ["string", "null"],
-      "description": "Contractor/subcontractor name if mentioned"
+      "description": "Corrective action noted or required"
     },
-    "material_supplier": {
-      "type": ["string", "null"],
-      "description": "Material supplier if mentioned"
-    },
-    "total_tests": {
-      "type": ["integer", "null"],
-      "description": "Total number of tests/specimens"
-    },
-    "tests_passed": {
-      "type": ["integer", "null"],
-      "description": "Number of tests that passed"
-    },
-    "tests_failed": {
-      "type": ["integer", "null"],
-      "description": "Number of tests that failed"
+    "test_counts": {
+      "type": ["object", "null"],
+      "properties": {
+        "total": {"type": ["integer", "null"]},
+        "passed": {"type": ["integer", "null"]},
+        "failed": {"type": ["integer", "null"]}
+      },
+      "description": "Test counts if specified"
     }
   },
-  "required": ["assignment_number", "test_type", "passed"]
+  "required": ["test_type", "outcome", "summary"]
 }

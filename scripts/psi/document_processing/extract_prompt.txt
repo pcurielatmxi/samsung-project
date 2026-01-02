@@ -1,15 +1,48 @@
-Analyze this PSI Daily Field Report and extract all relevant information.
+Analyze this PSI Daily Field Report. Extract information ONLY from what is explicitly stated in the document. Do not infer or add information not present.
 
-Include the following if found:
-- Report number (e.g., DFR:0306103-100-O1)
-- Report date
-- Type of inspection performed
-- Location (building, level, grid coordinates)
-- Inspection result (pass/fail)
-- Any failure reasons or deficiencies noted
-- Contractor or subcontractor name
-- Number of deficiencies found
-- Whether re-inspection is required
-- Any other significant observations or findings
+## PART 1: DOCUMENT SUMMARY
 
-Be thorough but concise. Extract factual information directly from the document.
+Provide a comprehensive summary of the document including:
+- Document type and purpose
+- Date(s) mentioned (inspection date, report date)
+- All location information found in the document
+- Work activity or system being inspected
+- Inspection criteria or checklist items reviewed
+- All findings and observations
+- Any photos or attachments referenced
+- Any notes or comments from the inspector
+
+## PART 2: SPECIFIC QUESTIONS
+
+Answer each question based ONLY on document contents. If information is not present, state "Not specified in document."
+
+### Identification
+- Report Date:
+- Inspection Type:
+
+### Location
+- Full location information (capture ALL location details exactly as stated in the document):
+
+### Outcome
+- Did the inspection PASS or FAIL?: (State: PASS, FAIL, or PARTIAL if mixed results)
+- If FAIL or PARTIAL, what specific items/criteria failed?:
+- Failure reason or cause (quote from document if available):
+
+### Issues & Deficiencies
+- Were any deficiencies, non-conformances, or issues noted?:
+- Description of each issue found:
+- Number of deficiencies:
+- Severity or classification of issues (if stated):
+
+### Parties Involved
+- Inspection company:
+- Contractor/Subcontractor:
+- Trade or work crew:
+- Inspector name:
+- Other parties mentioned:
+
+### Follow-up
+- Is re-inspection required?:
+- Any corrective actions noted or required?:
+- Due date for corrections (if stated)?:
+- Any hold points or work stoppages mentioned?:

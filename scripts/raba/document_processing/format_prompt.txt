@@ -1,16 +1,24 @@
-Format the extracted RABA quality test report information into the required JSON structure.
+Convert the extracted RABA report information into the required JSON structure for analytics and root cause analysis.
 
 Rules:
-- assignment_number: RABA assignment number (e.g., "A22-016871")
-- report_date: Format as YYYY-MM-DD
-- test_type: Type of test (e.g., "Compressive Strength", "Soil Compaction", "Moisture-Density")
-- location: Building + level + grid if available (e.g., "FAB1 L4 D/13-17")
-- passed: true if ALL tests passed, false if ANY failed
-- failure_reason: Brief explanation if tests failed, null otherwise
-- contractor: Contractor name if mentioned, null otherwise
-- material_supplier: Material supplier if mentioned, null otherwise
-- total_tests: Total number of tests/specimens as integer, null if not specified
-- tests_passed: Count of passed tests as integer, null if not specified
-- tests_failed: Count of failed tests as integer, null if not specified
+- Use ONLY information explicitly stated in the extracted content
+- Do not infer or fabricate information
+- Use null for fields where information is not available
+- For outcome: use exactly "PASS", "FAIL", or "PARTIAL" (PARTIAL = some tests passed, some failed)
+- For arrays (issues, parties_involved), use empty array [] if none found
+- Quote failure reasons and issues directly from the document when possible
+- Be precise with dates (YYYY-MM-DD format)
+- For location: capture ALL location details exactly as stated (building, level, area, grid, coordinates, etc.)
 
-Use null for any field where information is not available in the extracted content.
+Field mapping:
+- report_date: The report or test date in YYYY-MM-DD format
+- test_type: Type of test performed (e.g., "Compressive Strength", "Soil Compaction")
+- location: All location information as a single string
+- summary: Brief summary of what was tested and the results
+- outcome: "PASS", "FAIL", or "PARTIAL"
+- failure_reason: Quote the reason for failure if stated
+- issues: Array of {description, severity} for each deficiency found
+- parties_involved: Array of {name, role} for testing company, contractor, supplier, inspector
+- reinspection_required: true/false if stated, null if not mentioned
+- corrective_action: Any corrective actions noted
+- test_counts: {total, passed, failed} if counts are specified

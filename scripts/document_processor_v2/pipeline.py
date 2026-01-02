@@ -209,9 +209,44 @@ async def process_stage1(task: FileTask, config: PipelineConfig) -> bool:
         return False
 
 
+def convert_schema_to_gemini(schema: dict) -> dict:
+    """Convert JSON Schema to Gemini-compatible format."""
+    def convert_type(t):
+        if isinstance(t, list):
+            # Handle ["string", "null"] -> STRING with nullable
+            non_null = [x for x in t if x != "null"]
+            return non_null[0].upper() if non_null else "STRING"
+        return t.upper()
+
+    def convert_prop(prop):
+        result = {}
+        if "type" in prop:
+            t = prop["type"]
+            if isinstance(t, list):
+                result["type"] = convert_type(t)
+                if "null" in t:
+                    result["nullable"] = True
+            else:
+                result["type"] = t.upper()
+        if "description" in prop:
+            result["description"] = prop["description"]
+        if "properties" in prop:
+            result["properties"] = {k: convert_prop(v) for k, v in prop["properties"].items()}
+        if "items" in prop:
+            result["items"] = convert_prop(prop["items"])
+        return result
+
+    result = {"type": "OBJECT"}
+    if "properties" in schema:
+        result["properties"] = {k: convert_prop(v) for k, v in schema["properties"].items()}
+    if "required" in schema:
+        result["required"] = schema["required"]
+    return result
+
+
 async def process_stage2(task: FileTask, config: PipelineConfig) -> bool:
     """
-    Process Stage 2: Claude formatting.
+    Process Stage 2: Formatting with Gemini or Claude.
 
     Returns:
         True if successful, False if failed
@@ -223,28 +258,64 @@ async def process_stage2(task: FileTask, config: PipelineConfig) -> bool:
 
         extracted_content = extract_data.get("content", "")
 
-        # Build prompt for Claude
+        # Build prompt
         full_prompt = f"{config.stage2.prompt}\n\nExtracted content:\n---\n{extracted_content}\n---"
 
-        # Process with Claude using subprocess
-        from claude_client import ClaudeClient
+        # Check if using Gemini or Claude
+        model = config.stage2.model
+        is_gemini = model.startswith("gemini")
 
-        client = ClaudeClient(model=config.stage2.model)
-        response = await client.analyze_document(
-            content=extracted_content,
-            prompt=config.stage2.prompt,
-            schema=config.stage2.schema,
-        )
+        if is_gemini:
+            # Use Gemini with structured output
+            from gemini_client import process_document_text
 
-        if not response.success:
-            write_error_file(
-                task.format_error,
-                task.source_path,
-                "format",
-                response.error,
-                retryable=True,
+            gemini_schema = convert_schema_to_gemini(config.stage2.schema)
+            response = process_document_text(
+                text=extracted_content,
+                prompt=config.stage2.prompt,
+                schema=gemini_schema,
+                model=model,
             )
-            return False
+
+            if not response.success:
+                write_error_file(
+                    task.format_error,
+                    task.source_path,
+                    "format",
+                    response.error,
+                    retryable=True,
+                )
+                return False
+
+            result = response.result
+            usage = response.usage
+            duration_ms = 0
+            cost_usd = 0.0
+        else:
+            # Use Claude
+            from claude_client import ClaudeClient
+
+            client = ClaudeClient(model=model)
+            response = await client.analyze_document(
+                content=extracted_content,
+                prompt=config.stage2.prompt,
+                schema=config.stage2.schema,
+            )
+
+            if not response.success:
+                write_error_file(
+                    task.format_error,
+                    task.source_path,
+                    "format",
+                    response.error,
+                    retryable=True,
+                )
+                return False
+
+            result = response.result
+            usage = None
+            duration_ms = response.duration_ms
+            cost_usd = response.cost_usd
 
         # Write successful output
         output = {
@@ -255,10 +326,11 @@ async def process_stage2(task: FileTask, config: PipelineConfig) -> bool:
                 "processed_at": datetime.now(timezone.utc).isoformat(),
                 "model": config.stage2.model,
                 "stage": "format",
-                "duration_ms": response.duration_ms,
-                "cost_usd": response.cost_usd,
+                "usage": usage,
+                "duration_ms": duration_ms,
+                "cost_usd": cost_usd,
             },
-            "content": response.result,
+            "content": result,
         }
 
         write_json_atomic(task.format_output, output)

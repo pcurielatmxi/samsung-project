@@ -1,14 +1,24 @@
-Format the extracted PSI Daily Field Report information into the required JSON structure.
+Convert the extracted PSI Daily Field Report information into the required JSON structure for analytics and root cause analysis.
 
 Rules:
-- report_number: DFR report number (e.g., "DFR:0306103-100-O1")
-- report_date: Format as YYYY-MM-DD
-- inspection_type: Type of inspection (e.g., "Paint Touch Up", "Framing", "Drywall")
-- location: Building + level + grid if available (e.g., "FAB1 L4 D/13-17")
-- passed: true if inspection passed, false if failed
-- failure_reason: Brief explanation if inspection failed, null otherwise
-- contractor: Contractor name if mentioned, null otherwise
-- deficiency_count: Number of deficiencies as integer, null if not specified
-- reinspection_required: true/false if specified, null otherwise
+- Use ONLY information explicitly stated in the extracted content
+- Do not infer or fabricate information
+- Use null for fields where information is not available
+- For outcome: use exactly "PASS", "FAIL", or "PARTIAL" (PARTIAL = some items passed, some failed)
+- For arrays (issues, parties_involved), use empty array [] if none found
+- Quote failure reasons and issues directly from the document when possible
+- Be precise with dates (YYYY-MM-DD format)
+- For location: capture ALL location details exactly as stated (building, level, area, grid, coordinates, etc.)
 
-Use null for any field where information is not available in the extracted content.
+Field mapping:
+- report_date: The report date in YYYY-MM-DD format
+- inspection_type: Type of inspection (e.g., "Paint Touch Up", "Framing", "Drywall", "MEP")
+- location: All location information as a single string
+- summary: Brief summary of the inspection and findings
+- outcome: "PASS", "FAIL", or "PARTIAL"
+- failure_reason: Quote the reason for failure if stated
+- issues: Array of {description, severity} for each deficiency found
+- parties_involved: Array of {name, role} for inspector, contractor, subcontractor, trade
+- reinspection_required: true/false if stated, null if not mentioned
+- corrective_action: Any corrective actions noted
+- deficiency_count: Number of deficiencies if specified

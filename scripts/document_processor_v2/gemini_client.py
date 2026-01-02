@@ -223,6 +223,106 @@ def process_document(
         )
 
 
+def process_document_text(
+    text: str,
+    prompt: str,
+    schema: Optional[dict] = None,
+    model: str = "gemini-2.0-flash",
+) -> GeminiResponse:
+    """
+    Process text content with Gemini (for Stage 2 formatting).
+
+    Args:
+        text: Text content to process
+        prompt: Processing prompt
+        schema: Optional Gemini-format schema for structured output
+        model: Gemini model to use
+
+    Returns:
+        GeminiResponse with processed content
+    """
+    # Initialize client with API key
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error="No API key found. Set GEMINI_API_KEY or GOOGLE_API_KEY in .env",
+            model=model,
+        )
+
+    try:
+        client = genai.Client(api_key=api_key)
+    except Exception as e:
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error=f"Failed to initialize Gemini client: {e}",
+            model=model,
+        )
+
+    try:
+        # Build full prompt with content
+        full_prompt = f"{prompt}\n\nContent:\n---\n{text}\n---"
+
+        # Build config for structured output if schema provided
+        config = {}
+        if schema:
+            config = {
+                "response_mime_type": "application/json",
+                "response_schema": schema,
+            }
+
+        # Generate content
+        response = client.models.generate_content(
+            model=model,
+            contents=full_prompt,
+            config=config if config else None,
+        )
+
+        # Parse result
+        result_text = response.text
+
+        # If schema was provided, parse JSON
+        if schema:
+            try:
+                result = json.loads(result_text)
+            except json.JSONDecodeError as e:
+                return GeminiResponse(
+                    success=False,
+                    result=result_text,
+                    error=f"Failed to parse JSON response: {e}",
+                    model=model,
+                )
+        else:
+            result = result_text
+
+        # Extract usage metadata if available
+        usage = None
+        if hasattr(response, 'usage_metadata'):
+            usage = {
+                "prompt_tokens": getattr(response.usage_metadata, 'prompt_token_count', None),
+                "output_tokens": getattr(response.usage_metadata, 'candidates_token_count', None),
+                "total_tokens": getattr(response.usage_metadata, 'total_token_count', None),
+            }
+
+        return GeminiResponse(
+            success=True,
+            result=result,
+            error=None,
+            model=model,
+            usage=usage,
+        )
+
+    except Exception as e:
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error=str(e),
+            model=model,
+        )
+
+
 # Test function
 if __name__ == "__main__":
     import sys

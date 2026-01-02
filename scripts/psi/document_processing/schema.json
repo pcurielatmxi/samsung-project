@@ -1,44 +1,81 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "PSI Daily Field Report",
+  "title": "PSI Daily Field Report - Analytics",
   "type": "object",
   "properties": {
-    "report_number": {
-      "type": "string",
-      "description": "DFR report number (e.g., 'DFR:0306103-100-O1')"
-    },
     "report_date": {
-      "type": "string",
-      "description": "Date of report (YYYY-MM-DD)"
+      "type": ["string", "null"],
+      "description": "Report date (YYYY-MM-DD)"
     },
     "inspection_type": {
       "type": "string",
-      "description": "Type of inspection (e.g., 'Paint Touch Up', 'Framing', 'Drywall')"
+      "description": "Type of inspection (e.g., 'Paint Touch Up', 'Framing', 'Drywall', 'MEP')"
     },
     "location": {
       "type": ["string", "null"],
-      "description": "Location (building + level + grid)"
+      "description": "Location (project, building, level, area, grid coordinates)"
     },
-    "passed": {
-      "type": "boolean",
-      "description": "Whether inspection passed"
+    "summary": {
+      "type": "string",
+      "description": "Brief summary of the inspection and findings"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "PARTIAL"],
+      "description": "Inspection outcome: PASS (all passed), FAIL (failed), PARTIAL (mixed results)"
     },
     "failure_reason": {
       "type": ["string", "null"],
-      "description": "Reason for failure if applicable"
+      "description": "Primary reason for failure, quoted from document if available"
     },
-    "contractor": {
-      "type": ["string", "null"],
-      "description": "Contractor/subcontractor name if mentioned"
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the issue or deficiency"
+          },
+          "severity": {
+            "type": ["string", "null"],
+            "description": "Severity level if stated"
+          }
+        },
+        "required": ["description"]
+      },
+      "description": "List of issues, deficiencies, or non-conformances found"
     },
-    "deficiency_count": {
-      "type": ["integer", "null"],
-      "description": "Number of deficiencies found"
+    "parties_involved": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the party"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role (e.g., 'contractor', 'subcontractor', 'trade', 'inspector')"
+          }
+        },
+        "required": ["name", "role"]
+      },
+      "description": "List of parties involved in the inspection"
     },
     "reinspection_required": {
       "type": ["boolean", "null"],
       "description": "Whether re-inspection is required"
+    },
+    "corrective_action": {
+      "type": ["string", "null"],
+      "description": "Corrective action noted or required"
+    },
+    "deficiency_count": {
+      "type": ["integer", "null"],
+      "description": "Number of deficiencies found"
     }
   },
-  "required": ["report_number", "inspection_type", "passed"]
+  "required": ["inspection_type", "outcome", "summary"]
 }
