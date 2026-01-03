@@ -10,6 +10,6 @@
     "prompt_file": "format_prompt.txt",
     "schema_file": "schema.json"
   },
-  "concurrency": 5,
+  "concurrency": 20,
   "file_extensions": [".pdf"]
 }
