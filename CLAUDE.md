@@ -346,6 +346,53 @@ python scripts/psi/process/scrape_psi_reports.py --dry-run
 - `PSI_USERNAME` - Login email
 - `PSI_PASSWORD` - Login password
 
+### ProjectSight NCR/QOR/SOR/SWN/VR Scraper
+
+**Location:** [scripts/projectsight/process/scrape_projectsight_ncr.py](scripts/projectsight/process/scrape_projectsight_ncr.py)
+
+A Playwright-based automation tool for scraping quality non-conformance records from ProjectSight (T-PJT FAB1 Construction project). Downloads individual JSON files per record with full comment history and attachments.
+
+**Features:**
+- Scrapes all record types: NCR (72), QOR (23), SOR (174), SWN (5), Variance Request (1)
+- Full detail extraction including Comments tab and Additional Info tab
+- Downloads attachments (PowerPoint, PDFs, images)
+- Idempotent operation via `manifest.json` tracking
+- Date range filtering by Required Correction Date
+- Resume capability - skips already processed records
+
+**Output Structure:**
+```
+{WINDOWS_DATA_DIR}/raw/projectsight/ncr/
+├── records/
+│   ├── NCR-0828.json    # Individual record files
+│   ├── QOR-0123.json
+│   └── ...
+├── attachments/
+│   ├── NCR-0828/        # Downloaded files per record
+│   │   └── *.pptx, *.pdf, *.jpg
+│   └── ...
+└── manifest.json         # Download tracking
+```
+
+**Usage:**
+```bash
+# Full extraction (all 275 records)
+python scripts/projectsight/process/scrape_projectsight_ncr.py
+
+# Process specific date range
+python scripts/projectsight/process/scrape_projectsight_ncr.py --start-date 2024-01-01 --end-date 2024-12-31
+
+# Skip already processed records
+python scripts/projectsight/process/scrape_projectsight_ncr.py --skip-existing
+
+# Limit for testing
+python scripts/projectsight/process/scrape_projectsight_ncr.py --limit 10
+```
+
+**Environment Variables (`.env`):**
+- `PROJECTSIGHT_USERNAME` - Login email
+- `PROJECTSIGHT_PASSWORD` - Login password
+
 ### QC Logs (CPMS Inspection Tracking)
 
 **Location:** `{WINDOWS_DATA_DIR}/raw/qc_logs/`

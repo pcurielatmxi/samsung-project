@@ -42,6 +42,11 @@ class ProjectConfig:
     def daily_reports_url(self) -> str:
         return f"{ProjectSightSession.BASE_URL}/web/app/Project?listid=-4038&orgid={self.org_id}&projid={self.project_id}"
 
+    @property
+    def ncr_list_url(self) -> str:
+        """URL for NCR/QOR/SOR/SWN/VR records list (Quality non-conformance records)."""
+        return f"{ProjectSightSession.BASE_URL}/web/app/Project?listid=-4067&orgid={self.org_id}&projid={self.project_id}"
+
     def to_dict(self) -> dict:
         return {
             'name': self.name,
