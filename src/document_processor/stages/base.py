@@ -26,16 +26,21 @@ class FileTask:
     """A file to be processed through the pipeline."""
     source_path: Path
     relative_path: Path  # Relative to input_dir
-    output_dir: Path
+    output_base: Path    # Base output directory (e.g., processed/narratives/)
     stem: str
+    relative_subdir: Path = field(default_factory=lambda: Path("."))  # Subdirectory within input
 
     def get_stage_output(self, stage: StageConfig) -> Path:
-        """Get output path for a specific stage."""
-        return self.output_dir / stage.folder_name / f"{self.stem}{stage.output_suffix}"
+        """Get output path for a specific stage.
+
+        Structure: output_base / stage.folder_name / relative_subdir / file
+        Example: processed/narratives/1.extract/BRG Expert/file.extract.json
+        """
+        return self.output_base / stage.folder_name / self.relative_subdir / f"{self.stem}{stage.output_suffix}"
 
     def get_stage_error(self, stage: StageConfig) -> Path:
         """Get error marker path for a specific stage."""
-        return self.output_dir / stage.folder_name / f"{self.stem}{stage.error_suffix}"
+        return self.output_base / stage.folder_name / self.relative_subdir / f"{self.stem}{stage.error_suffix}"
 
     def get_stage_input(self, stage: StageConfig, prior_stage: Optional[StageConfig]) -> Path:
         """

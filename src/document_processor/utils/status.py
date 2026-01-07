@@ -63,13 +63,14 @@ def analyze_status(config: PipelineConfig) -> PipelineStatus:
         status.total_files += 1
 
         relative_path = source_path.relative_to(config.input_dir)
-        output_dir = config.output_dir / relative_path.parent
+        relative_subdir = relative_path.parent
 
         task = FileTask(
             source_path=source_path,
             relative_path=relative_path,
-            output_dir=output_dir,
+            output_base=config.output_dir,
             stem=source_path.stem,
+            relative_subdir=relative_subdir,
         )
 
         file_status = {

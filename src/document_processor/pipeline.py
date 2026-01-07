@@ -76,13 +76,15 @@ def discover_files(config: PipelineConfig) -> List[FileTask]:
     tasks = []
     for source_path in resolved:
         relative_path = source_path.relative_to(config.input_dir)
-        output_dir = config.output_dir / relative_path.parent
+        # Subdirectory within input (e.g., "BRG Expert/subfolder")
+        relative_subdir = relative_path.parent
 
         tasks.append(FileTask(
             source_path=source_path,
             relative_path=relative_path,
-            output_dir=output_dir,
+            output_base=config.output_dir,
             stem=source_path.stem,
+            relative_subdir=relative_subdir,
         ))
 
     # Sort for consistent ordering
