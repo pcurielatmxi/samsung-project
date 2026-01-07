@@ -113,6 +113,76 @@ def _get_client() -> genai.Client:
     return genai.Client(api_key=api_key)
 
 
+def _convert_schema_to_gemini(schema: dict) -> dict:
+    """
+    Convert standard JSON Schema to Gemini's schema format.
+
+    Gemini schema differences:
+    - No $schema key allowed
+    - Nullable uses: type: "STRING", nullable: true
+    - Type names are uppercase: STRING, INTEGER, BOOLEAN, ARRAY, OBJECT
+    """
+    if not schema:
+        return schema
+
+    def convert_type(type_value):
+        """Convert JSON Schema type to Gemini type."""
+        if isinstance(type_value, list):
+            # ["string", "null"] -> ("STRING", True)
+            non_null = [t for t in type_value if t != "null"]
+            is_nullable = "null" in type_value
+            if non_null:
+                return non_null[0].upper(), is_nullable
+            return "STRING", is_nullable
+        return type_value.upper() if type_value else "STRING", False
+
+    def convert_node(node: dict) -> dict:
+        """Recursively convert a schema node."""
+        if not isinstance(node, dict):
+            return node
+
+        result = {}
+
+        for key, value in node.items():
+            # Skip $schema
+            if key == "$schema":
+                continue
+
+            if key == "type":
+                gemini_type, is_nullable = convert_type(value)
+                result["type"] = gemini_type
+                if is_nullable:
+                    result["nullable"] = True
+
+            elif key == "properties":
+                result["properties"] = {
+                    k: convert_node(v) for k, v in value.items()
+                }
+
+            elif key == "items":
+                result["items"] = convert_node(value)
+
+            elif key == "enum":
+                result["enum"] = value
+
+            elif key in ("required", "description", "title"):
+                result[key] = value
+
+            # Skip other JSON Schema specific keys
+            elif key in ("$id", "$ref", "definitions", "additionalProperties",
+                         "minItems", "maxItems", "minLength", "maxLength",
+                         "minimum", "maximum", "pattern", "format"):
+                continue
+
+            else:
+                # Copy other keys as-is
+                result[key] = value
+
+        return result
+
+    return convert_node(schema)
+
+
 def process_document(
     filepath: Union[str, Path],
     prompt: str,
@@ -168,9 +238,10 @@ def process_document(
         # Build config for structured output if schema provided
         config = {}
         if schema:
+            gemini_schema = _convert_schema_to_gemini(schema)
             config = {
                 "response_mime_type": "application/json",
-                "response_schema": schema,
+                "response_schema": gemini_schema,
             }
 
         # Generate content
@@ -270,9 +341,10 @@ def process_document_text(
         # Build config for structured output if schema provided
         config = {}
         if schema:
+            gemini_schema = _convert_schema_to_gemini(schema)
             config = {
                 "response_mime_type": "application/json",
-                "response_schema": schema,
+                "response_schema": gemini_schema,
             }
 
         # Generate content

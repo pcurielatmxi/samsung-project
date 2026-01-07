@@ -28,8 +28,12 @@ from .utils.file_utils import (
     write_stage_output,
     format_time,
 )
+from .utils.progress import ProgressDisplay
 
 logger = logging.getLogger(__name__)
+
+# Global progress display (set in run_pipeline)
+_progress: Optional[ProgressDisplay] = None
 
 
 @dataclass
@@ -82,12 +86,18 @@ async def process_single_file(
     Returns:
         True if processing succeeded, False otherwise
     """
+    global _progress
+
     input_path = task.get_stage_input(stage_config, prior_stage)
     output_path = task.get_stage_output(stage_config)
     error_path = task.get_stage_error(stage_config)
 
     # Ensure output directory exists
     output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Report file start
+    if _progress:
+        _progress.file_start(task.stem)
 
     try:
         result = await stage_impl.process(task, input_path)
@@ -112,8 +122,18 @@ async def process_single_file(
                 error_path.unlink()
 
             stats.processed += 1
+            tokens = 0
             if result.usage:
-                stats.total_tokens += result.usage.get("total_tokens", 0) or 0
+                tokens = result.usage.get("total_tokens", 0) or 0
+                stats.total_tokens += tokens
+
+            # Report success
+            if _progress:
+                _progress.file_complete(
+                    task.stem,
+                    tokens=tokens,
+                    duration_ms=result.duration_ms or 0,
+                )
 
             return True
         else:
@@ -126,6 +146,15 @@ async def process_single_file(
                 retryable=result.retryable,
             )
             stats.errors += 1
+
+            # Report error
+            if _progress:
+                _progress.file_error(
+                    task.stem,
+                    error=result.error or "Unknown error",
+                    retryable=result.retryable,
+                )
+
             return False
 
     except Exception as e:
@@ -138,6 +167,11 @@ async def process_single_file(
             retryable=True,
         )
         stats.errors += 1
+
+        # Report error
+        if _progress:
+            _progress.file_error(task.stem, error=str(e), retryable=True)
+
         return False
 
 
@@ -157,6 +191,8 @@ async def run_stage(
     Returns:
         Tuple of (stats, qc_tracker or None)
     """
+    global _progress
+
     stats = ProcessingStats(stage_name=stage_config.name)
     stats.start_time = time.time()
 
@@ -204,15 +240,19 @@ async def run_stage(
         print(f"Stage '{stage_config.name}': Would process {stats.total_files} files")
         return stats, qc_tracker
 
+    # Report stage start
+    if _progress:
+        _progress.stage_start(
+            stage_config.name,
+            stats.total_files,
+            skipped=stats.skipped_completed + stats.skipped_blocked,
+        )
+
     if stats.total_files == 0:
         return stats, qc_tracker
 
-    print(f"\nStage '{stage_config.name}': Processing {stats.total_files} files...")
-
     # Process with concurrency control
     semaphore = asyncio.Semaphore(config.concurrency)
-    batch_count = 0
-    qc_check_due = False
 
     async def process_with_semaphore(task: FileTask) -> tuple[FileTask, bool]:
         async with semaphore:
@@ -227,7 +267,6 @@ async def run_stage(
 
     # Process in batches for QC sampling
     batch_size = config.qc_batch_size
-    processed_count = 0
 
     for i in range(0, len(eligible_tasks), batch_size):
         batch = eligible_tasks[i:i + batch_size]
@@ -239,15 +278,6 @@ async def run_stage(
 
         # Collect successful tasks for potential QC sampling
         successful_tasks = [task for task, success in results if success]
-        processed_count += len(batch)
-
-        # Progress update
-        elapsed = time.time() - stats.start_time
-        rate = processed_count / elapsed if elapsed > 0 else 0
-        print(
-            f"  Progress: {processed_count}/{stats.total_files} "
-            f"({rate:.1f} files/s, {stats.errors} errors)"
-        )
 
         # QC sampling: check 1 file per batch
         if qc_tracker and successful_tasks and stage_config.has_qc:
@@ -267,19 +297,32 @@ async def run_stage(
                 stats.qc_samples += 1
                 if not qc_result.passed:
                     stats.qc_failures += 1
+                    if _progress:
+                        _progress.qc_result(False, sample_task.stem, qc_result.reason)
+                else:
+                    if _progress:
+                        _progress.qc_result(True, sample_task.stem)
 
                 # Check if we should halt
                 if qc_tracker.should_halt(
                     config.qc_failure_threshold,
                     config.qc_min_samples,
                 ):
-                    print(f"\n  QC HALT: Failure rate {qc_tracker.failure_rate*100:.1f}% "
-                          f"exceeds threshold {config.qc_failure_threshold*100:.0f}%")
+                    if _progress:
+                        _progress.qc_halt(qc_tracker.failure_rate, config.qc_failure_threshold)
                     write_qc_halt(config.output_dir, qc_tracker, config.qc_failure_threshold)
                     break
 
             except Exception as e:
                 logger.warning(f"QC check failed: {e}")
+
+    # Report stage complete
+    if _progress:
+        _progress.stage_complete({
+            "processed": stats.processed,
+            "errors": stats.errors,
+            "total_tokens": stats.total_tokens,
+        })
 
     return stats, qc_tracker
 
@@ -293,6 +336,7 @@ async def run_pipeline(
     dry_run: bool = False,
     bypass_qc_halt: bool = False,
     disable_qc: bool = False,
+    verbose: bool = False,
 ) -> dict:
     """
     Run the N-stage processing pipeline.
@@ -306,10 +350,17 @@ async def run_pipeline(
         dry_run: Show what would be processed without processing
         bypass_qc_halt: Continue despite QC halt file
         disable_qc: Skip quality checks entirely
+        verbose: Show per-file error messages
 
     Returns:
         Dictionary with results and statistics
     """
+    global _progress
+
+    # Initialize progress display
+    log_file = config.output_dir / "pipeline.log" if not dry_run else None
+    _progress = ProgressDisplay(log_file=log_file, verbose=verbose)
+
     # Check for QC halt
     if not bypass_qc_halt:
         halt_data = check_qc_halt(config.output_dir)
@@ -329,7 +380,6 @@ async def run_pipeline(
 
     # Discover files
     all_tasks = discover_files(config)
-    print(f"Discovered {len(all_tasks)} input files")
 
     # Determine which stages to run
     if stages:
@@ -341,7 +391,12 @@ async def run_pipeline(
         print("No stages to run")
         return {"stages": []}
 
-    print(f"Running {len(stages_to_run)} stage(s): {[s.name for s in stages_to_run]}")
+    # Report pipeline start
+    if not dry_run:
+        _progress.pipeline_start(len(all_tasks), stages_to_run)
+    else:
+        print(f"Discovered {len(all_tasks)} input files")
+        print(f"Running {len(stages_to_run)} stage(s): {[s.name for s in stages_to_run]}")
 
     results = {"stages": [], "halted": False}
 
@@ -374,19 +429,6 @@ async def run_pipeline(
         }
         results["stages"].append(stage_result)
 
-        # Print stage summary
-        if not dry_run:
-            print(f"\nStage '{stage_config.name}' complete:")
-            print(f"  Processed: {stats.processed}")
-            print(f"  Errors: {stats.errors}")
-            print(f"  Skipped (completed): {stats.skipped_completed}")
-            print(f"  Skipped (blocked): {stats.skipped_blocked}")
-            if stats.total_tokens:
-                print(f"  Total tokens: {stats.total_tokens:,}")
-            if stats.qc_samples:
-                print(f"  QC samples: {stats.qc_samples} ({stats.qc_failures} failures)")
-            print(f"  Elapsed: {format_time(elapsed)}")
-
         # Check if we should halt due to QC
         if qc_tracker and qc_tracker.should_halt(
             config.qc_failure_threshold,
@@ -395,5 +437,9 @@ async def run_pipeline(
             results["halted"] = True
             results["halt_stage"] = stage_config.name
             break
+
+    # Report pipeline complete
+    if not dry_run:
+        _progress.pipeline_complete(results)
 
     return results

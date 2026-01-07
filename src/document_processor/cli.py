@@ -60,6 +60,7 @@ def cmd_run(args, config) -> int:
         dry_run=args.dry_run,
         bypass_qc_halt=args.bypass_qc_halt,
         disable_qc=args.disable_qc,
+        verbose=args.verbose,
     ))
 
     if result.get("halted"):
