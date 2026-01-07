@@ -4,7 +4,7 @@
   "file_extensions": [".pdf", ".docx", ".doc", ".xlsx", ".xls"],
   "concurrency": 3,
 
-  "qc_batch_size": 10,
+  "qc_batch_size": 5,
   "qc_failure_threshold": 0.15,
   "qc_min_samples": 5,
 
