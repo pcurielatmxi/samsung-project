@@ -1,12 +1,12 @@
 {
-  "input_dir": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports",
-  "output_dir": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/processed/psi/v2",
+  "input_dir": "${WINDOWS_DATA_DIR}/raw/psi/reports",
+  "output_dir": "${WINDOWS_DATA_DIR}/processed/psi/v2",
   "stage1": {
     "model": "gemini-3-flash-preview",
     "prompt_file": "extract_prompt.txt"
   },
   "stage2": {
-    "model": "gemini-2.5-flash-lite",
+    "model": "gemini-3-flash-preview",
     "prompt_file": "format_prompt.txt",
     "schema_file": "schema.json"
   },

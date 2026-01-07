@@ -9,6 +9,8 @@ Expects a config folder with:
 """
 
 import json
+import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List
@@ -73,6 +75,55 @@ class ConfigValidationError(Exception):
         super().__init__(f"Config validation failed: {'; '.join(errors)}")
 
 
+def windows_to_wsl_path(windows_path: str) -> str:
+    """
+    Convert Windows path to WSL2 path.
+
+    Examples:
+        "C:\\Users\\foo" -> "/mnt/c/Users/foo"
+        "D:\\Data" -> "/mnt/d/Data"
+        "/mnt/c/Users/foo" -> "/mnt/c/Users/foo" (unchanged)
+    """
+    if not windows_path:
+        return windows_path
+
+    # Normalize path separators
+    normalized = windows_path.replace('\\', '/')
+
+    # Already a Unix/WSL path
+    if normalized.startswith('/'):
+        return normalized
+
+    # Convert Windows drive letter (C:/... -> /mnt/c/...)
+    if len(normalized) >= 2 and normalized[1] == ':':
+        drive_letter = normalized[0].lower()
+        rest_of_path = normalized[2:].lstrip('/')
+        return f'/mnt/{drive_letter}/{rest_of_path}'
+
+    # Return as-is if no conversion needed
+    return normalized
+
+
+def expand_env_vars(path_str: str) -> str:
+    """
+    Expand environment variables in path string.
+    Supports ${VAR_NAME} syntax.
+    Converts Windows paths to WSL2 if needed.
+
+    Examples:
+        "${WINDOWS_DATA_DIR}/raw/raba" where WINDOWS_DATA_DIR="C:\\Users\\...\\Data"
+        -> "/mnt/c/Users/.../Data/raw/raba"
+    """
+    # Replace ${VAR} patterns with environment variable values
+    def replace_var(match):
+        var_name = match.group(1)
+        value = os.environ.get(var_name, match.group(0))
+        # Convert Windows paths to WSL2
+        return windows_to_wsl_path(value)
+
+    return re.sub(r'\$\{(\w+)\}', replace_var, path_str)
+
+
 def load_config(config_dir: str | Path) -> PipelineConfig:
     """
     Load and validate pipeline configuration from a config folder.
@@ -135,8 +186,12 @@ def load_config(config_dir: str | Path) -> PipelineConfig:
         stage2.schema = json.load(f)
 
     # Resolve input/output directories (relative to config_dir or absolute)
-    input_dir = Path(config_data.get("input_dir", ""))
-    output_dir = Path(config_data.get("output_dir", ""))
+    # Expand environment variables first
+    input_dir_str = expand_env_vars(config_data.get("input_dir", ""))
+    output_dir_str = expand_env_vars(config_data.get("output_dir", ""))
+
+    input_dir = Path(input_dir_str)
+    output_dir = Path(output_dir_str)
 
     if not input_dir.is_absolute():
         input_dir = (config_dir / input_dir).resolve()

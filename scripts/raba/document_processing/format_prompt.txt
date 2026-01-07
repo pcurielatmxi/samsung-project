@@ -1,13 +1,46 @@
 Convert the extracted RABA report information into the required JSON structure for analytics and root cause analysis.
 
+The extracted content has two parts:
+- PART 1: Free-form document summary with detailed test results, specifications, and context
+- PART 2: Structured Q&A answers
+
+Use BOTH parts to build the output schema. For outcome specifically, leverage the full document context.
+
 Rules:
-- Use ONLY information explicitly stated in the extracted content
-- Do not infer or fabricate information
-- Use null for fields where information is not available
-- For outcome: use exactly "PASS", "FAIL", or "PARTIAL" (PARTIAL = some tests passed, some failed)
+- Extract information from the provided extraction (both Part 1 summary and Part 2 Q&A)
+- Use null for fields where information is truly not available across the entire extraction
 - For arrays (issues, parties_involved), use empty array [] if none found
-- Quote failure reasons and issues directly from the document when possible
-- For location: capture ALL location details exactly as stated (building, level, area, grid, coordinates, etc.)
+- Quote failure reasons and issues directly from the extracted content when possible
+- For location: capture ALL location details from the extraction
+
+CRITICAL - Outcome Field (most important):
+The extracted content provides detailed context in PART 1 and explicit outcome determination in PART 2.
+
+Key rule: If Part 2 explicitly explains WHY there's no outcome (e.g., "material characterization report does not list pass/fail requirements", "provides data but does not list pass/fail criteria"), respect that and use NULL.
+
+Otherwise, use these signals to determine outcome:
+
+PASS:
+  - Document explicitly states "PASS", "PASSED", "ACCEPTABLE", "APPROVED", or similar, OR
+  - Part 2 indicates outcome is PASS, OR
+  - All test/measurement results shown in Part 1 are explicitly stated as "exceeded" or "exceeding" design specifications, AND Part 2 doesn't say "no pass/fail criteria"
+
+FAIL:
+  - Document explicitly states "FAIL", "FAILED", "NOT COMPLETE", "INCOMPLETE", or similar, OR
+  - Part 2 indicates outcome is FAIL, OR
+  - Any test/measurement explicitly shown as below specification/requirement
+
+PARTIAL:
+  - Some tests/measurements in Part 1 met specifications, some did not, OR
+  - Deficiencies noted in Part 1 but also noted as corrected/fixed, OR
+  - Mixed results clearly stated in Part 2
+
+NULL (use when):
+  - Part 2 explicitly explains no outcome was determined (e.g., characterization report, baseline data, no specifications listed)
+  - No test results or clear pass/fail indicators anywhere in document
+  - Cannot reasonably infer from available data
+
+IMPORTANT: Don't override Part 2's explanation. If Part 2 gives a reason why outcome can't be determined, use NULL rather than inferring.
 
 Standardization rules (IMPORTANT - follow exactly):
 - Dates: ALWAYS use YYYY-MM-DD format (e.g., "2022-08-09", NOT "08/09/2022")

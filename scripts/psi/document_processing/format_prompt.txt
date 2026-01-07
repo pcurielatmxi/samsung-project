@@ -1,13 +1,46 @@
 Convert the extracted PSI Daily Field Report information into the required JSON structure for analytics and root cause analysis.
 
+The extracted content has two parts:
+- PART 1: Free-form document summary with inspection details, observations, and findings
+- PART 2: Structured Q&A answers
+
+Use BOTH parts to build the output schema. For outcome specifically, leverage the full document context.
+
 Rules:
-- Use ONLY information explicitly stated in the extracted content
-- Do not infer or fabricate information
-- Use null for fields where information is not available
-- For outcome: use exactly "PASS", "FAIL", or "PARTIAL" (PARTIAL = some items passed, some failed)
+- Extract information from the provided extraction (both Part 1 summary and Part 2 Q&A)
+- Use null for fields where information is truly not available across the entire extraction
 - For arrays (issues, parties_involved), use empty array [] if none found
-- Quote failure reasons and issues directly from the document when possible
-- For location: capture ALL location details exactly as stated (building, level, area, grid, coordinates, etc.)
+- Quote failure reasons and issues directly from the extracted content when possible
+- For location: capture ALL location details from the extraction
+
+CRITICAL - Outcome Field (most important):
+The extracted content provides detailed inspection findings in PART 1 and explicit outcome determination in PART 2.
+
+Key rule: If Part 2 explicitly explains WHY there's no outcome (e.g., "inspection findings do not specify pass/fail", "no approval status indicated"), respect that and use NULL.
+
+Otherwise, use these signals to determine outcome:
+
+PASS:
+  - Document explicitly states "PASS", "PASSED", "ACCEPTABLE", "APPROVED", "Passed", or similar, OR
+  - Part 2 indicates outcome is PASS, OR
+  - Inspection report clearly describes work as complete, acceptable, meeting requirements with no outstanding deficiencies AND Part 2 doesn't say "outcome not specified"
+
+FAIL:
+  - Document explicitly states "FAIL", "FAILED", "NOT COMPLETE", "INCOMPLETE", "Not approved", or similar, OR
+  - Part 2 indicates outcome is FAIL, OR
+  - Inspection notes deficiencies or non-conformances that were NOT corrected
+
+PARTIAL:
+  - Some items/areas passed, some failed OR
+  - Deficiencies noted but also noted as corrected during inspection, OR
+  - Mixed approval status described
+
+NULL (use when):
+  - Part 2 explicitly explains no outcome was determined (e.g., findings don't specify approval, no approval status indicated)
+  - No clear inspection determination or approval status anywhere in document
+  - Cannot reasonably determine from available data
+
+IMPORTANT: Don't override Part 2's explanation. If Part 2 says outcome is "not specified" with explanation, use NULL rather than inferring.
 
 Standardization rules (IMPORTANT - follow exactly):
 - Dates: ALWAYS use YYYY-MM-DD format (e.g., "2024-04-29", NOT "4/29/2024")
