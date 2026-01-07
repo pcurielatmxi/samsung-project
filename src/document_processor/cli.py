@@ -47,6 +47,13 @@ def setup_logging(verbose: bool = False) -> None:
 
 def cmd_run(args, config) -> int:
     """Run the pipeline."""
+    # Immediate feedback - print before any file scanning
+    print(f"Starting pipeline: {config.config_dir.name}")
+    print(f"  Input:  {config.input_dir}")
+    print(f"  Output: {config.output_dir}")
+    print(f"  Stages: {[s.name for s in config.stages]}")
+    print("Scanning files...")
+
     # Parse stages argument
     stages = args.stage if args.stage else None
 

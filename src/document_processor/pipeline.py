@@ -126,16 +126,19 @@ async def process_single_file(
                 error_path.unlink()
 
             stats.processed += 1
-            tokens = 0
+            input_tokens = 0
+            output_tokens = 0
             if result.usage:
-                tokens = result.usage.get("total_tokens", 0) or 0
-                stats.total_tokens += tokens
+                input_tokens = result.usage.get("prompt_tokens", 0) or 0
+                output_tokens = result.usage.get("output_tokens", 0) or 0
+                stats.total_tokens += input_tokens + output_tokens
 
             # Report success
             if _progress:
                 _progress.file_complete(
                     task.stem,
-                    tokens=tokens,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
                     duration_ms=result.duration_ms or 0,
                 )
 
@@ -157,6 +160,7 @@ async def process_single_file(
                     task.stem,
                     error=result.error or "Unknown error",
                     retryable=result.retryable,
+                    duration_ms=result.duration_ms or 0,
                 )
 
             return False
