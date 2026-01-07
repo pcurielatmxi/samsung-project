@@ -44,23 +44,23 @@ class FileTask:
 
     @property
     def extract_output(self) -> Path:
-        """Stage 1 output path."""
-        return self.output_dir / f"{self.stem}.extract.json"
+        """Stage 1 output path (in 1.extract/ subdirectory)."""
+        return self.output_dir / "1.extract" / f"{self.stem}.extract.json"
 
     @property
     def extract_error(self) -> Path:
-        """Stage 1 error path."""
-        return self.output_dir / f"{self.stem}.extract.error.json"
+        """Stage 1 error path (in 1.extract/ subdirectory)."""
+        return self.output_dir / "1.extract" / f"{self.stem}.extract.error.json"
 
     @property
     def format_output(self) -> Path:
-        """Stage 2 output path."""
-        return self.output_dir / f"{self.stem}.format.json"
+        """Stage 2 output path (in 2.format/ subdirectory)."""
+        return self.output_dir / "2.format" / f"{self.stem}.format.json"
 
     @property
     def format_error(self) -> Path:
-        """Stage 2 error path."""
-        return self.output_dir / f"{self.stem}.format.error.json"
+        """Stage 2 error path (in 2.format/ subdirectory)."""
+        return self.output_dir / "2.format" / f"{self.stem}.format.error.json"
 
     def stage1_status(self) -> Literal["completed", "failed", "pending"]:
         """Get Stage 1 status from file system."""

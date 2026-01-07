@@ -1,6 +1,6 @@
 {
   "input_dir": "${WINDOWS_DATA_DIR}/raw/psi/reports",
-  "output_dir": "${WINDOWS_DATA_DIR}/processed/psi/v2",
+  "output_dir": "${WINDOWS_DATA_DIR}/processed/psi/stages",
   "stage1": {
     "model": "gemini-3-flash-preview",
     "prompt_file": "extract_prompt.txt"
