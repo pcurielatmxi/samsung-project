@@ -81,12 +81,14 @@ samsung-project/
 │   ├── tbm/                     # TBM Excel parsing
 │   ├── projectsight/            # ProjectSight export processing
 │   ├── quality/                 # Quality record processing
-│   ├── raba/                    # RABA quality inspection scraper
-│   ├── integrated_analysis/     # Phase 2 - cross-source integration
-│   └── document_processor/      # Batch document-to-JSON extraction tool
+│   ├── raba/                    # RABA scraper + document_processing config
+│   ├── psi/                     # PSI scraper + document_processing config
+│   ├── narratives/              # Narratives document_processing config
+│   └── integrated_analysis/     # Phase 2 - cross-source integration
 ├── src/
 │   ├── config/settings.py       # Path configuration
-│   └── classifiers/             # WBS taxonomy classifier
+│   ├── classifiers/             # WBS taxonomy classifier
+│   └── document_processor/      # Centralized N-stage document processing
 └── data/                        # Git-tracked analysis outputs
 ```
 
@@ -172,116 +174,124 @@ Quality inspection data is central to the project's rework and delay analysis. T
 
 ## Tools
 
-### Document Processor (Batch Unstructured → Structured)
+### Document Processor (Centralized N-Stage Pipeline)
 
-**Location:** [scripts/document_processor/](scripts/document_processor/)
+**Location:** [src/document_processor/](src/document_processor/)
 
-A CLI tool for batch processing unstructured documents (PDF, Word, text) into structured JSON using Claude Code in non-interactive mode.
+Centralized document processing pipeline with flexible N-stage support, implicit stage chaining, and LLM-based quality checking.
+
+**Architecture:**
+```
+src/document_processor/
+├── pipeline.py           # N-stage runner with QC integration
+├── config.py             # N-stage config loader
+├── cli.py                # Unified CLI entry point
+├── quality_check.py      # QC sampling and halt logic
+├── stages/               # Stage implementations
+│   ├── llm_stage.py      # Gemini PDF/text processing
+│   └── script_stage.py   # Python postprocessing
+├── clients/
+│   └── gemini_client.py  # Gemini API wrapper
+└── utils/
+    ├── file_utils.py     # Atomic writes, error files
+    └── status.py         # Pipeline status analysis
+```
+
+**Stage Types:**
+- `llm`: Process documents with Gemini (PDF native upload, DOCX/XLSX text extraction)
+- `script`: Custom Python postprocessing (location parsing, date normalization, etc.)
 
 **Features:**
-- Multi-format parsing (PDF via PyMuPDF, DOCX via python-docx, TXT/MD)
-- Concurrent processing with configurable parallelism
-- Idempotency (`--skip-existing` flag)
-- Automatic skip for documents exceeding token limit (default: 100K)
-- Rate limit handling with exponential backoff
-- Error rate monitoring (aborts if >50% failure after 10 files)
-- Subdirectory preservation in output structure
-- Full source filepath in output metadata
+- Flexible N stages (not fixed to 2) - configure as many as needed
+- Implicit chaining: Stage 1 uses input files, Stage N uses Stage N-1 output
+- Per-stage QC prompts with automatic halt on >10% failure rate
+- Idempotency via `.error.json` files
+- Sequential numbered output folders (1.extract/, 2.format/, 3.clean/)
+- Source-specific configs in `scripts/{source}/document_processing/`
 
-**Usage:**
-```bash
-python scripts/document_processor/process_documents.py \
-  -i /path/to/documents \
-  -o /path/to/output \
-  -p "Your extraction prompt" \
-  --schema schema.json \      # Optional JSON schema
-  --model sonnet \            # sonnet, opus, or haiku
-  --concurrency 5 \           # Parallel limit
-  --skip-existing             # Idempotency
-```
-
-**Output:** Each document produces `{filename}.json` with metadata and structured content.
-
-### Narratives Document Processor
-
-**Location:** [scripts/narratives/document_processing/](scripts/narratives/document_processing/)
-
-Batch processor for extracting structured information from narrative documents (P6 schedule narratives, milestone variance reports, weekly report narratives, SECAI responses) using Gemini for forensic delay analysis.
-
-**Supported Formats:**
-- PDF - Native Gemini upload
-- DOCX/DOC - Text extraction via python-docx → Gemini text API
-- XLSX/XLS - Text extraction via pandas → Gemini text API
-
-**Features:**
-- Two-phase processing: (1) Gemini extraction → JSON, (2) LLM formatting (planned)
-- Concurrent processing with configurable parallelism
-- Idempotency via `--skip-existing` flag
-- Preserves subfolder structure from input to output
-- Extracts forensically relevant statements with dates, parties, locations, and impacts
-
-**Output Structure:**
-```
-{WINDOWS_DATA_DIR}/
-├── raw/narratives/
-│   ├── p6_narratives/           # P6 schedule narratives, milestone variance
-│   ├── weekly_reports/          # Weekly report narrative sections
-│   └── other/                   # SECAI responses, EOT exhibits, etc.
-└── processed/narratives/
-    ├── p6_narratives/           # JSON extractions (same structure as raw)
-    ├── weekly_reports/
-    └── other/
-```
-
-**Usage:**
-```bash
-# Process all narrative documents (skips already completed by default)
-python scripts/narratives/document_processing/process_narratives.py
-
-# Process with limit (for testing)
-python scripts/narratives/document_processing/process_narratives.py --limit 10
-
-# Force reprocess all files (ignore existing)
-python scripts/narratives/document_processing/process_narratives.py --force
-
-# Retry only files that previously failed
-python scripts/narratives/document_processing/process_narratives.py --retry-errors
-
-# Adjust concurrency
-python scripts/narratives/document_processing/process_narratives.py --concurrency 5
-
-# Dry run (show what would be processed)
-python scripts/narratives/document_processing/process_narratives.py --dry-run
-```
-
-**Idempotency:**
-- Success: `{filename}.json` - File processed successfully
-- Failure: `{filename}.error.json` - File failed, contains error details
-- Default: Skips files with `.json` (completed) or `.error.json` (failed)
-- `--force`: Reprocess everything
-- `--retry-errors`: Only retry files with `.error.json`
-
-**Output JSON Structure:**
+**Config Schema (config.json):**
 ```json
 {
-  "metadata": {
-    "source_file": "/path/to/document.pdf",
-    "processed_at": "2026-01-06T...",
-    "model": "gemini-3-flash-preview",
-    "success": true,
-    "usage": {"prompt_tokens": 1000, "output_tokens": 2000}
-  },
-  "content": "## DOCUMENT SUMMARY\n...\n## RELEVANT STATEMENTS\n..."
+  "input_dir": "${WINDOWS_DATA_DIR}/raw/raba/individual",
+  "output_dir": "${WINDOWS_DATA_DIR}/processed/raba",
+  "file_extensions": [".pdf"],
+  "concurrency": 5,
+  "qc_batch_size": 50,
+  "qc_failure_threshold": 0.10,
+  "stages": [
+    {"name": "extract", "type": "llm", "model": "gemini-2.5-flash-preview-05-20", "prompt_file": "extract_prompt.txt"},
+    {"name": "format", "type": "llm", "model": "gemini-2.5-flash-preview-05-20", "prompt_file": "format_prompt.txt", "schema_file": "schema.json"},
+    {"name": "clean", "type": "script", "script": "postprocess.py", "function": "process_record"}
+  ]
 }
 ```
 
-**Extraction Output:**
-Each document produces a summary and list of forensically relevant statements including:
-- Delay events with dates and quantified impacts
-- Owner directions and scope changes
-- Quality issues and coordination problems
-- Party/contractor attribution
-- Location references (FAB, SUE, SUW, FIZ, grid lines, levels)
+**Usage:**
+```bash
+# Run all stages
+python -m src.document_processor scripts/raba/document_processing/
+
+# Run specific stage
+python -m src.document_processor scripts/raba/document_processing/ --stage extract
+
+# Show status
+python -m src.document_processor scripts/raba/document_processing/ --status
+
+# Common options
+--force              # Reprocess completed files
+--retry-errors       # Retry failed files only
+--limit N            # Process N files max
+--dry-run            # Preview without processing
+--bypass-qc-halt     # Continue despite QC halt file
+--disable-qc         # Skip quality checks
+```
+
+**Quality Check System:**
+- Samples 1 file per `qc_batch_size` files processed
+- QC prompt verifies input→output quality with LLM
+- Tracks failure rate; halts if >10% after min samples
+- Creates `.qc_halt.json` requiring prompt fix or `--bypass-qc-halt`
+
+**Output Structure:**
+```
+processed/raba/
+├── 1.extract/
+│   ├── {file}.extract.json
+│   └── {file}.extract.error.json
+├── 2.format/
+│   └── {file}.format.json
+├── 3.clean/
+│   └── {file}.clean.json
+└── .qc_halt.json  # If QC failure rate exceeded
+```
+
+### Source-Specific Pipelines
+
+Each data source has its own config in `scripts/{source}/document_processing/`:
+
+| Source | Stages | Config Location |
+|--------|--------|-----------------|
+| RABA | extract → format → clean | `scripts/raba/document_processing/` |
+| PSI | extract → format → clean | `scripts/psi/document_processing/` |
+| Narratives | extract (only) | `scripts/narratives/document_processing/` |
+
+**RABA/PSI Pipeline:**
+```bash
+cd scripts/raba/document_processing
+./run.sh status              # Check progress
+./run.sh test 10             # Dry run 10 files
+./run.sh extract --limit 50  # Extract 50 files
+./run.sh format              # Format all extracted
+./run.sh clean               # Normalize all formatted
+./run.sh retry               # Retry failures
+```
+
+**Narratives Pipeline (single stage):**
+```bash
+cd scripts/narratives/document_processing
+./run.sh extract --limit 10  # Extract narrative documents
+./run.sh status              # Check progress
+```
 
 ### RABA Quality Reports Scraper
 

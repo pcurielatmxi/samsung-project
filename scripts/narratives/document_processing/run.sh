@@ -1,5 +1,5 @@
 #!/bin/bash
-# PSI Document Processing Pipeline
+# Narratives Document Processing Pipeline
 # Usage: ./run.sh <command> [options]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,23 +10,8 @@ CONFIG_DIR="$SCRIPT_DIR"
 source "$PROJECT_ROOT/.venv/bin/activate"
 
 case "${1:-help}" in
-    extract)
-        # Run extract stage only
-        shift
-        python -m src.document_processor "$CONFIG_DIR" --stage extract "$@"
-        ;;
-    format)
-        # Run format stage only
-        shift
-        python -m src.document_processor "$CONFIG_DIR" --stage format "$@"
-        ;;
-    clean)
-        # Run clean stage only (postprocessing)
-        shift
-        python -m src.document_processor "$CONFIG_DIR" --stage clean "$@"
-        ;;
-    run)
-        # Run all stages
+    extract|run)
+        # Run extract stage (only stage for narratives)
         shift
         python -m src.document_processor "$CONFIG_DIR" "$@"
         ;;
@@ -46,21 +31,19 @@ case "${1:-help}" in
         python -m src.document_processor "$CONFIG_DIR" --limit "${1:-5}" --dry-run
         ;;
     help|*)
-        echo "PSI Document Processing Pipeline"
+        echo "Narratives Document Processing Pipeline"
         echo ""
         echo "Usage: ./run.sh <command> [options]"
         echo ""
         echo "Commands:"
-        echo "  extract     Run extract stage only (Gemini PDF extraction)"
-        echo "  format      Run format stage only (Gemini JSON formatting)"
-        echo "  clean       Run clean stage only (Python postprocessing)"
+        echo "  extract     Run extraction (alias: run)"
         echo "  run         Run all stages"
         echo "  status      Show pipeline status"
         echo "  retry       Retry failed files"
         echo "  test [n]    Dry run with n files (default: 5)"
         echo ""
         echo "Options (passed to pipeline):"
-        echo "  --limit N           Process only N files per stage"
+        echo "  --limit N           Process only N files"
         echo "  --force             Reprocess completed files"
         echo "  --dry-run           Show what would be processed"
         echo "  --retry-errors      Retry failed files only"
@@ -73,8 +56,6 @@ case "${1:-help}" in
         echo "  ./run.sh status              # Check progress"
         echo "  ./run.sh test 10             # Dry run 10 files"
         echo "  ./run.sh extract --limit 50  # Extract 50 files"
-        echo "  ./run.sh format              # Format all extracted"
-        echo "  ./run.sh clean               # Normalize all formatted"
         echo "  ./run.sh retry               # Retry failures"
         ;;
 esac

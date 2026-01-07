@@ -4,8 +4,6 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-PIPELINE="$PROJECT_ROOT/scripts/document_processor_v2/pipeline.py"
-STATUS="$PROJECT_ROOT/scripts/document_processor_v2/status.py"
 CONFIG_DIR="$SCRIPT_DIR"
 
 # Activate virtual environment
@@ -13,34 +11,39 @@ source "$PROJECT_ROOT/.venv/bin/activate"
 
 case "${1:-help}" in
     extract)
-        # Run Stage 1 only (Gemini extraction)
+        # Run extract stage only
         shift
-        python "$PIPELINE" "$CONFIG_DIR" --stage 1 "$@"
+        python -m src.document_processor "$CONFIG_DIR" --stage extract "$@"
         ;;
     format)
-        # Run Stage 2 only (Claude formatting)
+        # Run format stage only
         shift
-        python "$PIPELINE" "$CONFIG_DIR" --stage 2 "$@"
+        python -m src.document_processor "$CONFIG_DIR" --stage format "$@"
+        ;;
+    clean)
+        # Run clean stage only (postprocessing)
+        shift
+        python -m src.document_processor "$CONFIG_DIR" --stage clean "$@"
         ;;
     run)
-        # Run both stages
+        # Run all stages
         shift
-        python "$PIPELINE" "$CONFIG_DIR" "$@"
+        python -m src.document_processor "$CONFIG_DIR" "$@"
         ;;
     status)
         # Show pipeline status
         shift
-        python "$STATUS" "$CONFIG_DIR" "$@"
+        python -m src.document_processor "$CONFIG_DIR" --status "$@"
         ;;
     retry)
         # Retry failed files
         shift
-        python "$PIPELINE" "$CONFIG_DIR" --retry-errors "$@"
+        python -m src.document_processor "$CONFIG_DIR" --retry-errors "$@"
         ;;
     test)
         # Test with limited files
         shift
-        python "$PIPELINE" "$CONFIG_DIR" --limit "${1:-5}" --dry-run
+        python -m src.document_processor "$CONFIG_DIR" --limit "${1:-5}" --dry-run
         ;;
     help|*)
         echo "RABA Document Processing Pipeline"
@@ -48,24 +51,30 @@ case "${1:-help}" in
         echo "Usage: ./run.sh <command> [options]"
         echo ""
         echo "Commands:"
-        echo "  extract     Run Stage 1 only (Gemini extraction)"
-        echo "  format      Run Stage 2 only (Claude formatting)"
-        echo "  run         Run both stages"
+        echo "  extract     Run extract stage only (Gemini PDF extraction)"
+        echo "  format      Run format stage only (Gemini JSON formatting)"
+        echo "  clean       Run clean stage only (Python postprocessing)"
+        echo "  run         Run all stages"
         echo "  status      Show pipeline status"
         echo "  retry       Retry failed files"
         echo "  test [n]    Dry run with n files (default: 5)"
         echo ""
         echo "Options (passed to pipeline):"
-        echo "  --limit N       Process only N files"
-        echo "  --force         Reprocess existing files"
-        echo "  --dry-run       Show what would be processed"
-        echo "  --errors        Show error details (status only)"
+        echo "  --limit N           Process only N files per stage"
+        echo "  --force             Reprocess completed files"
+        echo "  --dry-run           Show what would be processed"
+        echo "  --retry-errors      Retry failed files only"
+        echo "  --bypass-qc-halt    Continue despite QC halt"
+        echo "  --disable-qc        Skip quality checks"
+        echo "  --errors            Show error details (status only)"
+        echo "  --verbose           Verbose output"
         echo ""
         echo "Examples:"
         echo "  ./run.sh status              # Check progress"
         echo "  ./run.sh test 10             # Dry run 10 files"
         echo "  ./run.sh extract --limit 50  # Extract 50 files"
         echo "  ./run.sh format              # Format all extracted"
+        echo "  ./run.sh clean               # Normalize all formatted"
         echo "  ./run.sh retry               # Retry failures"
         ;;
 esac
