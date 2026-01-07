@@ -1,6 +1,12 @@
-# Quality Check Prompt Guidelines
+# Quality Check and Enhancement Prompt Guidelines
 
 ## Purpose
+
+This guide covers two related prompt types:
+1. **QC prompts** - Verify pipeline output quality by sampling (low cost, catches issues early)
+2. **Enhancement prompts** - Improve output quality by running a second pass (higher cost, better results)
+
+## QC Prompts
 
 QC prompts verify that pipeline stages produce accurate, complete output. The QC system samples processed files and uses an LLM to compare input vs output, catching problems early before wasting API credits on bad prompts.
 
@@ -141,14 +147,14 @@ To enable QC for a stage, add `qc_prompt_file` to the stage config:
     {
       "name": "extract",
       "type": "llm",
-      "model": "gemini-2.0-flash",
+      "model": "gemini-3-flash-preview",
       "prompt_file": "extract_prompt.txt",
       "qc_prompt_file": "extract_qc_prompt.txt"
     },
     {
       "name": "format",
       "type": "llm",
-      "model": "gemini-2.0-flash",
+      "model": "gemini-3-flash-preview",
       "prompt_file": "format_prompt.txt",
       "schema_file": "schema.json",
       "qc_prompt_file": "format_qc_prompt.txt"
@@ -172,3 +178,90 @@ When QC halts the pipeline, check `.qc_halt.json` in the output directory:
 - Review the reasons to identify if it's a prompt problem or data problem
 - Fix the extraction/format prompt and delete `.qc_halt.json` to retry
 - Use `--bypass-qc-halt` only if you've reviewed failures and they're acceptable
+
+---
+
+## Enhancement Prompts
+
+Enhancement prompts run a second LLM pass to review and correct the initial output. This is useful when:
+- High accuracy is critical
+- The extraction prompt produces occasional errors
+- You want to catch and fix issues automatically
+
+### When Enhancement Runs
+
+- Only when `--enhance` flag is passed to the CLI
+- Only for LLM stages with `enhance_prompt_file` configured
+- Runs after the initial extraction, using the same schema
+- Roughly doubles token cost per file
+
+### Configuration
+
+Add `enhance_prompt_file` to LLM stage config:
+
+```json
+{
+  "stages": [
+    {
+      "name": "extract",
+      "type": "llm",
+      "model": "gemini-3-flash-preview",
+      "prompt_file": "extract_prompt.txt",
+      "enhance_prompt_file": "enhance_prompt.txt"
+    }
+  ]
+}
+```
+
+### Template Variables
+
+- `{output_content}` - The initial extraction output (JSON string)
+
+### Sample Enhancement Prompt
+
+```
+You are a quality reviewer for document extraction. Your task is to review and correct the extraction output below.
+
+## EXTRACTION OUTPUT TO REVIEW
+{output_content}
+
+## REVIEW TASK
+
+Carefully review the extraction output and fix any issues you find:
+
+1. **Accuracy**: Correct any misread values, dates, numbers, or identifiers
+2. **Completeness**: Fill in any obviously missing fields that can be inferred from context
+3. **Consistency**: Ensure data types are correct (dates are dates, numbers are numbers)
+4. **Formatting**: Fix any formatting issues (extra whitespace, inconsistent casing, etc.)
+5. **No Hallucinations**: Do NOT add information that isn't clearly implied by the existing data
+
+## OUTPUT
+
+Return the corrected extraction in the same format as the input. If no corrections are needed, return the input unchanged.
+```
+
+### Tips for Enhancement Prompts
+
+1. **Be conservative** - Enhancement should fix errors, not add information
+2. **Preserve structure** - Output format must match input format
+3. **Focus on common errors** - Target the types of mistakes your extraction prompt makes
+4. **Don't over-correct** - When in doubt, preserve the original value
+5. **Cost consideration** - Enhancement roughly doubles cost; use when quality justifies it
+
+### QC vs Enhancement
+
+| Aspect | QC | Enhancement |
+|--------|-----|-------------|
+| Purpose | Detect problems | Fix problems |
+| Runs on | Sampled files (~1/batch) | Every file (when enabled) |
+| Cost | Low (~2% overhead) | High (~100% overhead) |
+| Output | Pass/Fail verdict | Corrected data |
+| Use when | Developing prompts | Production with high accuracy needs |
+
+### Recommended Workflow
+
+1. Start with extraction prompt only
+2. Add QC prompt to catch issues during development
+3. Iterate on extraction prompt until QC pass rate is acceptable
+4. Add enhancement prompt for production runs where accuracy is critical
+5. Use `--enhance` flag only when needed to control costs

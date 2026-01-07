@@ -67,6 +67,7 @@ def cmd_run(args, config) -> int:
         dry_run=args.dry_run,
         bypass_qc_halt=args.bypass_qc_halt,
         disable_qc=args.disable_qc,
+        enable_enhance=args.enhance,
         verbose=args.verbose,
     ))
 
@@ -154,6 +155,11 @@ def main() -> int:
         "--disable-qc",
         action="store_true",
         help="Skip quality checks entirely",
+    )
+    parser.add_argument(
+        "--enhance",
+        action="store_true",
+        help="Enable enhancement pass for LLM stages (requires enhance_prompt_file in config)",
     )
     parser.add_argument(
         "--status",

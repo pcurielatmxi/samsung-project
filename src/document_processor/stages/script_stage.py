@@ -69,12 +69,15 @@ class ScriptStage(BaseStage):
         self,
         task: FileTask,
         input_path: Path,
+        enable_enhance: bool = False,
     ) -> StageResult:
         """
         Process a file with the Python script.
 
         Reads JSON from prior stage, calls the processing function,
         and returns the result.
+
+        Note: enable_enhance is ignored for script stages (deterministic).
         """
         start_time = time.time()
 

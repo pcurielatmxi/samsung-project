@@ -83,6 +83,7 @@ async def process_single_file(
     prior_stage: Optional[StageConfig],
     task: FileTask,
     stats: ProcessingStats,
+    enable_enhance: bool = False,
 ) -> bool:
     """
     Process a single file through a stage.
@@ -104,7 +105,7 @@ async def process_single_file(
         _progress.file_start(task.stem)
 
     try:
-        result = await stage_impl.process(task, input_path)
+        result = await stage_impl.process(task, input_path, enable_enhance=enable_enhance)
 
         if result.success:
             # Write successful output
@@ -192,6 +193,7 @@ async def run_stage(
     limit: Optional[int] = None,
     dry_run: bool = False,
     disable_qc: bool = False,
+    enable_enhance: bool = False,
 ) -> tuple[ProcessingStats, Optional[QCTracker]]:
     """
     Run a single stage of the pipeline.
@@ -281,6 +283,7 @@ async def run_stage(
                 prior_stage=prior_stage,
                 task=task,
                 stats=stats,
+                enable_enhance=enable_enhance,
             )
             return task, success
 
@@ -355,6 +358,7 @@ async def run_pipeline(
     dry_run: bool = False,
     bypass_qc_halt: bool = False,
     disable_qc: bool = False,
+    enable_enhance: bool = False,
     verbose: bool = False,
 ) -> dict:
     """
@@ -369,6 +373,7 @@ async def run_pipeline(
         dry_run: Show what would be processed without processing
         bypass_qc_halt: Continue despite QC halt file
         disable_qc: Skip quality checks entirely
+        enable_enhance: Enable enhancement pass for LLM stages
         verbose: Show per-file error messages
 
     Returns:
@@ -430,6 +435,7 @@ async def run_pipeline(
             limit=limit,
             dry_run=dry_run,
             disable_qc=disable_qc,
+            enable_enhance=enable_enhance,
         )
 
         elapsed = time.time() - stats.start_time if stats.start_time else 0

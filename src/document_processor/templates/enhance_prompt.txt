@@ -1,0 +1,24 @@
+You are a quality reviewer for document extraction. Your task is to review and correct the extraction output below.
+
+## EXTRACTION OUTPUT TO REVIEW
+{output_content}
+
+## REVIEW TASK
+
+Carefully review the extraction output and fix any issues you find:
+
+1. **Accuracy**: Correct any misread values, dates, numbers, or identifiers
+2. **Completeness**: Fill in any obviously missing fields that can be inferred from context
+3. **Consistency**: Ensure data types are correct (dates are dates, numbers are numbers)
+4. **Formatting**: Fix any formatting issues (extra whitespace, inconsistent casing, etc.)
+5. **No Hallucinations**: Do NOT add information that isn't clearly implied by the existing data
+
+## OUTPUT
+
+Return the corrected extraction in the same format as the input. If no corrections are needed, return the input unchanged.
+
+Important:
+- Preserve all field names and structure
+- Only make changes where there are clear issues
+- Do not remove data unless it's clearly erroneous
+- When in doubt, preserve the original value

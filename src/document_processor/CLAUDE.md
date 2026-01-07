@@ -44,7 +44,7 @@ Sends documents to Gemini for extraction or formatting.
 {
   "name": "extract",
   "type": "llm",
-  "model": "gemini-2.0-flash",
+  "model": "gemini-3-flash-preview",
   "prompt_file": "extract_prompt.txt",
   "schema_file": "schema.json",        // Optional: structured output
   "qc_prompt_file": "extract_qc.txt"   // Optional: enables QC
@@ -116,13 +116,13 @@ scripts/psi/document_processing/
     {
       "name": "extract",
       "type": "llm",
-      "model": "gemini-2.0-flash",
+      "model": "gemini-3-flash-preview",
       "prompt_file": "extract_prompt.txt"
     },
     {
       "name": "format",
       "type": "llm",
-      "model": "gemini-2.0-flash",
+      "model": "gemini-3-flash-preview",
       "prompt_file": "format_prompt.txt",
       "schema_file": "schema.json"
     },
@@ -156,11 +156,54 @@ python -m src.document_processor scripts/psi/document_processing/ --stage extrac
 --bypass-qc-halt     # Continue despite QC halt
 --disable-qc         # Skip quality checks
 
+# Enhancement flags
+--enhance            # Enable enhancement pass for LLM stages
+
 # Status
 --status             # Show pipeline status
 --status --errors    # Show error details
 --clear-halt         # Remove QC halt file
 ```
+
+## Enhancement Mode
+
+Enhancement runs a second LLM pass to review and correct extraction output.
+
+### Configuration
+
+Add `enhance_prompt_file` to LLM stage config:
+
+```json
+{
+  "name": "extract",
+  "type": "llm",
+  "model": "gemini-3-flash-preview",
+  "prompt_file": "extract_prompt.txt",
+  "enhance_prompt_file": "enhance_prompt.txt"
+}
+```
+
+### Usage
+
+```bash
+# Run with enhancement enabled
+python -m src.document_processor scripts/psi/document_processing/ --enhance
+```
+
+### How It Works
+
+1. Initial extraction runs as normal
+2. If `--enhance` flag is set and stage has `enhance_prompt_file`:
+   - Initial output is passed to enhancement prompt
+   - Enhancement prompt reviews and corrects the output
+   - Corrected output replaces initial output
+3. Token usage includes both passes (~2x cost)
+
+### When to Use
+
+- **Development**: Use QC to identify issues, iterate on extraction prompt
+- **Production**: Add `--enhance` when accuracy is critical
+- **Cost control**: Only use `--enhance` when quality justifies ~2x cost
 
 ## Quality Checking
 
@@ -197,7 +240,7 @@ Each stage writes JSON with metadata:
     "source_file": "/path/to/input.pdf",
     "processed_at": "2026-01-07T12:00:00Z",
     "stage": "extract",
-    "model": "gemini-2.0-flash",
+    "model": "gemini-3-flash-preview",
     "usage": {
       "prompt_tokens": 1500,
       "output_tokens": 400,

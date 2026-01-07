@@ -241,7 +241,7 @@ async def run_quality_check(
     stage: StageConfig,
     input_path: Path,
     output_path: Path,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-3-flash-preview",
 ) -> QCResult:
     """
     Run quality check on a processed file.

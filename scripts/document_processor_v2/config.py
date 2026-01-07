@@ -19,7 +19,7 @@ from typing import Optional, List
 @dataclass
 class Stage1Config:
     """Stage 1 (Gemini extraction) configuration."""
-    model: str = "gemini-2.0-flash"
+    model: str = "gemini-3-flash-preview"
     prompt: str = ""
     prompt_file: str = "extract_prompt.txt"
 
@@ -156,7 +156,7 @@ def load_config(config_dir: str | Path) -> PipelineConfig:
     stage2_data = config_data.get("stage2", {})
 
     stage1 = Stage1Config(
-        model=stage1_data.get("model", "gemini-2.0-flash"),
+        model=stage1_data.get("model", "gemini-3-flash-preview"),
         prompt_file=stage1_data.get("prompt_file", "extract_prompt.txt"),
     )
 

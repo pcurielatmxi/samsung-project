@@ -103,6 +103,7 @@ class BaseStage(ABC):
         self,
         task: FileTask,
         input_path: Path,
+        enable_enhance: bool = False,
     ) -> StageResult:
         """
         Process a single file.
@@ -110,6 +111,7 @@ class BaseStage(ABC):
         Args:
             task: The file task to process
             input_path: Path to input file (source or prior stage output)
+            enable_enhance: Enable enhancement pass (for LLM stages with enhance_prompt)
 
         Returns:
             StageResult with success/failure and output data

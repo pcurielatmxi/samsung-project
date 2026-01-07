@@ -31,6 +31,8 @@ class StageConfig:
     schema_file: Optional[str] = None
     qc_prompt: Optional[str] = None
     qc_prompt_file: Optional[str] = None
+    enhance_prompt: Optional[str] = None
+    enhance_prompt_file: Optional[str] = None
 
     # Script stage fields
     script: Optional[str] = None
@@ -55,6 +57,11 @@ class StageConfig:
     def has_qc(self) -> bool:
         """Whether this stage has quality checking enabled."""
         return self.qc_prompt is not None
+
+    @property
+    def has_enhance(self) -> bool:
+        """Whether this stage has enhancement prompt configured."""
+        return self.enhance_prompt is not None
 
 
 @dataclass
@@ -176,10 +183,11 @@ def _load_stage(stage_data: dict, index: int, config_dir: Path) -> StageConfig:
     )
 
     if stage_type == "llm":
-        stage.model = stage_data.get("model", "gemini-2.5-flash-preview-05-20")
+        stage.model = stage_data.get("model", "gemini-3-flash-preview")
         stage.prompt_file = stage_data.get("prompt_file")
         stage.schema_file = stage_data.get("schema_file")
         stage.qc_prompt_file = stage_data.get("qc_prompt_file")
+        stage.enhance_prompt_file = stage_data.get("enhance_prompt_file")
 
         # Load prompt
         if stage.prompt_file:
@@ -204,6 +212,13 @@ def _load_stage(stage_data: dict, index: int, config_dir: Path) -> StageConfig:
             if qc_path.exists():
                 stage.qc_prompt = qc_path.read_text(encoding="utf-8").strip()
             # QC is optional, don't raise if missing
+
+        # Load enhance prompt
+        if stage.enhance_prompt_file:
+            enhance_path = config_dir / stage.enhance_prompt_file
+            if enhance_path.exists():
+                stage.enhance_prompt = enhance_path.read_text(encoding="utf-8").strip()
+            # Enhancement is optional, don't raise if missing
 
     elif stage_type == "script":
         stage.script = stage_data.get("script")
@@ -300,9 +315,14 @@ def print_config(config: PipelineConfig) -> None:
     print()
     print(f"Stages ({len(config.stages)}):")
     for stage in config.stages:
-        qc_indicator = " [QC]" if stage.has_qc else ""
+        indicators = []
+        if stage.has_qc:
+            indicators.append("QC")
+        if stage.has_enhance:
+            indicators.append("ENHANCE")
+        indicator_str = f" [{', '.join(indicators)}]" if indicators else ""
         if stage.type == "llm":
-            print(f"  {stage.folder_name}: {stage.type} ({stage.model}){qc_indicator}")
+            print(f"  {stage.folder_name}: {stage.type} ({stage.model}){indicator_str}")
             if stage.prompt:
                 print(f"    Prompt: {stage.prompt[:60]}...")
             if stage.schema:

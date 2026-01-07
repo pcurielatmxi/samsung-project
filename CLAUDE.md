@@ -219,8 +219,8 @@ src/document_processor/
   "qc_batch_size": 50,
   "qc_failure_threshold": 0.10,
   "stages": [
-    {"name": "extract", "type": "llm", "model": "gemini-2.5-flash-preview-05-20", "prompt_file": "extract_prompt.txt"},
-    {"name": "format", "type": "llm", "model": "gemini-2.5-flash-preview-05-20", "prompt_file": "format_prompt.txt", "schema_file": "schema.json"},
+    {"name": "extract", "type": "llm", "model": "gemini-3-flash-preview", "prompt_file": "extract_prompt.txt"},
+    {"name": "format", "type": "llm", "model": "gemini-3-flash-preview", "prompt_file": "format_prompt.txt", "schema_file": "schema.json"},
     {"name": "clean", "type": "script", "script": "postprocess.py", "function": "process_record"}
   ]
 }

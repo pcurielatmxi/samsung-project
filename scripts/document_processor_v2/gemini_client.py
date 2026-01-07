@@ -227,7 +227,7 @@ def process_document_text(
     text: str,
     prompt: str,
     schema: Optional[dict] = None,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-3-flash-preview",
 ) -> GeminiResponse:
     """
     Process text content with Gemini (for Stage 2 formatting).

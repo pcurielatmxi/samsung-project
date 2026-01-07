@@ -8,7 +8,7 @@ Supports multiple document formats: PDF (native upload), DOCX, XLSX (text extrac
 import json
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from .base import BaseStage, StageResult, FileTask
 from ..config import StageConfig
@@ -79,14 +79,19 @@ class LLMStage(BaseStage):
         self,
         task: FileTask,
         input_path: Path,
+        enable_enhance: bool = False,
     ) -> StageResult:
         """
         Process a file with Gemini.
 
         For stage 0 (first stage): Uses document upload for PDF
         For stage N: Reads JSON from prior stage and processes as text
+
+        If enable_enhance and enhance_prompt is configured, runs a second pass
+        to review and correct the initial output.
         """
         start_time = time.time()
+        total_usage = {"prompt_tokens": 0, "output_tokens": 0, "total_tokens": 0}
 
         try:
             # Determine if this is first stage (document upload) or later (text)
@@ -97,17 +102,8 @@ class LLMStage(BaseStage):
                 # Later stage: process prior stage's output as text
                 response = await self._process_text(input_path)
 
-            duration_ms = int((time.time() - start_time) * 1000)
-
-            if response.success:
-                return StageResult(
-                    success=True,
-                    result=response.result,
-                    usage=response.usage,
-                    duration_ms=duration_ms,
-                )
-            else:
-                # Determine if error is retryable
+            if not response.success:
+                duration_ms = int((time.time() - start_time) * 1000)
                 retryable = self._is_retryable_error(response.error)
                 return StageResult(
                     success=False,
@@ -115,6 +111,35 @@ class LLMStage(BaseStage):
                     duration_ms=duration_ms,
                     retryable=retryable,
                 )
+
+            # Track initial pass usage
+            if response.usage:
+                total_usage["prompt_tokens"] += response.usage.get("prompt_tokens", 0) or 0
+                total_usage["output_tokens"] += response.usage.get("output_tokens", 0) or 0
+
+            result = response.result
+
+            # Enhancement pass: if enabled and enhance_prompt is configured
+            if enable_enhance and self.config.has_enhance:
+                enhance_response = await self._run_enhancement(result)
+
+                if enhance_response.success:
+                    result = enhance_response.result
+                    # Add enhancement usage to total
+                    if enhance_response.usage:
+                        total_usage["prompt_tokens"] += enhance_response.usage.get("prompt_tokens", 0) or 0
+                        total_usage["output_tokens"] += enhance_response.usage.get("output_tokens", 0) or 0
+                # If enhancement fails, we still return the initial result
+
+            total_usage["total_tokens"] = total_usage["prompt_tokens"] + total_usage["output_tokens"]
+            duration_ms = int((time.time() - start_time) * 1000)
+
+            return StageResult(
+                success=True,
+                result=result,
+                usage=total_usage,
+                duration_ms=duration_ms,
+            )
 
         except Exception as e:
             duration_ms = int((time.time() - start_time) * 1000)
@@ -214,6 +239,30 @@ class LLMStage(BaseStage):
             text=content,
             prompt=self.config.prompt,
             schema=self.config.schema,
+            model=self.config.model,
+        )
+
+    async def _run_enhancement(self, initial_result: Any) -> GeminiResponse:
+        """
+        Run enhancement pass on initial extraction result.
+
+        Takes the initial output and runs it through the enhance_prompt
+        to review and correct any issues.
+        """
+        # Prepare the content for enhancement
+        if isinstance(initial_result, dict):
+            content = json.dumps(initial_result, indent=2)
+        else:
+            content = str(initial_result)
+
+        # Format the enhance prompt with the initial output
+        enhance_prompt = self.config.enhance_prompt.replace("{output_content}", content)
+
+        # Run enhancement through text API
+        return process_document_text(
+            text=content,
+            prompt=enhance_prompt,
+            schema=self.config.schema,  # Use same schema for consistent output
             model=self.config.model,
         )
 

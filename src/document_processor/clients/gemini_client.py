@@ -224,7 +224,7 @@ def process_document(
     filepath: Union[str, Path],
     prompt: str,
     schema: Optional[dict] = None,
-    model: str = "gemini-2.5-flash-preview-05-20",
+    model: str = "gemini-3-flash-preview",
 ) -> GeminiResponse:
     """
     Process a PDF document with Gemini.
@@ -341,7 +341,7 @@ def process_document_text(
     text: str,
     prompt: str,
     schema: Optional[dict] = None,
-    model: str = "gemini-2.5-flash-preview-05-20",
+    model: str = "gemini-3-flash-preview",
 ) -> GeminiResponse:
     """
     Process text content with Gemini.

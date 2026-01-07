@@ -16,9 +16,9 @@ from pathlib import Path
 from typing import Optional
 
 
-# Gemini pricing (per 1M tokens) - gemini-2.0-flash
-GEMINI_INPUT_COST_PER_M = 0.10   # $0.10 per 1M input tokens
-GEMINI_OUTPUT_COST_PER_M = 0.40  # $0.40 per 1M output tokens
+# Gemini pricing (per 1M tokens) - gemini-3-flash-preview
+GEMINI_INPUT_COST_PER_M = 0.50   # $0.10 per 1M input tokens
+GEMINI_OUTPUT_COST_PER_M = 3.00  # $0.40 per 1M output tokens
 
 
 def calculate_cost(input_tokens: int, output_tokens: int) -> float:
