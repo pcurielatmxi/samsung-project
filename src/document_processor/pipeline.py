@@ -57,21 +57,33 @@ class ProcessingStats:
 
 
 def discover_files(config: PipelineConfig) -> List[FileTask]:
-    """Discover all input files matching configured extensions."""
+    """
+    Discover all input files matching configured extensions.
+
+    Handles duplicate filenames (same stem, different extensions):
+    - .pdf + .docx: Keep .pdf only (preferred format)
+    - Other duplicates: Raise error for manual resolution
+    """
+    from .utils.file_utils import discover_source_files, report_conflicts_and_raise
+
+    resolved, conflicts = discover_source_files(config.input_dir, config.file_extensions)
+
+    # Report conflicts if any
+    if conflicts:
+        report_conflicts_and_raise(conflicts)
+
+    # Build tasks from resolved files
     tasks = []
+    for source_path in resolved:
+        relative_path = source_path.relative_to(config.input_dir)
+        output_dir = config.output_dir / relative_path.parent
 
-    for ext in config.file_extensions:
-        for source_path in config.input_dir.rglob(f"*{ext}"):
-            if source_path.is_file():
-                relative_path = source_path.relative_to(config.input_dir)
-                output_dir = config.output_dir / relative_path.parent
-
-                tasks.append(FileTask(
-                    source_path=source_path,
-                    relative_path=relative_path,
-                    output_dir=output_dir,
-                    stem=source_path.stem,
-                ))
+        tasks.append(FileTask(
+            source_path=source_path,
+            relative_path=relative_path,
+            output_dir=output_dir,
+            stem=source_path.stem,
+        ))
 
     # Sort for consistent ordering
     tasks.sort(key=lambda t: t.relative_path)

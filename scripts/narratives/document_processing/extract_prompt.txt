@@ -15,8 +15,11 @@ Be comprehensive. The summary should capture the essential content so someone co
 
 Extract every statement relevant to understanding project performance: delays, impacts, issues, directions, scope changes, quality problems, coordination issues, progress, commitments, or disputed items.
 
+**CRITICAL: USE VERBATIM QUOTES**
+Each statement MUST be copied exactly as written in the document - word for word, character for character. This is required for source traceability. Do NOT paraphrase, summarize, or reword. Copy the exact text.
+
 For each statement provide:
-- Statement: The quote or close paraphrase (preserve full context, do not over-summarize)
+- Statement: **VERBATIM QUOTE** - copy the exact text from the document (required for traceability)
 - Date: Date of event if mentioned
 - Parties: Companies, contractors, or individuals involved
 - Location: Building, area, grid reference if mentioned (FAB, SUE, SUW, FIZ, GL, Level, etc.)
@@ -28,9 +31,11 @@ Use a simple list format. Omit fields that have no relevant information rather t
 ## GUIDELINES
 
 - Extract ALL potentially relevant statements - when in doubt, include it
-- Preserve original wording and full context - do not compress or summarize quotes
+- **USE EXACT VERBATIM QUOTES** - copy text exactly as written for source traceability
+- Do NOT paraphrase, reword, or summarize the statement text
 - Include progress and status updates that provide context
 - Include conditional statements and assumptions
 - Include items noted as "not accounted for" or disputed
 - Do not interpret or infer beyond what is stated
 - If a statement has multiple parts or sub-points, include them all
+- Preserve original punctuation, capitalization, and spelling (even if incorrect)

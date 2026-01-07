@@ -7,7 +7,7 @@ import os
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 
 def write_json_atomic(path: Path, data: dict) -> None:
@@ -143,3 +143,81 @@ def format_size(bytes_count: int) -> str:
         return f"{bytes_count / (1024 * 1024):.1f}MB"
     else:
         return f"{bytes_count / (1024 * 1024 * 1024):.1f}GB"
+
+
+def discover_source_files(
+    input_dir: Path,
+    file_extensions: List[str],
+) -> Tuple[List[Path], List[Tuple[str, List[str]]]]:
+    """
+    Discover source files with duplicate handling.
+
+    Handles duplicate filenames (same stem, different extensions):
+    - .pdf + .docx/.doc: Keep .pdf only (preferred format)
+    - Other duplicates: Return as conflicts for manual resolution
+
+    Args:
+        input_dir: Directory to scan for files
+        file_extensions: List of extensions to match (e.g., [".pdf", ".docx"])
+
+    Returns:
+        Tuple of (resolved_files, conflicts):
+        - resolved_files: List of Paths to process
+        - conflicts: List of (stem, [file_paths]) for unresolved duplicates
+    """
+    # Collect all matching files grouped by stem
+    files_by_stem: Dict[str, List[Path]] = {}
+
+    for ext in file_extensions:
+        for source_path in input_dir.rglob(f"*{ext}"):
+            if source_path.is_file():
+                # Key by parent + stem to handle subdirectories
+                key = str(source_path.parent / source_path.stem)
+                if key not in files_by_stem:
+                    files_by_stem[key] = []
+                files_by_stem[key].append(source_path)
+
+    # Resolve duplicates
+    resolved = []
+    conflicts = []
+
+    for key, paths in files_by_stem.items():
+        if len(paths) == 1:
+            # No duplicate
+            resolved.append(paths[0])
+        else:
+            # Multiple files with same stem - check for .pdf + .docx/.doc pattern
+            extensions = {p.suffix.lower() for p in paths}
+
+            if extensions == {'.pdf', '.docx'} or extensions == {'.pdf', '.doc'}:
+                # Prefer PDF over Word docs
+                resolved.append(next(p for p in paths if p.suffix.lower() == '.pdf'))
+            else:
+                # Unresolved conflict - flag for manual resolution
+                conflicts.append((key, [str(p) for p in paths]))
+
+    return resolved, conflicts
+
+
+def report_conflicts_and_raise(conflicts: List[Tuple[str, List[str]]]) -> None:
+    """
+    Report file conflicts and raise ValueError.
+
+    Args:
+        conflicts: List of (stem, [file_paths]) tuples
+
+    Raises:
+        ValueError: Always raises with conflict details
+    """
+    print("\n⚠️  DUPLICATE FILES REQUIRING MANUAL RESOLUTION:")
+    print("   Remove duplicates to continue (keep one version per document)")
+    print()
+    for stem, file_list in conflicts:
+        print(f"   {Path(stem).name}:")
+        for f in file_list:
+            print(f"      - {f}")
+    print()
+    raise ValueError(
+        f"Found {len(conflicts)} file(s) with unresolved duplicates. "
+        "Remove duplicates and retry."
+    )

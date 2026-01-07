@@ -53,7 +53,7 @@
           },
           "category": {
             "type": "string",
-            "enum": ["delay", "scope_change", "quality_issue", "owner_direction", "progress", "resource", "weather", "design_issue", "coordination", "dispute", "commitment", "other"],
+            "enum": ["delay", "scope_change", "quality_issue", "safety", "owner_direction", "progress", "resource", "weather", "design_issue", "coordination", "dispute", "commitment", "other"],
             "description": "Statement category for analysis"
           },
           "event_date": {
@@ -82,6 +82,29 @@
             "type": ["array", "null"],
             "items": {"type": "string"},
             "description": "References to other documents, RFIs, letters, exhibits"
+          },
+          "source_location": {
+            "type": ["object", "null"],
+            "description": "Location of statement in source document (added by locate stage)",
+            "properties": {
+              "page": {
+                "type": "integer",
+                "description": "Page number in source document (1-indexed, -1 if not found)"
+              },
+              "char_offset": {
+                "type": "integer",
+                "description": "Character offset in document (-1 if not found)"
+              },
+              "match_confidence": {
+                "type": "number",
+                "description": "Confidence score 0-100 (100 = exact match)"
+              },
+              "match_type": {
+                "type": "string",
+                "enum": ["exact", "fuzzy", "prefix", "fuzzy_prefix", "not_found", "error", "empty"],
+                "description": "How the match was found"
+              }
+            }
           }
         }
       }

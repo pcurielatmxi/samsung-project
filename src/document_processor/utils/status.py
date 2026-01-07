@@ -43,63 +43,68 @@ def analyze_status(config: PipelineConfig) -> PipelineStatus:
     Returns:
         PipelineStatus with counts and details per stage
     """
+    from .file_utils import discover_source_files
+
     status = PipelineStatus()
 
     # Initialize stage status objects
     for stage in config.stages:
         status.stages[stage.name] = StageStatus(name=stage.name)
 
-    # Discover all input files
-    for ext in config.file_extensions:
-        for source_path in config.input_dir.rglob(f"*{ext}"):
-            if not source_path.is_file():
-                continue
+    # Discover all input files (with duplicate handling)
+    resolved_files, conflicts = discover_source_files(
+        config.input_dir, config.file_extensions
+    )
 
-            status.total_files += 1
+    # Note conflicts but don't raise - just report in status
+    # (could add conflicts to PipelineStatus if needed for reporting)
 
-            relative_path = source_path.relative_to(config.input_dir)
-            output_dir = config.output_dir / relative_path.parent
+    for source_path in resolved_files:
+        status.total_files += 1
 
-            task = FileTask(
-                source_path=source_path,
-                relative_path=relative_path,
-                output_dir=output_dir,
-                stem=source_path.stem,
-            )
+        relative_path = source_path.relative_to(config.input_dir)
+        output_dir = config.output_dir / relative_path.parent
 
-            file_status = {
-                "relative_path": str(relative_path),
-                "source_path": str(source_path),
-                "stages": {},
-            }
+        task = FileTask(
+            source_path=source_path,
+            relative_path=relative_path,
+            output_dir=output_dir,
+            stem=source_path.stem,
+        )
 
-            # Check status for each stage
-            for stage in config.stages:
-                prior_stage = config.get_prior_stage(stage)
-                stage_stat = task.stage_status(stage, prior_stage)
+        file_status = {
+            "relative_path": str(relative_path),
+            "source_path": str(source_path),
+            "stages": {},
+        }
 
-                file_status["stages"][stage.name] = stage_stat
+        # Check status for each stage
+        for stage in config.stages:
+            prior_stage = config.get_prior_stage(stage)
+            stage_stat = task.stage_status(stage, prior_stage)
 
-                # Update counts
-                ss = status.stages[stage.name]
-                if stage_stat == "completed":
-                    ss.completed += 1
-                elif stage_stat == "failed":
-                    ss.failed += 1
-                    # Read error details
-                    error_path = task.get_stage_error(stage)
-                    try:
-                        with open(error_path, "r") as f:
-                            err_data = json.load(f)
-                        ss.errors.append((relative_path, err_data.get("error", "Unknown")))
-                    except:
-                        ss.errors.append((relative_path, "Unknown error"))
-                elif stage_stat == "blocked":
-                    ss.blocked += 1
-                else:
-                    ss.pending += 1
+            file_status["stages"][stage.name] = stage_stat
 
-            status.files.append(file_status)
+            # Update counts
+            ss = status.stages[stage.name]
+            if stage_stat == "completed":
+                ss.completed += 1
+            elif stage_stat == "failed":
+                ss.failed += 1
+                # Read error details
+                error_path = task.get_stage_error(stage)
+                try:
+                    with open(error_path, "r") as f:
+                        err_data = json.load(f)
+                    ss.errors.append((relative_path, err_data.get("error", "Unknown")))
+                except:
+                    ss.errors.append((relative_path, "Unknown error"))
+            elif stage_stat == "blocked":
+                ss.blocked += 1
+            else:
+                ss.pending += 1
+
+        status.files.append(file_status)
 
     return status
 

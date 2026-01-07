@@ -30,17 +30,18 @@ For each extracted statement, provide:
 - **text**: The full statement text (preserve context, don't truncate)
 - **category**: Classify as one of:
   - delay: Schedule delays, slippage, late activities
-  - scope_change: Added work, scope modifications, change orders
+  - scope_change: Added work, scope modifications, change orders, IOCCs, CCDs
   - quality_issue: Defects, rework, failed inspections
+  - safety: Safety violations, safety incidents, crew removals for safety
   - owner_direction: Directions from Samsung/SECAI
   - progress: Status updates, completion percentages
-  - resource: Manpower, equipment, material issues
+  - resource: Manpower shortages, equipment issues, material delays (NOT safety-related)
   - weather: Weather delays or impacts
   - design_issue: Drawing errors, RFI responses, design changes
   - coordination: Interface issues between trades/contractors
-  - dispute: Contested items, disagreements
+  - dispute: Contested items, disagreements, cost disputes
   - commitment: Promised dates, commitments made
-  - other: Statements that don't fit above categories
+  - other: ONLY for statements that truly don't fit any category above
 
 - **event_date**: When the event occurred (YYYY-MM-DD), null if not stated
 - **parties**: Array of involved parties (preserve exact names from extraction)
@@ -67,6 +68,21 @@ List document references found (RFIs, letters, exhibits, etc.)
 4. **Preserve detail**: Keep full statement context - don't over-summarize
 5. **Category accuracy**: Choose the most specific applicable category
 6. **Party names**: Preserve exact names (Yates, SECAI, Samsung, Austin Bridge, etc.)
+
+## FILTERING RULES - DO NOT INCLUDE
+
+Skip these types of statements (they are noise, not forensic evidence):
+- **Date-only entries**: Bare dates like "9-24-2024" with no context
+- **Comment acknowledgments**: "Comments from X that we responded to" without substance
+- **Spelling/formatting corrections**: "Spell X correctly"
+- **Administrative instructions**: "Add X to subject line"
+
+## CATEGORIZATION GUIDANCE
+
+- **IOCCs and CCDs are scope_change**: Any change order reference (IOCC-XXX, CCD-XXX) should be `scope_change`
+- **Safety violations are safety**: Crew removals, safety incidents, OSHA issues → `safety` (not `resource`)
+- **Cost disputes are dispute**: Disagreements about pricing, cost increases → `dispute`
+- **Avoid "other"**: Only use `other` if no category fits. Most statements should have a specific category.
 
 ## EXAMPLE OUTPUT STRUCTURE
 

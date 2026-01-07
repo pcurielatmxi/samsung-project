@@ -23,17 +23,25 @@ Carefully review the JSON output and improve it by:
 ### 2. Statement Categories
 Review each statement's category for accuracy:
 - **delay**: Actual schedule delays, slippage, late completion
-- **scope_change**: Added work, modifications, change orders
-- **quality_issue**: Defects, rework, failed inspections, safety violations
+- **scope_change**: Added work, modifications, change orders, IOCCs, CCDs
+- **quality_issue**: Defects, rework, failed inspections
+- **safety**: Safety violations, safety incidents, crew removals for safety reasons
 - **owner_direction**: Directions from Samsung/SECAI that impacted work
 - **progress**: Status updates, completion percentages (neutral, not delay)
-- **resource**: Manpower shortages, equipment issues, material delays
+- **resource**: Manpower shortages, equipment issues, material delays (NOT safety-related)
 - **weather**: Weather-related delays
 - **design_issue**: RFI issues, drawing errors, redesigns
 - **coordination**: Interface problems between contractors/trades
-- **dispute**: Contested items, disagreements, claims
+- **dispute**: Contested items, disagreements, claims, cost disputes
 - **commitment**: Promised dates, schedule commitments
 - **other**: Only if nothing else fits
+
+### 2b. Remove Noise
+Remove statements that are not forensically relevant:
+- Date-only entries with no context
+- "Comments from X that we responded to" without substance
+- Spelling corrections, formatting instructions
+- Administrative notes ("Add X to subject line")
 
 ### 3. Data Completeness
 For each statement, verify:

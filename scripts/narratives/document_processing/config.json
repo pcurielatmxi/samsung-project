@@ -25,6 +25,12 @@
       "schema_file": "schema.json",
       "enhance_prompt_file": "format_enhance_prompt.txt",
       "qc_prompt_file": "format_qc_prompt.txt"
+    },
+    {
+      "name": "locate",
+      "type": "script",
+      "script": "locate.py",
+      "function": "process_record"
     }
   ]
 }

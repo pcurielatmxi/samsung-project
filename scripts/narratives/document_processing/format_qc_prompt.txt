@@ -24,13 +24,16 @@ Compare the formatted output against the input extraction. Check for:
 3. **Category Accuracy**:
    - Are statement categories appropriate for the content?
    - delay: actual schedule delays
-   - scope_change: added work or modifications
-   - quality_issue: defects, rework
+   - scope_change: added work, modifications, IOCCs, CCDs
+   - quality_issue: defects, rework, failed inspections
+   - safety: safety violations, crew removals for safety
    - owner_direction: directions from owner
    - progress: status updates
+   - resource: manpower/equipment/material issues (NOT safety)
    - design_issue: drawing/RFI issues
    - coordination: interface problems
-   - dispute: contested items
+   - dispute: contested items, cost disputes
+   - Noise removed: date-only entries, comment acknowledgments, spelling corrections
 
 4. **Data Preservation**:
    - Are party names preserved exactly?
