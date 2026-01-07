@@ -342,7 +342,7 @@ class ProgressDisplay:
 
         # Cost estimate (show after a few files processed)
         if s.processed >= 3 and s.estimated_cost > 0:
-            parts.append(f"~${s.estimated_cost:.2f}")
+            parts.append(f"~${s.estimated_cost:.4f}")
 
         # Errors
         if s.errors > 0:
@@ -392,13 +392,13 @@ class ProgressDisplay:
             msg_parts.append(f"{rate:.1f}/s")
         if s.total_tokens > 0:
             msg_parts.append(f"{s.total_tokens:,} tokens")
-            msg_parts.append(f"${s.current_cost:.2f}")
+            msg_parts.append(f"${s.current_cost:.4f}")
 
         self._print_line(f"[{s.stage_name}] Complete: {' | '.join(msg_parts)}")
 
         self._log("info", f"Stage '{s.stage_name}' complete: "
                   f"processed={s.processed}, errors={s.errors}, "
-                  f"tokens={s.total_tokens}, cost=${s.current_cost:.2f}, "
+                  f"tokens={s.total_tokens}, cost=${s.current_cost:.4f}, "
                   f"elapsed={format_duration(elapsed)}, rate={rate:.1f}/s")
 
         self.current_stage = None
