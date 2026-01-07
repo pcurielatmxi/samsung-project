@@ -43,11 +43,11 @@ pytest
 ### Process Primavera XER Files
 
 ```bash
-# Process all XER files from manifest
+# Process all XER files (auto-discovers from input directory)
 python scripts/primavera/process/batch_process_xer.py
 
-# Validate manifest
-python scripts/validate_xer_manifest.py
+# Or use the run script
+./scripts/primavera/process/run.sh
 ```
 
 ### Transform ProjectSight Data
@@ -83,11 +83,11 @@ pip install -e .
 ### XER Processing Issues
 
 ```bash
-# Validate manifest first
-python scripts/validate_xer_manifest.py
+# Check XER files in input directory
+ls -la $WINDOWS_DATA_DIR/raw/primavera/*.xer | wc -l
 
-# Check for missing files
-python scripts/validate_xer_manifest.py --fix
+# Process with verbose output
+python scripts/primavera/process/batch_process_xer.py
 ```
 
 ## Next Steps

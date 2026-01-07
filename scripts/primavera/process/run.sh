@@ -3,10 +3,10 @@
 # P6 XER Batch Processor
 # =============================================================================
 #
-# Processes all XER files from manifest and generates:
+# Auto-discovers and processes all XER files from input directory.
 #
 # OUTPUT (processed/primavera/):
-#   - xer_files.csv      - File metadata from manifest
+#   - xer_files.csv      - File metadata (auto-discovered)
 #   - task.csv           - All tasks (activities) with prefixed IDs
 #   - taskpred.csv       - Task predecessors/dependencies
 #   - taskrsrc.csv       - Task resource assignments

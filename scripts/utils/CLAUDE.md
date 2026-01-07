@@ -12,7 +12,6 @@ Helper scripts for path validation, data migration, and file conversion.
 |--------|-------------|
 | `check_paths.py` | Verify WINDOWS_DATA_DIR configuration |
 | `migrate_data_structure.py` | Migrate files to raw/processed/derived structure |
-| `validate_xer_manifest.py` | Validate XER file manifest |
 | `convert_drawings_to_png.py` | Convert CAD drawings to PNG |
 
 ## Commands

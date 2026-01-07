@@ -4,7 +4,7 @@ Map narrative documents to XER schedule files by date.
 
 This script:
 1. Extracts dates from narrative document filenames
-2. Matches them to XER files from the manifest by date proximity
+2. Matches them to XER files by date proximity (auto-discovered from directory)
 3. Outputs a mapping CSV with confidence scores
 
 Confidence Levels:
@@ -46,7 +46,7 @@ from src.config.settings import Settings
 # Directories
 NARRATIVES_RAW_DIR = Settings.PRIMAVERA_RAW_DIR.parent / "primavera_narratives"
 NARRATIVES_PROCESSED_DIR = Settings.PRIMAVERA_PROCESSED_DIR.parent / "primavera_narratives"
-MANIFEST_PATH = Settings.PRIMAVERA_RAW_DIR / "manifest.json"
+XER_DIR = Settings.PRIMAVERA_RAW_DIR
 
 # Date extraction patterns - ordered by specificity
 DATE_PATTERNS = [
@@ -130,25 +130,60 @@ def extract_date_from_filename(filename: str) -> datetime | None:
     return None
 
 
-def load_xer_dates(manifest_path: Path) -> dict[str, datetime]:
-    """Load XER file dates from manifest.
+def extract_date_from_xer_filename(filename: str) -> datetime | None:
+    """Extract schedule date from XER filename.
+
+    Supports patterns like:
+        - "10-10-22" -> 2022-10-10
+        - "11-20-25" -> 2025-11-20
+        - "11.29.24" -> 2024-11-29
 
     Args:
-        manifest_path: Path to manifest.json
+        filename: XER filename
+
+    Returns:
+        datetime or None if no valid date found
+    """
+    # Pattern: MM-DD-YY or MM.DD.YY
+    pattern = r'(\d{1,2})[-.](\d{1,2})[-.](\d{2,4})'
+    matches = re.findall(pattern, filename)
+
+    if matches:
+        # Take the last match (usually the most specific date)
+        month, day, year = matches[-1]
+        month = int(month)
+        day = int(day)
+        year = int(year)
+
+        # Convert 2-digit year to 4-digit
+        if year < 100:
+            year = 2000 + year if year < 50 else 1900 + year
+
+        # Validate and return
+        if 1 <= month <= 12 and 1 <= day <= 31 and 2020 <= year <= 2030:
+            try:
+                return datetime(year, month, day)
+            except ValueError:
+                pass
+
+    return None
+
+
+def load_xer_dates(xer_dir: Path) -> dict[str, datetime]:
+    """Load XER file dates by scanning directory and extracting dates from filenames.
+
+    Args:
+        xer_dir: Directory containing XER files
 
     Returns:
         Dict mapping XER filename to datetime
     """
-    manifest = json.loads(manifest_path.read_text())
     xer_dates = {}
 
-    for fname, meta in manifest.get('files', {}).items():
-        date_str = meta.get('date')
-        if date_str:
-            try:
-                xer_dates[fname] = datetime.strptime(date_str, '%Y-%m-%d')
-            except ValueError:
-                pass
+    for xer_path in xer_dir.glob("*.xer"):
+        date = extract_date_from_xer_filename(xer_path.name)
+        if date:
+            xer_dates[xer_path.name] = date
 
     return xer_dates
 
@@ -198,8 +233,8 @@ def map_narratives_to_xer(max_days: int = 7) -> list[dict]:
     Returns:
         List of mapping dictionaries
     """
-    # Load XER dates
-    xer_dates = load_xer_dates(MANIFEST_PATH)
+    # Load XER dates from directory
+    xer_dates = load_xer_dates(XER_DIR)
     print(f"Loaded {len(xer_dates)} XER files with dates")
 
     # Process narratives recursively
@@ -345,7 +380,7 @@ def main():
 
     # Generate mappings
     print(f"Mapping narratives from: {NARRATIVES_RAW_DIR}")
-    print(f"Using XER manifest: {MANIFEST_PATH}")
+    print(f"Using XER directory: {XER_DIR}")
     print(f"Max days threshold: {args.max_days}")
 
     mappings = map_narratives_to_xer(max_days=args.max_days)

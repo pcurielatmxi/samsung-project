@@ -81,7 +81,6 @@ data/primavera/analysis/*.csv
 !data/raw/.gitkeep
 !data/raw/xer/
 !data/raw/xer/.gitkeep
-!data/raw/xer/manifest.json
 data/raw/xer/*.xer
 !data/raw/tbm/
 !data/raw/tbm/.gitkeep

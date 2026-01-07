@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Batch XER Processor - Process all XER files from manifest with file tracking
+Batch XER Processor - Process all XER files with auto-discovery and file tracking
 
-This script processes all XER files listed in the manifest and exports ALL tables
-from each XER file to CSV format. Each record includes a file_id to track which
-XER file it came from.
+This script auto-discovers XER files in the input directory, extracts dates from
+filenames, and exports ALL tables from each XER file to CSV format. Each record
+includes a file_id to track which XER file it came from.
 
 IMPORTANT: All ID columns are prefixed with file_id to maintain referential integrity
 across multiple XER files. Format: "{file_id}_{original_id}"
@@ -30,7 +30,7 @@ Task Taxonomy Generation:
 - Saved to derived/primavera/ directory (separate from processed data)
 
 Output Tables (all with file_id and prefixed IDs):
-- xer_files.csv        - Metadata about each XER file (from manifest)
+- xer_files.csv        - Metadata about each XER file (auto-discovered)
 - task.csv             - Tasks (activities)
 - taskpred.csv         - Task predecessors/dependencies
 - taskrsrc.csv         - Task resource assignments
@@ -70,7 +70,6 @@ from src.config.settings import Settings
 from src.classifiers.task_classifier import TaskClassifier
 
 # Paths - use Settings for proper WINDOWS_DATA_DIR support
-MANIFEST_PATH = Settings.PRIMAVERA_RAW_DIR / "manifest.json"
 XER_DIR = Settings.PRIMAVERA_RAW_DIR
 DEFAULT_OUTPUT_DIR = Settings.PRIMAVERA_PROCESSED_DIR
 
@@ -110,6 +109,114 @@ def classify_schedule_from_filename(filename: str) -> str:
         return SCHEDULE_SECAI
 
     return SCHEDULE_UNKNOWN
+
+
+def extract_date_from_filename(filename: str) -> str | None:
+    """
+    Extract schedule date from XER filename.
+
+    Supports patterns like:
+        - "10-10-22" -> "2022-10-10"
+        - "11-20-25" -> "2025-11-20"
+        - "12-31-23" -> "2023-12-31"
+        - "11.29.24" -> "2024-11-29"
+
+    Args:
+        filename: XER filename
+
+    Returns:
+        ISO date string (YYYY-MM-DD) or None if no date found
+    """
+    import re
+
+    # Pattern: MM-DD-YY or MM.DD.YY (with various separators)
+    # Look for date patterns in the filename
+    patterns = [
+        r'(\d{1,2})[-.](\d{1,2})[-.](\d{2,4})',  # MM-DD-YY or MM.DD.YY
+    ]
+
+    for pattern in patterns:
+        matches = re.findall(pattern, filename)
+        if matches:
+            # Take the last match (usually the most specific date)
+            month, day, year = matches[-1]
+            month = int(month)
+            day = int(day)
+            year = int(year)
+
+            # Convert 2-digit year to 4-digit
+            if year < 100:
+                year = 2000 + year if year < 50 else 1900 + year
+
+            # Validate date components
+            if 1 <= month <= 12 and 1 <= day <= 31 and 2020 <= year <= 2030:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+
+    return None
+
+
+def discover_xer_files(xer_dir: Path, verbose: bool = True) -> pd.DataFrame:
+    """
+    Discover all XER files in directory and build metadata table.
+
+    Scans the directory for .xer files, extracts dates from filenames,
+    and classifies schedule types automatically.
+
+    Args:
+        xer_dir: Directory containing XER files
+        verbose: Print discovery progress
+
+    Returns:
+        DataFrame with columns:
+            - file_id: Unique identifier (1-indexed, assigned after sorting)
+            - filename: Original filename
+            - date: Schedule date extracted from filename
+            - schedule_type: YATES, SECAI, or UNKNOWN
+            - is_current: True for the latest file by date
+    """
+    if verbose:
+        print(f"Scanning for XER files in: {xer_dir}")
+
+    # Find all .xer files
+    xer_files = list(xer_dir.glob("*.xer"))
+
+    if not xer_files:
+        raise ValueError(f"No XER files found in {xer_dir}")
+
+    rows = []
+    for xer_path in xer_files:
+        filename = xer_path.name
+        date = extract_date_from_filename(filename)
+        schedule_type = classify_schedule_from_filename(filename)
+
+        rows.append({
+            "filename": filename,
+            "date": date or "",
+            "schedule_type": schedule_type,
+        })
+
+    df = pd.DataFrame(rows)
+
+    # Sort by date (files without dates go to the end)
+    df = df.sort_values("date", na_position="last").reset_index(drop=True)
+
+    # Assign file_id after sorting
+    df["file_id"] = range(1, len(df) + 1)
+
+    # Mark the latest file as current (last one with a valid date)
+    df["is_current"] = False
+    valid_dates = df[df["date"] != ""]
+    if len(valid_dates) > 0:
+        latest_idx = valid_dates.index[-1]
+        df.loc[latest_idx, "is_current"] = True
+
+    if verbose:
+        print(f"  Found {len(df)} XER files")
+        type_counts = df['schedule_type'].value_counts()
+        for stype, count in type_counts.items():
+            print(f"    {stype}: {count} files")
+
+    return df
 
 
 # =============================================================================
@@ -370,48 +477,6 @@ def prefix_id_columns(df: pd.DataFrame, file_id: int) -> pd.DataFrame:
     return df
 
 
-def load_manifest() -> dict:
-    """Load and return the XER manifest"""
-    with open(MANIFEST_PATH) as f:
-        return json.load(f)
-
-
-def create_files_table(manifest: dict) -> pd.DataFrame:
-    """
-    Create xer_files table from manifest metadata
-
-    Returns DataFrame with columns:
-        - file_id: Unique identifier (1-indexed)
-        - filename: Original filename
-        - date: Schedule date from manifest
-        - description: Description from manifest
-        - status: current/archived/superseded
-        - is_current: Boolean flag for current file
-        - schedule_type: YATES, SECAI, or UNKNOWN (classified from filename)
-    """
-    rows = []
-    current_file = manifest["current"]
-
-    for idx, (filename, meta) in enumerate(manifest["files"].items(), start=1):
-        rows.append({
-            "file_id": idx,
-            "filename": filename,
-            "date": meta.get("date", ""),
-            "description": meta.get("description", ""),
-            "status": meta.get("status", ""),
-            "is_current": filename == current_file,
-            "schedule_type": classify_schedule_from_filename(filename)
-        })
-
-    df = pd.DataFrame(rows)
-    # Sort by date
-    df = df.sort_values("date").reset_index(drop=True)
-    # Reassign file_id after sorting
-    df["file_id"] = range(1, len(df) + 1)
-
-    return df
-
-
 def process_single_xer(xer_path: Path, file_id: int, verbose: bool = True) -> dict[str, pd.DataFrame]:
     """
     Process a single XER file and return all tables with file_id added
@@ -468,11 +533,14 @@ def batch_process(
     verbose: bool = True
 ) -> dict[str, Path]:
     """
-    Process all XER files from manifest and export all tables
+    Process all XER files from input directory and export all tables.
+
+    Auto-discovers XER files in the input directory, extracts dates from
+    filenames, and classifies schedule types (YATES/SECAI) automatically.
 
     Args:
         output_dir: Directory for output CSV files
-        current_only: If True, only process the current file
+        current_only: If True, only process the current (latest) file
         schedule_type: Filter by schedule type ('YATES', 'SECAI', or None for all)
         verbose: Print progress messages
 
@@ -482,27 +550,20 @@ def batch_process(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load manifest
-    manifest = load_manifest()
-
     if verbose:
         print(f"XER Batch Processor")
         print(f"=" * 60)
-        print(f"Manifest: {MANIFEST_PATH}")
+        print(f"Input: {XER_DIR}")
         print(f"Output: {output_dir}")
-        print(f"Current file: {manifest['current']}")
-        print(f"Total files in manifest: {len(manifest['files'])}")
         print()
 
-    # Create files metadata table
-    files_df = create_files_table(manifest)
+    # Auto-discover XER files from directory
+    files_df = discover_xer_files(XER_DIR, verbose=verbose)
 
-    # Show schedule type distribution
-    if verbose:
-        type_counts = files_df['schedule_type'].value_counts()
-        print(f"Schedule types in manifest:")
-        for stype, count in type_counts.items():
-            print(f"  {stype}: {count} files")
+    # Show current file
+    current_files = files_df[files_df['is_current']]
+    if verbose and len(current_files) > 0:
+        print(f"  Current (latest): {current_files.iloc[0]['filename']}")
         print()
 
     # Apply filters
@@ -571,7 +632,7 @@ def batch_process(
     # Combine and save all tables
     output_files = {}
 
-    # 1. Save xer_files.csv first (only processed files, not all manifest files)
+    # 1. Save xer_files.csv first
     files_output = output_dir / "xer_files.csv"
     files_to_process.to_csv(files_output, index=False)
     output_files['xer_files'] = files_output
@@ -636,7 +697,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Batch process XER files from manifest - exports ALL tables',
+        description='Batch process XER files (auto-discovered) - exports ALL tables',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Schedule Filtering:
