@@ -6,9 +6,13 @@ Uses google-genai library to process PDFs with optional structured output.
 
 import json
 import os
+import shutil
+import tempfile
+import uuid
 from pathlib import Path
 from typing import Optional, Any, Union
 from dataclasses import dataclass
+from contextlib import contextmanager
 
 import fitz  # PyMuPDF
 from dotenv import load_dotenv
@@ -22,6 +26,39 @@ load_dotenv(_project_root / ".env")
 MAX_FILE_SIZE_MB = 50
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 MAX_PAGES = 1000
+
+
+def _is_ascii_safe(filepath: Path) -> bool:
+    """Check if filepath can be safely encoded as ASCII."""
+    try:
+        str(filepath).encode('ascii')
+        return True
+    except UnicodeEncodeError:
+        return False
+
+
+@contextmanager
+def _safe_upload_path(filepath: Path):
+    """
+    Context manager that yields an ASCII-safe path for file upload.
+
+    The google-genai library has a bug where it cannot handle non-ASCII
+    characters in file paths. This workaround copies the file to a temp
+    location with an ASCII-safe name if needed.
+    """
+    if _is_ascii_safe(filepath):
+        yield filepath
+    else:
+        # Copy to temp file with ASCII-safe name
+        temp_dir = Path(tempfile.gettempdir())
+        safe_name = f"{uuid.uuid4().hex}{filepath.suffix}"
+        temp_file = temp_dir / safe_name
+        try:
+            shutil.copy2(filepath, temp_file)
+            yield temp_file
+        finally:
+            if temp_file.exists():
+                temp_file.unlink()
 
 
 @dataclass
@@ -232,27 +269,28 @@ def process_document(
         )
 
     try:
-        # Upload the PDF file
-        uploaded_file = client.files.upload(file=filepath)
+        # Upload the PDF file (handle non-ASCII filenames)
+        with _safe_upload_path(filepath) as upload_path:
+            uploaded_file = client.files.upload(file=upload_path)
 
-        # Build config for structured output if schema provided
-        config = {}
-        if schema:
-            gemini_schema = _convert_schema_to_gemini(schema)
-            config = {
-                "response_mime_type": "application/json",
-                "response_schema": gemini_schema,
-            }
+            # Build config for structured output if schema provided
+            config = {}
+            if schema:
+                gemini_schema = _convert_schema_to_gemini(schema)
+                config = {
+                    "response_mime_type": "application/json",
+                    "response_schema": gemini_schema,
+                }
 
-        # Generate content
-        response = client.models.generate_content(
-            model=model,
-            contents=[
-                uploaded_file,
-                prompt,
-            ],
-            config=config if config else None,
-        )
+            # Generate content
+            response = client.models.generate_content(
+                model=model,
+                contents=[
+                    uploaded_file,
+                    prompt,
+                ],
+                config=config if config else None,
+            )
 
         # Parse result
         result_text = response.text

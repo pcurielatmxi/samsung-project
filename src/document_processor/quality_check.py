@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from .config import StageConfig, PipelineConfig
-from .clients.gemini_client import process_document_text, GeminiResponse, _get_client
+from .clients.gemini_client import process_document_text, GeminiResponse, _get_client, _safe_upload_path
 from .stages.llm_stage import extract_docx_text, extract_xlsx_text
 
 # Document extensions that need special handling for QC
@@ -330,24 +330,25 @@ async def _run_qc_with_pdf(
         )
 
     try:
-        # Upload the PDF file
-        uploaded_file = client.files.upload(file=pdf_path)
+        # Upload the PDF file (handle non-ASCII filenames)
+        with _safe_upload_path(pdf_path) as upload_path:
+            uploaded_file = client.files.upload(file=upload_path)
 
-        # Build QC prompt with output content
-        # The PDF is provided as a file, so we only embed the output in the prompt
-        qc_prompt = stage.qc_prompt.format(
-            input_content="[See attached PDF document]",
-            output_content=output_content,
-        )
+            # Build QC prompt with output content
+            # The PDF is provided as a file, so we only embed the output in the prompt
+            qc_prompt = stage.qc_prompt.format(
+                input_content="[See attached PDF document]",
+                output_content=output_content,
+            )
 
-        # Generate content with PDF + prompt
-        response = client.models.generate_content(
-            model=model,
-            contents=[
-                uploaded_file,
-                qc_prompt,
-            ],
-        )
+            # Generate content with PDF + prompt
+            response = client.models.generate_content(
+                model=model,
+                contents=[
+                    uploaded_file,
+                    qc_prompt,
+                ],
+            )
 
         # Parse verdict from response
         verdict, reason = _parse_qc_response(response.text)
