@@ -4,16 +4,17 @@
   "file_extensions": [".pdf", ".docx", ".doc", ".xlsx", ".xls"],
   "concurrency": 3,
 
-  "qc_batch_size": 20,
+  "qc_batch_size": 5,
   "qc_failure_threshold": 0.10,
-  "qc_min_samples": 10,
+  "qc_min_samples": 5,
 
   "stages": [
     {
       "name": "extract",
       "type": "llm",
       "model": "gemini-2.0-flash",
-      "prompt_file": "extract_prompt.txt"
+      "prompt_file": "extract_prompt.txt",
+      "qc_prompt_file": "extract_qc_prompt.txt"
     }
   ]
 }

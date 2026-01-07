@@ -14,6 +14,13 @@ from typing import List, Optional
 
 from .config import StageConfig, PipelineConfig
 from .clients.gemini_client import process_document_text, GeminiResponse, _get_client
+from .stages.llm_stage import extract_docx_text, extract_xlsx_text
+
+# Document extensions that need special handling for QC
+PDF_EXTENSIONS = {'.pdf'}
+DOCX_EXTENSIONS = {'.docx', '.doc'}
+XLSX_EXTENSIONS = {'.xlsx', '.xls'}
+DOCUMENT_EXTENSIONS = PDF_EXTENSIONS | DOCX_EXTENSIONS | XLSX_EXTENSIONS
 
 
 @dataclass
@@ -267,11 +274,11 @@ async def run_quality_check(
             output_path=output_path,
         )
 
-    # Check if input is PDF (stage 1) or JSON (later stages)
-    is_pdf_input = input_path.suffix.lower() == ".pdf"
+    # Check input file type
+    ext = input_path.suffix.lower()
 
-    if is_pdf_input:
-        # Stage 1: Upload PDF to Gemini for full comparison
+    if ext in PDF_EXTENSIONS:
+        # PDF: Upload to Gemini for visual comparison
         return await _run_qc_with_pdf(
             stage=stage,
             pdf_path=input_path,
@@ -279,8 +286,17 @@ async def run_quality_check(
             output_path=output_path,
             model=model,
         )
+    elif ext in DOCX_EXTENSIONS or ext in XLSX_EXTENSIONS:
+        # DOCX/XLSX: Extract text and compare
+        return await _run_qc_with_document(
+            stage=stage,
+            doc_path=input_path,
+            output_content=output_content,
+            output_path=output_path,
+            model=model,
+        )
     else:
-        # Later stages: Text-based comparison
+        # JSON from prior stage: Text-based comparison
         return await _run_qc_with_text(
             stage=stage,
             input_path=input_path,
@@ -352,6 +368,90 @@ async def _run_qc_with_pdf(
             input_path=pdf_path,
             output_path=output_path,
         )
+
+
+async def _run_qc_with_document(
+    stage: StageConfig,
+    doc_path: Path,
+    output_content: str,
+    output_path: Path,
+    model: str,
+) -> QCResult:
+    """
+    Run QC by extracting text from DOCX/XLSX and comparing with output.
+    """
+    ext = doc_path.suffix.lower()
+
+    # Extract text from document
+    try:
+        if ext in DOCX_EXTENSIONS:
+            input_content = extract_docx_text(doc_path)
+        elif ext in XLSX_EXTENSIONS:
+            input_content = extract_xlsx_text(doc_path)
+        else:
+            return QCResult(
+                passed=False,
+                verdict="FAIL",
+                reason=f"Unsupported document type: {ext}",
+                input_path=doc_path,
+                output_path=output_path,
+            )
+
+        if not input_content.strip():
+            return QCResult(
+                passed=False,
+                verdict="FAIL",
+                reason=f"No text content extracted from {doc_path.name}",
+                input_path=doc_path,
+                output_path=output_path,
+            )
+
+    except Exception as e:
+        return QCResult(
+            passed=False,
+            verdict="FAIL",
+            reason=f"Failed to extract text from document: {e}",
+            input_path=doc_path,
+            output_path=output_path,
+        )
+
+    # Truncate input if too long (to avoid token limits)
+    max_input_chars = 50000
+    if len(input_content) > max_input_chars:
+        input_content = input_content[:max_input_chars] + "\n\n[... content truncated for QC ...]"
+
+    # Build QC prompt with extracted text and output
+    qc_prompt = stage.qc_prompt.format(
+        input_content=input_content,
+        output_content=output_content,
+    )
+
+    # Run QC with LLM
+    response = process_document_text(
+        text="",  # Content is in the prompt
+        prompt=qc_prompt,
+        model=model,
+    )
+
+    if not response.success:
+        return QCResult(
+            passed=False,
+            verdict="FAIL",
+            reason=f"QC LLM call failed: {response.error}",
+            input_path=doc_path,
+            output_path=output_path,
+        )
+
+    # Parse verdict from response
+    verdict, reason = _parse_qc_response(response.result)
+
+    return QCResult(
+        passed=(verdict == "PASS"),
+        verdict=verdict,
+        reason=reason,
+        input_path=doc_path,
+        output_path=output_path,
+    )
 
 
 async def _run_qc_with_text(
