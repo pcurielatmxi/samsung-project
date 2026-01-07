@@ -16,15 +16,32 @@ from pathlib import Path
 from typing import Optional
 
 
-# Gemini pricing (per 1M tokens) - gemini-3-flash-preview
-GEMINI_INPUT_COST_PER_M = 0.50   # $0.10 per 1M input tokens
-GEMINI_OUTPUT_COST_PER_M = 3.00  # $0.40 per 1M output tokens
+# Gemini pricing (per 1M tokens)
+# Source: https://ai.google.dev/pricing
+MODEL_PRICING = {
+    # Model: (input_cost_per_M, output_cost_per_M)
+    "gemini-3-flash-preview": (0.50, 3.00),      # $0.50 input, $3.00 output
+    "gemini-2.5-flash-lite": (0.10, 0.40),       # $0.10 input, $0.40 output
+    "gemini-2.0-flash": (0.10, 0.40),            # $0.10 input, $0.40 output
+    "gemini-1.5-flash": (0.075, 0.30),           # $0.075 input, $0.30 output
+    "gemini-1.5-pro": (1.25, 5.00),              # $1.25 input, $5.00 output
+}
+
+# Default pricing (fallback)
+DEFAULT_INPUT_COST_PER_M = 0.10
+DEFAULT_OUTPUT_COST_PER_M = 0.40
 
 
-def calculate_cost(input_tokens: int, output_tokens: int) -> float:
-    """Calculate cost in USD for given token counts."""
-    input_cost = (input_tokens / 1_000_000) * GEMINI_INPUT_COST_PER_M
-    output_cost = (output_tokens / 1_000_000) * GEMINI_OUTPUT_COST_PER_M
+def calculate_cost(input_tokens: int, output_tokens: int, model: str = None) -> float:
+    """Calculate cost in USD for given token counts and model."""
+    if model and model in MODEL_PRICING:
+        input_cost_per_m, output_cost_per_m = MODEL_PRICING[model]
+    else:
+        input_cost_per_m = DEFAULT_INPUT_COST_PER_M
+        output_cost_per_m = DEFAULT_OUTPUT_COST_PER_M
+
+    input_cost = (input_tokens / 1_000_000) * input_cost_per_m
+    output_cost = (output_tokens / 1_000_000) * output_cost_per_m
     return input_cost + output_cost
 
 
@@ -41,6 +58,7 @@ class StageProgress:
     total_cost: float = 0.0
     start_time: float = field(default_factory=time.time)
     current_file: Optional[str] = None
+    model: Optional[str] = None  # Track model for cost calculation
 
     @property
     def done(self) -> int:
@@ -256,12 +274,14 @@ class ProgressDisplay:
         failed: int = 0,
         blocked: int = 0,
         pending: int = 0,
+        model: str = None,
     ):
         """Called when a stage starts."""
         self.current_stage = StageProgress(
             stage_name=stage_name,
             total_files=to_process,
             skipped=completed,
+            model=model,
         )
 
         # Build status breakdown
@@ -300,7 +320,9 @@ class ProgressDisplay:
         duration_ms: int = 0,
     ):
         """Called when a file completes successfully."""
-        file_cost = calculate_cost(input_tokens, output_tokens)
+        # Use model-aware cost calculation
+        model = self.current_stage.model if self.current_stage else None
+        file_cost = calculate_cost(input_tokens, output_tokens, model=model)
 
         if self.current_stage:
             self.current_stage.processed += 1

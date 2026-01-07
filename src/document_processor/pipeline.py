@@ -20,6 +20,7 @@ from .quality_check import (
     QCTracker,
     check_qc_halt,
     write_qc_halt,
+    write_qc_result_file,
     run_quality_check,
 )
 from .utils.file_utils import (
@@ -267,6 +268,7 @@ async def run_stage(
             failed=stats.count_failed,
             blocked=stats.count_blocked,
             pending=stats.count_pending,
+            model=stage_config.model if stage_config.type == "llm" else None,
         )
 
     if stats.total_files == 0:
@@ -317,6 +319,14 @@ async def run_stage(
                 )
                 qc_tracker.add_result(qc_result)
                 stats.qc_samples += 1
+
+                # Persist QC result to file
+                write_qc_result_file(
+                    output_path=output_path,
+                    stage_name=stage_config.name,
+                    result=qc_result,
+                )
+
                 if not qc_result.passed:
                     stats.qc_failures += 1
                     if _progress:

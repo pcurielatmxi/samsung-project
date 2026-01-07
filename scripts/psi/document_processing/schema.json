@@ -21,8 +21,8 @@
     },
     "outcome": {
       "type": "string",
-      "enum": ["PASS", "FAIL", "PARTIAL"],
-      "description": "Inspection outcome: PASS (all passed), FAIL (failed), PARTIAL (mixed results)"
+      "enum": ["PASS", "FAIL", "PARTIAL", "CANCELLED"],
+      "description": "Inspection outcome: PASS (all passed), FAIL (failed), PARTIAL (mixed results), CANCELLED (inspection did not occur)"
     },
     "failure_reason": {
       "type": ["string", "null"],

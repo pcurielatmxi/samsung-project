@@ -63,6 +63,59 @@ class QCTracker:
 QC_HALT_FILENAME = ".qc_halt.json"
 
 
+def write_qc_result_file(
+    output_path: Path,
+    stage_name: str,
+    result: QCResult,
+) -> Path:
+    """
+    Write QC result to a file alongside the output.
+
+    Creates {stem}.{stage}.qc.pass.json or {stem}.{stage}.qc.fail.json
+
+    Args:
+        output_path: Path to the stage output file (e.g., file.format.json)
+        stage_name: Name of the stage (e.g., "format")
+        result: QC result to persist
+
+    Returns:
+        Path to the QC result file
+    """
+    # Build QC result filename: {stem}.{stage}.qc.{verdict}.json
+    stem = output_path.stem  # e.g., "file.format"
+    # Remove stage suffix to get base stem
+    if stem.endswith(f".{stage_name}"):
+        base_stem = stem[:-len(f".{stage_name}")]
+    else:
+        base_stem = stem
+
+    verdict_suffix = "pass" if result.passed else "fail"
+    qc_filename = f"{base_stem}.{stage_name}.qc.{verdict_suffix}.json"
+    qc_path = output_path.parent / qc_filename
+
+    # Remove opposite verdict file if it exists (in case of re-run)
+    opposite_suffix = "fail" if result.passed else "pass"
+    opposite_filename = f"{base_stem}.{stage_name}.qc.{opposite_suffix}.json"
+    opposite_path = output_path.parent / opposite_filename
+    if opposite_path.exists():
+        opposite_path.unlink()
+
+    qc_data = {
+        "stage": stage_name,
+        "verdict": result.verdict,
+        "passed": result.passed,
+        "reason": result.reason,
+        "input_file": str(result.input_path),
+        "output_file": str(result.output_path),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+    with open(qc_path, "w", encoding="utf-8") as f:
+        json.dump(qc_data, f, indent=2)
+
+    return qc_path
+
+
 def get_qc_halt_path(output_dir: Path) -> Path:
     """Get path to QC halt file."""
     return output_dir / QC_HALT_FILENAME

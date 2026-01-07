@@ -18,9 +18,10 @@
     {
       "name": "format",
       "type": "llm",
-      "model": "gemini-3-flash-preview",
+      "model": "gemini-2.5-flash-lite",
       "prompt_file": "format_prompt.txt",
-      "schema_file": "schema.json"
+      "schema_file": "schema.json",
+      "qc_prompt_file": "format_qc_prompt.txt"
     },
     {
       "name": "clean",

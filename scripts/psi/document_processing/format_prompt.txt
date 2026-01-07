@@ -16,17 +16,15 @@ Rules:
 CRITICAL - Outcome Field (most important):
 The extracted content provides detailed inspection findings in PART 1 and explicit outcome determination in PART 2.
 
-Key rule: If Part 2 explicitly explains WHY there's no outcome (e.g., "inspection findings do not specify pass/fail", "no approval status indicated"), respect that and use NULL.
-
-Otherwise, use these signals to determine outcome:
+Use these signals to determine outcome:
 
 PASS:
-  - Document explicitly states "PASS", "PASSED", "ACCEPTABLE", "APPROVED", "Passed", or similar, OR
+  - Document explicitly states "PASS", "PASSED", "ACCEPTABLE", "APPROVED", "Accepted", or similar, OR
   - Part 2 indicates outcome is PASS, OR
-  - Inspection report clearly describes work as complete, acceptable, meeting requirements with no outstanding deficiencies AND Part 2 doesn't say "outcome not specified"
+  - Inspection report clearly describes work as complete, acceptable, meeting requirements with no outstanding deficiencies
 
 FAIL:
-  - Document explicitly states "FAIL", "FAILED", "NOT COMPLETE", "INCOMPLETE", "Not approved", or similar, OR
+  - Document explicitly states "FAIL", "FAILED", "NOT COMPLETE", "INCOMPLETE", "Not approved", "Rejected", or similar, OR
   - Part 2 indicates outcome is FAIL, OR
   - Inspection notes deficiencies or non-conformances that were NOT corrected
 
@@ -35,12 +33,13 @@ PARTIAL:
   - Deficiencies noted but also noted as corrected during inspection, OR
   - Mixed approval status described
 
-NULL (use when):
-  - Part 2 explicitly explains no outcome was determined (e.g., findings don't specify approval, no approval status indicated)
-  - No clear inspection determination or approval status anywhere in document
-  - Cannot reasonably determine from available data
+CANCELLED:
+  - Inspection was cancelled, not performed, or did not occur
+  - Document states "cancelled", "not ready", "work cancelled", "inspection cancelled", or similar
+  - Part 2 indicates outcome is N/A because inspection was cancelled
+  - Site was not ready for inspection
 
-IMPORTANT: Don't override Part 2's explanation. If Part 2 says outcome is "not specified" with explanation, use NULL rather than inferring.
+IMPORTANT: CANCELLED is NOT the same as FAIL. Use CANCELLED when the inspection did not happen at all. Use FAIL when inspection occurred but work did not pass.
 
 Standardization rules (IMPORTANT - follow exactly):
 - Dates: ALWAYS use YYYY-MM-DD format (e.g., "2024-04-29", NOT "4/29/2024")
@@ -54,7 +53,7 @@ Field mapping:
 - inspection_type: Type of inspection (e.g., "Paint Touch Up", "Framing", "Drywall", "MEP")
 - location: All location information as a single string
 - summary: Brief summary of the inspection and findings
-- outcome: "PASS", "FAIL", or "PARTIAL"
+- outcome: "PASS", "FAIL", "PARTIAL", or "CANCELLED"
 - failure_reason: Quote the reason for failure if stated
 - issues: Array of {description, severity} for each deficiency found
 - parties_involved: Array of {name, role} for inspector, contractor, subcontractor, trade
