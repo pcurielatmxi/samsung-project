@@ -26,6 +26,7 @@ Established data pipelines for 9 primary sources:
 | PSI | Quality inspections (Construction Hive) | 6,309 reports | ✅ Scraped |
 | QC Logs | Inspection request tracking (CPMS exports) | 61K+ records, 141 files | 📁 Raw |
 | Fieldwire | Punch lists, field tasks | TBD | 🔄 In Progress |
+| Narratives | P6 narratives, weekly report narratives, milestone variance | ~80 documents | 🔄 Processing |
 
 **Key Deliverables:**
 - Parsed CSV tables for all sources in `data/processed/`
@@ -200,6 +201,87 @@ python scripts/document_processor/process_documents.py \
 ```
 
 **Output:** Each document produces `{filename}.json` with metadata and structured content.
+
+### Narratives Document Processor
+
+**Location:** [scripts/narratives/document_processing/](scripts/narratives/document_processing/)
+
+Batch processor for extracting structured information from narrative documents (P6 schedule narratives, milestone variance reports, weekly report narratives, SECAI responses) using Gemini for forensic delay analysis.
+
+**Supported Formats:**
+- PDF - Native Gemini upload
+- DOCX/DOC - Text extraction via python-docx → Gemini text API
+- XLSX/XLS - Text extraction via pandas → Gemini text API
+
+**Features:**
+- Two-phase processing: (1) Gemini extraction → JSON, (2) LLM formatting (planned)
+- Concurrent processing with configurable parallelism
+- Idempotency via `--skip-existing` flag
+- Preserves subfolder structure from input to output
+- Extracts forensically relevant statements with dates, parties, locations, and impacts
+
+**Output Structure:**
+```
+{WINDOWS_DATA_DIR}/
+├── raw/narratives/
+│   ├── p6_narratives/           # P6 schedule narratives, milestone variance
+│   ├── weekly_reports/          # Weekly report narrative sections
+│   └── other/                   # SECAI responses, EOT exhibits, etc.
+└── processed/narratives/
+    ├── p6_narratives/           # JSON extractions (same structure as raw)
+    ├── weekly_reports/
+    └── other/
+```
+
+**Usage:**
+```bash
+# Process all narrative documents (skips already completed by default)
+python scripts/narratives/document_processing/process_narratives.py
+
+# Process with limit (for testing)
+python scripts/narratives/document_processing/process_narratives.py --limit 10
+
+# Force reprocess all files (ignore existing)
+python scripts/narratives/document_processing/process_narratives.py --force
+
+# Retry only files that previously failed
+python scripts/narratives/document_processing/process_narratives.py --retry-errors
+
+# Adjust concurrency
+python scripts/narratives/document_processing/process_narratives.py --concurrency 5
+
+# Dry run (show what would be processed)
+python scripts/narratives/document_processing/process_narratives.py --dry-run
+```
+
+**Idempotency:**
+- Success: `{filename}.json` - File processed successfully
+- Failure: `{filename}.error.json` - File failed, contains error details
+- Default: Skips files with `.json` (completed) or `.error.json` (failed)
+- `--force`: Reprocess everything
+- `--retry-errors`: Only retry files with `.error.json`
+
+**Output JSON Structure:**
+```json
+{
+  "metadata": {
+    "source_file": "/path/to/document.pdf",
+    "processed_at": "2026-01-06T...",
+    "model": "gemini-3-flash-preview",
+    "success": true,
+    "usage": {"prompt_tokens": 1000, "output_tokens": 2000}
+  },
+  "content": "## DOCUMENT SUMMARY\n...\n## RELEVANT STATEMENTS\n..."
+}
+```
+
+**Extraction Output:**
+Each document produces a summary and list of forensically relevant statements including:
+- Delay events with dates and quantified impacts
+- Owner directions and scope changes
+- Quality issues and coordination problems
+- Party/contractor attribution
+- Location references (FAB, SUE, SUW, FIZ, grid lines, levels)
 
 ### RABA Quality Reports Scraper
 

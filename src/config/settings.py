@@ -154,6 +154,14 @@ class Settings:
     PSI_DERIVED_DIR = DERIVED_DATA_DIR / 'psi'
     PSI_ANALYSIS_DIR = ANALYSIS_DIR / 'psi'
 
+    # ============================================================================
+    # Source-specific paths: Narratives (P6 narratives, weekly reports, etc.)
+    # ============================================================================
+    NARRATIVES_RAW_DIR = RAW_DATA_DIR / 'narratives'
+    NARRATIVES_PROCESSED_DIR = PROCESSED_DATA_DIR / 'narratives'
+    NARRATIVES_DERIVED_DIR = DERIVED_DATA_DIR / 'narratives'
+    NARRATIVES_ANALYSIS_DIR = ANALYSIS_DIR / 'narratives'
+
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 
@@ -224,7 +232,7 @@ class Settings:
         print("  derived   = includes assumptions/inference (NOT fully traceable)")
         print()
 
-        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi']
+        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi', 'narratives']
         for source in sources:
             raw_attr = f"{source.upper()}_RAW_DIR"
             proc_attr = f"{source.upper()}_PROCESSED_DIR"
@@ -284,6 +292,11 @@ class Settings:
             cls.PSI_PROCESSED_DIR,
             cls.PSI_DERIVED_DIR,
             cls.PSI_ANALYSIS_DIR,
+            # Narratives
+            cls.NARRATIVES_RAW_DIR,
+            cls.NARRATIVES_PROCESSED_DIR,
+            cls.NARRATIVES_DERIVED_DIR,
+            cls.NARRATIVES_ANALYSIS_DIR,
         ]
         for dir_path in dirs_to_create:
             dir_path.mkdir(parents=True, exist_ok=True)

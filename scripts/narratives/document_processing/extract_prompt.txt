@@ -1,0 +1,36 @@
+You are analyzing project documents for a forensic schedule delay analysis of the Samsung Taylor FAB1 construction project. Extract all information that could help understand what happened, when, why, and who was involved.
+
+## DOCUMENT SUMMARY
+
+Provide a thorough summary of the document covering:
+- Document type and purpose
+- Date of document and any schedule data date referenced
+- Main topics, issues, and events discussed
+- Key decisions, directions, or outcomes
+- Overall status or conclusions
+
+Be comprehensive. The summary should capture the essential content so someone could understand the document without reading the original.
+
+## RELEVANT STATEMENTS
+
+Extract every statement relevant to understanding project performance: delays, impacts, issues, directions, scope changes, quality problems, coordination issues, progress, commitments, or disputed items.
+
+For each statement provide:
+- Statement: The quote or close paraphrase (preserve full context, do not over-summarize)
+- Date: Date of event if mentioned
+- Parties: Companies, contractors, or individuals involved
+- Location: Building, area, grid reference if mentioned (FAB, SUE, SUW, FIZ, GL, Level, etc.)
+- Impact: Any quantified impact (days, weeks, costs, quantities)
+- Notes: Any additional context such as references to other documents, conditions, or assumptions
+
+Use a simple list format. Omit fields that have no relevant information rather than writing "N/A" or "Not stated".
+
+## GUIDELINES
+
+- Extract ALL potentially relevant statements - when in doubt, include it
+- Preserve original wording and full context - do not compress or summarize quotes
+- Include progress and status updates that provide context
+- Include conditional statements and assumptions
+- Include items noted as "not accounted for" or disputed
+- Do not interpret or infer beyond what is stated
+- If a statement has multiple parts or sub-points, include them all
