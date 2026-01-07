@@ -16,6 +16,11 @@ from pathlib import Path
 from typing import Optional
 
 
+# Gemini pricing (per 1M tokens) - gemini-2.0-flash
+GEMINI_INPUT_COST_PER_M = 0.10   # $0.10 per 1M input tokens
+GEMINI_OUTPUT_COST_PER_M = 0.40  # $0.40 per 1M output tokens
+
+
 @dataclass
 class StageProgress:
     """Track progress for a single stage."""
@@ -24,6 +29,7 @@ class StageProgress:
     processed: int = 0
     errors: int = 0
     skipped: int = 0
+    total_tokens: int = 0
     start_time: float = field(default_factory=time.time)
     current_file: Optional[str] = None
 
@@ -58,6 +64,31 @@ class StageProgress:
         if self.total_files > 0:
             return (self.done / self.total_files) * 100
         return 0.0
+
+    @property
+    def avg_tokens(self) -> float:
+        """Average tokens per successful file."""
+        if self.processed > 0:
+            return self.total_tokens / self.processed
+        return 0.0
+
+    @property
+    def estimated_total_tokens(self) -> int:
+        """Estimated total tokens for all files."""
+        if self.processed > 0:
+            return int(self.avg_tokens * self.total_files)
+        return 0
+
+    @property
+    def estimated_cost(self) -> float:
+        """Estimated total cost in USD (using output token pricing as approximation)."""
+        # Use output pricing as conservative estimate (output tokens cost more)
+        return (self.estimated_total_tokens / 1_000_000) * GEMINI_OUTPUT_COST_PER_M
+
+    @property
+    def current_cost(self) -> float:
+        """Current cost so far."""
+        return (self.total_tokens / 1_000_000) * GEMINI_OUTPUT_COST_PER_M
 
 
 def format_duration(seconds: float) -> str:
@@ -213,20 +244,42 @@ class ProgressDisplay:
         self._print_line(f"Pipeline: {total_files} files → {' → '.join(stage_names)}")
         self._log("info", f"Total files: {total_files}, Stages: {stage_names}")
 
-    def stage_start(self, stage_name: str, total_files: int, skipped: int = 0):
+    def stage_start(
+        self,
+        stage_name: str,
+        total_files: int,
+        to_process: int,
+        completed: int = 0,
+        failed: int = 0,
+        blocked: int = 0,
+        pending: int = 0,
+    ):
         """Called when a stage starts."""
         self.current_stage = StageProgress(
             stage_name=stage_name,
-            total_files=total_files,
-            skipped=skipped,
+            total_files=to_process,
+            skipped=completed,
         )
 
-        if total_files == 0:
-            self._print_line(f"\n[{stage_name}] No files to process (skipped: {skipped})")
-        else:
-            self._print_line(f"\n[{stage_name}] Processing {total_files} files...")
+        # Build status breakdown
+        status_parts = [f"{total_files} total"]
+        if completed > 0:
+            status_parts.append(f"{completed} done")
+        if failed > 0:
+            status_parts.append(f"{failed} errors")
+        if blocked > 0:
+            status_parts.append(f"{blocked} blocked")
+        if pending > 0:
+            status_parts.append(f"{pending} pending")
 
-        self._log("info", f"Stage '{stage_name}' started: {total_files} to process, {skipped} skipped")
+        status_str = ", ".join(status_parts)
+
+        if to_process == 0:
+            self._print_line(f"\n[{stage_name}] Nothing to process ({status_str})")
+        else:
+            self._print_line(f"\n[{stage_name}] Processing {to_process} files ({status_str})")
+
+        self._log("info", f"Stage '{stage_name}': {status_str}, processing {to_process}")
 
     def file_start(self, filename: str):
         """Called when processing a file starts."""
@@ -240,6 +293,7 @@ class ProgressDisplay:
         """Called when a file completes successfully."""
         if self.current_stage:
             self.current_stage.processed += 1
+            self.current_stage.total_tokens += tokens
             self.current_stage.current_file = None
             self._update_status()
 
@@ -286,13 +340,17 @@ class ProgressDisplay:
         if s.eta_seconds and s.eta_seconds > 0:
             parts.append(f"ETA: {format_duration(s.eta_seconds)}")
 
+        # Cost estimate (show after a few files processed)
+        if s.processed >= 3 and s.estimated_cost > 0:
+            parts.append(f"~${s.estimated_cost:.2f}")
+
         # Errors
         if s.errors > 0:
             parts.append(f"err:{s.errors}")
 
         # Current file (truncated)
         if s.current_file:
-            max_len = 40
+            max_len = 30
             fname = s.current_file
             if len(fname) > max_len:
                 fname = "..." + fname[-(max_len-3):]
@@ -328,10 +386,19 @@ class ProgressDisplay:
         elapsed = s.elapsed
         rate = s.rate
 
-        self._print_line(f"[{s.stage_name}] Complete: {s.processed} OK, {s.errors} errors in {format_duration(elapsed)} ({rate:.1f}/s)")
+        # Build completion message
+        msg_parts = [f"{s.processed} OK", f"{s.errors} errors", format_duration(elapsed)]
+        if rate > 0:
+            msg_parts.append(f"{rate:.1f}/s")
+        if s.total_tokens > 0:
+            msg_parts.append(f"{s.total_tokens:,} tokens")
+            msg_parts.append(f"${s.current_cost:.2f}")
+
+        self._print_line(f"[{s.stage_name}] Complete: {' | '.join(msg_parts)}")
 
         self._log("info", f"Stage '{s.stage_name}' complete: "
                   f"processed={s.processed}, errors={s.errors}, "
+                  f"tokens={s.total_tokens}, cost=${s.current_cost:.2f}, "
                   f"elapsed={format_duration(elapsed)}, rate={rate:.1f}/s")
 
         self.current_stage = None

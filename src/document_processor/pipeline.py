@@ -40,11 +40,15 @@ _progress: Optional[ProgressDisplay] = None
 class ProcessingStats:
     """Statistics for a pipeline run."""
     stage_name: str
-    total_files: int = 0
-    processed: int = 0
-    skipped_completed: int = 0
-    skipped_blocked: int = 0
-    errors: int = 0
+    total_files: int = 0           # Files to process this run
+    processed: int = 0             # Successfully processed
+    errors: int = 0                # Failed during processing
+    # Pre-run counts (for logging)
+    count_completed: int = 0       # Already done (skipped)
+    count_failed: int = 0          # Had errors (will retry)
+    count_blocked: int = 0         # Waiting for prior stage
+    count_pending: int = 0         # New files to process
+    # Other stats
     total_tokens: int = 0
     start_time: float = 0
     qc_samples: int = 0
@@ -204,7 +208,19 @@ async def run_stage(
     if stage_config.has_qc and not disable_qc:
         qc_tracker = QCTracker(stage_name=stage_config.name)
 
-    # Filter tasks based on status
+    # First pass: count all statuses
+    for task in tasks:
+        status = task.stage_status(stage_config, prior_stage)
+        if status == "completed":
+            stats.count_completed += 1
+        elif status == "failed":
+            stats.count_failed += 1
+        elif status == "blocked":
+            stats.count_blocked += 1
+        elif status == "pending":
+            stats.count_pending += 1
+
+    # Second pass: determine which tasks to process
     eligible_tasks = []
     for task in tasks:
         status = task.stage_status(stage_config, prior_stage)
@@ -213,22 +229,17 @@ async def run_stage(
             # Include if prior stage complete (or no prior stage)
             if prior_stage is None:
                 eligible_tasks.append(task)
-            else:
-                prior_status = task.stage_status(prior_stage, config.get_prior_stage(prior_stage))
-                if prior_status == "completed":
-                    eligible_tasks.append(task)
-                else:
-                    stats.skipped_blocked += 1
-        elif retry_errors and status == "failed":
-            eligible_tasks.append(task)
+            elif status != "blocked":
+                eligible_tasks.append(task)
+        elif retry_errors:
+            # Only retry failed files
+            if status == "failed":
+                eligible_tasks.append(task)
         elif status == "pending":
             eligible_tasks.append(task)
-        elif status == "completed":
-            stats.skipped_completed += 1
-        elif status == "blocked":
-            stats.skipped_blocked += 1
         elif status == "failed":
-            stats.skipped_completed += 1  # Count as skipped unless retry_errors
+            # Retry failed files by default
+            eligible_tasks.append(task)
 
     # Apply limit
     if limit and len(eligible_tasks) > limit:
@@ -244,8 +255,12 @@ async def run_stage(
     if _progress:
         _progress.stage_start(
             stage_config.name,
-            stats.total_files,
-            skipped=stats.skipped_completed + stats.skipped_blocked,
+            total_files=len(tasks),
+            to_process=stats.total_files,
+            completed=stats.count_completed,
+            failed=stats.count_failed,
+            blocked=stats.count_blocked,
+            pending=stats.count_pending,
         )
 
     if stats.total_files == 0:
@@ -420,8 +435,10 @@ async def run_pipeline(
             "total_files": stats.total_files,
             "processed": stats.processed,
             "errors": stats.errors,
-            "skipped_completed": stats.skipped_completed,
-            "skipped_blocked": stats.skipped_blocked,
+            "count_completed": stats.count_completed,
+            "count_failed": stats.count_failed,
+            "count_blocked": stats.count_blocked,
+            "count_pending": stats.count_pending,
             "total_tokens": stats.total_tokens,
             "elapsed_seconds": elapsed,
             "qc_samples": stats.qc_samples,
