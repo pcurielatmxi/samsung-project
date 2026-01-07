@@ -1,0 +1,53 @@
+You are a quality checker for forensic schedule delay analysis formatting. Your job is to verify that the formatted JSON output correctly represents the extracted input data.
+
+## INPUT (from extraction stage)
+{input_content}
+
+## FORMATTED OUTPUT
+{output_content}
+
+## VERIFICATION TASK
+
+Compare the formatted output against the input extraction. Check for:
+
+1. **Document Metadata Accuracy**:
+   - Does the document type classification make sense for the content?
+   - Are dates correctly formatted as YYYY-MM-DD?
+   - Is the summary preserved from the extraction?
+   - Is the author/originating party correct?
+
+2. **Statement Completeness**:
+   - Are all statements from the extraction represented in the output?
+   - Is statement text preserved without truncation?
+   - Are no statements missing or combined inappropriately?
+
+3. **Category Accuracy**:
+   - Are statement categories appropriate for the content?
+   - delay: actual schedule delays
+   - scope_change: added work or modifications
+   - quality_issue: defects, rework
+   - owner_direction: directions from owner
+   - progress: status updates
+   - design_issue: drawing/RFI issues
+   - coordination: interface problems
+   - dispute: contested items
+
+4. **Data Preservation**:
+   - Are party names preserved exactly?
+   - Are locations captured (FAB, SUE, SUW, FIZ, grid lines, levels)?
+   - Are quantified impacts (days, costs) correctly transcribed?
+   - Are document references captured?
+
+5. **No Hallucinations**:
+   - All data in the output should come from the extraction
+   - No invented dates, parties, or impacts
+
+## VERDICT
+
+If the formatting correctly transforms the input:
+VERDICT: PASS
+REASON: <brief confirmation>
+
+If there are mapping errors, missing statements, or data loss:
+VERDICT: FAIL
+REASON: <specific issues found>

@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["document", "statements"],
+  "properties": {
+    "document": {
+      "type": "object",
+      "description": "Document metadata",
+      "required": ["type", "title", "summary"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["schedule_narrative", "milestone_variance", "meeting_minutes", "official_notice", "correspondence", "exhibit", "report", "other"],
+          "description": "Document type classification"
+        },
+        "title": {
+          "type": "string",
+          "description": "Document title or filename-derived title"
+        },
+        "document_date": {
+          "type": ["string", "null"],
+          "description": "Date of document (YYYY-MM-DD format)"
+        },
+        "data_date": {
+          "type": ["string", "null"],
+          "description": "Schedule data date if referenced (YYYY-MM-DD format)"
+        },
+        "author": {
+          "type": ["string", "null"],
+          "description": "Author or originating party"
+        },
+        "recipients": {
+          "type": ["array", "null"],
+          "items": {"type": "string"},
+          "description": "Recipient parties if correspondence"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Comprehensive summary of document content and conclusions"
+        }
+      }
+    },
+    "statements": {
+      "type": "array",
+      "description": "Forensically relevant statements extracted from document",
+      "items": {
+        "type": "object",
+        "required": ["text", "category"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The statement text - quote or close paraphrase preserving full context"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["delay", "scope_change", "quality_issue", "owner_direction", "progress", "resource", "weather", "design_issue", "coordination", "dispute", "commitment", "other"],
+            "description": "Statement category for analysis"
+          },
+          "event_date": {
+            "type": ["string", "null"],
+            "description": "Date of event if mentioned (YYYY-MM-DD format)"
+          },
+          "parties": {
+            "type": ["array", "null"],
+            "items": {"type": "string"},
+            "description": "Companies, contractors, or individuals involved"
+          },
+          "locations": {
+            "type": ["array", "null"],
+            "items": {"type": "string"},
+            "description": "Building, area, grid references (FAB, SUE, SUW, FIZ, GL, Level, etc.)"
+          },
+          "impact_days": {
+            "type": ["integer", "null"],
+            "description": "Quantified schedule impact in days if stated"
+          },
+          "impact_description": {
+            "type": ["string", "null"],
+            "description": "Description of impact (cost, quantity, duration) if not in days"
+          },
+          "references": {
+            "type": ["array", "null"],
+            "items": {"type": "string"},
+            "description": "References to other documents, RFIs, letters, exhibits"
+          }
+        }
+      }
+    },
+    "key_dates": {
+      "type": ["array", "null"],
+      "description": "Important dates mentioned in the document",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date in YYYY-MM-DD format"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this date represents"
+          }
+        }
+      }
+    },
+    "referenced_documents": {
+      "type": ["array", "null"],
+      "description": "Other documents referenced",
+      "items": {"type": "string"}
+    }
+  }
+}

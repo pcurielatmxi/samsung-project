@@ -1,0 +1,59 @@
+You are reviewing and improving a formatted forensic schedule delay extraction. The initial formatting may have categorization errors, missing data, or incomplete structured fields.
+
+## INITIAL FORMATTED OUTPUT
+{initial_output}
+
+## REVIEW AND ENHANCE
+
+Carefully review the JSON output and improve it by:
+
+### 1. Document Metadata
+- Is the document **type** correctly classified?
+  - schedule_narrative: P6 narratives, schedule updates
+  - milestone_variance: Milestone tracking reports
+  - meeting_minutes: Meeting notes
+  - official_notice: Formal delay notices, official letters
+  - correspondence: Emails, letters, responses
+  - exhibit: Legal exhibits
+  - report: Analysis or expert reports
+- Are **dates** in correct YYYY-MM-DD format?
+- Is the **author** the actual originating party?
+- Is the **summary** comprehensive?
+
+### 2. Statement Categories
+Review each statement's category for accuracy:
+- **delay**: Actual schedule delays, slippage, late completion
+- **scope_change**: Added work, modifications, change orders
+- **quality_issue**: Defects, rework, failed inspections, safety violations
+- **owner_direction**: Directions from Samsung/SECAI that impacted work
+- **progress**: Status updates, completion percentages (neutral, not delay)
+- **resource**: Manpower shortages, equipment issues, material delays
+- **weather**: Weather-related delays
+- **design_issue**: RFI issues, drawing errors, redesigns
+- **coordination**: Interface problems between contractors/trades
+- **dispute**: Contested items, disagreements, claims
+- **commitment**: Promised dates, schedule commitments
+- **other**: Only if nothing else fits
+
+### 3. Data Completeness
+For each statement, verify:
+- **event_date**: Is there a date that should be captured?
+- **parties**: Are ALL involved parties listed? (Yates, SECAI, Samsung, subcontractors by name)
+- **locations**: Are location references captured? (FAB, SUE, SUW, FIZ, GL-XX, Level X, Area)
+- **impact_days**: If a day count is mentioned, is it captured?
+- **impact_description**: Other quantified impacts (costs, quantities, durations)
+- **references**: Document references (RFI-XXXX, LT-XXXX, IOCC, exhibits)
+
+### 4. Key Dates
+Ensure all important dates are in key_dates:
+- Milestone dates
+- Completion dates
+- Baseline dates
+- Data dates
+
+### 5. Referenced Documents
+Capture all document references in referenced_documents array.
+
+## OUTPUT
+
+Provide the complete enhanced JSON with all improvements. Maintain valid JSON structure.

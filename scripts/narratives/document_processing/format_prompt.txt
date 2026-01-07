@@ -1,0 +1,101 @@
+You are formatting extracted forensic schedule delay information into a structured JSON format for analysis.
+
+## INPUT
+You will receive an extraction containing:
+1. A DOCUMENT SUMMARY describing the document
+2. A list of RELEVANT STATEMENTS with dates, parties, locations, and impacts
+
+## OUTPUT REQUIREMENTS
+
+Transform the extraction into structured JSON with these components:
+
+### Document Metadata
+- **type**: Classify as one of:
+  - schedule_narrative: P6 schedule narratives, update reports
+  - milestone_variance: Milestone tracking or variance reports
+  - meeting_minutes: Meeting notes or minutes
+  - official_notice: Formal notices (delay notices, official letters)
+  - correspondence: Emails, letters, responses
+  - exhibit: Legal exhibits, attachments
+  - report: Analysis reports, expert reports
+  - other: Documents that don't fit above categories
+
+- **document_date**: Date of the document itself (YYYY-MM-DD)
+- **data_date**: Schedule data date if this is a schedule update (YYYY-MM-DD)
+- **author**: Originating party (Yates, SECAI, Samsung, etc.)
+- **summary**: Preserve the comprehensive summary from extraction
+
+### Statements Array
+For each extracted statement, provide:
+- **text**: The full statement text (preserve context, don't truncate)
+- **category**: Classify as one of:
+  - delay: Schedule delays, slippage, late activities
+  - scope_change: Added work, scope modifications, change orders
+  - quality_issue: Defects, rework, failed inspections
+  - owner_direction: Directions from Samsung/SECAI
+  - progress: Status updates, completion percentages
+  - resource: Manpower, equipment, material issues
+  - weather: Weather delays or impacts
+  - design_issue: Drawing errors, RFI responses, design changes
+  - coordination: Interface issues between trades/contractors
+  - dispute: Contested items, disagreements
+  - commitment: Promised dates, commitments made
+  - other: Statements that don't fit above categories
+
+- **event_date**: When the event occurred (YYYY-MM-DD), null if not stated
+- **parties**: Array of involved parties (preserve exact names from extraction)
+- **locations**: Array of location references (FAB, SUE, SUW, FIZ, GL-XX, Level X, etc.)
+- **impact_days**: Integer if schedule impact stated in days
+- **impact_description**: Other quantified impacts (costs, quantities, durations not in days)
+- **references**: Referenced documents (RFI-XXXX, LT-XXXX, exhibits, etc.)
+
+### Key Dates
+Extract important project dates mentioned:
+- Milestone dates
+- Baseline dates
+- Completion dates
+- Data dates
+
+### Referenced Documents
+List document references found (RFIs, letters, exhibits, etc.)
+
+## FORMATTING RULES
+
+1. **Dates**: Always use YYYY-MM-DD format. Convert "March 15, 2024" to "2024-03-15"
+2. **Null values**: Use null (not empty string) for missing optional fields
+3. **Arrays**: Use empty array [] only if the field exists but has no items; use null if not applicable
+4. **Preserve detail**: Keep full statement context - don't over-summarize
+5. **Category accuracy**: Choose the most specific applicable category
+6. **Party names**: Preserve exact names (Yates, SECAI, Samsung, Austin Bridge, etc.)
+
+## EXAMPLE OUTPUT STRUCTURE
+
+```json
+{
+  "document": {
+    "type": "schedule_narrative",
+    "title": "Schedule Narrative DD 03-27-2025",
+    "document_date": "2025-03-27",
+    "data_date": "2025-03-27",
+    "author": "Yates",
+    "recipients": ["SECAI"],
+    "summary": "Monthly schedule narrative explaining..."
+  },
+  "statements": [
+    {
+      "text": "Steel erection delayed 14 days due to late arrival of embed plates",
+      "category": "delay",
+      "event_date": "2025-03-15",
+      "parties": ["Yates", "Steel Supplier"],
+      "locations": ["FAB", "Level 2"],
+      "impact_days": 14,
+      "impact_description": null,
+      "references": ["LT-0523"]
+    }
+  ],
+  "key_dates": [
+    {"date": "2025-06-30", "description": "Planned substantial completion"}
+  ],
+  "referenced_documents": ["LT-0523", "RFI-00892"]
+}
+```

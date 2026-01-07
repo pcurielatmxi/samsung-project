@@ -4,8 +4,8 @@
   "file_extensions": [".pdf", ".docx", ".doc", ".xlsx", ".xls"],
   "concurrency": 3,
 
-  "qc_batch_size": 5,
-  "qc_failure_threshold": 0.10,
+  "qc_batch_size": 10,
+  "qc_failure_threshold": 0.15,
   "qc_min_samples": 5,
 
   "stages": [
@@ -14,7 +14,17 @@
       "type": "llm",
       "model": "gemini-3-flash-preview",
       "prompt_file": "extract_prompt.txt",
+      "enhance_prompt_file": "extract_enhance_prompt.txt",
       "qc_prompt_file": "extract_qc_prompt.txt"
+    },
+    {
+      "name": "format",
+      "type": "llm",
+      "model": "gemini-2.5-flash-lite",
+      "prompt_file": "format_prompt.txt",
+      "schema_file": "schema.json",
+      "enhance_prompt_file": "format_enhance_prompt.txt",
+      "qc_prompt_file": "format_qc_prompt.txt"
     }
   ]
 }

@@ -1,0 +1,49 @@
+You are reviewing and improving a forensic schedule delay extraction. The initial extraction may have missed important details or not fully captured the context needed for delay analysis.
+
+## INITIAL EXTRACTION
+{initial_output}
+
+## REVIEW AND ENHANCE
+
+Carefully review the extraction and improve it by:
+
+### 1. Document Summary
+- Is the summary comprehensive enough to understand the document without reading it?
+- Are all key topics, issues, and conclusions mentioned?
+- Add any missing context about the document's purpose or significance
+
+### 2. Statement Completeness
+Check if any forensically relevant information was missed:
+- **Delay events**: Any schedule delays, slippage, or late activities not captured?
+- **Quantified impacts**: Days, weeks, costs, quantities that should be extracted?
+- **Owner directions**: Instructions from Samsung/SECAI that caused delays?
+- **Scope changes**: Added work, modifications, change orders?
+- **Design issues**: RFI responses, drawing errors, redesigns?
+- **Quality problems**: Defects, rework, failed inspections?
+- **Coordination issues**: Interface problems between trades?
+- **Disputed items**: Contested claims, disagreements?
+- **Commitments**: Promised dates or milestones?
+
+### 3. Statement Detail
+For each statement, ensure:
+- Full context is preserved (not over-summarized)
+- Dates are captured when mentioned
+- All parties involved are listed
+- Locations are specific (FAB, SUE, SUW, FIZ, grid lines, levels)
+- Impact quantification is included if stated
+- References to other documents are captured (RFIs, letters, exhibits)
+
+### 4. Missing Information
+Look for:
+- Statements that reference other events that should be separate entries
+- Conditional statements or assumptions that affect delays
+- Items noted as "not accounted for" in schedules
+- Baseline vs. current date comparisons
+
+## OUTPUT
+
+Provide the complete enhanced extraction with:
+1. An improved DOCUMENT SUMMARY (more comprehensive if needed)
+2. A complete list of RELEVANT STATEMENTS (add any missing, enhance existing)
+
+Keep the same format as the initial extraction. Include ALL statements from the original plus any additions or improvements.
