@@ -20,6 +20,10 @@ _project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
+from scripts.shared.company_standardization import (
+    standardize_company,
+    standardize_inspector,
+)
 
 
 # Validation rules
@@ -151,6 +155,11 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         if descriptions:
             issues_text = " | ".join(descriptions)
 
+    # Apply company standardization
+    inspector_std = standardize_inspector(inspector)
+    contractor_std = standardize_company(contractor)
+    testing_company_std = standardize_company(testing_company)
+
     # Build flat record
     return {
         # Identification
@@ -187,11 +196,16 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'reinspection_required': content.get('reinspection_required'),
         'corrective_action': content.get('corrective_action'),
 
-        # Parties (flattened)
-        'inspector': inspector,
-        'contractor': contractor,
-        'testing_company': testing_company,
+        # Parties (raw values)
+        'inspector_raw': inspector,
+        'contractor_raw': contractor,
+        'testing_company_raw': testing_company,
         'engineer': engineer,
+
+        # Parties (standardized)
+        'inspector': inspector_std,
+        'contractor': contractor_std,
+        'testing_company': testing_company_std,
 
         # Issues (flattened)
         'issues': issues_text,
