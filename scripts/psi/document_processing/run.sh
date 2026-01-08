@@ -45,6 +45,11 @@ case "${1:-help}" in
         shift
         python -m src.document_processor "$CONFIG_DIR" --limit "${1:-5}" --dry-run
         ;;
+    consolidate)
+        # Consolidate clean JSON files into CSV
+        shift
+        python "$CONFIG_DIR/consolidate.py" "$@"
+        ;;
     help|*)
         echo "PSI Document Processing Pipeline"
         echo ""
@@ -55,6 +60,7 @@ case "${1:-help}" in
         echo "  format      Run format stage only (Gemini JSON formatting)"
         echo "  clean       Run clean stage only (Python postprocessing)"
         echo "  run         Run all stages"
+        echo "  consolidate Combine all clean JSON into CSV with validation"
         echo "  status      Show pipeline status"
         echo "  retry       Retry failed files"
         echo "  test [n]    Dry run with n files (default: 5)"
@@ -75,6 +81,7 @@ case "${1:-help}" in
         echo "  ./run.sh extract --limit 50  # Extract 50 files"
         echo "  ./run.sh format              # Format all extracted"
         echo "  ./run.sh clean               # Normalize all formatted"
+        echo "  ./run.sh consolidate         # Generate CSV + validation report"
         echo "  ./run.sh retry               # Retry failures"
         ;;
 esac
