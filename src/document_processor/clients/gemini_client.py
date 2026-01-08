@@ -2,15 +2,19 @@
 Gemini Python SDK client for document processing.
 
 Uses google-genai library to process PDFs with optional structured output.
+Includes exponential backoff for rate limit handling.
 """
 
 import json
+import logging
 import os
+import random
 import shutil
 import tempfile
+import time
 import uuid
 from pathlib import Path
-from typing import Optional, Any, Union
+from typing import Optional, Any, Union, Callable, TypeVar
 from dataclasses import dataclass
 from contextlib import contextmanager
 
@@ -22,10 +26,37 @@ from google import genai
 _project_root = Path(__file__).parent.parent.parent.parent
 load_dotenv(_project_root / ".env")
 
+# Logger for retry messages
+_logger = logging.getLogger(__name__)
+
 # Gemini limits
 MAX_FILE_SIZE_MB = 50
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 MAX_PAGES = 1000
+
+# Retry configuration for rate limiting
+RETRY_MAX_ATTEMPTS = 5
+RETRY_BASE_DELAY_SECONDS = 1.0
+RETRY_MAX_DELAY_SECONDS = 60.0
+RETRY_EXPONENTIAL_BASE = 2
+
+# Error patterns that indicate rate limiting (should retry with backoff)
+RETRYABLE_ERROR_PATTERNS = [
+    "429",
+    "resource_exhausted",
+    "rate limit",
+    "rate_limit",
+    "quota exceeded",
+    "quota_exceeded",
+    "too many requests",
+    "overloaded",
+    "temporarily unavailable",
+    "503",
+    "500",
+    "internal error",
+]
+
+T = TypeVar('T')
 
 
 def _is_ascii_safe(filepath: Path) -> bool:
@@ -59,6 +90,87 @@ def _safe_upload_path(filepath: Path):
         finally:
             if temp_file.exists():
                 temp_file.unlink()
+
+
+def _is_retryable_api_error(error: Exception) -> bool:
+    """
+    Check if an API error is retryable (rate limit, temporary failure, etc.).
+
+    Args:
+        error: The exception raised by the API call
+
+    Returns:
+        True if the error indicates a temporary/rate limit issue that should be retried
+    """
+    error_str = str(error).lower()
+    return any(pattern in error_str for pattern in RETRYABLE_ERROR_PATTERNS)
+
+
+def _calculate_backoff_delay(attempt: int) -> float:
+    """
+    Calculate exponential backoff delay with jitter.
+
+    Args:
+        attempt: Current attempt number (0-indexed)
+
+    Returns:
+        Delay in seconds before next retry
+    """
+    # Exponential backoff: base * 2^attempt
+    delay = RETRY_BASE_DELAY_SECONDS * (RETRY_EXPONENTIAL_BASE ** attempt)
+
+    # Add jitter (random 0-25% of delay) to prevent thundering herd
+    jitter = delay * random.uniform(0, 0.25)
+    delay += jitter
+
+    # Cap at maximum delay
+    return min(delay, RETRY_MAX_DELAY_SECONDS)
+
+
+def _call_with_retry(
+    api_call: Callable[[], T],
+    operation_name: str = "API call",
+) -> T:
+    """
+    Execute an API call with exponential backoff retry on rate limit errors.
+
+    Args:
+        api_call: A callable that makes the API request
+        operation_name: Description of the operation for logging
+
+    Returns:
+        The result of the successful API call
+
+    Raises:
+        Exception: The last exception if all retries are exhausted
+    """
+    last_exception = None
+
+    for attempt in range(RETRY_MAX_ATTEMPTS):
+        try:
+            return api_call()
+        except Exception as e:
+            last_exception = e
+
+            if not _is_retryable_api_error(e):
+                # Non-retryable error, raise immediately
+                raise
+
+            if attempt < RETRY_MAX_ATTEMPTS - 1:
+                delay = _calculate_backoff_delay(attempt)
+                _logger.warning(
+                    f"Rate limit hit on {operation_name} (attempt {attempt + 1}/{RETRY_MAX_ATTEMPTS}). "
+                    f"Retrying in {delay:.1f}s. Error: {str(e)[:100]}"
+                )
+                time.sleep(delay)
+            else:
+                _logger.error(
+                    f"Max retries ({RETRY_MAX_ATTEMPTS}) exhausted for {operation_name}. "
+                    f"Last error: {str(e)[:200]}"
+                )
+
+    # All retries exhausted
+    raise last_exception
 
 
 @dataclass
@@ -271,7 +383,11 @@ def process_document(
     try:
         # Upload the PDF file (handle non-ASCII filenames)
         with _safe_upload_path(filepath) as upload_path:
-            uploaded_file = client.files.upload(file=upload_path)
+            # Upload with retry on rate limit
+            uploaded_file = _call_with_retry(
+                lambda: client.files.upload(file=upload_path),
+                operation_name=f"file upload ({filepath.name})",
+            )
 
             # Build config for structured output if schema provided
             config = {}
@@ -282,14 +398,17 @@ def process_document(
                     "response_schema": gemini_schema,
                 }
 
-            # Generate content
-            response = client.models.generate_content(
-                model=model,
-                contents=[
-                    uploaded_file,
-                    prompt,
-                ],
-                config=config if config else None,
+            # Generate content with retry on rate limit
+            response = _call_with_retry(
+                lambda: client.models.generate_content(
+                    model=model,
+                    contents=[
+                        uploaded_file,
+                        prompt,
+                    ],
+                    config=config if config else None,
+                ),
+                operation_name=f"generate content ({filepath.name})",
             )
 
         # Parse result
@@ -385,11 +504,14 @@ def process_document_text(
                 "response_schema": gemini_schema,
             }
 
-        # Generate content
-        response = client.models.generate_content(
-            model=model,
-            contents=full_prompt,
-            config=config if config else None,
+        # Generate content with retry on rate limit
+        response = _call_with_retry(
+            lambda: client.models.generate_content(
+                model=model,
+                contents=full_prompt,
+                config=config if config else None,
+            ),
+            operation_name="generate content (text)",
         )
 
         # Parse result

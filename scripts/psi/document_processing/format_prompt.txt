@@ -16,22 +16,30 @@ Rules:
 CRITICAL - Outcome Field (most important):
 The extracted content provides detailed inspection findings in PART 1 and explicit outcome determination in PART 2.
 
+IMPORTANT DISTINCTION: PSI reports may include both:
+- FINAL PSI REPORT OUTCOME (the official pass/fail status for the main inspection)
+- INTERMEDIATE WIR STATUS (work inspection request flags like "Re-Inspection Required")
+
+Use the FINAL PSI REPORT OUTCOME, not intermediate WIR statuses. Examples:
+- If PSI says "Passed" but WIR has "Re-Inspection Required" → outcome is PASS (WIR was for initial inspection; PSI final is what matters)
+- If PSI says "Confirmed" or no explicit fail stated, with no cancelled notation → outcome is PASS
+
 Use these signals to determine outcome:
 
 PASS:
-  - Document explicitly states "PASS", "PASSED", "ACCEPTABLE", "APPROVED", "Accepted", or similar, OR
-  - Part 2 indicates outcome is PASS, OR
-  - Inspection report clearly describes work as complete, acceptable, meeting requirements with no outstanding deficiencies
+  - The FINAL PSI summary/report explicitly states "PASS", "PASSED", "ACCEPTABLE", "APPROVED", "Confirmed", "Accepted", or similar, OR
+  - Part 2 indicates the final inspection outcome is PASS, OR
+  - Inspection report clearly describes work as complete, acceptable, meeting requirements with no outstanding deficiencies noted in the FINAL outcome
+  - NOTE: Even if intermediate WIR had "Re-Inspection Required", if FINAL PSI outcome is PASS, use PASS
 
 FAIL:
-  - Document explicitly states "FAIL", "FAILED", "NOT COMPLETE", "INCOMPLETE", "Not approved", "Rejected", or similar, OR
-  - Part 2 indicates outcome is FAIL, OR
-  - Inspection notes deficiencies or non-conformances that were NOT corrected
+  - The FINAL PSI summary/report explicitly states "FAIL", "FAILED", "NOT COMPLETE", "INCOMPLETE", "Not approved", "Rejected", or similar, OR
+  - Part 2 indicates the final inspection outcome is FAIL, OR
+  - The FINAL inspection notes deficiencies or non-conformances that were NOT corrected
 
 PARTIAL:
-  - Some items/areas passed, some failed OR
-  - Deficiencies noted but also noted as corrected during inspection, OR
-  - Mixed approval status described
+  - The FINAL PSI report explicitly states or clearly indicates mixed/partial approval (some areas pass, some fail), OR
+  - The inspection was incomplete due to work not being ready, but work was partially inspected and some items passed while others couldn't be assessed
 
 CANCELLED:
   - Inspection was cancelled, not performed, or did not occur
@@ -43,7 +51,8 @@ IMPORTANT: CANCELLED is NOT the same as FAIL. Use CANCELLED when the inspection 
 
 Standardization rules (IMPORTANT - follow exactly):
 - Dates: ALWAYS use YYYY-MM-DD format (e.g., "2024-04-29", NOT "4/29/2024")
-- failure_reason: Use null if outcome is PASS (not "N/A", "Not applicable", or "None")
+- failure_reason: ALWAYS null if outcome is PASS. Even if intermediate steps had deficiencies (WIR notes), if the FINAL outcome is PASS, this must be null
+- reinspection_required: ALWAYS null or false if outcome is PASS. If final outcome is PASS, the inspection is complete and passed; don't carry over WIR "Re-Inspection Required" flags to the final outcome
 - corrective_action: Use null if no corrective action mentioned (not "No", "None", or "N/A")
 - reinspection_required: Use true, false, or null only (not strings)
 - deficiency_count: Use integer or null only (not 0 if no deficiencies mentioned, use null)
