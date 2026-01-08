@@ -65,9 +65,14 @@ import pandas as pd
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+# Add derive directory for task_taxonomy module
+derive_dir = Path(__file__).parent.parent / 'derive'
+sys.path.insert(0, str(derive_dir))
+
 from src.utils.xer_parser import XERParser
 from src.config.settings import Settings
 from src.classifiers.task_classifier import TaskClassifier
+from task_taxonomy import build_task_context, infer_all_fields
 
 # Paths - use Settings for proper WINDOWS_DATA_DIR support
 XER_DIR = Settings.PRIMAVERA_RAW_DIR
@@ -355,80 +360,124 @@ def enhance_wbs_with_hierarchy(wbs_df: pd.DataFrame, num_tiers: int = DEFAULT_NU
 # Taxonomy Generation Functions
 # =============================================================================
 
-def generate_task_taxonomy(tasks_df: pd.DataFrame, wbs_df: pd.DataFrame,
-                           verbose: bool = True) -> pd.DataFrame:
+def generate_task_taxonomy(
+    tasks_df: pd.DataFrame,
+    wbs_df: pd.DataFrame,
+    taskactv_df: pd.DataFrame = None,
+    actvcode_df: pd.DataFrame = None,
+    actvtype_df: pd.DataFrame = None,
+    verbose: bool = True
+) -> pd.DataFrame:
     """
-    Generate taxonomy lookup table for tasks.
+    Generate taxonomy lookup table for tasks using full inference system.
 
-    Creates a lean join table with task_id and taxonomy columns:
-    - phase/phase_desc: Construction phase
-    - scope/scope_desc: Work type
-    - loc_type/loc_type_desc: Location granularity
-    - loc_id: Specific location
-    - building/building_desc: Building code
-    - level/level_desc: Floor level
-    - label: Combined classification label
+    Uses priority-based inference from multiple sources:
+    1. Activity codes (Z-TRADE, Z-BLDG, Z-LEVEL, Z-AREA) - highest priority
+    2. Task code extraction (CN.SEA5.xxx → SUE)
+    3. WBS hierarchy context
+    4. Task name pattern matching - fallback
 
     Args:
-        tasks_df: Tasks dataframe with task_id, task_name, wbs_id
-        wbs_df: WBS dataframe with wbs_id, wbs_name
+        tasks_df: Tasks dataframe with task_id, task_name, task_code, wbs_id
+        wbs_df: WBS dataframe with wbs_id, wbs_name, tier columns
+        taskactv_df: Task-to-activity code assignments (optional for backward compat)
+        actvcode_df: Activity code values (optional)
+        actvtype_df: Activity code types (optional)
         verbose: Print progress messages
 
     Returns:
-        Taxonomy lookup table (join with task.csv on task_id)
+        Taxonomy lookup table with source tracking columns
     """
     if verbose:
         print(f"  Generating task taxonomy for {len(tasks_df):,} tasks...")
 
-    classifier = TaskClassifier()
+    # Check if we have activity code data for full inference
+    has_activity_codes = (
+        taskactv_df is not None and
+        actvcode_df is not None and
+        actvtype_df is not None and
+        len(taskactv_df) > 0
+    )
 
-    # Get WBS name lookup for classification context
-    wbs_names = wbs_df.set_index('wbs_id')['wbs_name'].to_dict()
+    if has_activity_codes:
+        if verbose:
+            print("    Using full taxonomy inference with activity codes...")
 
-    results = []
-    total = len(tasks_df)
+        # Build enriched context with activity codes
+        context = build_task_context(
+            tasks_df=tasks_df,
+            wbs_df=wbs_df,
+            taskactv_df=taskactv_df,
+            actvcode_df=actvcode_df,
+            actvtype_df=actvtype_df,
+            verbose=verbose
+        )
 
-    for idx, (_, row) in enumerate(tasks_df.iterrows()):
-        if verbose and idx % 50000 == 0 and idx > 0:
-            print(f"    Processed {idx:,}/{total:,} ({idx/total*100:.1f}%)")
+        # Generate taxonomy using full inference
+        results = []
+        total = len(context)
 
-        task_name = str(row.get('task_name', ''))
-        wbs_id = row.get('wbs_id')
-        wbs_name = wbs_names.get(wbs_id, '')
+        for idx, (_, row) in enumerate(context.iterrows()):
+            if verbose and idx % 50000 == 0 and idx > 0:
+                print(f"    Processed {idx:,}/{total:,} ({idx/total*100:.1f}%)")
 
-        # Classify
-        classification = classifier.classify_task(task_name, wbs_name)
+            result = infer_all_fields(row)
+            results.append(result)
 
-        # Build result row - task_id + taxonomy with descriptions
-        result = {
-            'task_id': row.get('task_id'),
-            'phase': classification['phase'],
-            'phase_desc': classification['phase_desc'],
-            'scope': classification['scope'],
-            'scope_desc': classification['scope_desc'],
-            'loc_type': classification['loc_type'],
-            'loc_type_desc': classification['loc_type_desc'],
-            'loc_id': classification['loc_id'],
-            'building': classification['building'],
-            'building_desc': classification['building_desc'],
-            'level': classification['level'],
-            'level_desc': classification['level_desc'],
-            'label': classification['label'],
-            # Impact tracking (sparse - only for IMPACT tasks)
-            'impact_code': classification.get('impact_code'),
-            'impact_type': classification.get('impact_type'),
-            'impact_type_desc': classification.get('impact_type_desc'),
-            'attributed_to': classification.get('attributed_to'),
-            'attributed_to_desc': classification.get('attributed_to_desc'),
-            'root_cause': classification.get('root_cause'),
-            'root_cause_desc': classification.get('root_cause_desc'),
-        }
-        results.append(result)
+        if verbose:
+            print(f"    Inferred taxonomy for {total:,} tasks")
 
-    if verbose:
-        print(f"    Classified {total:,} tasks")
+        return pd.DataFrame(results)
 
-    return pd.DataFrame(results)
+    else:
+        # Fallback to basic classifier (backward compatibility)
+        if verbose:
+            print("    Using basic classifier (no activity codes available)...")
+
+        classifier = TaskClassifier()
+        wbs_names = wbs_df.set_index('wbs_id')['wbs_name'].to_dict()
+
+        results = []
+        total = len(tasks_df)
+
+        for idx, (_, row) in enumerate(tasks_df.iterrows()):
+            if verbose and idx % 50000 == 0 and idx > 0:
+                print(f"    Processed {idx:,}/{total:,} ({idx/total*100:.1f}%)")
+
+            task_name = str(row.get('task_name', ''))
+            wbs_id = row.get('wbs_id')
+            wbs_name = wbs_names.get(wbs_id, '')
+
+            classification = classifier.classify_task(task_name, wbs_name)
+
+            result = {
+                'task_id': row.get('task_id'),
+                'phase': classification['phase'],
+                'phase_desc': classification['phase_desc'],
+                'scope': classification['scope'],
+                'scope_desc': classification['scope_desc'],
+                'loc_type': classification['loc_type'],
+                'loc_type_desc': classification['loc_type_desc'],
+                'loc_id': classification['loc_id'],
+                'building': classification['building'],
+                'building_desc': classification['building_desc'],
+                'level': classification['level'],
+                'level_desc': classification['level_desc'],
+                'label': classification['label'],
+                'impact_code': classification.get('impact_code'),
+                'impact_type': classification.get('impact_type'),
+                'impact_type_desc': classification.get('impact_type_desc'),
+                'attributed_to': classification.get('attributed_to'),
+                'attributed_to_desc': classification.get('attributed_to_desc'),
+                'root_cause': classification.get('root_cause'),
+                'root_cause_desc': classification.get('root_cause_desc'),
+            }
+            results.append(result)
+
+        if verbose:
+            print(f"    Classified {total:,} tasks")
+
+        return pd.DataFrame(results)
 
 
 def prefix_id_columns(df: pd.DataFrame, file_id: int) -> pd.DataFrame:
@@ -642,9 +691,12 @@ def batch_process(
         print("-" * 60)
         print(f"✓ xer_files.csv ({len(files_to_process)} rows)")
 
-    # 2. Save all other tables (keep task and projwbs for taxonomy generation)
+    # 2. Save all other tables (keep tables needed for taxonomy generation)
     tasks_combined = None
     wbs_combined = None
+    taskactv_combined = None
+    actvcode_combined = None
+    actvtype_combined = None
 
     for table_name in sorted(all_tables.keys()):
         dfs = all_tables[table_name]
@@ -656,9 +708,15 @@ def batch_process(
                 combined = enhance_wbs_with_hierarchy(combined, verbose=verbose)
                 wbs_combined = combined
 
-            # Keep tasks for taxonomy generation
+            # Keep tables for taxonomy generation
             if table_name == 'task':
                 tasks_combined = combined
+            elif table_name == 'taskactv':
+                taskactv_combined = combined
+            elif table_name == 'actvcode':
+                actvcode_combined = combined
+            elif table_name == 'actvtype':
+                actvtype_combined = combined
 
             output_path = output_dir / f"{table_name}.csv"
             combined.to_csv(output_path, index=False)
@@ -669,7 +727,14 @@ def batch_process(
 
     # 3. Generate task taxonomy (derived data)
     if tasks_combined is not None and wbs_combined is not None:
-        taxonomy_df = generate_task_taxonomy(tasks_combined, wbs_combined, verbose=verbose)
+        taxonomy_df = generate_task_taxonomy(
+            tasks_combined,
+            wbs_combined,
+            taskactv_combined,
+            actvcode_combined,
+            actvtype_combined,
+            verbose=verbose
+        )
 
         # Save to derived directory
         derived_dir = Settings.PRIMAVERA_DERIVED_DIR
