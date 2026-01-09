@@ -774,6 +774,66 @@ def standardize_trade(name: Optional[str]) -> Optional[str]:
     return name.strip()
 
 
+def infer_trade_from_inspection_type(inspection_type: Optional[str]) -> Optional[str]:
+    """
+    Infer trade from inspection type when trade is not explicitly provided.
+
+    Maps inspection types to their corresponding trades based on common patterns.
+
+    Args:
+        inspection_type: The inspection type string (normalized or raw)
+
+    Returns:
+        Inferred trade name, or None if no match
+    """
+    if not inspection_type:
+        return None
+
+    insp_lower = inspection_type.lower()
+
+    # Mapping of inspection type keywords to trades
+    # Order matters - more specific patterns first
+    trade_inference_rules = [
+        # Drywall/Framing related
+        (["drywall", "gypsum", "sheetrock", "layer inspection", "1st layer", "2nd layer", "3rd layer"], "Drywall"),
+        (["framing", "bottom plate", "top plate", "stud", "sliptrack"], "Drywall"),  # Framing is typically Arch/Drywall trade
+        (["control joint", "cj inspection", "cj gap", "cj framing"], "Drywall"),
+        (["screw inspection", "fastener"], "Drywall"),
+
+        # Structural
+        (["structural steel", "steel erection", "steel connection", "bolt inspection"], "Structural Steel"),
+        (["welding", "weld inspection", "vt inspection", "aws"], "Structural Steel"),
+        (["anchor", "dowel", "post-installed"], "Structural Steel"),
+
+        # Concrete
+        (["concrete", "compressive strength", "cylinder", "placement", "pour", "slab"], "Concrete"),
+        (["precast", "waffle panel", "waffle slab", "double t"], "Concrete"),
+        (["pier", "pile", "foundation", "caisson", "drilled"], "Concrete"),
+        (["grout", "mortar"], "Concrete"),
+
+        # Finishes
+        (["paint", "coating", "primer", "topcoat", "nace", "surface preparation"], "Painting"),
+        (["firestop", "fire stop", "fireproofing", "intumescent", "penetration seal"], "Fire Protection"),
+        (["waterproofing", "membrane", "dampproofing"], "Waterproofing"),
+
+        # MEP
+        (["electrical", "conduit", "wiring"], "Electrical"),
+        (["mechanical", "hvac", "ductwork"], "Mechanical"),
+        (["plumbing", "piping", "pipe"], "Plumbing"),
+
+        # General/Architectural
+        (["architectural", "arch inspection", "visual inspection"], "Architectural"),
+        (["masonry", "cmu", "block", "brick"], "Masonry"),
+    ]
+
+    for keywords, trade in trade_inference_rules:
+        for keyword in keywords:
+            if keyword in insp_lower:
+                return trade
+
+    return None
+
+
 def get_all_canonical_companies() -> list:
     """Return list of all canonical company names."""
     return sorted(COMPANY_ALIASES.keys())
@@ -800,6 +860,21 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "gypsum",
         "cleanroom gypsum",
         "sheetrock",
+        # Layer inspections (PSI)
+        "1st layer",
+        "2nd layer",
+        "3rd layer",
+        "1st & 2nd layer",
+        "layer inspection",
+        "layer sheathing",
+        # Control joint inspections
+        "control joint",
+        "cj inspection",
+        "cj gap",
+        "cj framing",
+        # Contamination/wall inspections
+        "contamination wall",
+        "wall inspection",
     ],
     "Framing": [
         "framing",
@@ -826,6 +901,18 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "slab",
         "mortar",
         "grout",
+        # Precast elements
+        "precast",
+        "precast waffle",
+        "precast panel",
+        "precast column",
+        "precast spandrel",
+        "double t panel",
+        "waffle panel",
+        "waffle slab",
+        # Storm/void forms
+        "storm void",
+        "void form",
     ],
     "Structural Steel": [
         "structural steel",
@@ -833,6 +920,12 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "steel connection",
         "bolt",
         "high strength bolt",
+        # Post-installed anchors and dowels
+        "post-installed anchor",
+        "post-installed dowel",
+        "anchor rod",
+        "anchor inspection",
+        "dowel inspection",
     ],
     "Welding": [
         "welding",
@@ -913,6 +1006,12 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "construction operations",
         "general inspection",
         "observation",
+        # Materials/general inspections
+        "materials inspection",
+        "material inspection",
+        "visual",
+        "arch inspection",
+        "architectural inspection",
     ],
 }
 

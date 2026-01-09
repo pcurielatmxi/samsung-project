@@ -28,6 +28,7 @@ from scripts.shared.company_standardization import (
     standardize_level,
     infer_level_from_location,
     categorize_failure_reason,
+    infer_trade_from_inspection_type,
 )
 
 
@@ -163,6 +164,10 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     # Apply inspection type categorization
     inspection_type = content.get('inspection_type')
     inspection_category = categorize_inspection_type(inspection_type)
+
+    # Infer trade from inspection type if not provided
+    if not trade_std and inspection_type:
+        trade_std = infer_trade_from_inspection_type(inspection_type)
 
     # Apply level standardization with fallback to location inference
     level_raw = content.get('level')

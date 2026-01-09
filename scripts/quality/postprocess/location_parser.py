@@ -37,9 +37,20 @@ AREA_KEYWORDS = [
     'NORTH', 'SOUTH', 'EAST', 'WEST'
 ]
 
-# Grid pattern - matches various grid formats
+# Grid patterns - matches various grid formats
 # NOTE: Location string is uppercased
-GRID_PATTERN = r'GRID\s+LINES?\s+([A-Z]\.?\d*[/\-]?\d+)'
+# Primary pattern for explicit grid references like "GRID LINES G/10"
+GRID_PATTERN_EXPLICIT = r'GRID\s+LINES?\s+([A-Z]\.?\d*[/\-]?\d+(?:\.\d+)?)'
+
+# Pattern for column references like "COLUMN L5" or "AT COLUMN N8"
+GRID_PATTERN_COLUMN = r'COLUMN\s+([A-Z]\.?\d+(?:\.\d+)?)'
+
+# Pattern for standalone grid coordinates like "F.6/18" or "N/5" or "A26"
+# Matches: letter(s), optional dot+digit, slash or dash, digits
+GRID_PATTERN_STANDALONE = r'\b([A-Z](?:\.\d+)?[/\-]\d+(?:\.\d+)?)\b'
+
+# Pattern for simple grid like "A26" or "L5" (letter followed by digits)
+GRID_PATTERN_SIMPLE = r'\b([A-Z]\d+(?:\.\d+)?)\b'
 
 
 def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
@@ -96,11 +107,37 @@ def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
                 level = match.group(1)
             break
 
-    # Extract grid
+    # Extract grid - try multiple patterns in order of specificity
     grid = None
-    grid_match = re.search(GRID_PATTERN, loc)
-    if grid_match:
-        grid = grid_match.group(1)
+    grids_found = []
+
+    # 1. Try explicit "GRID LINES" pattern first (most specific)
+    grid_matches = re.findall(GRID_PATTERN_EXPLICIT, loc)
+    if grid_matches:
+        grids_found.extend(grid_matches)
+
+    # 2. Try column references
+    col_matches = re.findall(GRID_PATTERN_COLUMN, loc)
+    if col_matches:
+        grids_found.extend(col_matches)
+
+    # 3. Try standalone grid coordinates (e.g., "F.6/18", "N/5")
+    # Always try this to capture additional grids not caught by explicit pattern
+    standalone_matches = re.findall(GRID_PATTERN_STANDALONE, loc)
+    if standalone_matches:
+        # Filter out false positives (building codes, level codes) and duplicates
+        for match in standalone_matches:
+            # Skip if it looks like a building or level code
+            if match in ['B1', 'B2', '1F', '2F', '3F', '4F', '5F', '6F', '7F', '8F']:
+                continue
+            # Skip if already found via explicit pattern
+            if match not in grids_found:
+                grids_found.append(match)
+
+    # Combine found grids (deduplicated, up to 3)
+    if grids_found:
+        unique_grids = list(dict.fromkeys(grids_found))[:3]  # Preserve order, limit to 3
+        grid = ','.join(unique_grids)
 
     # Extract area (simple keyword matching)
     area = None
