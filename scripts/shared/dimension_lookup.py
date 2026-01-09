@@ -4,23 +4,32 @@ Dimension Lookup Module
 Provides functions to map raw data values to dimension table IDs.
 Used by all data source consolidation scripts for consistent integration.
 
-Dimension Tables (from scripts/integrated_analysis/dimensions/):
-- dim_location: building + level → location_id
+Dimension Tables (from derived/integrated_analysis/dimensions/):
+- dim_location: location codes (rooms, elevators, stairs) with grid bounds
 - dim_company: company name → company_id
 - dim_trade: trade/category → trade_id
+
+Location Lookup:
+- get_location_id(building, level) → building_level string (e.g., "FAB-1F")
+- get_locations_at_grid(building, level, row, col) → list of location_codes
 """
 
 import sys
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 import re
 
 import pandas as pd
 
-# Project paths
+# Project paths - dimension tables are in the external data folder
 _project_root = Path(__file__).parent.parent.parent
-_dimensions_dir = _project_root / 'scripts' / 'integrated_analysis' / 'dimensions'
-_mappings_dir = _project_root / 'scripts' / 'integrated_analysis' / 'mappings'
+sys.path.insert(0, str(_project_root))
+
+from src.config.settings import settings
+
+# Dimension tables are stored in derived data folder (external)
+_dimensions_dir = settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+_mappings_dir = settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'mappings'
 
 
 # Cached dimension data
@@ -49,14 +58,17 @@ def _load_dimensions():
 
 def get_location_id(building: str, level: str) -> Optional[str]:
     """
-    Get dim_location_id from building and level.
+    Get building_level string from building and level.
+
+    This returns a coarse location identifier (building+level) for aggregation.
+    For room-level resolution, use get_locations_at_grid().
 
     Args:
         building: Building code (FAB, SUE, SUW, FIZ)
         level: Level code (1F, 2F, B1, ROOF, etc.)
 
     Returns:
-        location_id like "SUE-1F" or None if not found
+        building_level string like "FAB-1F" or None if invalid
     """
     if not building or not level:
         return None
@@ -66,14 +78,130 @@ def get_location_id(building: str, level: str) -> Optional[str]:
     building = str(building).upper().strip()
     level = str(level).upper().strip()
 
-    # Construct the location_id
-    location_id = f"{building}-{level}"
+    # Construct the building_level
+    building_level = f"{building}-{level}"
 
     # Check if it exists in dim_location
-    if location_id in _dim_location['location_id'].values:
-        return location_id
+    if building_level in _dim_location['building_level'].values:
+        return building_level
 
-    return None
+    # If exact match not found, still return it for data that may not have
+    # corresponding rooms in dim_location (e.g., areas not yet mapped)
+    return building_level
+
+
+def get_locations_at_grid(
+    building: str,
+    level: str,
+    grid_row: str,
+    grid_col: float
+) -> List[Dict]:
+    """
+    Find all locations (rooms, elevators, etc.) whose grid bounds contain the given point.
+
+    This enables spatial joins from quality inspection grid coordinates to room codes.
+
+    Args:
+        building: Building code (FAB, SUE, SUW)
+        level: Level code (1F, 2F, B1, etc.)
+        grid_row: Grid row letter (A-N, may include decimal like "E.5")
+        grid_col: Grid column number (1-34, may include decimal like 17.5)
+
+    Returns:
+        List of dicts with location_id, location_code, location_type, room_name
+    """
+    if not building or not level or not grid_row or grid_col is None:
+        return []
+
+    _load_dimensions()
+
+    building = str(building).upper().strip()
+    level = str(level).upper().strip()
+    grid_row = str(grid_row).upper().strip()
+
+    # Filter by building and level first
+    candidates = _dim_location[
+        (_dim_location['building'] == building) &
+        (_dim_location['level'] == level) &
+        (_dim_location['grid_row_min'].notna()) &
+        (_dim_location['grid_col_min'].notna())
+    ].copy()
+
+    if candidates.empty:
+        return []
+
+    # Row comparison helper (handles fractional rows like E.5)
+    def row_in_range(row_min, row_max, target_row):
+        """Check if target_row is between row_min and row_max."""
+        # Extract base letter and decimal
+        def parse_row(r):
+            r = str(r).upper()
+            if '.' in r:
+                base = r[0]
+                decimal = float(r[1:])
+            else:
+                base = r[0]
+                decimal = 0
+            return (base, decimal)
+
+        min_parsed = parse_row(row_min)
+        max_parsed = parse_row(row_max)
+        target_parsed = parse_row(target_row)
+
+        return min_parsed <= target_parsed <= max_parsed
+
+    # Filter by grid containment
+    results = []
+    for _, row in candidates.iterrows():
+        try:
+            if (row_in_range(row['grid_row_min'], row['grid_row_max'], grid_row) and
+                row['grid_col_min'] <= grid_col <= row['grid_col_max']):
+                results.append({
+                    'location_id': row['location_id'],
+                    'location_code': row['location_code'],
+                    'location_type': row['location_type'],
+                    'room_name': row['room_name'],
+                })
+        except (TypeError, ValueError):
+            continue
+
+    return results
+
+
+def get_location_by_code(location_code: str) -> Optional[Dict]:
+    """
+    Get location details by location code.
+
+    Args:
+        location_code: Location code (e.g., "FAB114402", "ELV-S", "STR-A")
+
+    Returns:
+        Dict with location details or None if not found
+    """
+    if not location_code:
+        return None
+
+    _load_dimensions()
+
+    code = str(location_code).upper().strip()
+    match = _dim_location[_dim_location['location_code'].str.upper() == code]
+
+    if match.empty:
+        return None
+
+    row = match.iloc[0]
+    return {
+        'location_id': row['location_id'],
+        'location_code': row['location_code'],
+        'location_type': row['location_type'],
+        'room_name': row['room_name'],
+        'building': row['building'],
+        'level': row['level'],
+        'grid_row_min': row['grid_row_min'],
+        'grid_row_max': row['grid_row_max'],
+        'grid_col_min': row['grid_col_min'],
+        'grid_col_max': row['grid_col_max'],
+    }
 
 
 def _normalize_company_name(name: str) -> str:
@@ -386,3 +514,178 @@ def reset_cache():
     _dim_company = None
     _dim_trade = None
     _map_company_aliases = None
+
+
+# =============================================================================
+# Grid Coordinate Parsing
+# =============================================================================
+
+# Valid grid row letters
+# Primary rows: A-N (no 'I' in standard grid system)
+# Extended rows: O, P, Q, R, S found in some areas (CUB, external)
+VALID_GRID_ROWS = set('ABCDEFGHJKLMNOPQRS')  # Expanded based on actual data
+
+# Pattern for single grid coordinate: letter(s), optional decimal, slash, digits
+# Examples: G/10, E.5/17.3, N/5, A26
+GRID_COORD_PATTERN = re.compile(
+    r'([A-N])(?:\.(\d+))?[/\-]?(\d+)(?:\.(\d+))?',
+    re.IGNORECASE
+)
+
+# Pattern for simple grid like "A26" or "L5" (letter followed by digits, no slash)
+GRID_SIMPLE_PATTERN = re.compile(r'([A-N])(\d+)(?:\.(\d+))?', re.IGNORECASE)
+
+
+def parse_single_grid(coord: str) -> Optional[Dict[str, any]]:
+    """
+    Parse a single grid coordinate string.
+
+    Args:
+        coord: Grid coordinate like "G/10", "E.5/17.3", "N/5", "A26"
+
+    Returns:
+        Dict with 'row', 'row_decimal', 'col', 'col_decimal' or None if invalid
+    """
+    if not coord or pd.isna(coord):
+        return None
+
+    coord = str(coord).strip().upper()
+
+    # Try standard row/col format first (e.g., "G/10", "E.5/17.3")
+    if '/' in coord or '-' in coord:
+        match = GRID_COORD_PATTERN.match(coord)
+        if match:
+            row_letter = match.group(1)
+            row_decimal = match.group(2)  # May be None
+            col_int = match.group(3)
+            col_decimal = match.group(4)  # May be None
+
+            if row_letter in VALID_GRID_ROWS and col_int:
+                row = row_letter
+                if row_decimal:
+                    row = f"{row_letter}.{row_decimal}"
+                col = float(col_int)
+                if col_decimal:
+                    col = float(f"{col_int}.{col_decimal}")
+                return {'row': row, 'col': col}
+
+    # Try simple format (e.g., "A26", "L5")
+    match = GRID_SIMPLE_PATTERN.match(coord)
+    if match:
+        row_letter = match.group(1)
+        col_int = match.group(2)
+        col_decimal = match.group(3)
+
+        if row_letter in VALID_GRID_ROWS and col_int:
+            col = float(col_int)
+            if col_decimal:
+                col = float(f"{col_int}.{col_decimal}")
+            return {'row': row_letter, 'col': col}
+
+    return None
+
+
+def parse_grid_field(grid_str: str) -> Dict[str, Optional[str]]:
+    """
+    Parse a grid field which may contain multiple coordinates.
+
+    Args:
+        grid_str: Grid string like "G/10", "F.6/18,F.8/18,E.8/18", "N/5"
+
+    Returns:
+        Dict with:
+        - grid_row_min: Minimum row letter (e.g., "E")
+        - grid_row_max: Maximum row letter (e.g., "G")
+        - grid_col_min: Minimum column number (e.g., 17.0)
+        - grid_col_max: Maximum column number (e.g., 18.0)
+        - grid_rows: All unique rows as comma-separated string (e.g., "E,F,G")
+        - grid_cols: All unique cols as comma-separated string (e.g., "17,18")
+    """
+    result = {
+        'grid_row_min': None,
+        'grid_row_max': None,
+        'grid_col_min': None,
+        'grid_col_max': None,
+        'grid_rows': None,
+        'grid_cols': None,
+    }
+
+    if not grid_str or pd.isna(grid_str):
+        return result
+
+    grid_str = str(grid_str).strip()
+
+    # Split by comma to handle multiple coordinates
+    parts = [p.strip() for p in grid_str.split(',')]
+
+    rows = []
+    cols = []
+
+    for part in parts:
+        # Skip non-grid parts (e.g., "B-150" is a lab address, not a grid)
+        if part.startswith('B-') and len(part) > 3:
+            continue
+
+        parsed = parse_single_grid(part)
+        if parsed:
+            rows.append(parsed['row'])
+            cols.append(parsed['col'])
+
+    if rows and cols:
+        # Sort rows alphabetically (A < B < ... < N)
+        # Handle fractional rows by sorting base letter first
+        def row_sort_key(r):
+            base = r[0]
+            decimal = float(r[2:]) if len(r) > 1 and '.' in r else 0
+            return (base, decimal)
+
+        unique_rows = sorted(set(rows), key=row_sort_key)
+        unique_cols = sorted(set(cols))
+
+        result['grid_row_min'] = unique_rows[0]
+        result['grid_row_max'] = unique_rows[-1]
+        result['grid_col_min'] = unique_cols[0]
+        result['grid_col_max'] = unique_cols[-1]
+        result['grid_rows'] = ','.join(unique_rows)
+        result['grid_cols'] = ','.join(str(c) for c in unique_cols)
+
+    return result
+
+
+def normalize_grid(grid_str: str) -> Optional[str]:
+    """
+    Normalize a grid string to standard format.
+
+    Removes extraneous data (lab addresses, etc.) and standardizes format.
+
+    Args:
+        grid_str: Raw grid string
+
+    Returns:
+        Normalized grid string with only valid coordinates, comma-separated
+    """
+    if not grid_str or pd.isna(grid_str):
+        return None
+
+    grid_str = str(grid_str).strip()
+    parts = [p.strip() for p in grid_str.split(',')]
+
+    valid_coords = []
+    for part in parts:
+        # Skip non-grid parts
+        if part.startswith('B-') and len(part) > 3:
+            continue
+
+        parsed = parse_single_grid(part)
+        if parsed:
+            # Reconstruct standardized format
+            row = parsed['row']
+            col = parsed['col']
+            # Format column: use integer if whole number
+            if col == int(col):
+                col_str = str(int(col))
+            else:
+                col_str = str(col)
+            valid_coords.append(f"{row}/{col_str}")
+
+    return ','.join(valid_coords) if valid_coords else None

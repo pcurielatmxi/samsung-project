@@ -53,13 +53,22 @@ Low-level gridline coordinate lookup from FAB code mapping file.
 
 Dimension ID lookups for cross-source integration. Maps raw values to dimension table IDs.
 
+**Data Location:** Dimension tables are in the external data folder:
+```
+{WINDOWS_DATA_DIR}/derived/integrated_analysis/dimensions/
+{WINDOWS_DATA_DIR}/derived/integrated_analysis/mappings/
+```
+
 **Functions:**
 | Function | Purpose |
 |----------|---------|
 | `get_location_id(building, level)` | Building+Level → dim_location_id (e.g., "SUE-1F") |
+| `get_locations_at_grid(bldg, level, row, col)` | Find rooms containing grid point |
 | `get_company_id(name)` | Company name → dim_company_id (fuzzy matching) |
 | `get_trade_id(name)` | Trade/category → dim_trade_id |
 | `get_trade_code(trade_id)` | Trade ID → trade code |
+| `parse_grid_field(grid_str)` | Parse grid coords → row/col bounds |
+| `normalize_grid(grid_str)` | Normalize grid string format |
 | `enrich_dataframe(df, ...)` | Add all dimension IDs to dataframe |
 
 **Usage:**
@@ -76,6 +85,10 @@ company_id = get_company_id('Samsung E&C')  # → 1
 # Trade lookup
 trade_id = get_trade_id('Drywall')  # → 4
 trade_id = get_trade_id('Firestop')  # → 6
+
+# Grid parsing
+parsed = parse_grid_field('G/10,H/11')
+# {'grid_row_min': 'G', 'grid_row_max': 'H', 'grid_col_min': 10.0, 'grid_col_max': 11.0, ...}
 ```
 
 **Used by:** RABA consolidation, PSI consolidation

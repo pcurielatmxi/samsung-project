@@ -13,6 +13,7 @@ traced back to specific locations in the source document.
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Optional, List, Dict, Any, Tuple
@@ -290,6 +291,75 @@ def refine_statements_batch(
     return results
 
 
+def extract_date_from_filename(filename: str) -> Optional[str]:
+    """
+    Extract date from filename as fallback when LLM doesn't find document date.
+
+    Supports patterns:
+    - MM-DD-YY, MM-DD-YYYY (e.g., "11-19-22", "10-10-2022")
+    - MM.DD.YY, MM.DD.YYYY (e.g., "11.19.22")
+    - MMDDYY, MMDDYYYY (e.g., "120422", "12042022")
+    - DD MMMMM YYYY or MMMMM DD, YYYY (e.g., "12 December 2022")
+
+    Returns:
+        ISO date string (YYYY-MM-DD) or None if no date found
+    """
+    # Pattern 1: MM-DD-YY or MM-DD-YYYY
+    match = re.search(r'(\d{1,2})-(\d{1,2})-(\d{2,4})', filename)
+    if match:
+        month, day, year = match.groups()
+        year = int(year)
+        if year < 100:
+            year = 2000 + year if year < 50 else 1900 + year
+        try:
+            month, day = int(month), int(day)
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+        except ValueError:
+            pass
+
+    # Pattern 2: MM.DD.YY or MM.DD.YYYY
+    match = re.search(r'(\d{1,2})\.(\d{1,2})\.(\d{2,4})', filename)
+    if match:
+        month, day, year = match.groups()
+        year = int(year)
+        if year < 100:
+            year = 2000 + year if year < 50 else 1900 + year
+        try:
+            month, day = int(month), int(day)
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+        except ValueError:
+            pass
+
+    # Pattern 3: MMDDYY or MMDDYYYY (6 or 8 digits, not part of longer number)
+    match = re.search(r'(?<!\d)(\d{2})(\d{2})(\d{2})(?!\d)', filename)
+    if match:
+        month, day, year = match.groups()
+        year = int(year)
+        if year < 100:
+            year = 2000 + year if year < 50 else 1900 + year
+        try:
+            month, day = int(month), int(day)
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+        except ValueError:
+            pass
+
+    # Pattern 4: MMDDYYYY (8 digits)
+    match = re.search(r'(?<!\d)(\d{2})(\d{2})(\d{4})(?!\d)', filename)
+    if match:
+        month, day, year = match.groups()
+        try:
+            month, day, year = int(month), int(day), int(year)
+            if 1 <= month <= 12 and 1 <= day <= 31 and 2000 <= year <= 2030:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+        except ValueError:
+            pass
+
+    return None
+
+
 def process_record(input_data: dict, source_path: Path) -> dict:
     """
     Process a record to refine low-confidence statements.
@@ -306,6 +376,18 @@ def process_record(input_data: dict, source_path: Path) -> dict:
     # Extract content
     data = input_data.get("content", input_data)
     statements = data.get("statements", [])
+
+    # Fallback: Extract date from filename if document.document_date is empty
+    document = data.get("document", {})
+    if not document.get("document_date"):
+        filename = source_path.name
+        extracted_date = extract_date_from_filename(filename)
+        if extracted_date:
+            if "document" not in data:
+                data["document"] = {}
+            data["document"]["document_date"] = extracted_date
+            data["document"]["_date_source"] = "filename"
+            print(f"  Extracted date from filename: {extracted_date}")
 
     if not statements:
         data["_refine_stats"] = {

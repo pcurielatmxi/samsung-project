@@ -106,32 +106,57 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 
 Coverage of dimension IDs (`dim_location_id`, `dim_company_id`, `dim_trade_id`) by data source:
 
-| Source | Records | Location | Company | Trade | Notes |
-|--------|---------|----------|---------|-------|-------|
-| **RABA** | 9,391 | 98.6% | 88.8% | 99.4% | Quality inspections (RKCI) |
-| **PSI** | 6,309 | 97.9% | 99.0% | 96.7% | Quality inspections (Const Hive) |
-| **TBM** | 13,539 | 91.5% | 98.2% | 37.7% | Daily plans - trade inferred from activities |
-| **ProjectSight** | 857,516 | - | 99.9% | 35.2% | Labor hours - no location data |
-| **Weekly Reports** | 10 | - | 100% | - | Aggregated labor by company only |
-| P6 Tasks | 470K | 97.6%* | N/A | 96.8% | *building only, level 93.5% |
+| Source | Records | Location | Company | Trade | Grid | Notes |
+|--------|---------|----------|---------|-------|------|-------|
+| **RABA** | 9,391 | 99.9% | 88.8% | 99.4% | 62.1% | Quality inspections (RKCI) |
+| **PSI** | 6,309 | 98.2% | 99.0% | 96.7% | 73.3% | Quality inspections (Const Hive) |
+| **TBM** | 13,539 | 91.5% | 98.2% | 37.7% | - | Daily plans - trade inferred |
+| **ProjectSight** | 857,516 | - | 99.9% | 35.2% | - | Labor hours - no location |
+| **Weekly Reports** | 10 | - | 100% | - | - | Aggregated labor by company |
+| P6 Tasks | 470K | 97.6%* | N/A | 96.8% | - | *building only |
 
 **Legend:** - not applicable/available in source
 
 **Notes:**
-- Trade coverage is lower for labor sources (TBM, ProjectSight) because trade is inferred from activity descriptions
-- Location is not available in ProjectSight or Weekly Reports labor data
-- Company mapping uses fuzzy matching with alias resolution (see `scripts/shared/dimension_lookup.py`)
+- **Location** = building+level (coarse), **Grid** = grid coordinates (fine-grained)
+- Trade coverage is lower for labor sources because trade is inferred from activity descriptions
+- Grid coordinates in RABA/PSI enable spatial joins to room codes via `get_locations_at_grid()`
 
 **Enriched Output Files:**
-- `processed/raba/raba_consolidated.csv` - RABA with dimension IDs
-- `processed/psi/psi_consolidated.csv` - PSI with dimension IDs
+- `processed/raba/raba_consolidated.csv` - RABA with dimension IDs + grid bounds
+- `processed/psi/psi_consolidated.csv` - PSI with dimension IDs + grid bounds
 - `processed/tbm/work_entries_enriched.csv` - TBM with dimension IDs
 - `processed/projectsight/labor_entries_enriched.csv` - ProjectSight with dimension IDs
 - `processed/weekly_reports/labor_detail_by_company_enriched.csv` - Weekly Reports with dimension IDs
 
+#### dim_location Structure
+
+The location dimension (`scripts/integrated_analysis/dimensions/dim_location.csv`) contains 523 location codes from the taxonomy:
+
+| Location Type | Count | Grid Coverage | Description |
+|---------------|-------|---------------|-------------|
+| ROOM | 367 | 80% | Room codes (FAB114402, FAB136302) |
+| STAIR | 80 | 14% | Stair codes (STR-A, STR-B) |
+| GRIDLINE | 35 | 100% | Column-based locations (full row span) |
+| ELEVATOR | 23 | 35% | Elevator codes (ELV-S, ELV-H) |
+| LEVEL | 9 | 0% | Level-only references |
+| BUILDING | 5 | 0% | Building-only references |
+| AREA | 4 | 0% | Area references |
+
+**Key columns:** `location_code`, `location_type`, `building`, `level`, `grid_row_min/max`, `grid_col_min/max`, `building_level`
+
+**Spatial Join Workflow:**
+```
+Quality inspection at FAB-1F, grid G/10
+    ↓
+get_locations_at_grid('FAB', '1F', 'G', 10)
+    ↓
+Returns: rooms whose grid bounds contain G/10
+```
+
 #### Deliverables
 
-- `dim_location` - All locations with grid bounds (in progress)
+- `dim_location` - 523 location codes with grid bounds (from location_master.csv)
 - `dim_company` - Master company list with alias resolution
 - `dim_trade` - Trade/work type classification
 - `map_company_location` - Company work areas by period (derived from quality data)

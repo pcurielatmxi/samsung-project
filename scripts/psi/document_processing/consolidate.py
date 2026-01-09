@@ -35,6 +35,8 @@ from scripts.shared.dimension_lookup import (
     get_company_id,
     get_trade_id,
     get_trade_code,
+    parse_grid_field,
+    normalize_grid,
 )
 
 
@@ -198,6 +200,11 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     dim_trade_id = get_trade_id(trade_std)
     dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
 
+    # Parse and normalize grid coordinates
+    grid_raw = content.get('grid')
+    grid_normalized = normalize_grid(grid_raw)
+    grid_parsed = parse_grid_field(grid_raw)
+
     # Build flat record
     return {
         # Identification
@@ -219,7 +226,11 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'level_raw': level_raw,
         'level': level_std,
         'area': content.get('area'),
-        'grid': content.get('grid'),
+        'grid': grid_normalized,
+        'grid_row_min': grid_parsed['grid_row_min'],
+        'grid_row_max': grid_parsed['grid_row_max'],
+        'grid_col_min': grid_parsed['grid_col_min'],
+        'grid_col_max': grid_parsed['grid_col_max'],
         'location_id': content.get('location_id'),
 
         # Results
