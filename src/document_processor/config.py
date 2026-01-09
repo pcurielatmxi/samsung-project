@@ -21,7 +21,7 @@ from typing import Optional, List, Literal
 class StageConfig:
     """Configuration for a single pipeline stage."""
     name: str
-    type: Literal["llm", "script"]
+    type: Literal["llm", "script", "aggregate"]
     index: int  # 0-based position in pipeline
 
     # LLM stage fields
@@ -64,6 +64,11 @@ class StageConfig:
     def has_enhance(self) -> bool:
         """Whether this stage has enhancement prompt configured."""
         return self.enhance_prompt is not None
+
+    @property
+    def is_aggregate(self) -> bool:
+        """Whether this is an aggregate stage (runs once after all files)."""
+        return self.type == "aggregate"
 
 
 @dataclass
@@ -130,6 +135,11 @@ class PipelineConfig:
                     errors.append(f"Stage '{stage.name}': Script stage missing script path")
                 if not stage.function:
                     errors.append(f"Stage '{stage.name}': Script stage missing function name")
+            elif stage.type == "aggregate":
+                if not stage.script:
+                    errors.append(f"Stage '{stage.name}': Aggregate stage missing script path")
+                if not stage.function:
+                    errors.append(f"Stage '{stage.name}': Aggregate stage missing function name")
 
         # Check QC settings
         if self.qc_failure_threshold < 0 or self.qc_failure_threshold > 1:
@@ -240,6 +250,10 @@ def _load_stage(stage_data: dict, index: int, config_dir: Path) -> StageConfig:
         stage.script = stage_data.get("script")
         stage.function = stage_data.get("function", "process_record")
 
+    elif stage_type == "aggregate":
+        stage.script = stage_data.get("script")
+        stage.function = stage_data.get("function", "aggregate")
+
     return stage
 
 
@@ -337,6 +351,8 @@ def print_config(config: PipelineConfig) -> None:
     print(f"Stages ({len(config.stages)}):")
     for stage in config.stages:
         indicators = []
+        if stage.is_aggregate:
+            indicators.append("AGGREGATE")
         if stage.has_qc:
             indicators.append("QC")
         if stage.has_enhance:
@@ -351,7 +367,7 @@ def print_config(config: PipelineConfig) -> None:
             if stage.schema:
                 print(f"    Schema: {len(stage.schema.get('properties', {}))} properties")
         else:
-            print(f"  {stage.folder_name}: {stage.type} ({stage.script}::{stage.function})")
+            print(f"  {stage.folder_name}: {stage.type} ({stage.script}::{stage.function}){indicator_str}")
     print("=" * 60)
 
 

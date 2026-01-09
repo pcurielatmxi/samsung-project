@@ -16,6 +16,7 @@ from typing import List, Optional, Set
 from .config import PipelineConfig, StageConfig
 from .stages.base import BaseStage, FileTask, StageResult
 from .stages.registry import create_stage
+from .stages.aggregate_stage import AggregateStage, AggregateResult
 from .quality_check import (
     QCTracker,
     check_qc_halt,
@@ -375,6 +376,85 @@ async def run_stage(
     return stats, qc_tracker
 
 
+def run_aggregate_stage(
+    config: PipelineConfig,
+    stage_config: StageConfig,
+    prior_stage: StageConfig,
+    dry_run: bool = False,
+) -> dict:
+    """
+    Run an aggregate stage.
+
+    Aggregate stages run once after all per-file stages complete,
+    processing all outputs together (e.g., consolidation to CSV).
+
+    Args:
+        config: Pipeline configuration
+        stage_config: The aggregate stage to run
+        prior_stage: The stage whose outputs will be aggregated
+        dry_run: If True, just report what would be done
+
+    Returns:
+        Dictionary with stage results
+    """
+    global _progress
+
+    if dry_run:
+        print(f"Stage '{stage_config.name}': Would run aggregate on {prior_stage.folder_name}/")
+        return {
+            "name": stage_config.name,
+            "type": "aggregate",
+            "dry_run": True,
+        }
+
+    # Report stage start
+    print(f"Running aggregate stage: {stage_config.name}")
+    print(f"  Input: {prior_stage.folder_name}/")
+    print(f"  Output: {stage_config.folder_name}/")
+
+    # Create and run the aggregate stage
+    try:
+        aggregate_impl = AggregateStage(
+            stage_config=stage_config,
+            pipeline_config=config,
+            config_dir=config.config_dir,
+        )
+
+        result = aggregate_impl.run(prior_stage)
+
+        if result.success:
+            print(
+                f"AGGREGATE COMPLETE | stage: {stage_config.name} | "
+                f"files: {result.files_processed} | "
+                f"outputs: {', '.join(result.output_files)} | "
+                f"time: {result.duration_ms}ms"
+            )
+        else:
+            print(
+                f"AGGREGATE FAILED | stage: {stage_config.name} | "
+                f"error: {result.error}"
+            )
+
+        return {
+            "name": stage_config.name,
+            "type": "aggregate",
+            "success": result.success,
+            "error": result.error,
+            "files_processed": result.files_processed,
+            "output_files": result.output_files,
+            "duration_ms": result.duration_ms,
+        }
+
+    except Exception as e:
+        print(f"AGGREGATE ERROR | stage: {stage_config.name} | error: {e}")
+        return {
+            "name": stage_config.name,
+            "type": "aggregate",
+            "success": False,
+            "error": str(e),
+        }
+
+
 async def run_pipeline(
     config: PipelineConfig,
     stages: Optional[List[str]] = None,
@@ -450,8 +530,16 @@ async def run_pipeline(
 
     results = {"stages": [], "halted": False}
 
-    # Run each stage
-    for stage_config in stages_to_run:
+    # Separate per-file stages from aggregate stages
+    per_file_stages = [s for s in stages_to_run if not s.is_aggregate]
+    aggregate_stages = [s for s in stages_to_run if s.is_aggregate]
+
+    # Run per-file stages first
+    # If no per-file stages to run, find the last per-file stage from full config
+    # (needed when running only aggregate stages with --stage)
+    all_per_file_stages = [s for s in config.stages if not s.is_aggregate]
+    last_per_file_stage = all_per_file_stages[-1] if all_per_file_stages else None
+    for stage_config in per_file_stages:
         stats, qc_tracker = await run_stage(
             config=config,
             stage_config=stage_config,
@@ -482,6 +570,8 @@ async def run_pipeline(
         }
         results["stages"].append(stage_result)
 
+        last_per_file_stage = stage_config
+
         # Check if we should halt due to QC
         if qc_tracker and qc_tracker.should_halt(
             config.qc_failure_threshold,
@@ -490,6 +580,24 @@ async def run_pipeline(
             results["halted"] = True
             results["halt_stage"] = stage_config.name
             break
+
+    # Run aggregate stages after all per-file stages (if not halted)
+    if not results["halted"] and aggregate_stages and last_per_file_stage:
+        for stage_config in aggregate_stages:
+            # Find the prior stage (last per-file stage or previous aggregate)
+            prior_stage = last_per_file_stage
+
+            stage_result = run_aggregate_stage(
+                config=config,
+                stage_config=stage_config,
+                prior_stage=prior_stage,
+                dry_run=dry_run,
+            )
+            results["stages"].append(stage_result)
+
+            # Update prior stage for next aggregate (if chaining aggregates)
+            if stage_result.get("success"):
+                last_per_file_stage = stage_config
 
     # Report pipeline complete
     if not dry_run:

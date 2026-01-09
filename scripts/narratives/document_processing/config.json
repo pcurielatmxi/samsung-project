@@ -48,6 +48,12 @@
       "type": "script",
       "script": "refine.py",
       "function": "process_record"
+    },
+    {
+      "name": "consolidate",
+      "type": "aggregate",
+      "script": "consolidate.py",
+      "function": "aggregate"
     }
   ]
 }

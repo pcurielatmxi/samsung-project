@@ -221,8 +221,126 @@ def write_csv(records: List[dict], output_path: Path, fieldnames: List[str]) -> 
         writer.writerows(records)
 
 
+def run_consolidation(
+    input_dir: Path,
+    output_dir: Path,
+    exclude_patterns: List[str],
+) -> Dict[str, Any]:
+    """
+    Core consolidation logic.
+
+    Args:
+        input_dir: Directory containing *.refine.json files
+        output_dir: Directory for output CSVs
+        exclude_patterns: Glob patterns for files to exclude
+
+    Returns:
+        Dict with files_processed, output_files, and statistics
+    """
+    # Load all outputs
+    outputs = load_refine_outputs(input_dir, exclude_patterns)
+
+    if not outputs:
+        return {
+            "files_processed": 0,
+            "output_files": [],
+            "error": "No outputs to consolidate",
+        }
+
+    # Build dimension table
+    dim_records, path_to_id = build_dimension_table(outputs)
+
+    # Build statements table
+    stmt_records = build_statements_table(outputs, path_to_id)
+
+    # Create output directory if needed
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Define output paths
+    dim_output = output_dir / "dim_narrative_file.csv"
+    stmt_output = output_dir / "narrative_statements.csv"
+
+    # Write dimension table
+    dim_fieldnames = [
+        "narrative_file_id", "relative_path", "filename", "document_type",
+        "document_title", "document_date", "data_date", "author", "summary",
+        "statement_count", "locate_rate", "file_extension"
+    ]
+    write_csv(dim_records, dim_output, dim_fieldnames)
+
+    # Write statements table
+    stmt_fieldnames = [
+        "statement_id", "narrative_file_id", "statement_index", "text",
+        "category", "event_date", "parties", "locations", "impact_days",
+        "impact_description", "references", "source_page", "source_char_offset",
+        "match_confidence", "match_type", "is_located"
+    ]
+    write_csv(stmt_records, stmt_output, stmt_fieldnames)
+
+    # Calculate statistics
+    total_docs = len(dim_records)
+    total_stmts = len(stmt_records)
+    located_stmts = sum(1 for r in stmt_records if r["is_located"])
+
+    return {
+        "files_processed": len(outputs),
+        "output_files": [dim_output.name, stmt_output.name],
+        "stats": {
+            "documents": total_docs,
+            "statements": total_stmts,
+            "located_statements": located_stmts,
+            "locate_rate": round(located_stmts / total_stmts * 100, 1) if total_stmts else 0,
+        }
+    }
+
+
+def aggregate(input_dir: Path, output_dir: Path, config) -> "AggregateResult":
+    """
+    Aggregate stage entry point.
+
+    Called by the document processor pipeline for aggregate stages.
+
+    Args:
+        input_dir: Prior stage output directory (e.g., 4.refine/)
+        output_dir: This stage's output directory (e.g., 5.consolidate/)
+        config: PipelineConfig object
+
+    Returns:
+        AggregateResult with success status and output info
+    """
+    # Import here to avoid circular dependency
+    from src.document_processor.stages.aggregate_stage import AggregateResult
+
+    try:
+        exclude_patterns = config.exclude_patterns if hasattr(config, 'exclude_patterns') else []
+
+        result = run_consolidation(
+            input_dir=input_dir,
+            output_dir=output_dir,
+            exclude_patterns=exclude_patterns,
+        )
+
+        if result.get("error"):
+            return AggregateResult(
+                success=False,
+                error=result["error"],
+            )
+
+        return AggregateResult(
+            success=True,
+            files_processed=result["files_processed"],
+            output_files=result["output_files"],
+        )
+
+    except Exception as e:
+        return AggregateResult(
+            success=False,
+            error=str(e),
+        )
+
+
 def main(config_dir: Optional[Path] = None):
-    """Main consolidation function."""
+    """Main consolidation function (standalone usage)."""
 
     # Default config directory
     if config_dir is None:
@@ -246,85 +364,29 @@ def main(config_dir: Optional[Path] = None):
         print(f"ERROR: Refine directory not found: {refine_dir}")
         sys.exit(1)
 
-    # Load all outputs
-    print(f"\nLoading outputs from {refine_dir}...")
-    outputs = load_refine_outputs(refine_dir, exclude_patterns)
-    print(f"Loaded {len(outputs)} narrative files (after exclusions)")
+    print(f"\nProcessing from {refine_dir}...")
 
-    if not outputs:
-        print("ERROR: No outputs to consolidate")
+    # Run consolidation
+    result = run_consolidation(
+        input_dir=refine_dir,
+        output_dir=output_dir,
+        exclude_patterns=exclude_patterns,
+    )
+
+    if result.get("error"):
+        print(f"ERROR: {result['error']}")
         sys.exit(1)
 
-    # Build dimension table
-    print("\nBuilding dimension table...")
-    dim_records, path_to_id = build_dimension_table(outputs)
+    # Print results
+    print(f"\nWrote {result['files_processed']} files to:")
+    for fname in result["output_files"]:
+        print(f"  - {fname}")
 
-    # Build statements table
-    print("Building statements table...")
-    stmt_records = build_statements_table(outputs, path_to_id)
-
-    # Define output paths
-    dim_output = output_dir / "dim_narrative_file.csv"
-    stmt_output = output_dir / "narrative_statements.csv"
-
-    # Write dimension table
-    dim_fieldnames = [
-        "narrative_file_id", "relative_path", "filename", "document_type",
-        "document_title", "document_date", "data_date", "author", "summary",
-        "statement_count", "locate_rate", "file_extension"
-    ]
-    write_csv(dim_records, dim_output, dim_fieldnames)
-    print(f"\nWrote {len(dim_records)} records to {dim_output.name}")
-
-    # Write statements table
-    stmt_fieldnames = [
-        "statement_id", "narrative_file_id", "statement_index", "text",
-        "category", "event_date", "parties", "locations", "impact_days",
-        "impact_description", "references", "source_page", "source_char_offset",
-        "match_confidence", "match_type", "is_located"
-    ]
-    write_csv(stmt_records, stmt_output, stmt_fieldnames)
-    print(f"Wrote {len(stmt_records)} records to {stmt_output.name}")
-
-    # Print summary statistics
-    print("\n" + "=" * 60)
-    print("Summary Statistics")
-    print("=" * 60)
-
-    # Document stats
-    total_docs = len(dim_records)
-    docs_100 = sum(1 for r in dim_records if r["locate_rate"] == 100)
-    docs_partial = sum(1 for r in dim_records if 0 < r["locate_rate"] < 100)
-    docs_zero = sum(1 for r in dim_records if r["locate_rate"] == 0)
-
-    print(f"\nDocuments:")
-    print(f"  Total: {total_docs}")
-    print(f"  100% located: {docs_100}")
-    print(f"  Partial: {docs_partial}")
-    print(f"  0% located: {docs_zero}")
-
-    # Statement stats
-    total_stmts = len(stmt_records)
-    located_stmts = sum(1 for r in stmt_records if r["is_located"])
-    unlocated_stmts = total_stmts - located_stmts
-
-    print(f"\nStatements:")
-    print(f"  Total: {total_stmts}")
-    print(f"  Located: {located_stmts} ({located_stmts/total_stmts*100:.1f}%)")
-    print(f"  Unlocated: {unlocated_stmts}")
-
-    # Category breakdown
-    print(f"\nStatements by category:")
-    from collections import Counter
-    categories = Counter(r["category"] for r in stmt_records)
-    for cat, count in categories.most_common():
-        print(f"  {cat or '(empty)'}: {count}")
-
-    # Document type breakdown
-    print(f"\nDocuments by type:")
-    doc_types = Counter(r["document_type"] for r in dim_records)
-    for dtype, count in doc_types.most_common():
-        print(f"  {dtype or '(empty)'}: {count}")
+    stats = result.get("stats", {})
+    print(f"\nStatistics:")
+    print(f"  Documents: {stats.get('documents', 0)}")
+    print(f"  Statements: {stats.get('statements', 0)}")
+    print(f"  Located: {stats.get('located_statements', 0)} ({stats.get('locate_rate', 0)}%)")
 
     print("\n" + "=" * 60)
     print("Consolidation complete")
