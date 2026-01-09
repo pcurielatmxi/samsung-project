@@ -23,6 +23,10 @@ from src.config.settings import settings
 from scripts.shared.company_standardization import (
     standardize_company,
     standardize_inspector,
+    categorize_inspection_type,
+    standardize_level,
+    infer_level_from_location,
+    categorize_failure_reason,
 )
 
 
@@ -160,6 +164,21 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     contractor_std = standardize_company(contractor)
     testing_company_std = standardize_company(testing_company)
 
+    # Apply test type categorization (same as inspection type)
+    test_type = content.get('test_type')
+    test_category = categorize_inspection_type(test_type)
+
+    # Apply level standardization with fallback to location inference
+    level_raw = content.get('level')
+    location_raw = content.get('location_raw')
+    level_std = standardize_level(level_raw)
+    if not level_std and location_raw:
+        level_std = infer_level_from_location(location_raw)
+
+    # Apply failure reason categorization
+    failure_reason = content.get('failure_reason')
+    failure_category = categorize_failure_reason(failure_reason) if failure_reason else None
+
     # Build flat record
     return {
         # Identification
@@ -171,20 +190,23 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'report_date_normalized': content.get('report_date_normalized'),
 
         # Test type
-        'test_type': content.get('test_type'),
+        'test_type': test_type,
         'test_type_normalized': content.get('test_type_normalized'),
+        'test_category': test_category,
 
         # Location
-        'location_raw': content.get('location_raw'),
+        'location_raw': location_raw,
         'building': content.get('building'),
-        'level': content.get('level'),
+        'level_raw': level_raw,
+        'level': level_std,
         'area': content.get('area'),
         'grid': content.get('grid'),
         'location_id': content.get('location_id'),
 
         # Results
         'outcome': content.get('outcome'),
-        'failure_reason': content.get('failure_reason'),
+        'failure_reason': failure_reason,
+        'failure_category': failure_category,
         'summary': content.get('summary'),
 
         # Test counts

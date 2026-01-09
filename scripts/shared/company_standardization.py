@@ -784,6 +784,372 @@ def get_company_aliases(canonical: str) -> list:
     return COMPANY_ALIASES.get(canonical, [])
 
 
+# =============================================================================
+# INSPECTION TYPE CATEGORIZATION
+# =============================================================================
+# Groups 2000+ inspection types into ~15 standard categories
+
+INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
+    "Drywall": [
+        "drywall",
+        "1st layer drywall",
+        "2nd layer drywall",
+        "3rd layer drywall",
+        "layer drywall",
+        "drywall inspection",
+        "gypsum",
+        "cleanroom gypsum",
+        "sheetrock",
+    ],
+    "Framing": [
+        "framing",
+        "framing inspection",
+        "frame",
+        "bottom plate",
+        "top plate",
+        "stud",
+        "sliptrack",
+        "frame remediation",
+    ],
+    "Screw Inspection": [
+        "screw inspection",
+        "screw",
+        "fastener",
+    ],
+    "Concrete": [
+        "concrete",
+        "compressive strength",
+        "cylinder",
+        "placement",
+        "pre-placement",
+        "pour",
+        "slab",
+        "mortar",
+        "grout",
+    ],
+    "Structural Steel": [
+        "structural steel",
+        "steel erection",
+        "steel connection",
+        "bolt",
+        "high strength bolt",
+    ],
+    "Welding": [
+        "welding",
+        "weld",
+        "visual inspection (vt)",
+        "vt inspection",
+        "aws",
+    ],
+    "Drilled Pier/Foundation": [
+        "drilled pier",
+        "pier",
+        "pile",
+        "foundation",
+        "caisson",
+        "shaft",
+        "excavation",
+    ],
+    "Firestop": [
+        "firestop",
+        "fire stop",
+        "fire resistive",
+        "fireproofing",
+        "intumescent",
+        "penetration seal",
+        "joint system",
+    ],
+    "Coating/Painting": [
+        "coating",
+        "paint",
+        "nace",
+        "surface preparation",
+        "primer",
+        "topcoat",
+        "corrosion",
+    ],
+    "Soil/Earthwork": [
+        "soil",
+        "nuclear density",
+        "compaction",
+        "backfill",
+        "earthwork",
+        "subgrade",
+        "base material",
+        "proctor",
+    ],
+    "Reinforcing Steel": [
+        "reinforcing",
+        "rebar",
+        "reinforcement",
+        "epoxy coated",
+        "bar placement",
+    ],
+    "Masonry": [
+        "masonry",
+        "cmu",
+        "block",
+        "brick",
+        "mortar cube",
+    ],
+    "Waterproofing": [
+        "waterproofing",
+        "membrane",
+        "dampproofing",
+        "below grade",
+    ],
+    "MEP": [
+        "mechanical",
+        "electrical",
+        "plumbing",
+        "hvac",
+        "ductwork",
+        "piping",
+        "conduit",
+    ],
+    "Visual/General": [
+        "visual inspection",
+        "daily field report",
+        "construction operations",
+        "general inspection",
+        "observation",
+    ],
+}
+
+_INSPECTION_CATEGORY_LOOKUP: Dict[str, str] = {}
+for category, keywords in INSPECTION_TYPE_CATEGORIES.items():
+    for keyword in keywords:
+        _INSPECTION_CATEGORY_LOOKUP[keyword.lower()] = category
+
+
+def categorize_inspection_type(inspection_type: Optional[str]) -> Optional[str]:
+    """
+    Categorize an inspection type into a standard category.
+
+    Args:
+        inspection_type: Raw inspection type string
+
+    Returns:
+        Category name, or None if no match
+    """
+    if not inspection_type:
+        return None
+
+    cleaned = inspection_type.lower().strip()
+
+    # Check each keyword
+    for keyword, category in _INSPECTION_CATEGORY_LOOKUP.items():
+        if keyword in cleaned:
+            return category
+
+    return None
+
+
+# =============================================================================
+# LEVEL STANDARDIZATION
+# =============================================================================
+# Standardizes level values including underground/foundation work
+
+LEVEL_ALIASES: Dict[str, list] = {
+    "1F": ["1f", "1", "level 1", "first floor", "ground", "ground floor", "g/f", "01f"],
+    "2F": ["2f", "2", "level 2", "second floor", "02f"],
+    "3F": ["3f", "3", "level 3", "third floor", "03f"],
+    "4F": ["4f", "4", "level 4", "fourth floor", "04f"],
+    "5F": ["5f", "5", "level 5", "fifth floor", "05f"],
+    "6F": ["6f", "6", "level 6", "sixth floor", "06f"],
+    "7F": ["7f", "7", "level 7", "seventh floor", "07f"],
+    "8F": ["8f", "8", "level 8", "08f"],
+    "9F": ["9f", "9", "level 9", "09f"],
+    "ROOF": ["roof", "rooftop", "rf", "penthouse", "ph"],
+    "B1": ["b1", "basement", "basement 1", "below grade 1", "-1"],
+    "B2": ["b2", "basement 2", "below grade 2", "-2"],
+    "UG": ["ug", "underground", "below grade", "subgrade"],
+    "FOUNDATION": ["foundation", "ftg", "footing", "mat foundation"],
+}
+
+_LEVEL_LOOKUP: Dict[str, str] = {}
+for canonical, aliases in LEVEL_ALIASES.items():
+    _LEVEL_LOOKUP[canonical.lower()] = canonical
+    for alias in aliases:
+        _LEVEL_LOOKUP[alias.lower()] = canonical
+
+
+def standardize_level(level: Optional[str]) -> Optional[str]:
+    """
+    Standardize a level value.
+
+    Args:
+        level: Raw level string
+
+    Returns:
+        Standardized level, or original if no match
+    """
+    if not level:
+        return None
+
+    cleaned = level.lower().strip()
+
+    if cleaned in _LEVEL_LOOKUP:
+        return _LEVEL_LOOKUP[cleaned]
+
+    # Check if it's a valid level format already (e.g., "18F")
+    if re.match(r'^\d+f?$', cleaned, re.IGNORECASE):
+        num = re.match(r'^(\d+)', cleaned).group(1)
+        return f"{num}F"
+
+    return level.strip()
+
+
+def infer_level_from_location(location_raw: Optional[str]) -> Optional[str]:
+    """
+    Attempt to extract level from a raw location string.
+
+    Args:
+        location_raw: Raw location description
+
+    Returns:
+        Inferred level, or None if not found
+    """
+    if not location_raw:
+        return None
+
+    loc = location_raw.upper()
+
+    # Check for explicit level mentions
+    patterns = [
+        r'\b(\d+)F\b',  # 1F, 2F, etc.
+        r'LEVEL\s*(\d+)',  # Level 1, Level 2
+        r'(\d+)(?:ST|ND|RD|TH)\s*FLOOR',  # 1st Floor, 2nd Floor
+        r'FLOOR\s*(\d+)',  # Floor 1
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, loc)
+        if match:
+            num = match.group(1)
+            return f"{num}F"
+
+    # Check for special levels
+    if 'ROOF' in loc:
+        return 'ROOF'
+    if 'BASEMENT' in loc or 'B1' in loc or 'B2' in loc:
+        if 'B2' in loc:
+            return 'B2'
+        return 'B1'
+
+    # Check for foundation/underground indicators
+    foundation_keywords = ['PIER', 'PILE', 'FOUNDATION', 'FOOTING', 'EXCAVATION', 'CAISSON']
+    if any(kw in loc for kw in foundation_keywords):
+        return 'FOUNDATION'
+
+    # Check for underground
+    if 'UNDERGROUND' in loc or 'BELOW GRADE' in loc or 'SUBGRADE' in loc:
+        return 'UG'
+
+    return None
+
+
+# =============================================================================
+# FAILURE REASON CATEGORIZATION
+# =============================================================================
+# Categorizes failure reasons into root cause categories
+
+FAILURE_CATEGORIES: Dict[str, list] = {
+    "Workmanship - Fasteners": [
+        "missing screw",
+        "screw",
+        "fastener",
+        "nail",
+        "bolt",
+    ],
+    "Workmanship - Alignment": [
+        "alignment",
+        "misalign",
+        "deform",
+        "bent",
+        "out of plumb",
+        "out of level",
+        "gap",
+    ],
+    "Workmanship - Installation": [
+        "installation",
+        "not installed",
+        "improper",
+        "incorrect",
+        "wrong location",
+        "deficien",
+    ],
+    "Materials - Concrete Strength": [
+        "compressive strength",
+        "28 day",
+        "7 day",
+        "psi",
+        "did not achieve",
+    ],
+    "Materials - Coating/Finish": [
+        "coating",
+        "paint",
+        "uncured",
+        "contamination",
+        "holiday",
+        "overspray",
+        "mill",
+        "bare metal",
+    ],
+    "Documentation": [
+        "document",
+        "drawing",
+        "submittal",
+        "not in accordance",
+        "not compliant",
+        "no ul system",
+        "no tag",
+    ],
+    "Not Ready": [
+        "not ready",
+        "cancelled",
+        "reschedul",
+        "internal inspection",
+        "didn't pass",
+        "did not pass",
+    ],
+    "Access/Safety": [
+        "scaffold",
+        "access",
+        "safety",
+        "no cm present",
+    ],
+}
+
+_FAILURE_CATEGORY_LOOKUP: Dict[str, str] = {}
+for category, keywords in FAILURE_CATEGORIES.items():
+    for keyword in keywords:
+        _FAILURE_CATEGORY_LOOKUP[keyword.lower()] = category
+
+
+def categorize_failure_reason(reason: Optional[str]) -> Optional[str]:
+    """
+    Categorize a failure reason into a root cause category.
+
+    Args:
+        reason: Raw failure reason string
+
+    Returns:
+        Category name, or None if no match
+    """
+    if not reason:
+        return None
+
+    cleaned = reason.lower().strip()
+
+    # Check each keyword (order matters - more specific first)
+    for keyword, category in sorted(_FAILURE_CATEGORY_LOOKUP.items(), key=lambda x: -len(x[0])):
+        if keyword in cleaned:
+            return category
+
+    return "Other"
+
+
 # CLI for testing
 if __name__ == "__main__":
     import sys
