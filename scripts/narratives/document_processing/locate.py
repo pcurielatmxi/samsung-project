@@ -95,7 +95,7 @@ def extract_pdf_text(path: Path) -> tuple[str, list[PageText]]:
 
 def extract_docx_text(path: Path) -> tuple[str, list[PageText]]:
     """
-    Extract text from DOCX.
+    Extract text from DOCX including paragraphs, tables, headers, and footers.
 
     Note: DOCX doesn't have real page numbers, so we treat the whole doc as page 1.
     We could estimate pages by paragraph count, but that's unreliable.
@@ -103,12 +103,41 @@ def extract_docx_text(path: Path) -> tuple[str, list[PageText]]:
     Document = _import_docx()
     doc = Document(path)
 
-    paragraphs = []
+    text_parts = []
+
+    # Extract paragraphs
     for para in doc.paragraphs:
         if para.text.strip():
-            paragraphs.append(para.text)
+            text_parts.append(para.text)
 
-    full_text = "\n".join(paragraphs)
+    # Extract table content (critical for milestone variance reports, etc.)
+    for table in doc.tables:
+        for row in table.rows:
+            # Get unique cell texts (tables can have merged cells with duplicates)
+            seen = set()
+            row_texts = []
+            for cell in row.cells:
+                cell_text = cell.text.strip()
+                if cell_text and cell_text not in seen:
+                    seen.add(cell_text)
+                    row_texts.append(cell_text)
+            if row_texts:
+                text_parts.append(" | ".join(row_texts))
+
+    # Extract headers and footers
+    for section in doc.sections:
+        for header in [section.header, section.first_page_header, section.even_page_header]:
+            if header:
+                for para in header.paragraphs:
+                    if para.text.strip():
+                        text_parts.append(para.text)
+        for footer in [section.footer, section.first_page_footer, section.even_page_footer]:
+            if footer:
+                for para in footer.paragraphs:
+                    if para.text.strip():
+                        text_parts.append(para.text)
+
+    full_text = "\n".join(text_parts)
 
     # Treat as single "page" since DOCX doesn't have reliable page info
     pages = [PageText(page_num=1, text=full_text, start_offset=0)]

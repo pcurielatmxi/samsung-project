@@ -66,7 +66,9 @@ def discover_files(config: PipelineConfig) -> List[FileTask]:
     """
     from .utils.file_utils import discover_source_files, report_conflicts_and_raise
 
-    resolved, conflicts = discover_source_files(config.input_dir, config.file_extensions)
+    resolved, conflicts = discover_source_files(
+        config.input_dir, config.file_extensions, config.exclude_patterns
+    )
 
     # Report conflicts if any
     if conflicts:

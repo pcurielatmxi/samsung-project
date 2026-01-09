@@ -4,6 +4,17 @@
   "file_extensions": [".pdf", ".docx", ".doc", ".xlsx", ".xls"],
   "concurrency": 3,
 
+  "exclude_patterns": [
+    "*activity relationship*",
+    "*Activity Relationship*",
+    "*Schedule by Area*",
+    "*Schedule by Trade*",
+    "*Schedule by WBS*",
+    "*Schedule by rooms*",
+    "*Schedule versions*",
+    "*High level Comparison*"
+  ],
+
   "qc_batch_size": 5,
   "qc_failure_threshold": 0.15,
   "qc_min_samples": 5,
@@ -30,6 +41,12 @@
       "name": "locate",
       "type": "script",
       "script": "locate.py",
+      "function": "process_record"
+    },
+    {
+      "name": "refine",
+      "type": "script",
+      "script": "refine.py",
       "function": "process_record"
     }
   ]

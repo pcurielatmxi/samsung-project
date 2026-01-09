@@ -8,6 +8,7 @@ Expects a config folder with:
   - schema.json: Optional JSON schema for structured output
 """
 
+import fnmatch
 import json
 import os
 import re
@@ -33,6 +34,7 @@ class StageConfig:
     qc_prompt_file: Optional[str] = None
     enhance_prompt: Optional[str] = None
     enhance_prompt_file: Optional[str] = None
+    include_source: bool = False  # Include original source document in LLM context
 
     # Script stage fields
     script: Optional[str] = None
@@ -79,6 +81,9 @@ class PipelineConfig:
     qc_failure_threshold: float = 0.10
     qc_min_samples: int = 10
 
+    # File exclusion patterns (glob patterns)
+    exclude_patterns: List[str] = field(default_factory=list)
+
     def get_stage(self, name: str) -> Optional[StageConfig]:
         """Get stage by name."""
         for stage in self.stages:
@@ -91,6 +96,16 @@ class PipelineConfig:
         if stage.index == 0:
             return None
         return self.stages[stage.index - 1]
+
+    def is_excluded(self, filepath: Path) -> bool:
+        """Check if a file should be excluded based on exclude_patterns."""
+        if not self.exclude_patterns:
+            return False
+        filename = filepath.name
+        for pattern in self.exclude_patterns:
+            if fnmatch.fnmatch(filename, pattern):
+                return True
+        return False
 
     def validate(self) -> List[str]:
         """Validate configuration. Returns list of errors (empty if valid)."""
@@ -188,6 +203,7 @@ def _load_stage(stage_data: dict, index: int, config_dir: Path) -> StageConfig:
         stage.schema_file = stage_data.get("schema_file")
         stage.qc_prompt_file = stage_data.get("qc_prompt_file")
         stage.enhance_prompt_file = stage_data.get("enhance_prompt_file")
+        stage.include_source = stage_data.get("include_source", False)
 
         # Load prompt
         if stage.prompt_file:
@@ -287,6 +303,7 @@ def load_config(config_dir: str | Path) -> PipelineConfig:
         qc_batch_size=config_data.get("qc_batch_size", 10),
         qc_failure_threshold=config_data.get("qc_failure_threshold", 0.10),
         qc_min_samples=config_data.get("qc_min_samples", 10),
+        exclude_patterns=config_data.get("exclude_patterns", []),
     )
 
     # Validate
@@ -307,6 +324,10 @@ def print_config(config: PipelineConfig) -> None:
     print(f"Output dir:   {config.output_dir}")
     print(f"Concurrency:  {config.concurrency}")
     print(f"Extensions:   {config.file_extensions}")
+    if config.exclude_patterns:
+        print(f"Exclusions:   {len(config.exclude_patterns)} patterns")
+        for pattern in config.exclude_patterns:
+            print(f"              - {pattern}")
     print()
     print("Quality Check Settings:")
     print(f"  Batch size:  {config.qc_batch_size}")
@@ -320,6 +341,8 @@ def print_config(config: PipelineConfig) -> None:
             indicators.append("QC")
         if stage.has_enhance:
             indicators.append("ENHANCE")
+        if stage.include_source:
+            indicators.append("SOURCE")
         indicator_str = f" [{', '.join(indicators)}]" if indicators else ""
         if stage.type == "llm":
             print(f"  {stage.folder_name}: {stage.type} ({stage.model}){indicator_str}")

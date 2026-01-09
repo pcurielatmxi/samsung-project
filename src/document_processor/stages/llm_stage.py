@@ -15,6 +15,7 @@ from ..config import StageConfig
 from ..clients.gemini_client import (
     process_document,
     process_document_text,
+    process_text_with_document,
     GeminiResponse,
 )
 
@@ -100,7 +101,9 @@ class LLMStage(BaseStage):
                 response = await self._process_document(input_path)
             else:
                 # Later stage: process prior stage's output as text
-                response = await self._process_text(input_path)
+                # Pass source_path if include_source is enabled
+                source_path = task.source_path if self.config.include_source else None
+                response = await self._process_text(input_path, source_path=source_path)
 
             if not response.success:
                 duration_ms = int((time.time() - start_time) * 1000)
@@ -207,8 +210,19 @@ class LLMStage(BaseStage):
                 model=self.config.model,
             )
 
-    async def _process_text(self, input_path: Path) -> GeminiResponse:
-        """Process text content from a prior stage's JSON output."""
+    async def _process_text(
+        self,
+        input_path: Path,
+        source_path: Optional[Path] = None,
+    ) -> GeminiResponse:
+        """
+        Process text content from a prior stage's JSON output.
+
+        Args:
+            input_path: Path to prior stage output JSON
+            source_path: Optional path to original source document
+                        (used when include_source=True)
+        """
         # Read prior stage output
         try:
             with open(input_path, "r", encoding="utf-8") as f:
@@ -234,6 +248,16 @@ class LLMStage(BaseStage):
         # If content is a dict (structured), convert to string
         if isinstance(content, dict):
             content = json.dumps(content, indent=2)
+
+        # Use source-aware processing if include_source is enabled
+        if self.config.include_source and source_path:
+            return process_text_with_document(
+                text=content,
+                document_path=source_path,
+                prompt=self.config.prompt,
+                schema=self.config.schema,
+                model=self.config.model,
+            )
 
         return process_document_text(
             text=content,

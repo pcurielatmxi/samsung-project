@@ -2,12 +2,13 @@
 File utility functions for document processing pipeline.
 """
 
+import fnmatch
 import json
 import os
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 def write_json_atomic(path: Path, data: dict) -> None:
@@ -148,9 +149,10 @@ def format_size(bytes_count: int) -> str:
 def discover_source_files(
     input_dir: Path,
     file_extensions: List[str],
+    exclude_patterns: Optional[List[str]] = None,
 ) -> Tuple[List[Path], List[Tuple[str, List[str]]]]:
     """
-    Discover source files with duplicate handling.
+    Discover source files with duplicate handling and exclusion support.
 
     Handles duplicate filenames (same stem, different extensions):
     - .pdf + .docx/.doc: Keep .pdf only (preferred format)
@@ -159,18 +161,29 @@ def discover_source_files(
     Args:
         input_dir: Directory to scan for files
         file_extensions: List of extensions to match (e.g., [".pdf", ".docx"])
+        exclude_patterns: Optional list of glob patterns to exclude (e.g., ["*Schedule by*"])
 
     Returns:
         Tuple of (resolved_files, conflicts):
         - resolved_files: List of Paths to process
         - conflicts: List of (stem, [file_paths]) for unresolved duplicates
     """
+    exclude_patterns = exclude_patterns or []
+
+    def is_excluded(filepath: Path) -> bool:
+        """Check if file matches any exclusion pattern."""
+        filename = filepath.name
+        for pattern in exclude_patterns:
+            if fnmatch.fnmatch(filename, pattern):
+                return True
+        return False
+
     # Collect all matching files grouped by stem
     files_by_stem: Dict[str, List[Path]] = {}
 
     for ext in file_extensions:
         for source_path in input_dir.rglob(f"*{ext}"):
-            if source_path.is_file():
+            if source_path.is_file() and not is_excluded(source_path):
                 # Key by parent + stem to handle subdirectories
                 key = str(source_path.parent / source_path.stem)
                 if key not in files_by_stem:

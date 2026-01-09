@@ -51,9 +51,9 @@ def analyze_status(config: PipelineConfig) -> PipelineStatus:
     for stage in config.stages:
         status.stages[stage.name] = StageStatus(name=stage.name)
 
-    # Discover all input files (with duplicate handling)
+    # Discover all input files (with duplicate handling and exclusions)
     resolved_files, conflicts = discover_source_files(
-        config.input_dir, config.file_extensions
+        config.input_dir, config.file_extensions, config.exclude_patterns
     )
 
     # Note conflicts but don't raise - just report in status

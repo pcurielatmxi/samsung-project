@@ -557,6 +557,208 @@ def process_document_text(
         )
 
 
+def process_text_with_document(
+    text: str,
+    document_path: Union[str, Path],
+    prompt: str,
+    schema: Optional[dict] = None,
+    model: str = "gemini-3-flash-preview",
+) -> GeminiResponse:
+    """
+    Process text content alongside a source document with Gemini.
+
+    This enables stages that need to reference the original document
+    (e.g., for verifying extractions against source).
+
+    For PDF: Uploads the document and includes it in the context
+    For DOCX/XLSX: Extracts text and combines with the input text
+
+    Args:
+        text: Text content to process (typically prior stage JSON)
+        document_path: Path to source document (PDF, DOCX, XLSX)
+        prompt: Processing prompt (should reference both {prior_output} and source)
+        schema: Optional Gemini-format schema for structured output
+        model: Gemini model to use
+
+    Returns:
+        GeminiResponse with processed content
+    """
+    document_path = Path(document_path)
+
+    # Validate document exists
+    if not document_path.exists():
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error=f"Source document not found: {document_path}",
+            model=model,
+        )
+
+    try:
+        client = _get_client()
+    except ValueError as e:
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error=str(e),
+            model=model,
+        )
+    except Exception as e:
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error=f"Failed to initialize Gemini client: {e}",
+            model=model,
+        )
+
+    try:
+        ext = document_path.suffix.lower()
+
+        # Build config for structured output if schema provided
+        config = {}
+        if schema:
+            gemini_schema = _convert_schema_to_gemini(schema)
+            config = {
+                "response_mime_type": "application/json",
+                "response_schema": gemini_schema,
+            }
+
+        if ext == ".pdf":
+            # For PDF: Upload document and send both file and text
+            doc_info = get_document_info(document_path)
+            if not doc_info.is_valid:
+                return GeminiResponse(
+                    success=False,
+                    result=None,
+                    error=doc_info.error,
+                    model=model,
+                    doc_info=doc_info,
+                )
+
+            with _safe_upload_path(document_path) as upload_path:
+                # Upload with retry on rate limit
+                uploaded_file = _call_with_retry(
+                    lambda: client.files.upload(file=upload_path),
+                    operation_name=f"file upload ({document_path.name})",
+                )
+
+                # Build prompt with prior output text
+                full_prompt = f"{prompt}\n\nPrior stage output:\n---\n{text}\n---"
+
+                # Generate content with both file and text
+                response = _call_with_retry(
+                    lambda: client.models.generate_content(
+                        model=model,
+                        contents=[
+                            uploaded_file,  # Source document
+                            full_prompt,    # Prompt + prior stage output
+                        ],
+                        config=config if config else None,
+                    ),
+                    operation_name=f"generate content with doc ({document_path.name})",
+                )
+
+        else:
+            # For DOCX/XLSX: Extract text and combine
+            from .gemini_client import extract_docx_text, extract_xlsx_text
+            # Import from llm_stage since that's where the extraction functions are
+
+            # Actually, let me use a simpler approach - extract inline
+            if ext in {'.docx', '.doc'}:
+                from docx import Document as DocxDocument
+                doc = DocxDocument(document_path)
+                doc_parts = []
+                for para in doc.paragraphs:
+                    if para.text.strip():
+                        doc_parts.append(para.text)
+                for table in doc.tables:
+                    for row in table.rows:
+                        row_text = " | ".join(cell.text.strip() for cell in row.cells)
+                        if row_text.strip(" |"):
+                            doc_parts.append(row_text)
+                source_text = "\n\n".join(doc_parts)
+
+            elif ext in {'.xlsx', '.xls'}:
+                import pandas as pd
+                doc_parts = []
+                xlsx = pd.ExcelFile(document_path)
+                for sheet in xlsx.sheet_names:
+                    df = pd.read_excel(xlsx, sheet_name=sheet)
+                    if not df.empty:
+                        doc_parts.append(f"## Sheet: {sheet}\n")
+                        doc_parts.append(df.to_string(index=False))
+                source_text = "\n".join(doc_parts)
+
+            else:
+                return GeminiResponse(
+                    success=False,
+                    result=None,
+                    error=f"Unsupported document type for include_source: {ext}",
+                    model=model,
+                )
+
+            # Build combined prompt with source document text and prior output
+            full_prompt = (
+                f"{prompt}\n\n"
+                f"Source document content:\n---\n{source_text}\n---\n\n"
+                f"Prior stage output:\n---\n{text}\n---"
+            )
+
+            # Generate content with retry
+            response = _call_with_retry(
+                lambda: client.models.generate_content(
+                    model=model,
+                    contents=full_prompt,
+                    config=config if config else None,
+                ),
+                operation_name=f"generate content with source ({document_path.name})",
+            )
+            doc_info = None
+
+        # Parse result
+        result_text = response.text
+
+        # If schema was provided, parse JSON
+        if schema:
+            try:
+                result = json.loads(result_text)
+            except json.JSONDecodeError as e:
+                return GeminiResponse(
+                    success=False,
+                    result=result_text,
+                    error=f"Failed to parse JSON response: {e}",
+                    model=model,
+                )
+        else:
+            result = result_text
+
+        # Extract usage metadata if available
+        usage = None
+        if hasattr(response, 'usage_metadata'):
+            usage = {
+                "prompt_tokens": getattr(response.usage_metadata, 'prompt_token_count', None),
+                "output_tokens": getattr(response.usage_metadata, 'candidates_token_count', None),
+                "total_tokens": getattr(response.usage_metadata, 'total_token_count', None),
+            }
+
+        return GeminiResponse(
+            success=True,
+            result=result,
+            error=None,
+            model=model,
+            usage=usage,
+            doc_info=doc_info if ext == ".pdf" else None,
+        )
+
+    except Exception as e:
+        return GeminiResponse(
+            success=False,
+            result=None,
+            error=str(e),
+            model=model,
+        )
+
+
 # Test function
 if __name__ == "__main__":
     import sys
