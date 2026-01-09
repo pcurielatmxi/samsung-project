@@ -93,19 +93,26 @@ def load_narrative_data(period: MonthlyPeriod) -> Dict[str, Any]:
             )
 
     # Categorize statements for delay attribution
-    # Categories that indicate potentially unjustified delays
-    unjustified_categories = ['QUALITY_ISSUE', 'COORDINATION', 'CONTRACTOR_PERFORMANCE',
-                              'REWORK', 'DEFECT', 'FAILURE']
-    # Categories that indicate potentially justified delays
-    justified_categories = ['WEATHER', 'OWNER_CHANGE', 'DESIGN_CHANGE', 'FORCE_MAJEURE',
-                           'PERMIT', 'SUPPLY_CHAIN']
+    # Categories that indicate potentially unjustified delays (contractor responsibility)
+    unjustified_categories = ['quality_issue', 'coordination', 'resource', 'safety']
+    # Categories that indicate potentially justified delays (external factors)
+    justified_categories = ['weather', 'owner_direction', 'design_issue', 'scope_change']
+    # Neutral - need more context to determine
+    neutral_categories = ['delay', 'progress', 'other', 'commitment', 'dispute']
 
     if not filtered.empty and 'category' in filtered.columns:
-        filtered['delay_justified'] = filtered['category'].apply(
-            lambda x: 'JUSTIFIED' if x in justified_categories
-                      else ('UNJUSTIFIED' if x in unjustified_categories
-                            else 'UNKNOWN')
-        )
+        def classify_justification(cat):
+            if pd.isna(cat):
+                return 'UNKNOWN'
+            cat_lower = str(cat).lower()
+            if cat_lower in justified_categories:
+                return 'JUSTIFIED'
+            elif cat_lower in unjustified_categories:
+                return 'UNJUSTIFIED'
+            else:
+                return 'REVIEW'  # Needs human review
+
+        filtered['delay_justified'] = filtered['category'].apply(classify_justification)
 
     # Coverage notes
     notes = []
