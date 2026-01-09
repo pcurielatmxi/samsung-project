@@ -47,6 +47,7 @@ case "${1:-help}" in
         echo "  --force             Reprocess completed files"
         echo "  --dry-run           Show what would be processed"
         echo "  --retry-errors      Retry failed files only"
+        echo "  --enhance           Enable enhancement pass for LLM stages"
         echo "  --bypass-qc-halt    Continue despite QC halt"
         echo "  --disable-qc        Skip quality checks"
         echo "  --errors            Show error details (status only)"
@@ -56,6 +57,7 @@ case "${1:-help}" in
         echo "  ./run.sh status              # Check progress"
         echo "  ./run.sh test 10             # Dry run 10 files"
         echo "  ./run.sh extract --limit 50  # Extract 50 files"
+        echo "  ./run.sh run --enhance       # Run with enhancement"
         echo "  ./run.sh retry               # Retry failures"
         ;;
 esac
