@@ -107,6 +107,22 @@ Tasks with negative float or past target end date:
 | Cobb Mechanical | 626 | 0.9% |
 | W&W Steel | 328 | 0.5% |
 
+### Hours by GC Responsibility
+
+| GC Responsibility | Hours | % of Total |
+|-------------------|-------|------------|
+| Yates Subcontractors | 57,445 | 79.8% |
+| Other / Unassigned | 8,478 | 11.8% |
+| Yates (Direct) | 6,072 | 8.4% |
+| **Yates Total (Direct + Subs)** | **63,517** | **88.2%** |
+
+**Yates Subcontractor Breakdown:**
+
+| Subcontractor | Hours | % of Yates Total |
+|---------------|-------|------------------|
+| Baker Concrete Construction | 57,117 | 89.9% |
+| W&W Steel | 328 | 0.5% |
+
 ## 3. Quality Metrics & Issues
 
 ### Summary

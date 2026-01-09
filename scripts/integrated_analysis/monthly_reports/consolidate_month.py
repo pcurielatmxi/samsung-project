@@ -28,6 +28,9 @@ from scripts.integrated_analysis.monthly_reports.data_loaders import (
 from scripts.integrated_analysis.monthly_reports.data_loaders.dimensions import (
     get_company_lookup,
     resolve_company_id,
+    get_parent_company_id,
+    get_gc_for_company,
+    get_subcontractors,
 )
 
 
@@ -200,6 +203,63 @@ def format_labor_section(labor: Dict[str, Any], period: MonthlyPeriod) -> str:
                 other_pct = (other_hours / total_hours * 100) if total_hours > 0 else 0
                 lines.append(f"| (Other {len(by_company) - 20} companies) | {other_hours:,.0f} | {other_pct:.1f}% |")
             lines.append("")
+
+    # Hours by GC responsibility
+    if not labor['labor'].empty and 'hours' in labor['labor'].columns:
+        company_col = 'dim_company_id' if 'dim_company_id' in labor['labor'].columns else None
+
+        if company_col:
+            lines.append("### Hours by GC Responsibility")
+            lines.append("")
+
+            # Get Yates subcontractors (company_id=2)
+            YATES_ID = 2
+            yates_subs = get_subcontractors(YATES_ID)
+            yates_sub_ids = {s['company_id'] for s in yates_subs}
+
+            # Calculate hours by GC grouping
+            df = labor['labor'].copy()
+            df['gc_group'] = df[company_col].apply(lambda x:
+                'Yates (Direct)' if x == YATES_ID
+                else ('Yates Subcontractors' if x in yates_sub_ids
+                else 'Other / Unassigned')
+            )
+
+            gc_hours = df.groupby('gc_group')['hours'].sum().sort_values(ascending=False)
+
+            lines.append("| GC Responsibility | Hours | % of Total |")
+            lines.append("|-------------------|-------|------------|")
+
+            for gc_group, hours in gc_hours.items():
+                pct = (hours / total_hours * 100) if total_hours > 0 else 0
+                lines.append(f"| {gc_group} | {hours:,.0f} | {pct:.1f}% |")
+
+            # Calculate Yates total (direct + subs)
+            yates_total = gc_hours.get('Yates (Direct)', 0) + gc_hours.get('Yates Subcontractors', 0)
+            yates_pct = (yates_total / total_hours * 100) if total_hours > 0 else 0
+            lines.append(f"| **Yates Total (Direct + Subs)** | **{yates_total:,.0f}** | **{yates_pct:.1f}%** |")
+            lines.append("")
+
+            # Breakdown of Yates subcontractor hours
+            if yates_sub_ids:
+                yates_sub_hours = df[df[company_col].isin(yates_sub_ids)].groupby(company_col)['hours'].sum().sort_values(ascending=False)
+
+                if not yates_sub_hours.empty:
+                    lines.append("**Yates Subcontractor Breakdown:**")
+                    lines.append("")
+                    lines.append("| Subcontractor | Hours | % of Yates Total |")
+                    lines.append("|---------------|-------|------------------|")
+
+                    for company_id, hours in yates_sub_hours.head(10).items():
+                        company_name = resolve_company_id(company_id)
+                        pct = (hours / yates_total * 100) if yates_total > 0 else 0
+                        lines.append(f"| {company_name} | {hours:,.0f} | {pct:.1f}% |")
+
+                    if len(yates_sub_hours) > 10:
+                        other_sub_hours = yates_sub_hours.iloc[10:].sum()
+                        other_pct = (other_sub_hours / yates_total * 100) if yates_total > 0 else 0
+                        lines.append(f"| (Other {len(yates_sub_hours) - 10} subs) | {other_sub_hours:,.0f} | {other_pct:.1f}% |")
+                    lines.append("")
 
     # TBM hours by floor (if available)
     if not labor['tbm'].empty and 'hours' in labor['tbm'].columns:
