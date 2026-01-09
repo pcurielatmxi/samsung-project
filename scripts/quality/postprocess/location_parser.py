@@ -52,6 +52,9 @@ GRID_PATTERN_STANDALONE = r'\b([A-Z](?:\.\d+)?[/\-]\d+(?:\.\d+)?)\b'
 # Pattern for simple grid like "A26" or "L5" (letter followed by digits)
 GRID_PATTERN_SIMPLE = r'\b([A-Z]\d+(?:\.\d+)?)\b'
 
+# Pattern for parenthetical grid coordinates like "(A5-A6/-2)" or "(A11-A12/ -3 to -4)"
+GRID_PATTERN_PAREN = r'\(([A-Z]\d+(?:\.\d+)?(?:\s*-\s*[A-Z]?\d+)?(?:\s*/\s*-?\d+(?:\s+to\s+-?\d+)?)?)\)'
+
 
 def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
     """
@@ -121,7 +124,14 @@ def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
     if col_matches:
         grids_found.extend(col_matches)
 
-    # 3. Try standalone grid coordinates (e.g., "F.6/18", "N/5")
+    # 3. Try parenthetical grid coordinates (e.g., "(A5-A6/-2)")
+    paren_matches = re.findall(GRID_PATTERN_PAREN, loc)
+    if paren_matches:
+        for match in paren_matches:
+            if match not in grids_found:
+                grids_found.append(match)
+
+    # 4. Try standalone grid coordinates (e.g., "F.6/18", "N/5")
     # Always try this to capture additional grids not caught by explicit pattern
     standalone_matches = re.findall(GRID_PATTERN_STANDALONE, loc)
     if standalone_matches:

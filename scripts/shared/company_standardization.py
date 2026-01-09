@@ -796,24 +796,27 @@ def infer_trade_from_inspection_type(inspection_type: Optional[str]) -> Optional
     trade_inference_rules = [
         # Drywall/Framing related
         (["drywall", "gypsum", "sheetrock", "layer inspection", "1st layer", "2nd layer", "3rd layer"], "Drywall"),
-        (["framing", "bottom plate", "top plate", "stud", "sliptrack"], "Drywall"),  # Framing is typically Arch/Drywall trade
+        (["framing", "bottom plate", "top plate", "stud", "sliptrack", "frame inspection", "frame remediation"], "Drywall"),
         (["control joint", "cj inspection", "cj gap", "cj framing"], "Drywall"),
         (["screw inspection", "fastener"], "Drywall"),
+        (["shaft wall", "shaft liner", "shaftliner"], "Drywall"),
+        (["ceiling", "scp ceiling", "ceiling panel"], "Drywall"),
+        (["raised access floor", "access floor"], "Drywall"),
 
         # Structural
-        (["structural steel", "steel erection", "steel connection", "bolt inspection"], "Structural Steel"),
+        (["structural steel", "steel erection", "steel connection", "bolt inspection", "steel beam"], "Structural Steel"),
         (["welding", "weld inspection", "vt inspection", "aws"], "Structural Steel"),
-        (["anchor", "dowel", "post-installed"], "Structural Steel"),
+        (["anchor", "dowel", "post-installed", "epoxy dowel", "coupler"], "Structural Steel"),
 
         # Concrete
         (["concrete", "compressive strength", "cylinder", "placement", "pour", "slab"], "Concrete"),
         (["precast", "waffle panel", "waffle slab", "double t"], "Concrete"),
         (["pier", "pile", "foundation", "caisson", "drilled"], "Concrete"),
-        (["grout", "mortar"], "Concrete"),
+        (["grout", "mortar", "honeycomb", "void form", "void-form"], "Concrete"),
 
         # Finishes
-        (["paint", "coating", "primer", "topcoat", "nace", "surface preparation"], "Painting"),
-        (["firestop", "fire stop", "fireproofing", "intumescent", "penetration seal"], "Fire Protection"),
+        (["paint", "coating", "primer", "topcoat", "nace", "surface preparation", "touch up"], "Painting"),
+        (["firestop", "fire stop", "fireproofing", "intumescent", "penetration seal", "fire caulk"], "Fire Protection"),
         (["waterproofing", "membrane", "dampproofing"], "Waterproofing"),
 
         # MEP
@@ -822,7 +825,7 @@ def infer_trade_from_inspection_type(inspection_type: Optional[str]) -> Optional
         (["plumbing", "piping", "pipe"], "Plumbing"),
 
         # General/Architectural
-        (["architectural", "arch inspection", "visual inspection"], "Architectural"),
+        (["architectural", "arch inspection", "visual inspection", "door and hardware"], "Architectural"),
         (["masonry", "cmu", "block", "brick"], "Masonry"),
     ]
 
@@ -875,6 +878,18 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         # Contamination/wall inspections
         "contamination wall",
         "wall inspection",
+        # Shaft wall / liner
+        "shaft wall",
+        "shaft liner",
+        "shaftliner",
+        # Ceiling
+        "ceiling",
+        "scp ceiling",
+        "ceiling panel",
+        "cement board",
+        # Access floor
+        "raised access floor",
+        "access floor",
     ],
     "Framing": [
         "framing",
@@ -913,6 +928,11 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         # Storm/void forms
         "storm void",
         "void form",
+        "void-form",
+        # Repairs
+        "honeycomb",
+        "honeycomb repair",
+        "honeycomb wall",
     ],
     "Structural Steel": [
         "structural steel",
@@ -926,6 +946,10 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "anchor rod",
         "anchor inspection",
         "dowel inspection",
+        "epoxy dowel",
+        "drilled epoxy",
+        "coupler",
+        "steel beam",
     ],
     "Welding": [
         "welding",
@@ -951,6 +975,8 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "intumescent",
         "penetration seal",
         "joint system",
+        "fire caulk",
+        "fire caulking",
     ],
     "Coating/Painting": [
         "coating",
@@ -960,6 +986,9 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "primer",
         "topcoat",
         "corrosion",
+        "touch up",
+        "dull-scraper",
+        "scraper test",
     ],
     "Soil/Earthwork": [
         "soil",
@@ -1012,6 +1041,15 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "visual",
         "arch inspection",
         "architectural inspection",
+        "re-inspection",
+        "final inspection",
+        # Architectural/finishing
+        "architectural",
+        "door and hardware",
+        "door hardware",
+        "expansion joint",
+        "space joint",
+        "sqr pipe",
     ],
 }
 
