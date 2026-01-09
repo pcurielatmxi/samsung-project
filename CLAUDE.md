@@ -161,6 +161,50 @@ Returns: rooms whose grid bounds contain G/10
 - `dim_trade` - Trade/work type classification
 - `map_company_location` - Company work areas by period (derived from quality data)
 
+#### Monthly Reports Consolidation 🔄
+
+**Status:** In Development
+**Design:** [docs/plans/2026-01-09-monthly-reports-design.md](docs/plans/2026-01-09-monthly-reports-design.md)
+
+Monthly report system that consolidates all data sources for MXI internal analysis with LLM validation.
+
+**Workflow:**
+```
+1. Script consolidates data → consolidated_data.md (metrics, tables, source citations)
+2. LLM validates data quality → data_quality_notes.md (anomalies, verification)
+3. LLM writes summary → executive_summary.md (factual narrative, findings)
+```
+
+**Report Sections:**
+1. Schedule Progress & Delays - by location, trade; duration overages; critical path
+2. Labor Hours & Consumption - by location, trade, company; anomaly detection
+3. Quality Metrics & Issues - inspection pass/fail rates; failures by location/trade/company
+4. Narrative Statements - categorized (justified vs unjustified delays); validation questions
+5. Cross-Reference Analysis - quality→labor impact; quality→schedule impact; delay attribution
+
+**Output Location:** `data/analysis/monthly_reports/{YYYY-MM}/`
+
+**Scripts:** `scripts/integrated_analysis/monthly_reports/`
+
+| Script | Purpose |
+|--------|---------|
+| `consolidate_month.py` | Main entry point - generates consolidated_data.md |
+| `data_loaders/` | Source-specific data loading (P6, labor, quality, narratives) |
+| `analyzers/` | Section generators (schedule, labor, quality, statements, cross-ref) |
+| `output/markdown_writer.py` | Renders final markdown output |
+
+**Usage:**
+```bash
+# Single month
+python -m scripts.integrated_analysis.monthly_reports.consolidate_month 2024-03
+
+# All months
+python -m scripts.integrated_analysis.monthly_reports.consolidate_month --all
+
+# Date range
+python -m scripts.integrated_analysis.monthly_reports.consolidate_month --start 2023-01 --end 2023-12
+```
+
 ### Phase 3: Analysis & Conclusions (Planned)
 
 **Status:** Not Started
@@ -182,7 +226,8 @@ samsung-project/
 │   ├── EXECUTIVE_SUMMARY.md     # Analysis goals and status
 │   ├── SOURCES.md               # Data source inventory
 │   ├── DATA_SOURCE_NOTES.md     # Technical parsing notes
-│   └── analysis/                # Analysis documentation
+│   ├── analysis/                # Analysis documentation
+│   └── plans/                   # Design documents for new features
 ├── scripts/
 │   ├── shared/                  # Cross-source utilities (location model, standardization)
 │   ├── primavera/               # P6 XER parsing and analysis
@@ -194,6 +239,7 @@ samsung-project/
 │   ├── psi/                     # PSI scraper + document_processing config
 │   ├── narratives/              # Narratives document_processing config
 │   └── integrated_analysis/     # Phase 2 - cross-source integration
+│       └── monthly_reports/     # Monthly report consolidation scripts
 ├── src/
 │   ├── config/settings.py       # Path configuration
 │   ├── classifiers/             # WBS taxonomy classifier
