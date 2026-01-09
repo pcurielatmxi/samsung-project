@@ -12,6 +12,7 @@ Data source priority:
 
 import pandas as pd
 
+from .gridline_mapping import get_gridline_bounds, get_default_mapping
 from .mappings import (
     Z_TRADE_TO_DIM_TRADE,
     Z_BLDG_TO_CODE,
@@ -431,7 +432,7 @@ def infer_impact(row: pd.Series) -> dict:
     }
 
 
-def infer_all_fields(row: pd.Series) -> dict:
+def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
     """
     Infer all taxonomy fields for a single task row.
 
@@ -443,6 +444,7 @@ def infer_all_fields(row: pd.Series) -> dict:
 
     Args:
         row: Combined task context row with all required columns
+        gridline_mapping: Optional GridlineMapping instance for coordinate lookup
 
     Returns:
         Dict with all taxonomy fields and their sources
@@ -459,6 +461,14 @@ def infer_all_fields(row: pd.Series) -> dict:
     # Pass inferred location fields to location_type inference
     location_type, location_code = infer_location_type(row, building=building, level=level, area=area, room=room)
     impact = infer_impact(row)
+
+    # Get gridline bounds based on location type and building
+    gridline_bounds = get_gridline_bounds(
+        location_type=location_type,
+        location_code=location_code,
+        building=building,
+        mapping=gridline_mapping
+    )
 
     return {
         'task_id': row.get('task_id'),
@@ -493,6 +503,11 @@ def infer_all_fields(row: pd.Series) -> dict:
         # Location (unified type and code system)
         'location_type': location_type,
         'location_code': location_code,
+        # Gridline coordinates (from mapping or building inference)
+        'grid_row_min': gridline_bounds['grid_row_min'],
+        'grid_row_max': gridline_bounds['grid_row_max'],
+        'grid_col_min': gridline_bounds['grid_col_min'],
+        'grid_col_max': gridline_bounds['grid_col_max'],
         # Label (combined classification)
         'label': row.get('label'),
         # Impact tracking (inferred only, sparse)

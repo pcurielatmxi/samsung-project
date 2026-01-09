@@ -72,7 +72,7 @@ sys.path.insert(0, str(derive_dir))
 from src.utils.xer_parser import XERParser
 from src.config.settings import Settings
 from src.classifiers.task_classifier import TaskClassifier
-from task_taxonomy import build_task_context, infer_all_fields
+from task_taxonomy import build_task_context, infer_all_fields, get_default_mapping
 
 # Paths - use Settings for proper WINDOWS_DATA_DIR support
 XER_DIR = Settings.PRIMAVERA_RAW_DIR
@@ -413,6 +413,16 @@ def generate_task_taxonomy(
             verbose=verbose
         )
 
+        # Load gridline mapping for coordinate lookup
+        try:
+            gridline_mapping = get_default_mapping()
+            if verbose:
+                print(f"    Loaded gridline mapping with {len(gridline_mapping.lookup)} FAB codes")
+        except FileNotFoundError as e:
+            if verbose:
+                print(f"    Warning: Gridline mapping not found, proceeding without: {e}")
+            gridline_mapping = None
+
         # Generate taxonomy using full inference
         results = []
         total = len(context)
@@ -421,7 +431,7 @@ def generate_task_taxonomy(
             if verbose and idx % 50000 == 0 and idx > 0:
                 print(f"    Processed {idx:,}/{total:,} ({idx/total*100:.1f}%)")
 
-            result = infer_all_fields(row)
+            result = infer_all_fields(row, gridline_mapping=gridline_mapping)
             results.append(result)
 
         if verbose:

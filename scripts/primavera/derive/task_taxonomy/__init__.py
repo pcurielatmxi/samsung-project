@@ -50,6 +50,15 @@ from .extractors import (
     extract_gridline_from_task_name_and_area,
     normalize_level,
 )
+from .gridline_mapping import (
+    GridlineMapping,
+    get_default_mapping,
+    get_gridline_bounds,
+    get_row_range_for_building,
+    normalize_elevator_code,
+    normalize_stair_code,
+    normalize_room_code,
+)
 
 __all__ = [
     # Context building
@@ -88,4 +97,12 @@ __all__ = [
     'extract_stair_from_task_name',
     'extract_gridline_from_task_name_and_area',
     'normalize_level',
+    # Gridline mapping
+    'GridlineMapping',
+    'get_default_mapping',
+    'get_gridline_bounds',
+    'get_row_range_for_building',
+    'normalize_elevator_code',
+    'normalize_stair_code',
+    'normalize_room_code',
 ]
