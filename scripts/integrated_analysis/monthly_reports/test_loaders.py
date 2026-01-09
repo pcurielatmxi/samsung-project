@@ -35,16 +35,31 @@ def test_period(year_month: str) -> None:
     # Test each loader
     print("\n--- Schedule Data (P6) ---")
     schedule = load_schedule_data(period)
-    print(f"Tasks: {len(schedule['tasks']):,}")
+    overall = schedule['overall']
+    print(f"Total tasks: {overall.total_tasks:,}")
     print(f"Snapshots: {schedule['snapshots']}")
     print(f"Availability: {schedule['availability'].to_dict()}")
 
-    if not schedule['tasks'].empty:
-        df = schedule['tasks']
-        print(f"  Completed this period: {df['completed_this_period'].sum():,}")
-        print(f"  Started this period: {df['started_this_period'].sum():,}")
-        if 'building' in df.columns:
-            print(f"  Buildings: {df['building'].value_counts().head(3).to_dict()}")
+    if overall.total_tasks > 0:
+        print(f"  % Complete (start): {overall.pct_complete_start:.1f}%")
+        print(f"  % Complete (end): {overall.pct_complete_end:.1f}%")
+        print(f"  Change: {overall.pct_complete_change:+.1f}%")
+        print(f"  Completed this month: {overall.completed_this_month:,}")
+        print(f"  Tasks behind schedule: {overall.tasks_behind_schedule:,}")
+        print(f"  Tasks with negative float: {overall.tasks_with_negative_float:,}")
+
+    if schedule['by_floor']:
+        print(f"  Progress by floor: {len(schedule['by_floor'])} floors tracked")
+        top_floors = sorted(schedule['by_floor'], key=lambda x: x.completed_this_month, reverse=True)[:3]
+        for f in top_floors:
+            if f.completed_this_month > 0:
+                print(f"    {f.group_name}: +{f.completed_this_month} tasks completed")
+
+    if schedule['by_scope']:
+        print(f"  Progress by scope: {len(schedule['by_scope'])} scopes tracked")
+
+    if not schedule['delay_tasks'].empty:
+        print(f"  Delay-causing tasks: {len(schedule['delay_tasks'])}")
 
     print("\n--- Quality Data (RABA + PSI) ---")
     quality = load_quality_data(period)
@@ -150,7 +165,7 @@ def main():
                 labor = load_labor_data(period)
                 narratives = load_narrative_data(period)
 
-                print(f"{year_month:<10} {len(schedule['tasks']):>10,} {len(quality['inspections']):>10,} {len(labor['labor']):>10,} {len(narratives['statements']):>10,}")
+                print(f"{year_month:<10} {schedule['overall'].total_tasks:>10,} {len(quality['inspections']):>10,} {len(labor['labor']):>10,} {len(narratives['statements']):>10,}")
         else:
             for year_month in periods:
                 test_period(year_month)
