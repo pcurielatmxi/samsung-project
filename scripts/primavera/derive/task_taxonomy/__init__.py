@@ -50,7 +50,14 @@ from .extractors import (
     extract_gridline_from_task_name_and_area,
     normalize_level,
 )
-from .gridline_mapping import (
+# Gridline mapping is now in scripts/shared/ for cross-source usage
+import sys
+from pathlib import Path
+_shared_dir = Path(__file__).parent.parent.parent.parent / 'shared'
+if str(_shared_dir) not in sys.path:
+    sys.path.insert(0, str(_shared_dir))
+
+from gridline_mapping import (
     GridlineMapping,
     get_default_mapping,
     get_gridline_bounds,

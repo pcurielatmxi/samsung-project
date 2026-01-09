@@ -27,9 +27,33 @@ Create dimension tables and mapping tables that enable joining data across the 6
 | Table | Purpose | Key Fields |
 |-------|---------|------------|
 | `dim_company` | Master company list with aliases | company_id, canonical_name, aliases |
-| `dim_location` | Building + Level standardization | location_id, building, level |
+| `dim_location` | Building + Level + Grid bounds | location_id, building, level, grid_row_min/max, grid_col_min/max |
 | `dim_trade` | Trade/work type classification | trade_id, trade_code, trade_name |
 | `dim_time` | Calendar dimension | date_id, year, month, week |
+
+### Location Model
+
+The location dimension is powered by the **grid-based spatial model** in `scripts/shared/`:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       dim_location                               │
+│  location_code │ building │ level │ grid_row_min/max │ grid_col_min/max │
+├─────────────────────────────────────────────────────────────────┤
+│  FAB112345     │ SUE      │ 1F    │ B / E            │ 5 / 12           │
+│  ELV-01        │ SUE      │ MULTI │ C / C            │ 8 / 8            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Key Lookups:**
+- **Forward:** Room code → Grid bounds (for P6 tasks)
+- **Reverse:** Grid coordinate → Room(s) (for quality data with grids like "G/10")
+
+**Supporting Files:**
+- `scripts/shared/location_model.py` - High-level API
+- `scripts/shared/gridline_mapping.py` - Low-level grid lookup
+- `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Source mapping
+- `raw/location_mappings/location_master.csv` - Working location master
 
 ## Mapping Tables
 
@@ -68,10 +92,16 @@ data/derived/integrated_analysis/
 
 ## Integration Granularity
 
-The integration layer operates at **Building + Level** granularity:
+The integration layer operates at **two levels**:
+
+**Building + Level** (primary):
 - Sufficient coverage across all sources (66-98%)
-- Enables meaningful spatial analysis
-- Finer granularity (gridline, room) has inconsistent coverage
+- Used for company→location inference and aggregated metrics
+
+**Room + Grid** (when available):
+- Quality data (RABA/PSI) often includes grid coordinates
+- P6 tasks have room codes with grid bounds (from mapping)
+- Enables spatial join: quality inspections ↔ rooms via grid containment
 
 ## Data Traceability
 

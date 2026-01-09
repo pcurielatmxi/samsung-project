@@ -20,7 +20,8 @@ from typing import Optional
 import pandas as pd
 
 # Add project root to path for Settings import
-_project_root = Path(__file__).parent.parent.parent.parent.parent
+# scripts/shared/ is 2 levels deep from project root
+_project_root = Path(__file__).parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 

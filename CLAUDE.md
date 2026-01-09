@@ -36,22 +36,77 @@ Established data pipelines for 9 primary sources:
 
 ### Phase 2: Integrated Analysis 🔄
 
-**Status:** Planning Complete - Implementation Pending
+**Status:** In Progress
 
-**Goal:** Create dimension tables and mapping tables to enable cross-dataset analysis.
+**Goal:** Link all data sources through a unified location model to enable cross-dataset analysis.
 
-**Primary Objective:** Tie together Quality records and Hours data to Locations and Companies/Trades.
+**Primary Objective:** Answer "What quality issues occurred WHERE, by WHOM, and how much rework did they cause?"
 
-**Key Challenge:** Hours data (Weekly Labor, ProjectSight) lacks location fields. Solution uses company→location inference from P6 activity codes and TBM.
+#### The Integration Challenge
 
-**Documentation:** [scripts/integrated_analysis/PLAN.md](scripts/integrated_analysis/PLAN.md)
+Each data source has different location granularity:
 
-**Deliverables:**
+| Source | Location Data | Linkage Key |
+|--------|---------------|-------------|
+| P6 Tasks | Room codes (FAB112345), Building, Level | `location_code` |
+| RABA/PSI | Building, Level, Grid (e.g., G/10) | Grid coordinates |
+| Labor Hours | Company only | Company → Trade → Location inference |
+
+#### Solution: `dim_location` with Grid Bounds
+
+The centerpiece is a location dimension table where every room/elevator/stair has **grid bounds** (row_min/max, col_min/max). This enables:
+
+1. **Room → Grid**: Look up grid bounds for any room code
+2. **Grid → Room(s)**: Reverse lookup - find which rooms contain a grid coordinate
+3. **Company → Location**: Infer from quality inspection patterns (e.g., "Berg works drywall on SUE levels 2-4")
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       dim_location                               │
+│  location_code │ building │ level │ grid_row_min/max │ grid_col_min/max │
+├─────────────────────────────────────────────────────────────────┤
+│  FAB112345     │ SUE      │ 1F    │ B / E            │ 5 / 12           │
+│  ELV-S         │ SUW      │ 2F    │ L / M            │ 17 / 17          │
+│  ...           │          │       │                  │                  │
+└─────────────────────────────────────────────────────────────────┘
+         │                              │
+         ▼                              ▼
+┌─────────────────┐           ┌─────────────────┐
+│    P6 Tasks     │           │  Quality Data   │
+│ JOIN ON         │           │ SPATIAL JOIN    │
+│ location_code   │           │ WHERE grid IN   │
+│                 │           │ (row/col bounds)│
+└─────────────────┘           └─────────────────┘
+```
+
+#### Location Master Status
+
+| Location Type | Total | With Grid Bounds | Status |
+|---------------|-------|------------------|--------|
+| ROOM | 360 | ~60 | Needs manual lookup from drawings |
+| ELEVATOR | 13 | 13 | Complete |
+| STAIR | 25 | ~10 | Partial |
+| GRIDLINE | 35 | 35 | Auto-generated (full row span) |
+| LEVEL/AREA | 90 | N/A | Special cases |
+
+**Working File:** `raw/location_mappings/location_master.csv`
+**Grid Source:** `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx`
+
+#### Key Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/primavera/derive/generate_location_master.py` | Generate location master from P6 taxonomy |
+| `scripts/shared/gridline_mapping.py` | Low-level grid coordinate lookup |
+| `scripts/shared/location_model.py` | High-level location API (forward/reverse lookups) |
+| `scripts/shared/company_standardization.py` | Company/trade/category normalization |
+
+#### Deliverables
+
+- `dim_location` - All locations with grid bounds (in progress)
 - `dim_company` - Master company list with alias resolution
-- `dim_location` - Building + Level standardization
 - `dim_trade` - Trade/work type classification
-- `map_company_location` - Company work areas by period
-- Cross-source integration views
+- `map_company_location` - Company work areas by period (derived from quality data)
 
 ### Phase 3: Analysis & Conclusions (Planned)
 
@@ -76,6 +131,7 @@ samsung-project/
 │   ├── DATA_SOURCE_NOTES.md     # Technical parsing notes
 │   └── analysis/                # Analysis documentation
 ├── scripts/
+│   ├── shared/                  # Cross-source utilities (location model, standardization)
 │   ├── primavera/               # P6 XER parsing and analysis
 │   ├── weekly_reports/          # PDF report parsing
 │   ├── tbm/                     # TBM Excel parsing

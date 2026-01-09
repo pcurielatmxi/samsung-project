@@ -10,9 +10,17 @@ Data source priority:
 3. Task name inference (TaskClassifier) - last resort
 """
 
+import sys
+from pathlib import Path
+
 import pandas as pd
 
-from .gridline_mapping import get_gridline_bounds, get_default_mapping
+# Gridline mapping is now in scripts/shared/ for cross-source usage
+_shared_dir = Path(__file__).parent.parent.parent.parent / 'shared'
+if str(_shared_dir) not in sys.path:
+    sys.path.insert(0, str(_shared_dir))
+
+from gridline_mapping import get_gridline_bounds, get_default_mapping
 from .mappings import (
     Z_TRADE_TO_DIM_TRADE,
     Z_BLDG_TO_CODE,
