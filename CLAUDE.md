@@ -108,14 +108,26 @@ Coverage of dimension IDs (`dim_location_id`, `dim_company_id`, `dim_trade_id`) 
 
 | Source | Records | Location | Company | Trade | Notes |
 |--------|---------|----------|---------|-------|-------|
-| **RABA** | 9,391 | 98.6% | 82.8% | 99.4% | Quality inspections (RKCI) |
-| **PSI** | 6,309 | 97.9% | 79.3% | 96.7% | Quality inspections (Const Hive) |
+| **RABA** | 9,391 | 98.6% | 88.8% | 99.4% | Quality inspections (RKCI) |
+| **PSI** | 6,309 | 97.9% | 99.0% | 96.7% | Quality inspections (Const Hive) |
+| **TBM** | 13,539 | 91.5% | 98.2% | 37.7% | Daily plans - trade inferred from activities |
+| **ProjectSight** | 857,516 | - | 99.9% | 35.2% | Labor hours - no location data |
+| **Weekly Reports** | 10 | - | 100% | - | Aggregated labor by company only |
 | P6 Tasks | 470K | 97.6%* | N/A | 96.8% | *building only, level 93.5% |
-| ProjectSight | 857K | - | TBD | - | Labor hours - no location |
-| TBM | 13.5K | TBD | TBD | TBD | Daily plans with location |
-| Weekly Reports | 1.1K | TBD | TBD | TBD | Issues/progress |
 
-**Legend:** ✓ mapped, - not applicable, TBD to be implemented
+**Legend:** - not applicable/available in source
+
+**Notes:**
+- Trade coverage is lower for labor sources (TBM, ProjectSight) because trade is inferred from activity descriptions
+- Location is not available in ProjectSight or Weekly Reports labor data
+- Company mapping uses fuzzy matching with alias resolution (see `scripts/shared/dimension_lookup.py`)
+
+**Enriched Output Files:**
+- `processed/raba/raba_consolidated.csv` - RABA with dimension IDs
+- `processed/psi/psi_consolidated.csv` - PSI with dimension IDs
+- `processed/tbm/work_entries_enriched.csv` - TBM with dimension IDs
+- `processed/projectsight/labor_entries_enriched.csv` - ProjectSight with dimension IDs
+- `processed/weekly_reports/labor_detail_by_company_enriched.csv` - Weekly Reports with dimension IDs
 
 #### Deliverables
 

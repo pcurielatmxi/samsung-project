@@ -169,3 +169,50 @@ QUALITY,ABR,0,0.8,Quality - unknown abbreviation
 QUALITY,SP,23,0.9,Quality - likely Spectra abbreviation
 QUALITY,SnS,0,0.8,Quality - unknown (possibly SNS Erectors)
 QUALITY,C&B,0,0.8,Quality - unknown (possibly Cook & Boardman)
+QUALITY,Hensel Phelps,34,1.0,Quality - GC from RABA data
+QUALITY,HENSEL PHELPS,34,1.0,Quality - uppercase
+QUALITY,Austin Bridge,35,1.0,Quality - civil contractor
+QUALITY,AUSTIN BRIDGE,35,1.0,Quality - uppercase
+QUALITY,ABR,35,0.9,Quality - Austin Bridge abbreviation
+QUALITY,Axios,36,1.0,Quality - fire protection
+QUALITY,AXIOS,36,1.0,Quality - uppercase
+QUALITY,AMTS,37,1.0,Quality - testing company
+QUALITY,Amts,37,1.0,Quality - mixed case
+QUALITY,JP Hi-Tech,38,1.0,Quality - MEP/tech contractor
+QUALITY,JP HITECH,38,1.0,Quality - no dash
+QUALITY,JP HI-TECH,38,1.0,Quality - uppercase
+QUALITY,Lehne,39,1.0,Quality - contractor
+QUALITY,LEHNE,39,1.0,Quality - uppercase
+QUALITY,ABAR,40,1.0,Quality - contractor
+QUALITY,Abar,40,1.0,Quality - mixed case
+QUALITY,JMEG,41,1.0,Quality - MEP contractor
+QUALITY,Jmeg,41,1.0,Quality - mixed case
+QUALITY,Greenberry,42,1.0,Quality - steel contractor
+QUALITY,GREENBERRY,42,1.0,Quality - uppercase
+QUALITY,Gate Precast,43,1.0,Quality - precast
+QUALITY,GATE PRECAST,43,1.0,Quality - uppercase
+QUALITY,PCL,44,1.0,Quality - GC
+QUALITY,Pcl,44,1.0,Quality - mixed case
+QUALITY,McCarthy,45,1.0,Quality - GC
+QUALITY,MCCARTHY,45,1.0,Quality - uppercase
+QUALITY,North Star,46,1.0,Quality - steel
+QUALITY,NORTH STAR,46,1.0,Quality - uppercase
+QUALITY,CHP,47,1.0,Quality - inspection company
+QUALITY,BrandSafway,48,1.0,Quality - scaffolding
+QUALITY,BRANDSAFWAY,48,1.0,Quality - uppercase
+QUALITY,Chaparral,49,1.0,Quality - steel
+QUALITY,CHAPARRAL,49,1.0,Quality - uppercase
+QUALITY,Coreslab,50,1.0,Quality - precast
+QUALITY,CORESLAB,50,1.0,Quality - uppercase
+QUALITY,Jacobs,51,1.0,Quality - engineering
+QUALITY,JACOBS,51,1.0,Quality - uppercase
+QUALITY,McDean,52,1.0,Quality - MEP
+QUALITY,MCDEAN,52,1.0,Quality - uppercase
+QUALITY,SBTA,53,1.0,Quality - contractor
+QUALITY,Sbta,53,1.0,Quality - mixed case
+QUALITY,BRYCON,54,1.0,Quality - contractor
+QUALITY,Brycon,54,1.0,Quality - mixed case
+QUALITY,Steely Farms,55,1.0,Quality - contractor
+QUALITY,STEELY FARMS,55,1.0,Quality - uppercase
+QUALITY,Baker Triangle,56,1.0,Quality - firestop
+QUALITY,BAKER TRIANGLE,56,1.0,Quality - uppercase

@@ -7,6 +7,17 @@ description: Create MXI-branded PowerPoint presentations for Samsung Taylor FAB1
 
 Create professional PowerPoint presentations for the Samsung Taylor FAB1 delay analysis project.
 
+## Recent Updates (January 2026)
+
+**Styling Enhancements:**
+- Improved paragraph spacing: 4pt after bullet points (tighter, more professional)
+- Consistent font sizing across all slide types
+- Better caption sizing (11pt instead of 10pt for readability)
+- Professional spacing refinements based on design best practices
+
+**Note on Page Numbers:**
+Page numbers are hardcoded based on slide order during presentation generation. If you need auto-updating page numbers after editing, use PowerPoint's built-in feature: **Insert > Header & Footer > Slide Number**.
+
 ## CRITICAL: Data Traceability Requirements
 
 **Every claim in a presentation MUST be verifiable and traceable to source data.**
@@ -103,6 +114,25 @@ Logo files are automatically loaded from OneDrive:
 | Light Background | `UI/MXI Light Background.png` | Optional slide backgrounds |
 
 **Asset Location:** `/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/UI/`
+
+## Styling & Spacing
+
+The helper class includes professional spacing and typography refinements:
+
+**Paragraph Spacing:**
+- Bullet points: 0pt before, 4pt after (tight, professional spacing)
+- Sub-bullets: 0pt before, 3pt after
+- Column items (two-column slides): 0pt before, 4pt after
+- Captions: 11pt font size, word-wrapped
+
+**Font Consistency:**
+- Titles: Segoe UI, 28pt, bold
+- Column titles: Segoe UI, 16pt, bold
+- Body text: Segoe UI, 14-15pt
+- Captions: Segoe UI, 11pt, italic
+- Footer: Segoe UI, 12pt
+
+These settings are optimized based on professional presentation styling standards and provide better visual hierarchy and readability.
 
 ## MXI Brand Guidelines
 
@@ -326,10 +356,15 @@ Footer appears on a banner at the bottom of every slide (except title). Uses Seg
 - **Center aligned:** `[Report Title]  |  [Date mm/dd/yyyy]`
 - **Right side:** MXI logo
 
+**Page Numbering:**
 The footer is automatically added by `MXIPresentation` and includes:
-- Page number and project name (left)
+- **Page number:** Hardcoded based on slide order at generation time
+- Project name (left)
 - Report title and date (center)
 - MXI logo (right)
+
+**To Update Page Numbers After Editing:**
+If you add or remove slides after generation, use PowerPoint's **Insert > Header & Footer** dialog to replace hardcoded numbers with auto-updating slide numbers.
 
 ## Complete Example
 

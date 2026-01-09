@@ -357,8 +357,8 @@ class MXIPresentation:
             p.font.size = Pt(15)
             p.font.color.rgb = MXIColors.DARK_GRAY
             p.font.name = "Segoe UI"
-            p.space_before = Pt(5)
-            p.space_after = Pt(5)
+            p.space_before = Pt(0)
+            p.space_after = Pt(4)  # Tighter spacing for professional look
             p.level = 0
 
             # Add sub-bullets if present
@@ -370,7 +370,7 @@ class MXIPresentation:
                     sp.font.color.rgb = MXIColors.GRAY
                     sp.font.name = "Segoe UI"
                     sp.level = 1
-                    sp.space_before = Pt(3)
+                    sp.space_before = Pt(0)
                     sp.space_after = Pt(3)
 
         self._add_slide_footer(slide)
@@ -381,8 +381,8 @@ class MXIPresentation:
         for i, item in enumerate(content):
             p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
             p.level = 0
-            p.space_before = Pt(2)
-            p.space_after = Pt(2)
+            p.space_before = Pt(0)
+            p.space_after = Pt(4)  # Consistent with bullet point spacing
 
             # Check for icons at the start and apply colors
             icon = None
@@ -513,13 +513,16 @@ class MXIPresentation:
                 Inches(0.5), Inches(6.5), Inches(12.333), Inches(0.3)
             )
             tf = caption_box.text_frame
+            tf.word_wrap = True
             p = tf.paragraphs[0]
             p.text = caption
-            p.font.size = Pt(10)
+            p.font.size = Pt(11)  # Slightly larger for better readability
             p.font.italic = True
             p.font.color.rgb = MXIColors.LIGHT_GRAY
             p.font.name = "Segoe UI"
             p.alignment = PP_ALIGN.CENTER
+            p.space_before = Pt(0)
+            p.space_after = Pt(0)
 
         self._add_slide_footer(slide)
         return slide

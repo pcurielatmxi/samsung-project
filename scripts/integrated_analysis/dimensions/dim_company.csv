@@ -33,3 +33,26 @@ company_id,canonical_name,short_code,tier,primary_trade_id,notes
 31,Bernco,BERNCO,T1_SUB,,Unknown trade - from P6 Z-SUB
 32,H2I Group,H2I,T1_SUB,,Unknown trade - from P6 Z-SUB
 33,Select Prefab,SELECT_PREFAB,T1_SUB,,Prefabrication - from P6 Z-SUB
+34,Hensel Phelps,HENSEL_PHELPS,GC,12,General contractor - from quality data
+35,Austin Bridge & Road,AUSTIN_BRIDGE,T1_SUB,1,Bridge and civil contractor
+36,Axios Industrial,AXIOS,T1_SUB,6,Fire protection and firestop
+37,AMTS (Advanced Material Testing),AMTS,TESTING,,Third-party testing company
+38,JP Hi-Tech,JP_HITECH,T1_SUB,7,MEP/technology contractor
+39,Lehne Construction,LEHNE,T1_SUB,,Contractor from quality data
+40,ABAR,ABAR,T1_SUB,,Contractor from quality data
+41,JMEG,JMEG,T1_SUB,7,MEP contractor
+42,Greenberry Industrial,GREENBERRY,T1_SUB,2,Steel and industrial contractor
+43,Gate Precast,GATE_PRECAST,T1_SUB,10,Precast concrete manufacturer
+44,PCL Construction,PCL,GC,12,General contractor
+45,McCarthy Building Companies,MCCARTHY,GC,12,General contractor
+46,North Star Steel,NORTH_STAR,T1_SUB,2,Steel contractor
+47,CHP (Construction Hive PSI),CHP,INSPECTOR,,Inspection company
+48,BrandSafway,BRANDSAFWAY,T1_SUB,,Scaffolding and access services
+49,Chaparral Steel,CHAPARRAL,T1_SUB,2,Steel contractor
+50,Coreslab Structures,CORESLAB,T1_SUB,10,Precast concrete
+51,Jacobs Engineering,JACOBS,CONSULTANT,,Engineering consultant
+52,McDean,MCDEAN,T1_SUB,7,MEP contractor
+53,SBTA,SBTA,T1_SUB,,Contractor from quality data
+54,BRYCON,BRYCON,T1_SUB,,Contractor from quality data
+55,Steely Farms,STEELY_FARMS,T1_SUB,,Contractor from quality data
+56,Baker Triangle,BAKER_TRIANGLE,T1_SUB,6,Firestop contractor (related to Baker)

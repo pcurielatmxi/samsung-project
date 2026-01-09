@@ -189,9 +189,11 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     # Dimension lookups for integration
     building = content.get('building')
     dim_location_id = get_location_id(building, level_std)
-    # For company, prefer subcontractor (actual work performer), fall back to contractor
-    company_for_lookup = subcontractor_std or contractor_std
-    dim_company_id = get_company_id(company_for_lookup)
+    # For company, prefer contractor (subcontractor often contains person names)
+    # Try contractor first, then subcontractor if contractor lookup fails
+    dim_company_id = get_company_id(contractor_std)
+    if dim_company_id is None and subcontractor_std:
+        dim_company_id = get_company_id(subcontractor_std)
     # For trade, use the inferred/standardized trade name
     dim_trade_id = get_trade_id(trade_std)
     dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
