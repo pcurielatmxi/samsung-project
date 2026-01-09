@@ -58,15 +58,32 @@ def load_schedule_data(period: MonthlyPeriod) -> Dict[str, Any]:
     taxonomy_path = Settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv'
     if taxonomy_path.exists():
         taxonomy = pd.read_csv(taxonomy_path, low_memory=False)
-        # Merge on task_id or task_code
+        # Merge on task_id - use actual column names from taxonomy
         if 'task_id' in taxonomy.columns and 'task_id' in tasks.columns:
+            # Select columns that exist in taxonomy
+            taxonomy_cols = ['task_id', 'building', 'level', 'location_type', 'location_code']
+            # Add trade columns if they exist (taxonomy uses trade_code/trade_name, not trade)
+            if 'trade_code' in taxonomy.columns:
+                taxonomy_cols.append('trade_code')
+            if 'trade_name' in taxonomy.columns:
+                taxonomy_cols.append('trade_name')
+
+            available_cols = [c for c in taxonomy_cols if c in taxonomy.columns]
             tasks = tasks.merge(
-                taxonomy[['task_id', 'building', 'level', 'trade', 'location_type',
-                          'location_code', 'building_level']],
+                taxonomy[available_cols],
                 on='task_id',
                 how='left',
                 suffixes=('', '_taxonomy')
             )
+
+            # Create building_level composite column if we have both
+            if 'building' in tasks.columns and 'level' in tasks.columns:
+                tasks['building_level'] = tasks['building'].fillna('') + '-' + tasks['level'].fillna('')
+                tasks.loc[tasks['building_level'] == '-', 'building_level'] = None
+
+            # Create trade alias for compatibility
+            if 'trade_code' in tasks.columns and 'trade' not in tasks.columns:
+                tasks['trade'] = tasks['trade_code']
 
     # Filter to tasks active during period
     # Active = (started before period ends) AND (not completed before period starts)
