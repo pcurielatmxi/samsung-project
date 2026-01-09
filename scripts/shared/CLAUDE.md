@@ -49,6 +49,37 @@ Low-level gridline coordinate lookup from FAB code mapping file.
 
 **Used by:** P6 task taxonomy, location_model.py
 
+### `dimension_lookup.py`
+
+Dimension ID lookups for cross-source integration. Maps raw values to dimension table IDs.
+
+**Functions:**
+| Function | Purpose |
+|----------|---------|
+| `get_location_id(building, level)` | Building+Level → dim_location_id (e.g., "SUE-1F") |
+| `get_company_id(name)` | Company name → dim_company_id (fuzzy matching) |
+| `get_trade_id(name)` | Trade/category → dim_trade_id |
+| `get_trade_code(trade_id)` | Trade ID → trade code |
+| `enrich_dataframe(df, ...)` | Add all dimension IDs to dataframe |
+
+**Usage:**
+```python
+from dimension_lookup import get_location_id, get_company_id, get_trade_id
+
+# Location lookup
+loc_id = get_location_id('SUE', '1F')  # → 'SUE-1F'
+
+# Company lookup (fuzzy matching)
+company_id = get_company_id('Berg')  # → 4
+company_id = get_company_id('Samsung E&C')  # → 1
+
+# Trade lookup
+trade_id = get_trade_id('Drywall')  # → 4
+trade_id = get_trade_id('Firestop')  # → 6
+```
+
+**Used by:** RABA consolidation, PSI consolidation
+
 ### `location_model.py`
 
 High-level location API for cross-source integration.

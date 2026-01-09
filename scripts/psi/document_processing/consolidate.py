@@ -30,6 +30,12 @@ from scripts.shared.company_standardization import (
     categorize_failure_reason,
     infer_trade_from_inspection_type,
 )
+from scripts.shared.dimension_lookup import (
+    get_location_id,
+    get_company_id,
+    get_trade_id,
+    get_trade_code,
+)
 
 
 # Validation rules
@@ -180,6 +186,16 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     failure_reason = content.get('failure_reason')
     failure_category = categorize_failure_reason(failure_reason) if failure_reason else None
 
+    # Dimension lookups for integration
+    building = content.get('building')
+    dim_location_id = get_location_id(building, level_std)
+    # For company, prefer subcontractor (actual work performer), fall back to contractor
+    company_for_lookup = subcontractor_std or contractor_std
+    dim_company_id = get_company_id(company_for_lookup)
+    # For trade, use the inferred/standardized trade name
+    dim_trade_id = get_trade_id(trade_std)
+    dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
+
     # Build flat record
     return {
         # Identification
@@ -230,6 +246,12 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         # Issues (flattened)
         'issues': issues_text,
         'issue_count': len(issues_list) if issues_list else 0,
+
+        # Dimension IDs (for integration)
+        'dim_location_id': dim_location_id,
+        'dim_company_id': dim_company_id,
+        'dim_trade_id': dim_trade_id,
+        'dim_trade_code': dim_trade_code,
     }
 
 
@@ -300,6 +322,28 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
         json.dump(report, f, indent=2)
     print(f"Wrote validation report to: {report_path}")
 
+    # Calculate dimension coverage
+    import pandas as pd
+    df = pd.DataFrame(flat_records)
+    dim_coverage = {
+        'location': {
+            'mapped': int(df['dim_location_id'].notna().sum()),
+            'total': len(df),
+            'pct': df['dim_location_id'].notna().mean() * 100
+        },
+        'company': {
+            'mapped': int(df['dim_company_id'].notna().sum()),
+            'total': len(df),
+            'pct': df['dim_company_id'].notna().mean() * 100
+        },
+        'trade': {
+            'mapped': int(df['dim_trade_id'].notna().sum()),
+            'total': len(df),
+            'pct': df['dim_trade_id'].notna().mean() * 100
+        }
+    }
+    report['dimension_coverage'] = dim_coverage
+
     # Print summary
     print("\n" + "=" * 60)
     print("CONSOLIDATION SUMMARY")
@@ -307,6 +351,10 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
     print(f"Total records:   {len(records)}")
     print(f"Valid records:   {valid_count} ({valid_count / len(records) * 100:.1f}%)")
     print(f"Invalid records: {len(validation_issues)} ({len(validation_issues) / len(records) * 100:.1f}%)")
+
+    print("\nDimension Coverage:")
+    for dim_name, stats in dim_coverage.items():
+        print(f"  {dim_name}: {stats['mapped']}/{stats['total']} ({stats['pct']:.1f}%)")
 
     if report['issues_by_type']:
         print("\nTop validation issues:")

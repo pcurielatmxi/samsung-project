@@ -100,6 +100,22 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 | `scripts/shared/gridline_mapping.py` | Low-level grid coordinate lookup |
 | `scripts/shared/location_model.py` | High-level location API (forward/reverse lookups) |
 | `scripts/shared/company_standardization.py` | Company/trade/category normalization |
+| `scripts/shared/dimension_lookup.py` | Dimension ID lookups for integration |
+
+#### Dimension Mapping Coverage
+
+Coverage of dimension IDs (`dim_location_id`, `dim_company_id`, `dim_trade_id`) by data source:
+
+| Source | Records | Location | Company | Trade | Notes |
+|--------|---------|----------|---------|-------|-------|
+| **RABA** | 9,391 | 98.6% | 82.8% | 99.4% | Quality inspections (RKCI) |
+| **PSI** | 6,309 | 97.9% | 79.3% | 96.7% | Quality inspections (Const Hive) |
+| P6 Tasks | 470K | 97.6%* | N/A | 96.8% | *building only, level 93.5% |
+| ProjectSight | 857K | - | TBD | - | Labor hours - no location |
+| TBM | 13.5K | TBD | TBD | TBD | Daily plans with location |
+| Weekly Reports | 1.1K | TBD | TBD | TBD | Issues/progress |
+
+**Legend:** ✓ mapped, - not applicable, TBD to be implemented
 
 #### Deliverables
 
