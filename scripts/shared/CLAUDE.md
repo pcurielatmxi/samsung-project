@@ -55,8 +55,8 @@ Dimension ID lookups for cross-source integration. Maps raw values to dimension 
 
 **Data Location:** Dimension tables are in the external data folder:
 ```
-{WINDOWS_DATA_DIR}/derived/integrated_analysis/dimensions/
-{WINDOWS_DATA_DIR}/derived/integrated_analysis/mappings/
+{WINDOWS_DATA_DIR}/processed/integrated_analysis/dimensions/
+{WINDOWS_DATA_DIR}/processed/integrated_analysis/mappings/
 ```
 
 **Functions:**

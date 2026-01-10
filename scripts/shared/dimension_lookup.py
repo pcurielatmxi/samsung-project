@@ -4,10 +4,14 @@ Dimension Lookup Module
 Provides functions to map raw data values to dimension table IDs.
 Used by all data source consolidation scripts for consistent integration.
 
-Dimension Tables (from derived/integrated_analysis/dimensions/):
+Dimension Tables (from processed/integrated_analysis/dimensions/):
 - dim_location: location codes (rooms, elevators, stairs) with grid bounds
 - dim_company: company name → company_id
 - dim_trade: trade/category → trade_id
+
+Mapping Tables (from processed/integrated_analysis/mappings/):
+- map_company_aliases: company name variants → company_id
+- map_projectsight_trade: ProjectSight trade names → dim_trade_id
 
 Location Lookup:
 - get_location_id(building, level) → building_level string (e.g., "FAB-1F")
@@ -27,9 +31,9 @@ sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
 
-# Dimension tables are stored in derived data folder (external)
-_dimensions_dir = settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
-_mappings_dir = settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'mappings'
+# Dimension tables are stored in processed data folder (external)
+_dimensions_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+_mappings_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings'
 
 
 # Cached dimension data
@@ -377,6 +381,26 @@ TRADE_NAME_TO_ID: Dict[str, int] = {
     'general': 12,
     'general conditions': 12,
     'visual/general': 12,
+    'general requirements': 12,
+    'existing conditions': 12,
+    'special construction': 12,
+    'transportation': 12,
+
+    # Masonry (trade_id=13)
+    'masonry': 13,
+    'cmu': 13,
+    'block': 13,
+    'brick': 13,
+
+    # ProjectSight-specific mappings (CSI divisions)
+    'metals': 2,  # CSI Div 05 - Metals = Structural Steel
+    'iron': 2,  # Iron work is steel/metal work
+    'thermal and moisture protection': 8,  # CSI Div 07 - Insulation
+    'openings': 5,  # CSI Div 08 - Doors, windows = Finishes
+    'equipment': 7,  # CSI Div 11 - Equipment = MEP
+    'furnishings': 5,  # CSI Div 12 - Furnishings = Finishes
+    'woods, plastics, and composites': 4,  # CSI Div 06 = Drywall/framing
+    'specialties': 5,  # CSI Div 10 = Finishes
 }
 
 

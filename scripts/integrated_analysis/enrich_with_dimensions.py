@@ -261,29 +261,47 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     )
     df['dim_company_id'] = df['tier2_sc'].apply(get_company_id)
 
-    # Infer trade from work activities (simplified mapping)
+    # Infer trade from work activities (enhanced mapping)
     def infer_trade_from_activity(activity):
         if pd.isna(activity):
             return None
         activity_lower = str(activity).lower()
-        if any(x in activity_lower for x in ['concrete', 'pour', 'slab', 'form', 'strip']):
+        # Concrete (trade_id=1)
+        if any(x in activity_lower for x in ['concrete', 'pour', 'slab', 'form', 'strip', 'rebar', 'topping', 'placement', 'cure', 'finishing']):
             return 'Concrete'
-        if any(x in activity_lower for x in ['steel', 'erect', 'deck', 'weld']):
+        # Structural Steel (trade_id=2)
+        if any(x in activity_lower for x in ['steel', 'erect', 'deck', 'weld', 'bolt', 'connection', 'joist', 'truss', 'iron']):
             return 'Structural Steel'
-        if any(x in activity_lower for x in ['drywall', 'frame', 'stud', 'gyp']):
-            return 'Drywall'
-        if any(x in activity_lower for x in ['paint', 'coat', 'finish']):
-            return 'Finishes'
-        if any(x in activity_lower for x in ['fireproof', 'firestop', 'sfrm']):
-            return 'Fire Protection'
-        if any(x in activity_lower for x in ['insul']):
-            return 'Insulation'
-        if any(x in activity_lower for x in ['roof', 'membrane']):
+        # Roofing (trade_id=3)
+        if any(x in activity_lower for x in ['roof', 'membrane', 'waterproof', 'eifs']):
             return 'Roofing'
-        if any(x in activity_lower for x in ['panel', 'clad']):
-            return 'Panels'
-        if any(x in activity_lower for x in ['mep', 'hvac', 'plumb', 'elec', 'pipe']):
+        # Drywall (trade_id=4)
+        if any(x in activity_lower for x in ['drywall', 'frame', 'stud', 'gyp', 'gypsum', 'framing', 'shaft', 'ceiling grid', 'metal track', 'sheathing']):
+            return 'Drywall'
+        # Finishes (trade_id=5)
+        if any(x in activity_lower for x in ['paint', 'coat', 'finish', 'tile', 'floor', 'ceiling', 'door', 'hardware', 'casework', 'glazing', 'window']):
+            return 'Finishes'
+        # Fire Protection (trade_id=6)
+        if any(x in activity_lower for x in ['fireproof', 'firestop', 'sfrm', 'fire caulk', 'intumescent', 'fire rating', 'fire barrier']):
+            return 'Fire Protection'
+        # MEP (trade_id=7)
+        if any(x in activity_lower for x in ['mep', 'hvac', 'plumb', 'elec', 'pipe', 'conduit', 'duct', 'wire', 'electrical', 'mechanical', 'sprinkler']):
             return 'MEP'
+        # Insulation (trade_id=8)
+        if any(x in activity_lower for x in ['insul', 'thermal', 'urethane', 'wrap']):
+            return 'Insulation'
+        # Earthwork (trade_id=9)
+        if any(x in activity_lower for x in ['excavat', 'backfill', 'grade', 'foundation', 'pier', 'pile', 'earth']):
+            return 'Earthwork'
+        # Precast (trade_id=10)
+        if any(x in activity_lower for x in ['precast', 'tilt', 'pc panel']):
+            return 'Precast'
+        # Panels (trade_id=11)
+        if any(x in activity_lower for x in ['panel', 'clad', 'skin', 'enclosure', 'metal wall']):
+            return 'Panels'
+        # Masonry (trade_id=13)
+        if any(x in activity_lower for x in ['masonry', 'cmu', 'block', 'brick', 'grout']):
+            return 'Masonry'
         return None
 
     df['trade_inferred'] = df['work_activities'].apply(infer_trade_from_activity)
