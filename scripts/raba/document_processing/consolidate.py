@@ -5,6 +5,9 @@ Consolidate RABA cleaned JSON records into a single CSV.
 Reads all *.clean.json files from the clean stage output and combines them
 into a single CSV file with flattened structure for analysis.
 
+Uses the unified QC inspection schema (shared with PSI) to enable direct
+append in Power BI without transformation.
+
 Also generates a validation report flagging data quality issues.
 """
 
@@ -36,6 +39,7 @@ from scripts.shared.dimension_lookup import (
     parse_grid_field,
     normalize_grid,
 )
+from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
 
 
 # Validation rules
@@ -199,7 +203,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     grid_normalized = normalize_grid(grid_raw)
     grid_parsed = parse_grid_field(grid_raw)
 
-    # Build flat record
+    # Build flat record using UNIFIED column names
     return {
         # Identification
         'inspection_id': content.get('inspection_id'),
@@ -209,10 +213,10 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'report_date': content.get('report_date'),
         'report_date_normalized': content.get('report_date_normalized'),
 
-        # Test type
-        'test_type': test_type,
-        'test_type_normalized': content.get('test_type_normalized'),
-        'test_category': test_category,
+        # Inspection type (unified naming: test_type -> inspection_type)
+        'inspection_type': test_type,
+        'inspection_type_normalized': content.get('test_type_normalized'),
+        'inspection_category': test_category,
 
         # Location
         'location_raw': location_raw,
@@ -233,10 +237,13 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'failure_category': failure_category,
         'summary': content.get('summary'),
 
-        # Test counts
+        # Test counts (RABA-specific)
         'tests_total': tests_total,
         'tests_passed': tests_passed,
         'tests_failed': tests_failed,
+
+        # Deficiency count (PSI-specific - always None for RABA)
+        'deficiency_count': None,
 
         # Follow-up
         'reinspection_required': content.get('reinspection_required'),
@@ -246,12 +253,16 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'inspector_raw': inspector,
         'contractor_raw': contractor,
         'testing_company_raw': testing_company,
+        'subcontractor_raw': None,  # PSI-specific
+        'trade_raw': None,  # PSI-specific
         'engineer': engineer,
 
         # Parties (standardized)
         'inspector': inspector_std,
         'contractor': contractor_std,
         'testing_company': testing_company_std,
+        'subcontractor': None,  # PSI-specific
+        'trade': None,  # PSI-specific
 
         # Issues (flattened)
         'issues': issues_text,
@@ -304,16 +315,15 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
         else:
             valid_count += 1
 
-    # Write CSV
-    output_dir.mkdir(parents=True, exist_ok=True)
-    csv_path = output_dir / "raba_consolidated.csv"
+    # Apply unified schema and write CSV to 4.consolidate folder
+    consolidate_dir = output_dir / "4.consolidate"
+    consolidate_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = consolidate_dir / "raba_qc_inspections.csv"
 
     if flat_records:
-        fieldnames = list(flat_records[0].keys())
-        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(flat_records)
+        # Apply unified schema to ensure consistent column order with PSI
+        df = apply_unified_schema(flat_records, source='RABA')
+        df.to_csv(csv_path, index=False)
         print(f"Wrote {len(flat_records)} records to: {csv_path}")
 
     # Write validation report

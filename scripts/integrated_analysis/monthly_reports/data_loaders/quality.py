@@ -1,6 +1,7 @@
 """Quality inspection data loader (RABA + PSI).
 
-Loads and combines quality inspection data from both third-party QC sources.
+Loads quality inspection data from RABA and PSI files which share an
+identical unified schema (same columns in same order) for easy append.
 """
 
 import sys
@@ -15,28 +16,21 @@ from src.config.settings import Settings
 from .base import MonthlyPeriod, DataAvailability, filter_by_period, get_date_range
 
 
-def _load_raba(period: MonthlyPeriod) -> tuple[pd.DataFrame, DataAvailability]:
-    """Load RABA inspection data for period."""
-    raba_path = Settings.RABA_PROCESSED_DIR / 'raba_consolidated.csv'
-
-    if not raba_path.exists():
+def _load_qc_file(path: Path, source: str, period: MonthlyPeriod) -> tuple[pd.DataFrame, DataAvailability]:
+    """Load a QC inspection file for period."""
+    if not path.exists():
         return pd.DataFrame(), DataAvailability(
-            source='RABA',
+            source=source,
             period=period,
             record_count=0,
             coverage_notes=['File not found'],
         )
 
-    df = pd.read_csv(raba_path, low_memory=False)
+    df = pd.read_csv(path, low_memory=False)
     df['report_date'] = pd.to_datetime(df['report_date'], errors='coerce')
 
     # Filter to period
     filtered = filter_by_period(df, 'report_date', period)
-
-    # Standardize columns for combined output
-    filtered['source'] = 'RABA'
-    filtered['inspection_type'] = filtered.get('test_type_normalized', filtered.get('test_type', ''))
-    filtered['inspection_category'] = filtered.get('test_category', '')
 
     # Coverage notes
     notes = []
@@ -53,51 +47,7 @@ def _load_raba(period: MonthlyPeriod) -> tuple[pd.DataFrame, DataAvailability]:
             notes.append(f"Missing {len(missing_days)} days")
 
     availability = DataAvailability(
-        source='RABA',
-        period=period,
-        record_count=len(filtered),
-        date_range=date_range,
-        coverage_notes=notes,
-    )
-
-    return filtered, availability
-
-
-def _load_psi(period: MonthlyPeriod) -> tuple[pd.DataFrame, DataAvailability]:
-    """Load PSI inspection data for period."""
-    psi_path = Settings.PSI_PROCESSED_DIR / 'psi_consolidated.csv'
-
-    if not psi_path.exists():
-        return pd.DataFrame(), DataAvailability(
-            source='PSI',
-            period=period,
-            record_count=0,
-            coverage_notes=['File not found'],
-        )
-
-    df = pd.read_csv(psi_path, low_memory=False)
-    df['report_date'] = pd.to_datetime(df['report_date'], errors='coerce')
-
-    # Filter to period
-    filtered = filter_by_period(df, 'report_date', period)
-
-    # Standardize columns for combined output
-    filtered['source'] = 'PSI'
-    filtered['inspection_type'] = filtered.get('inspection_type_normalized', filtered.get('inspection_type', ''))
-    filtered['inspection_category'] = filtered.get('inspection_category', '')
-
-    # Standardize outcome column (PSI may use different values)
-    if 'outcome' not in filtered.columns and 'status' in filtered.columns:
-        filtered['outcome'] = filtered['status']
-
-    # Coverage notes
-    notes = []
-    date_range = get_date_range(filtered, 'report_date')
-    if date_range:
-        notes.append(f"Dates: {date_range[0]} to {date_range[1]}")
-
-    availability = DataAvailability(
-        source='PSI',
+        source=source,
         period=period,
         record_count=len(filtered),
         date_range=date_range,
@@ -110,7 +60,8 @@ def _load_psi(period: MonthlyPeriod) -> tuple[pd.DataFrame, DataAvailability]:
 def load_quality_data(period: MonthlyPeriod) -> Dict[str, Any]:
     """Load combined quality inspection data for a monthly period.
 
-    Combines RABA and PSI data with standardized columns.
+    Both RABA and PSI files use the unified QC inspection schema with
+    identical columns, so they can be directly concatenated.
 
     Args:
         period: Monthly period to filter by
@@ -122,41 +73,34 @@ def load_quality_data(period: MonthlyPeriod) -> Dict[str, Any]:
         - 'psi': PSI-only DataFrame
         - 'availability': List of DataAvailability for each source
     """
-    raba_df, raba_avail = _load_raba(period)
-    psi_df, psi_avail = _load_psi(period)
+    # Load both sources (both have unified schema)
+    # Try 4.consolidate folder first, fall back to old locations
+    raba_path = Settings.RABA_PROCESSED_DIR / '4.consolidate' / 'raba_qc_inspections.csv'
+    if not raba_path.exists():
+        raba_path = Settings.RABA_PROCESSED_DIR / 'raba_consolidated.csv'
 
-    # Common columns for combined view
-    common_cols = [
-        'inspection_id', 'report_date', 'source',
-        'building', 'level', 'grid', 'area',
-        'dim_location_id', 'dim_company_id', 'dim_trade_id', 'dim_trade_code',
-        'outcome', 'inspection_type', 'inspection_category',
-        'contractor', 'inspector',
-        'failure_reason', 'failure_category', 'reinspection_required',
-        'tests_total', 'tests_passed', 'tests_failed', 'issue_count',
-    ]
+    psi_path = Settings.PSI_PROCESSED_DIR / '4.consolidate' / 'psi_qc_inspections.csv'
+    if not psi_path.exists():
+        psi_path = Settings.PSI_PROCESSED_DIR / 'psi_consolidated.csv'
 
-    # Build combined DataFrame with available columns
-    combined_dfs = []
+    raba_df, raba_avail = _load_qc_file(raba_path, 'RABA', period)
+    psi_df, psi_avail = _load_qc_file(psi_path, 'PSI', period)
 
-    for df in [raba_df, psi_df]:
-        if not df.empty:
-            # Select columns that exist
-            available_cols = [c for c in common_cols if c in df.columns]
-            combined_dfs.append(df[available_cols])
-
-    if combined_dfs:
-        combined = pd.concat(combined_dfs, ignore_index=True)
+    # Combine - both have identical schema so direct concat works
+    dfs_to_combine = [df for df in [raba_df, psi_df] if not df.empty]
+    if dfs_to_combine:
+        combined = pd.concat(dfs_to_combine, ignore_index=True)
     else:
-        combined = pd.DataFrame(columns=common_cols)
+        combined = pd.DataFrame()
 
     # Normalize outcome values
     outcome_map = {
         'PASS': 'PASS', 'Pass': 'PASS', 'pass': 'PASS', 'PASSED': 'PASS',
         'FAIL': 'FAIL', 'Fail': 'FAIL', 'fail': 'FAIL', 'FAILED': 'FAIL',
         'PARTIAL': 'PARTIAL', 'Partial': 'PARTIAL',
+        'CANCELLED': 'CANCELLED', 'Cancelled': 'CANCELLED',
     }
-    if 'outcome' in combined.columns:
+    if not combined.empty and 'outcome' in combined.columns:
         combined['outcome_normalized'] = combined['outcome'].map(
             lambda x: outcome_map.get(str(x).strip(), 'OTHER') if pd.notna(x) else 'UNKNOWN'
         )

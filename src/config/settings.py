@@ -162,6 +162,13 @@ class Settings:
     NARRATIVES_DERIVED_DIR = DERIVED_DATA_DIR / 'narratives'
     NARRATIVES_ANALYSIS_DIR = ANALYSIS_DIR / 'narratives'
 
+    # ============================================================================
+    # Integrated Analysis paths (combined data from multiple sources)
+    # ============================================================================
+    INTEGRATED_PROCESSED_DIR = PROCESSED_DATA_DIR / 'integrated'
+    INTEGRATED_DERIVED_DIR = DERIVED_DATA_DIR / 'integrated'
+    INTEGRATED_ANALYSIS_DIR = ANALYSIS_DIR / 'integrated'
+
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 
@@ -232,7 +239,7 @@ class Settings:
         print("  derived   = includes assumptions/inference (NOT fully traceable)")
         print()
 
-        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi', 'narratives']
+        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi', 'narratives', 'integrated']
         for source in sources:
             raw_attr = f"{source.upper()}_RAW_DIR"
             proc_attr = f"{source.upper()}_PROCESSED_DIR"
@@ -297,6 +304,10 @@ class Settings:
             cls.NARRATIVES_PROCESSED_DIR,
             cls.NARRATIVES_DERIVED_DIR,
             cls.NARRATIVES_ANALYSIS_DIR,
+            # Integrated Analysis
+            cls.INTEGRATED_PROCESSED_DIR,
+            cls.INTEGRATED_DERIVED_DIR,
+            cls.INTEGRATED_ANALYSIS_DIR,
         ]
         for dir_path in dirs_to_create:
             dir_path.mkdir(parents=True, exist_ok=True)

@@ -5,6 +5,9 @@ Consolidate PSI cleaned JSON records into a single CSV.
 Reads all *.clean.json files from the clean stage output and combines them
 into a single CSV file with flattened structure for analysis.
 
+Uses the unified QC inspection schema (shared with RABA) to enable direct
+append in Power BI without transformation.
+
 Also generates a validation report flagging data quality issues.
 """
 
@@ -38,6 +41,7 @@ from scripts.shared.dimension_lookup import (
     parse_grid_field,
     normalize_grid,
 )
+from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
 
 
 # Validation rules
@@ -205,7 +209,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     grid_normalized = normalize_grid(grid_raw)
     grid_parsed = parse_grid_field(grid_raw)
 
-    # Build flat record
+    # Build flat record using UNIFIED column names
     return {
         # Identification
         'inspection_id': content.get('inspection_id'),
@@ -239,20 +243,30 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'failure_category': failure_category,
         'summary': content.get('summary'),
 
+        # Test counts (RABA-specific - always None for PSI)
+        'tests_total': None,
+        'tests_passed': None,
+        'tests_failed': None,
+
+        # Deficiency count (PSI-specific)
+        'deficiency_count': content.get('deficiency_count'),
+
         # Follow-up
         'reinspection_required': content.get('reinspection_required'),
         'corrective_action': content.get('corrective_action'),
-        'deficiency_count': content.get('deficiency_count'),
 
         # Parties (raw values)
         'inspector_raw': inspector,
         'contractor_raw': contractor,
+        'testing_company_raw': None,  # RABA-specific
         'subcontractor_raw': subcontractor,
         'trade_raw': trade,
+        'engineer': None,  # RABA-specific
 
         # Parties (standardized)
         'inspector': inspector_std,
         'contractor': contractor_std,
+        'testing_company': None,  # RABA-specific
         'subcontractor': subcontractor_std,
         'trade': trade_std,
 
@@ -307,16 +321,15 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
         else:
             valid_count += 1
 
-    # Write CSV
-    output_dir.mkdir(parents=True, exist_ok=True)
-    csv_path = output_dir / "psi_consolidated.csv"
+    # Apply unified schema and write CSV to 4.consolidate folder
+    consolidate_dir = output_dir / "4.consolidate"
+    consolidate_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = consolidate_dir / "psi_qc_inspections.csv"
 
     if flat_records:
-        fieldnames = list(flat_records[0].keys())
-        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(flat_records)
+        # Apply unified schema to ensure consistent column order with RABA
+        df = apply_unified_schema(flat_records, source='PSI')
+        df.to_csv(csv_path, index=False)
         print(f"Wrote {len(flat_records)} records to: {csv_path}")
 
     # Write validation report
