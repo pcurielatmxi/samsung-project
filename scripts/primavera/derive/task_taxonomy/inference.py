@@ -489,12 +489,17 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         'sub_trade': sub_trade,
         'sub_trade_desc': sub_trade_desc,
         'sub_trade_source': sub_trade_source,
+        # Scope (raw classification from TaskClassifier, for backward compatibility)
+        'scope': row.get('scope'),
+        'scope_desc': row.get('scope_desc'),
         # Building (from activity_code > wbs > inferred)
         'building': building,
         'building_source': building_source,
+        'building_desc': row.get('building_desc'),  # Backward-compatible
         # Level (from activity_code > wbs > inferred)
         'level': level,
         'level_source': level_source,
+        'level_desc': row.get('level_desc'),  # Backward-compatible
         # Area (wbs only)
         'area': area,
         'area_source': area_source,
@@ -511,6 +516,13 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         # Location (unified type and code system)
         'location_type': location_type,
         'location_code': location_code,
+        # Original TaskClassifier location fields (for existing BI queries)
+        'loc_type': row.get('loc_type'),
+        'loc_type_desc': row.get('loc_type_desc'),
+        'loc_id': row.get('loc_id'),
+        # Computed fields for BI dashboard compatibility
+        'Building Code Desc': f"{building} - {row.get('building_desc')}" if building and row.get('building_desc') else (building or row.get('building_desc')),
+        'location': row.get('loc_type_desc'),
         # Gridline coordinates (from mapping or building inference)
         'grid_row_min': gridline_bounds['grid_row_min'],
         'grid_row_max': gridline_bounds['grid_row_max'],

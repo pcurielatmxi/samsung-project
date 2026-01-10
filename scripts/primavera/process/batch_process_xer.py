@@ -73,6 +73,7 @@ from src.utils.xer_parser import XERParser
 from src.config.settings import Settings
 from src.classifiers.task_classifier import TaskClassifier
 from task_taxonomy import build_task_context, infer_all_fields, get_default_mapping
+from scripts.primavera.process.add_task_versions import add_task_code_versions
 
 # Paths - use Settings for proper WINDOWS_DATA_DIR support
 XER_DIR = Settings.PRIMAVERA_RAW_DIR
@@ -755,6 +756,15 @@ def batch_process(
 
         if verbose:
             print(f"✓ task_taxonomy.csv ({len(taxonomy_df):,} rows) -> {derived_dir}")
+
+    # 4. Add task code versions (tracks task evolution across schedule versions)
+    if 'task' in output_files:
+        if verbose:
+            print()
+            print("Adding task code versions...")
+        add_task_code_versions()
+        if verbose:
+            print("✓ task_code_version column added to task.csv")
 
     if verbose:
         print("-" * 60)

@@ -101,7 +101,8 @@ def add_task_code_versions():
         ].drop_duplicates(subset=['file_id']).sort_values('date')
         print(f"\n  {task_code}:")
         for _, row in versions.iterrows():
-            print(f"    v{row['task_code_version']} (file_id={row['file_id']:2d}, {row['date'].strftime('%Y-%m-%d')}): "
+            date_str = row['date'].strftime('%Y-%m-%d') if pd.notna(row['date']) else 'N/A'
+            print(f"    v{row['task_code_version']} (file_id={row['file_id']:2d}, {date_str}): "
                   f"duration={row['target_drtn_hr_cnt']:.0f}h - {row['task_name'][:50]}")
 
     # Remove helper columns and save
