@@ -97,15 +97,17 @@ class CPMEngine:
                 # For in-progress tasks, P6 schedules remaining work from data_date
                 # (or later if driven by predecessors), not from actual_start
                 remaining_start = max(data_date, early_start)
-                task.early_start = remaining_start
+                # Advance to next work period start
+                task.early_start = calendar.advance_to_work_time(remaining_start)
                 duration = task.remaining_duration_hours
                 if duration > 0:
-                    task.early_finish = calendar.add_work_hours(remaining_start, duration)
+                    task.early_finish = calendar.add_work_hours(task.early_start, duration)
                 else:
-                    task.early_finish = remaining_start
+                    task.early_finish = task.early_start
             else:
                 # Not-started task: starts at calculated early_start (>= data_date)
-                task.early_start = early_start
+                # Advance to next work period start
+                task.early_start = calendar.advance_to_work_time(early_start)
                 duration = task.duration_hours
                 if duration > 0:
                     task.early_finish = calendar.add_work_hours(task.early_start, duration)
@@ -226,7 +228,20 @@ class CPMEngine:
 
         if dep.is_finish_to_start():
             # FS: pred finishes before successor starts - lag
-            return calendar.subtract_work_hours(succ.late_start, lag)
+            result = calendar.subtract_work_hours(succ.late_start, lag)
+            # If result is at start of work period, retreat to end of previous period
+            # This matches P6's convention that tasks finish at end of day, not start of next
+            if result is not None:
+                periods = calendar.get_work_periods(result.date())
+                for period in periods:
+                    period_start = datetime.combine(result.date(), period.start)
+                    if result == period_start:
+                        # At exact start of period - should be end of previous period
+                        prev_end = calendar.get_previous_work_period_end(result)
+                        if prev_end:
+                            return prev_end
+                        break
+            return result
 
         elif dep.is_start_to_start():
             # SS: pred starts before successor starts - lag

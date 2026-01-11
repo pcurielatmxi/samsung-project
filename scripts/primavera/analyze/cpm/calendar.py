@@ -103,27 +103,66 @@ class P6Calendar:
 
     def _parse_clndr_data(self, data: str) -> None:
         """Parse P6's nested calendar format."""
-        # Extract DaysOfWeek section
-        dow_match = re.search(r'DaysOfWeek\(\)\((.*?)\)\)', data, re.DOTALL)
-        if dow_match:
-            self._parse_days_of_week(dow_match.group(1))
+        # Extract DaysOfWeek section using balanced parentheses
+        dow_data = self._extract_section(data, 'DaysOfWeek()(')
+        if dow_data:
+            self._parse_days_of_week(dow_data)
 
-        # Extract Exceptions section
-        exc_match = re.search(r'Exceptions\(\)\((.*?)\)\)\)', data, re.DOTALL)
-        if exc_match:
-            self._parse_exceptions(exc_match.group(1))
+        # Extract Exceptions section using balanced parentheses
+        exc_data = self._extract_section(data, 'Exceptions()(')
+        if exc_data:
+            self._parse_exceptions(exc_data)
+
+    def _extract_section(self, data: str, marker: str) -> Optional[str]:
+        """Extract a section using balanced parentheses counting."""
+        start_idx = data.find(marker)
+        if start_idx < 0:
+            return None
+
+        start_idx += len(marker)
+        depth = 1
+        end_idx = start_idx
+
+        while depth > 0 and end_idx < len(data):
+            if data[end_idx] == '(':
+                depth += 1
+            elif data[end_idx] == ')':
+                depth -= 1
+            end_idx += 1
+
+        # Don't include the final closing parenthesis
+        return data[start_idx:end_idx - 1]
 
     def _parse_days_of_week(self, dow_data: str) -> None:
         """Parse DaysOfWeek section."""
         # Pattern: (0||N()(work_periods)) where N is day number 1-7
         # Day with no work: (0||1()())
-        # Day with work: (0||2()( (0||0(s|08:00|f|12:00)()) (0||1(s|13:00|f|17:00)()) ))
+        # Day with work: (0||2()( (0||0(s|08:00|f|16:00)()) ))
 
-        # Find all day definitions
-        day_pattern = r'\(0\|\|(\d)\(\)\((.*?)\)\)'
-        for match in re.finditer(day_pattern, dow_data, re.DOTALL):
+        # Find each day entry using balanced parentheses (handles nested structure)
+        # Match (0||N() where N is 1-7 (day numbers, not work period sequence numbers)
+        for match in re.finditer(r'\(0\|\|([1-7])\(\)', dow_data):
             day_num = int(match.group(1))
-            periods_data = match.group(2).strip()
+            start = match.start()
+
+            # Count parens to find the end of this day entry
+            depth = 0
+            end = start
+            for i in range(start, len(dow_data)):
+                if dow_data[i] == '(':
+                    depth += 1
+                elif dow_data[i] == ')':
+                    depth -= 1
+                    if depth == 0:
+                        end = i + 1
+                        break
+
+            entry = dow_data[start:end]
+
+            # Extract work periods: strip the (0||N()( prefix and )) suffix
+            inner_start = entry.find('()(') + 3
+            inner_end = len(entry) - 2  # remove last ))
+            periods_data = entry[inner_start:inner_end].strip()
 
             if not periods_data:
                 # No work on this day
@@ -157,16 +196,28 @@ class P6Calendar:
         """Parse work period definitions."""
         periods = []
 
-        # Pattern: (0||N(s|HH:MM|f|HH:MM)())
-        period_pattern = r'\(0\|\|\d+\(s\|(\d{2}:\d{2})\|f\|(\d{2}:\d{2})\)\(\)\)'
-        for match in re.finditer(period_pattern, periods_data):
+        # Pattern 1: (0||N(s|HH:MM|f|HH:MM)()) - start then finish
+        period_pattern1 = r'\(0\|\|\d+\(s\|(\d{1,2}:\d{2})\|f\|(\d{1,2}:\d{2})\)\(\)\)'
+        for match in re.finditer(period_pattern1, periods_data):
             start_str = match.group(1)
             finish_str = match.group(2)
-
-            start = time.fromisoformat(start_str)
-            finish = time.fromisoformat(finish_str)
+            # Normalize time format (8:00 -> 08:00)
+            start = time.fromisoformat(start_str.zfill(5))
+            finish = time.fromisoformat(finish_str.zfill(5))
             periods.append(WorkPeriod(start, finish))
 
+        # Pattern 2: (0||N(f|HH:MM|s|HH:MM)()) - finish then start (alternate format)
+        period_pattern2 = r'\(0\|\|\d+\(f\|(\d{1,2}:\d{2})\|s\|(\d{1,2}:\d{2})\)\(\)\)'
+        for match in re.finditer(period_pattern2, periods_data):
+            finish_str = match.group(1)
+            start_str = match.group(2)
+            # Normalize time format (8:00 -> 08:00)
+            start = time.fromisoformat(start_str.zfill(5))
+            finish = time.fromisoformat(finish_str.zfill(5))
+            periods.append(WorkPeriod(start, finish))
+
+        # Sort periods by start time
+        periods.sort(key=lambda p: p.start)
         return periods
 
     def get_work_periods(self, dt: date) -> list[WorkPeriod]:
@@ -191,7 +242,14 @@ class P6Calendar:
     def get_work_hours(self, dt: date) -> float:
         """Get total work hours available on a specific date."""
         periods = self.get_work_periods(dt)
-        return sum(p.hours() for p in periods)
+        hours = sum(p.hours() for p in periods)
+
+        # Fallback: if periods exist but have 0 hours (e.g., 00:00-00:00 curing calendars),
+        # use hours_per_day as the daily work hours
+        if periods and hours == 0:
+            return self.hours_per_day
+
+        return hours
 
     def add_work_hours(self, start: datetime, hours: float) -> datetime:
         """
@@ -207,10 +265,29 @@ class P6Calendar:
         remaining = hours
 
         # If starting outside work hours, move to next work period
-        current = self._advance_to_work_time(current)
+        current = self.advance_to_work_time(current)
 
-        while remaining > 0:
+        max_iterations = 365 * 10  # Safety limit
+        iteration = 0
+
+        while remaining > 0 and iteration < max_iterations:
+            iteration += 1
             periods = self.get_work_periods(current.date())
+            daily_hours = self.get_work_hours(current.date())
+
+            # Handle calendars with 0-hour periods (e.g., curing calendars)
+            # Use hours_per_day spread across a standard 8-5 day
+            if periods and daily_hours > 0 and all(p.hours() == 0 for p in periods):
+                # Special handling: treat as continuous day with hours_per_day
+                if remaining >= daily_hours:
+                    remaining -= daily_hours
+                    current = datetime.combine(current.date() + timedelta(days=1), time(8, 0))
+                else:
+                    # Partial day - spread hours_per_day across 8 hours (8am-4pm for 8hr day)
+                    hours_elapsed = remaining
+                    current = datetime.combine(current.date(), time(8, 0)) + timedelta(hours=hours_elapsed)
+                    remaining = 0
+                continue
 
             for period in periods:
                 period_start = datetime.combine(current.date(), period.start)
@@ -234,7 +311,7 @@ class P6Calendar:
 
             # Move to next day
             current = datetime.combine(current.date() + timedelta(days=1), time(0, 0))
-            current = self._advance_to_work_time(current)
+            current = self.advance_to_work_time(current)
 
         return current
 
@@ -253,8 +330,26 @@ class P6Calendar:
         # If ending outside work hours, move back to previous work period
         current = self._retreat_to_work_time(current)
 
-        while remaining > 0:
+        max_iterations = 365 * 10  # Safety limit
+        iteration = 0
+
+        while remaining > 0 and iteration < max_iterations:
+            iteration += 1
             periods = self.get_work_periods(current.date())
+            daily_hours = self.get_work_hours(current.date())
+
+            # Handle calendars with 0-hour periods (e.g., curing calendars)
+            if periods and daily_hours > 0 and all(p.hours() == 0 for p in periods):
+                # Special handling: treat as continuous day with hours_per_day
+                if remaining >= daily_hours:
+                    remaining -= daily_hours
+                    current = datetime.combine(current.date() - timedelta(days=1), time(17, 0))
+                else:
+                    hours_remaining = remaining
+                    current = datetime.combine(current.date(), time(17, 0)) - timedelta(hours=hours_remaining)
+                    remaining = 0
+                continue
+
             # Process periods in reverse order
             for period in reversed(periods):
                 period_start = datetime.combine(current.date(), period.start)
@@ -292,6 +387,26 @@ class P6Calendar:
 
         while current_date <= end.date():
             periods = self.get_work_periods(current_date)
+            daily_hours = self.get_work_hours(current_date)
+
+            # Handle calendars with 0-hour periods (e.g., curing calendars)
+            if periods and daily_hours > 0 and all(p.hours() == 0 for p in periods):
+                # For curing calendars, count full days of hours_per_day
+                if current_date == start.date() and current_date == end.date():
+                    # Same day - fraction based on elapsed time
+                    elapsed = (end - start).total_seconds() / 3600
+                    total_hours += min(elapsed, daily_hours)
+                elif current_date == start.date():
+                    # Partial first day
+                    total_hours += daily_hours * 0.5  # Approximate
+                elif current_date == end.date():
+                    # Partial last day
+                    total_hours += daily_hours * 0.5  # Approximate
+                else:
+                    # Full day
+                    total_hours += daily_hours
+                current_date += timedelta(days=1)
+                continue
 
             for period in periods:
                 period_start = datetime.combine(current_date, period.start)
@@ -308,12 +423,20 @@ class P6Calendar:
 
         return total_hours
 
-    def _advance_to_work_time(self, dt: datetime) -> datetime:
+    def advance_to_work_time(self, dt: datetime) -> datetime:
         """Advance datetime to next work time if not already in one."""
         max_days = 365  # Safety limit
 
         for _ in range(max_days):
             periods = self.get_work_periods(dt.date())
+            daily_hours = self.get_work_hours(dt.date())
+
+            # Handle calendars with 0-hour periods (e.g., curing calendars)
+            if periods and daily_hours > 0 and all(p.hours() == 0 for p in periods):
+                # Treat as if work starts at 8am
+                if dt.time() < time(8, 0):
+                    return datetime.combine(dt.date(), time(8, 0))
+                return dt
 
             for period in periods:
                 period_start = datetime.combine(dt.date(), period.start)
@@ -337,6 +460,14 @@ class P6Calendar:
 
         for _ in range(max_days):
             periods = self.get_work_periods(dt.date())
+            daily_hours = self.get_work_hours(dt.date())
+
+            # Handle calendars with 0-hour periods (e.g., curing calendars)
+            if periods and daily_hours > 0 and all(p.hours() == 0 for p in periods):
+                # Treat as if work ends at 5pm
+                if dt.time() > time(17, 0):
+                    return datetime.combine(dt.date(), time(17, 0))
+                return dt
 
             for period in reversed(periods):
                 period_start = datetime.combine(dt.date(), period.start)
@@ -369,6 +500,61 @@ class P6Calendar:
             return None
         first_period = periods[0]
         return datetime.combine(dt, first_period.start)
+
+    def get_previous_work_period_end(self, dt: datetime) -> Optional[datetime]:
+        """
+        Get the end of the previous work period.
+
+        If dt is at the start of a work period (e.g., 07:00 Monday),
+        returns the end of the previous work period (e.g., 17:00 Friday).
+
+        Used for FS relationships where predecessor must finish BEFORE
+        successor starts.
+        """
+        max_days = 365  # Safety limit
+        current = dt
+
+        for _ in range(max_days):
+            periods = self.get_work_periods(current.date())
+            daily_hours = self.get_work_hours(current.date())
+
+            # Handle calendars with 0-hour periods (e.g., curing calendars)
+            if periods and daily_hours > 0 and all(p.hours() == 0 for p in periods):
+                # Move to previous day end
+                current = datetime.combine(current.date() - timedelta(days=1), time(23, 59, 59))
+                continue
+
+            for period in reversed(periods):
+                period_start = datetime.combine(current.date(), period.start)
+                period_end = datetime.combine(current.date(), period.finish)
+
+                if current > period_end:
+                    # After this period - this is the previous work period end
+                    return period_end
+                elif current > period_start:
+                    # Within this period - need to go to previous period
+                    # Check if there's an earlier period today
+                    period_idx = periods.index(period)
+                    if period_idx > 0:
+                        prev_period = periods[period_idx - 1]
+                        return datetime.combine(current.date(), prev_period.finish)
+                    # No earlier period today, go to previous day
+                    current = datetime.combine(current.date() - timedelta(days=1), time(23, 59, 59))
+                    break
+                elif current == period_start:
+                    # At exact start of period - need previous period end
+                    period_idx = periods.index(period)
+                    if period_idx > 0:
+                        prev_period = periods[period_idx - 1]
+                        return datetime.combine(current.date(), prev_period.finish)
+                    # No earlier period today, go to previous day
+                    current = datetime.combine(current.date() - timedelta(days=1), time(23, 59, 59))
+                    break
+            else:
+                # No work periods today or before current time, go to previous day
+                current = datetime.combine(current.date() - timedelta(days=1), time(23, 59, 59))
+
+        return None
 
     def count_work_days(self, start: date, end: date) -> int:
         """Count work days between two dates (inclusive)."""
