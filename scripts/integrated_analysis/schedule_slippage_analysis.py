@@ -296,6 +296,50 @@ class ScheduleSlippageAnalyzer:
 
         print(f"  Loaded {len(self.tasks_df):,} task records across {self.tasks_df['file_id'].nunique()} schedules")
 
+    def _load_taxonomy_for_file(self, file_id):
+        """
+        Load task taxonomy data for a specific file_id.
+
+        The taxonomy provides scope_desc, trade_name, and other classification
+        fields that can be used to group tasks for analysis.
+
+        Args:
+            file_id: The schedule file_id to load taxonomy for
+
+        Returns:
+            DataFrame with task_code as index and taxonomy columns (scope_desc, trade_name, etc.)
+            Returns empty DataFrame if taxonomy file doesn't exist.
+        """
+        taxonomy_path = settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv'
+        if not taxonomy_path.exists():
+            return pd.DataFrame()
+
+        # Load taxonomy with relevant columns
+        taxonomy = pd.read_csv(
+            taxonomy_path,
+            usecols=['task_id', 'scope_desc', 'trade_name', 'building', 'level'],
+            low_memory=False
+        )
+
+        # Filter to this file_id (task_id format is "{file_id}_{task_id}")
+        file_prefix = f"{file_id}_"
+        taxonomy = taxonomy[taxonomy['task_id'].str.startswith(file_prefix)].copy()
+
+        if len(taxonomy) == 0:
+            return pd.DataFrame()
+
+        # Get task_code mapping from task.csv
+        # Note: task_id in self.tasks_df already has the "{file_id}_" prefix
+        task_lookup = self.tasks_df[self.tasks_df['file_id'] == file_id][['task_id', 'task_code']].copy()
+
+        # Join taxonomy with task_code
+        taxonomy = taxonomy.merge(task_lookup, on='task_id', how='inner')
+
+        # Set task_code as index for easy lookup
+        taxonomy = taxonomy.set_index('task_code')
+
+        return taxonomy[['scope_desc', 'trade_name', 'building', 'level']]
+
     def get_ordered_schedules(self, schedule_type='YATES'):
         """
         Get schedule snapshots ordered chronologically for comparison.
@@ -1251,9 +1295,28 @@ class ScheduleSlippageAnalyzer:
 
         # Calculate "others" aggregate
         shown_tasks = set(drivers_df.head(top_n * 2)['task_code'])
-        others = delay_tasks[~delay_tasks['task_code'].isin(shown_tasks)]
+        others = delay_tasks[~delay_tasks['task_code'].isin(shown_tasks)].copy()
         others_count = len(others)
         others_own_delay = others['own_delay_days'].sum()
+
+        # Load taxonomy to group "others" by scope_desc
+        file_id_curr = tasks['file_id_curr'].iloc[0] if 'file_id_curr' in tasks.columns else None
+        others_by_scope = pd.DataFrame()
+        if file_id_curr is not None and others_count > 0:
+            taxonomy = self._load_taxonomy_for_file(file_id_curr)
+            if len(taxonomy) > 0:
+                # Join others with taxonomy
+                others['scope_desc'] = others['task_code'].map(taxonomy['scope_desc'])
+                others['trade_name'] = others['task_code'].map(taxonomy['trade_name'])
+                others['scope_desc'] = others['scope_desc'].fillna('(Unknown)')
+
+                # Group by scope_desc
+                others_by_scope = others.groupby('scope_desc').agg(
+                    task_count=('task_code', 'count'),
+                    own_delay_sum=('own_delay_days', 'sum'),
+                    own_delay_avg=('own_delay_days', 'mean'),
+                ).reset_index()
+                others_by_scope = others_by_scope.sort_values('own_delay_sum', ascending=False)
 
         # Build report
         lines = [
@@ -1350,16 +1413,40 @@ class ScheduleSlippageAnalyzer:
                     f"{float_curr:>6.0f} {project_impact:>8.0f} {row['status'][:12]:<12} {row['category'][:15]}"
                 )
 
-        # Others aggregate
+        # Others aggregate - grouped by scope_desc
         if others_count > 0:
             lines.extend([
                 "",
                 "-" * 100,
-                f"REMAINING TASKS WITH DELAY ({others_count} tasks)",
+                f"REMAINING TASKS WITH DELAY BY SCOPE ({others_count} tasks, {others_own_delay:.0f} days total)",
                 "-" * 100,
-                f"  Combined own_delay: {others_own_delay:.0f} days",
-                f"  Note: These tasks have delay but are not in top drivers.",
-                f"  Most are absorbed by float or on non-critical paths.",
+            ])
+
+            if len(others_by_scope) > 0:
+                lines.extend([
+                    "",
+                    f"{'Scope/Trade':<30} {'Tasks':>8} {'Own Delay':>12} {'Avg Delay':>10}",
+                    "-" * 65,
+                ])
+                for _, row in others_by_scope.iterrows():
+                    lines.append(
+                        f"{row['scope_desc'][:29]:<30} {row['task_count']:>8} "
+                        f"{row['own_delay_sum']:>12.0f} {row['own_delay_avg']:>10.1f}"
+                    )
+                lines.extend([
+                    "-" * 65,
+                    f"{'TOTAL':<30} {others_count:>8} {others_own_delay:>12.0f}",
+                ])
+            else:
+                lines.extend([
+                    f"  Combined own_delay: {others_own_delay:.0f} days",
+                    f"  (Taxonomy data not available for scope grouping)",
+                ])
+
+            lines.extend([
+                "",
+                "  Note: These tasks have delay but are not in top drivers.",
+                "  Most are absorbed by float or on non-critical paths.",
             ])
 
         # Investigation checklist
