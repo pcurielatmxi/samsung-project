@@ -914,6 +914,220 @@ class ScheduleSlippageAnalyzer:
             'summary': summary,
         }
 
+    def analyze_recovery_sequence(self, comparison_result, float_bands=None):
+        """
+        Analyze the sequence of bottlenecks that limit schedule recovery.
+
+        Shows what tasks become critical at each recovery level, revealing the
+        full sequence of constraints that must be addressed to recover the schedule.
+
+        Args:
+            comparison_result: Output from compare_schedules() or analyze_month()
+            float_bands: List of float thresholds for grouping (default: [0,2,5,10,15,20,30,50])
+
+        Returns:
+            dict with:
+                'recovery_bands': DataFrame with columns:
+                    - float_min, float_max: Band range
+                    - task_count: Tasks becoming critical in this band
+                    - cumulative_tasks: Total tasks critical up to this band
+                    - max_recovery: Max recovery if all tasks in band addressed
+
+                'bottleneck_sequence': DataFrame of near-critical tasks ordered by float:
+                    - task_code, task_name, status
+                    - float_days: Current float
+                    - becomes_critical_at: Recovery level where this becomes bottleneck
+
+                'summary': dict with:
+                    - max_driving_delay: The recovery target (max own_delay on driving path)
+                    - total_near_critical: Count of tasks that could become bottlenecks
+                    - free_recovery: Days recoverable without hitting any bottleneck
+
+        Example:
+            >>> result = analyzer.analyze_month(2025, 9)
+            >>> seq = analyzer.analyze_recovery_sequence(result)
+            >>> print(seq['recovery_bands'])
+        """
+        if comparison_result is None:
+            return None
+
+        tasks = comparison_result['tasks']
+        project_metrics = comparison_result['project_metrics']
+        project_slip = project_metrics.get('project_slippage_days', 0)
+
+        if tasks is None or len(tasks) == 0:
+            return None
+
+        # Get max recovery target from driving path
+        driving = tasks[tasks['on_driving_path'] & (tasks['own_delay_days'] > 0)]
+        if len(driving) == 0:
+            return None
+
+        max_driving_delay = driving['own_delay_days'].max()
+
+        # Find all near-critical tasks (potential bottlenecks)
+        near_critical = tasks[
+            (~tasks['on_driving_path']) &
+            (tasks['status'] != 'TK_Complete') &
+            (tasks['float_curr_days'].notna()) &
+            (tasks['float_curr_days'] > 0) &
+            (tasks['float_curr_days'] < max_driving_delay)
+        ].copy()
+
+        near_critical = near_critical.sort_values('float_curr_days')
+
+        # Default float bands
+        if float_bands is None:
+            float_bands = [0, 2, 5, 10, 15, 20, 30, 50]
+
+        # Filter bands to relevant range
+        float_bands = [b for b in float_bands if b <= max_driving_delay + 10]
+        if float_bands[-1] < max_driving_delay:
+            float_bands.append(int(max_driving_delay) + 1)
+
+        # Calculate recovery bands
+        band_rows = []
+        cumulative = 0
+
+        for i in range(len(float_bands) - 1):
+            low, high = float_bands[i], float_bands[i + 1]
+            band_tasks = near_critical[
+                (near_critical['float_curr_days'] > low) &
+                (near_critical['float_curr_days'] <= high)
+            ]
+            count = len(band_tasks)
+            cumulative += count
+            max_recovery = min(high, max_driving_delay, project_slip)
+
+            band_rows.append({
+                'float_min': low,
+                'float_max': high,
+                'task_count': count,
+                'cumulative_tasks': cumulative,
+                'max_recovery': max_recovery,
+            })
+
+        recovery_bands = pd.DataFrame(band_rows)
+
+        # Build bottleneck sequence
+        bottleneck_rows = []
+        for _, row in near_critical.iterrows():
+            bottleneck_rows.append({
+                'task_code': row['task_code'],
+                'task_name': row['task_name'],
+                'status': row['status'],
+                'float_days': row['float_curr_days'],
+                'becomes_critical_at': row['float_curr_days'],
+                'is_critical': row['is_critical'],
+            })
+
+        bottleneck_sequence = pd.DataFrame(bottleneck_rows)
+
+        # Calculate free recovery (first bottleneck)
+        free_recovery = near_critical['float_curr_days'].min() if len(near_critical) > 0 else max_driving_delay
+
+        summary = {
+            'project_slippage_days': project_slip,
+            'max_driving_delay': max_driving_delay,
+            'total_near_critical': len(near_critical),
+            'free_recovery': free_recovery,
+        }
+
+        return {
+            'recovery_bands': recovery_bands,
+            'bottleneck_sequence': bottleneck_sequence,
+            'summary': summary,
+        }
+
+    def format_recovery_sequence_report(self, sequence_result, top_n=25):
+        """
+        Format the recovery sequence analysis as a readable report.
+
+        Args:
+            sequence_result: Output from analyze_recovery_sequence()
+            top_n: Max bottleneck tasks to show (default: 25)
+
+        Returns:
+            Formatted string report
+        """
+        if sequence_result is None:
+            return "No recovery sequence data available."
+
+        bands = sequence_result['recovery_bands']
+        bottlenecks = sequence_result['bottleneck_sequence']
+        summary = sequence_result['summary']
+
+        lines = [
+            "=" * 100,
+            "RECOVERY SEQUENCE ANALYSIS",
+            "=" * 100,
+            "",
+            "Shows what tasks become bottlenecks at each recovery level.",
+            "To recover X days, you must address all tasks with float < X days.",
+            "",
+            f"Project Slippage: {summary['project_slippage_days']} days",
+            f"Max Driving Path Delay: {summary['max_driving_delay']:.0f} days",
+            f"Free Recovery (before first bottleneck): {summary['free_recovery']:.1f} days",
+            f"Total Near-Critical Tasks: {summary['total_near_critical']}",
+            "",
+            "-" * 100,
+            "RECOVERY BANDS",
+            "-" * 100,
+            f"{'Recovery Range':<20} {'New Bottlenecks':>15} {'Cumulative':>12} {'Max Recovery':>15}",
+            "-" * 100,
+        ]
+
+        for _, row in bands.iterrows():
+            if row['task_count'] > 0 or row['float_min'] == 0:
+                lines.append(
+                    f"{row['float_min']:.0f}-{row['float_max']:.0f} days{'':<10} "
+                    f"{row['task_count']:>15} "
+                    f"{row['cumulative_tasks']:>12} "
+                    f"{row['max_recovery']:>12.0f} days"
+                )
+
+        lines.extend([
+            "",
+            "-" * 100,
+            "BOTTLENECK SEQUENCE (tasks in order of when they become critical)",
+            "-" * 100,
+            f"{'Float':>8} {'Task Code':<35} {'Task Name':<55}",
+            "-" * 100,
+        ])
+
+        for _, row in bottlenecks.head(top_n).iterrows():
+            name = str(row['task_name'])[:53] if pd.notna(row['task_name']) else ''
+            lines.append(
+                f"{row['float_days']:>8.1f} {row['task_code']:<35} {name:<55}"
+            )
+
+        if len(bottlenecks) > top_n:
+            lines.append(f"  ... and {len(bottlenecks) - top_n} more tasks")
+
+        lines.extend([
+            "",
+            "-" * 100,
+            "INTERPRETATION",
+            "-" * 100,
+            f"• To recover {summary['free_recovery']:.0f} days: No additional action needed",
+        ])
+
+        # Add interpretation for each band
+        prev_max = summary['free_recovery']
+        for _, row in bands.iterrows():
+            if row['task_count'] > 0 and row['float_max'] > prev_max:
+                lines.append(
+                    f"• To recover {row['max_recovery']:.0f} days: Address {row['cumulative_tasks']} tasks with float < {row['float_max']:.0f} days"
+                )
+                prev_max = row['max_recovery']
+
+        lines.extend([
+            "",
+            "=" * 100,
+        ])
+
+        return "\n".join(lines)
+
     def generate_whatif_table(self, comparison_result, include_non_driving=True, analyze_parallel=True):
         """
         Generate a what-if impact table showing potential schedule recovery.
@@ -1578,6 +1792,7 @@ def main():
     parser.add_argument('--list-schedules', action='store_true', help='List available schedules')
     parser.add_argument('--top-n', type=int, default=25, help='Number of top contributors')
     parser.add_argument('--whatif', action='store_true', help='Generate what-if impact analysis table')
+    parser.add_argument('--sequence', action='store_true', help='Generate recovery sequence analysis (bottleneck cascade)')
 
     args = parser.parse_args()
 
@@ -1630,6 +1845,13 @@ def main():
                 if whatif_result:
                     whatif_report = analyzer.format_whatif_report(whatif_result, top_n=args.top_n)
                     print("\n" + whatif_report)
+
+            # Generate recovery sequence analysis if requested
+            if args.sequence:
+                sequence_result = analyzer.analyze_recovery_sequence(comparison)
+                if sequence_result:
+                    sequence_report = analyzer.format_recovery_sequence_report(sequence_result, top_n=args.top_n)
+                    print("\n" + sequence_report)
 
             # Also show top contributors with category
             print("\nTOP SLIPPAGE CONTRIBUTORS (detailed):")

@@ -183,8 +183,12 @@ class CPMEngine:
                         late_finish = driven_date
                 task.late_finish = late_finish
 
-            # Apply finish-no-later-than constraint
-            if task.constraint_type in ('CS_FNLT', 'CS_MFO') and task.constraint_date:
+            # Apply finish-no-later-than constraint (various P6 constraint types)
+            # CS_FNLT: Finish No Later Than
+            # CS_MFO: Must Finish On
+            # CS_MEO: Must End On
+            # CS_MEOB: Must End On or Before
+            if task.constraint_type in ('CS_FNLT', 'CS_MFO', 'CS_MEO', 'CS_MEOB') and task.constraint_date:
                 task.late_finish = min(task.late_finish, task.constraint_date)
 
             # Calculate late start
@@ -194,6 +198,19 @@ class CPMEngine:
             else:
                 # Milestone
                 task.late_start = task.late_finish
+
+            # Apply start-no-later-than constraint (various P6 constraint types)
+            # CS_SNLT: Start No Later Than
+            # CS_MSO: Must Start On
+            # CS_SEOB: Start On or Before
+            if task.constraint_type in ('CS_SNLT', 'CS_MSO', 'CS_SEOB') and task.constraint_date:
+                if task.constraint_date < task.late_start:
+                    task.late_start = task.constraint_date
+                    # Recalculate late_finish based on constrained late_start
+                    if duration > 0:
+                        task.late_finish = calendar.add_work_hours(task.late_start, duration)
+                    else:
+                        task.late_finish = task.late_start
 
     def _get_driven_late_finish(self, succ: Task, dep: Dependency,
                                  pred: Task, calendar: P6Calendar) -> Optional[datetime]:
