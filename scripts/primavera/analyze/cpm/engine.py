@@ -70,10 +70,11 @@ class CPMEngine:
             task = self.network.tasks[task_id]
             calendar = self.get_calendar(task.calendar_id)
 
-            # Handle completed tasks - use actuals
+            # Handle completed tasks - P6 sets early dates to data_date
+            # This ensures successors are driven from data_date, not historical finish
             if task.is_completed():
-                task.early_start = task.actual_start or project_start
-                task.early_finish = task.actual_finish or task.early_start
+                task.early_start = data_date
+                task.early_finish = data_date
                 continue
 
             # Calculate early start from predecessors
@@ -106,14 +107,16 @@ class CPMEngine:
                     task.early_finish = task.early_start
             else:
                 # Not-started task: starts at calculated early_start (>= data_date)
-                # Advance to next work period start
-                task.early_start = calendar.advance_to_work_time(early_start)
                 duration = task.duration_hours
                 if duration > 0:
+                    # Regular task: advance to next work period start
+                    task.early_start = calendar.advance_to_work_time(early_start)
                     task.early_finish = calendar.add_work_hours(task.early_start, duration)
                 else:
-                    # Milestone - finish equals start
-                    task.early_finish = task.early_start
+                    # Milestone: can occur at exact driven time (including end of day)
+                    # Don't advance to next work period - milestones are instantaneous
+                    task.early_start = early_start
+                    task.early_finish = early_start
 
     def _get_driven_early_start(self, pred: Task, dep: Dependency,
                                  succ: Task, calendar: P6Calendar) -> Optional[datetime]:
@@ -121,11 +124,26 @@ class CPMEngine:
         Calculate the early start driven by a predecessor relationship.
 
         Handles FS, SS, FF, SF relationship types with lag.
+
+        For completed predecessors, lag is ignored because the constraint
+        is already satisfied - the predecessor has already started/finished.
         """
         if pred.early_finish is None or pred.early_start is None:
             return None
 
-        lag = dep.lag_hours
+        # Lag handling depends on relationship type and task status:
+        # - FS/SS from completed predecessor: lag=0 (start constraint satisfied)
+        # - FF/SF from completed predecessor: lag applies (finish constraint still relevant)
+        # - In-progress pred with in-progress succ: lag=0 for SS/FS (both running)
+        if dep.is_finish_to_start() or dep.is_start_to_start():
+            # Start-driving relationships: lag=0 if predecessor started/finished
+            if pred.is_completed() or (pred.is_in_progress() and succ.is_in_progress()):
+                lag = 0
+            else:
+                lag = dep.lag_hours
+        else:
+            # Finish-driving relationships (FF, SF): lag always applies
+            lag = dep.lag_hours
 
         if dep.is_finish_to_start():
             # FS: successor starts after predecessor finishes + lag

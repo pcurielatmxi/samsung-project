@@ -180,6 +180,16 @@ PROJECT SLIPPAGE:                              +36 days
 - **Limiting Task**: Parallel path task that caps recovery
 - **Investigation**: What to look for in documentation
 
+**Remaining Tasks by Scope:** Groups non-top-driver tasks by scope/trade from taxonomy:
+```
+Scope/Trade                       Tasks    Own Delay  Avg Delay
+-----------------------------------------------------------------
+Doors & Hardware                    194          384        2.0
+Finishes                            142          284        2.0
+Fire Protection                      47           93        2.0
+...
+```
+
 **Investigation Checklist:** Guides analysts on what documents to collect for each driver.
 
 ### CLI Usage
