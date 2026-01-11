@@ -1,6 +1,6 @@
 # Primavera Scripts
 
-**Last Updated:** 2025-12-18
+**Last Updated:** 2026-01-11
 
 ## Purpose
 
@@ -167,7 +167,8 @@ analyze/
 │   ├── single_task_impact.py # What-if for single task duration changes
 │   └── delay_attribution.py  # Delay source attribution
 ├── data_loader.py           # Load P6 CSV exports into TaskNetwork
-└── test_cpm.py              # Validation tests
+├── test_cpm.py              # Basic validation tests
+└── validate_cpm.py          # Comprehensive P6 comparison validator
 ```
 
 ### Key Functions
@@ -228,6 +229,51 @@ The CPM engine achieves **96-98% accuracy** compared to P6's calculated values (
 - **P6-specific optimizations**: P6 may use proprietary scheduling algorithms for edge cases
 
 For analysis purposes, this accuracy is sufficient. The remaining mismatches do not significantly impact critical path identification or float analysis.
+
+### Validation Test
+
+The `validate_cpm.py` script provides comprehensive validation of CPM calculations against P6's stored values.
+
+**Usage:**
+```bash
+# Validate latest schedule
+python scripts/primavera/analyze/validate_cpm.py
+
+# Validate specific schedule
+python scripts/primavera/analyze/validate_cpm.py --file-id 88
+
+# Save detailed reports to files
+python scripts/primavera/analyze/validate_cpm.py --output cpm_validation_report
+
+# List available schedules
+python scripts/primavera/analyze/validate_cpm.py --list-schedules
+```
+
+**Output:**
+- Summary table with match rates for each field (early_start, early_finish, late_start, late_finish, total_float)
+- Mismatch analysis grouped by field, calendar, and task status
+- Sample mismatches showing calculated vs P6 values and difference in hours
+- Optional CSV exports: `.summary.txt`, `.mismatches.csv`, `.all_comparisons.csv`
+
+**Sample Output:**
+```
+ACCURACY SUMMARY
+       Field  Compared  Matches  Mismatches Match Rate
+ early_start      2176     2099          77      96.5%
+early_finish      2176     2095          81      96.3%
+  late_start      2176     2136          40      98.2%
+ late_finish      2176     2115          61      97.2%
+ total_float      2176     2106          70      96.8%
+
+Overall Date Match Rate: 97.0%
+```
+
+**Test Methodology:**
+1. Loads schedule with P6's stored values (`p6_early_start`, `p6_early_finish`, etc.)
+2. Runs CPM forward pass, backward pass, and float calculation
+3. Compares calculated values to P6 values with tolerance (1 hour for dates, 8 hours for float)
+4. Excludes completed tasks (their dates are actuals, not calculated)
+5. Reports match rates and detailed mismatch analysis
 
 ### Note on Schedule Slippage
 
