@@ -119,6 +119,8 @@ ASSUMPTIONS
 3. Float is measured in hours with 8-hour workdays
 4. Early dates (not late dates) reflect the current plan
 5. Calendar days are used (not working days) for date differences
+6. NaN float means "not calculated" (completed tasks, milestones), NOT critical
+7. For NOT STARTED tasks, own_delay represents duration/scope change, not execution delay
 
 LIMITATIONS
 -----------
@@ -535,11 +537,20 @@ class ScheduleSlippageAnalyzer:
         # is_critical: Task currently has zero or negative float
         # Zero float = on critical path (any delay directly delays project)
         # Negative float = task is ALREADY late relative to target dates
+        #
+        # IMPORTANT: NaN float does NOT mean critical!
+        # NaN typically occurs for:
+        #   - Completed tasks (float is meaningless once done)
+        #   - Milestones (zero duration, no float calculation)
+        #   - Tasks with missing data
+        # We must exclude NaN from criticality to avoid false positives.
         common['is_critical_curr'] = (
-            common['total_float_hr_cnt_curr'].fillna(0) <= 0
+            common['total_float_hr_cnt_curr'].notna() &
+            (common['total_float_hr_cnt_curr'] <= 0)
         )
         common['was_critical_prev'] = (
-            common['total_float_hr_cnt_prev'].fillna(0) <= 0
+            common['total_float_hr_cnt_prev'].notna() &
+            (common['total_float_hr_cnt_prev'] <= 0)
         )
 
         # Driving path: Task is on the longest path to project completion
@@ -680,7 +691,11 @@ class ScheduleSlippageAnalyzer:
                 'total_float_days': new_tasks_raw['total_float_hr_cnt_curr'] / HOURS_PER_WORKDAY,
                 'remain_duration_days': new_tasks_raw['remain_drtn_hr_cnt_curr'] / HOURS_PER_WORKDAY,
                 'on_driving_path': new_tasks_raw['driving_path_flag_curr'] == 'Y',
-                'is_critical': new_tasks_raw['total_float_hr_cnt_curr'].fillna(0) <= 0,
+                # NaN float does NOT mean critical - must have actual <=0 value
+                'is_critical': (
+                    new_tasks_raw['total_float_hr_cnt_curr'].notna() &
+                    (new_tasks_raw['total_float_hr_cnt_curr'] <= 0)
+                ),
             })
 
             # Categorize new tasks by criticality
