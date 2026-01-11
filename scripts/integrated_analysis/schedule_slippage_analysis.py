@@ -62,11 +62,15 @@ TASK CATEGORIZATION
 Tasks are categorized based on their status and delay contribution:
 
 EXISTING TASKS (present in both snapshots):
-    ACTIVE_DELAYER    : status=TK_Active AND own_delay > 1 day
-                        Task is in-progress and actively causing delay
+    ACTIVE_DELAYER    : status=TK_Active AND own_delay > 1 day AND finish_slip > 0
+                        Task is in-progress and actively causing delay.
+                        Both conditions required: took longer than planned AND
+                        finish date moved later (not just consuming early start).
 
-    COMPLETED_DELAYER : status=TK_Complete AND own_delay > 1 day
-                        Task finished late, may have pushed successors
+    COMPLETED_DELAYER : status=TK_Complete AND own_delay > 1 day AND finish_slip > 0
+                        Task finished late, may have pushed successors.
+                        Both conditions required: took longer than planned AND
+                        finish date moved later.
 
     WAITING_INHERITED : status=TK_NotStart AND inherited_delay > 1 day
                         Task hasn't started, delayed by predecessors
@@ -74,10 +78,12 @@ EXISTING TASKS (present in both snapshots):
     WAITING_SQUEEZED  : status=TK_NotStart AND float_change < -5 days
                         Task's buffer is eroding (becoming more critical)
 
-    ACTIVE_OK         : status=TK_Active AND own_delay <= 1 day
-                        Task is in-progress but not causing delay
+    ACTIVE_OK         : status=TK_Active AND (own_delay <= 1 day OR finish_slip <= 0)
+                        Task is in-progress but not causing delay.
+                        Includes tasks that started early and took longer but
+                        still finish on time (positive own_delay, non-positive finish_slip).
 
-    COMPLETED_OK      : status=TK_Complete AND own_delay <= 1 day
+    COMPLETED_OK      : status=TK_Complete AND (own_delay <= 1 day OR finish_slip <= 0)
                         Task finished on time or early
 
     WAITING_OK        : status=TK_NotStart, no inherited delay or squeeze
@@ -592,25 +598,37 @@ class ScheduleSlippageAnalyzer:
             Assign a delay category to a task based on status and metrics.
 
             Categories:
-                ACTIVE_DELAYER: In-progress task causing delay (own_delay > threshold)
-                COMPLETED_DELAYER: Finished task that finished late
+                ACTIVE_DELAYER: In-progress task causing delay (own_delay > threshold AND finish slipped)
+                COMPLETED_DELAYER: Finished task that finished late (own_delay > threshold AND finish slipped)
                 WAITING_INHERITED: Not-started task with inherited delay
                 WAITING_SQUEEZED: Not-started task with significant float erosion
                 *_OK: Tasks not causing or experiencing significant delay
+
+            Note on DELAYER logic:
+                A task is only a "delayer" if BOTH conditions are true:
+                1. own_delay > threshold (task took longer than its duration estimate)
+                2. finish_slip > 0 (task's finish date actually moved later)
+
+                This prevents false positives where a task started early, took longer than
+                estimated, but still finishes on time or early. Such tasks have positive
+                own_delay but negative finish_slip - they're not causing project delay.
             """
             status = row['status_curr']
             own_delay = row['own_delay_days'] if pd.notna(row['own_delay_days']) else 0
             inherited = row['inherited_delay_days'] if pd.notna(row['inherited_delay_days']) else 0
             float_change = row['float_change_days'] if pd.notna(row['float_change_days']) else 0
+            finish_slip = row['finish_slip_days'] if pd.notna(row['finish_slip_days']) else 0
 
             if status == 'TK_Complete':
                 # Completed tasks: check if they finished late
-                if own_delay > OWN_DELAY_THRESHOLD_DAYS:
+                # Must have BOTH own_delay (took longer) AND finish_slip (actually slipped)
+                if own_delay > OWN_DELAY_THRESHOLD_DAYS and finish_slip > 0:
                     return 'COMPLETED_DELAYER'
                 return 'COMPLETED_OK'
             elif status == 'TK_Active':
                 # Active tasks: check if they're running behind
-                if own_delay > OWN_DELAY_THRESHOLD_DAYS:
+                # Must have BOTH own_delay (taking longer) AND finish_slip (finish date moved later)
+                if own_delay > OWN_DELAY_THRESHOLD_DAYS and finish_slip > 0:
                     return 'ACTIVE_DELAYER'
                 return 'ACTIVE_OK'
             else:  # TK_NotStart
@@ -1065,8 +1083,8 @@ class ScheduleSlippageAnalyzer:
             "",
             "CATEGORY DEFINITIONS",
             "-" * 40,
-            "• ACTIVE_DELAYER: In-progress task with own_delay > 1 day",
-            "• COMPLETED_DELAYER: Finished task that finished late",
+            "• ACTIVE_DELAYER: In-progress task with own_delay > 1 day AND finish_slip > 0",
+            "• COMPLETED_DELAYER: Finished task with own_delay > 1 day AND finish_slip > 0",
             "• WAITING_INHERITED: Not-started task with inherited delay > 1 day",
             "• WAITING_SQUEEZED: Not-started task with float erosion > 5 days",
             "• NEW_CRITICAL: New task added to critical/driving path",
