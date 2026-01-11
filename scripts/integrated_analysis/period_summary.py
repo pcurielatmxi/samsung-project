@@ -6,6 +6,7 @@ Extracts and summarizes data for a given period (year-month) from multiple sourc
 - Labor hours by trade/company (ProjectSight, TBM)
 - Schedule progress and delays (P6 slippage analysis)
 - Quality issues by trade (RABA, PSI)
+- Narrative statements (delay claims, quality issues, coordination)
 
 Designed for LLM consumption with context window controls.
 
@@ -133,6 +134,72 @@ class PeriodDataLoader:
         except Exception as e:
             print(f"Warning: Could not load schedule slippage: {e}", file=sys.stderr)
             return None
+
+    def load_narratives(self) -> list:
+        """Load narrative statements for the period."""
+        if 'narratives' in self._cache:
+            return self._cache['narratives']
+
+        # Load from stage 4 (refine) output
+        refine_dir = settings.NARRATIVES_PROCESSED_DIR / '4.refine'
+        if not refine_dir.exists():
+            return []
+
+        statements = []
+        period_start = datetime(self.year, self.month, 1)
+        if self.month == 12:
+            period_end = datetime(self.year + 1, 1, 1)
+        else:
+            period_end = datetime(self.year, self.month + 1, 1)
+
+        for f in refine_dir.glob('*.json'):
+            if '.error' in f.name:
+                continue
+            try:
+                data = json.loads(f.read_text())
+                content = data.get('content', {})
+                file_statements = content.get('statements', [])
+
+                for stmt in file_statements:
+                    # Parse event_date if available
+                    event_date_str = stmt.get('event_date', '')
+                    event_date = None
+                    if event_date_str:
+                        try:
+                            event_date = datetime.strptime(event_date_str, '%Y-%m-%d')
+                        except:
+                            pass
+
+                    # Include if event_date in period, or if no date (include by document)
+                    include = False
+                    if event_date and period_start <= event_date < period_end:
+                        include = True
+                    elif not event_date:
+                        # Check document metadata date
+                        doc_date_str = data.get('metadata', {}).get('document_date', '')
+                        if doc_date_str:
+                            try:
+                                doc_date = datetime.strptime(doc_date_str[:10], '%Y-%m-%d')
+                                if period_start <= doc_date < period_end:
+                                    include = True
+                            except:
+                                pass
+
+                    if include:
+                        statements.append({
+                            'text': stmt.get('text', ''),
+                            'category': stmt.get('category', 'other'),
+                            'event_date': event_date_str,
+                            'parties': stmt.get('parties', []),
+                            'locations': stmt.get('locations', []),
+                            'impact_days': stmt.get('impact_days'),
+                            'source_file': f.stem.replace('.refine', ''),
+                        })
+            except Exception as e:
+                continue
+
+        self._cache['narratives'] = statements
+        return statements
 
 
 ###############################################################################
@@ -473,6 +540,137 @@ class QualitySummary:
         }
 
 
+class NarrativeSummary:
+    """Generate narrative statement summaries."""
+
+    # Statement categories with descriptions
+    CATEGORIES = {
+        'delay': 'Delay claims and schedule impacts',
+        'quality_issue': 'Quality problems and defects',
+        'coordination': 'Coordination issues between parties',
+        'scope_change': 'Scope changes and modifications',
+        'owner_direction': 'Owner directives and decisions',
+        'design_issue': 'Design problems or RFIs',
+        'resource': 'Resource and manpower issues',
+        'dispute': 'Disputes and disagreements',
+        'weather': 'Weather-related impacts',
+        'safety': 'Safety incidents or concerns',
+        'progress': 'Progress updates and status',
+        'other': 'Other statements',
+    }
+
+    @staticmethod
+    def overview(loader: PeriodDataLoader) -> dict:
+        """Get high-level narrative overview."""
+        statements = loader.load_narratives()
+
+        if not statements:
+            return {'status': 'no_data', 'period': loader.period_str}
+
+        # Count by category
+        by_category = {}
+        for stmt in statements:
+            cat = stmt.get('category', 'other')
+            by_category[cat] = by_category.get(cat, 0) + 1
+
+        # Count statements with impact days
+        with_impact = [s for s in statements if s.get('impact_days')]
+        total_impact_days = sum(s.get('impact_days', 0) or 0 for s in with_impact)
+
+        # Unique parties mentioned
+        all_parties = set()
+        for stmt in statements:
+            parties = stmt.get('parties') or []
+            all_parties.update(parties)
+
+        return {
+            'status': 'ok',
+            'period': loader.period_str,
+            'total_statements': len(statements),
+            'by_category': by_category,
+            'statements_with_impact': len(with_impact),
+            'total_impact_days_claimed': total_impact_days,
+            'unique_parties': len(all_parties),
+            'parties': list(all_parties)[:10],
+        }
+
+    @staticmethod
+    def by_category(loader: PeriodDataLoader, categories: list = None, top_n: int = DEFAULT_TOP_N) -> dict:
+        """Get statements grouped by category."""
+        statements = loader.load_narratives()
+
+        if not statements:
+            return {'status': 'no_data', 'period': loader.period_str}
+
+        # Filter to requested categories
+        if categories:
+            statements = [s for s in statements if s.get('category') in categories]
+
+        # Group by category
+        grouped = {}
+        for stmt in statements:
+            cat = stmt.get('category', 'other')
+            if cat not in grouped:
+                grouped[cat] = []
+            grouped[cat].append(stmt)
+
+        # Format output - limit per category
+        result = {}
+        for cat, stmts in grouped.items():
+            # Sort by impact_days (descending) then by text length
+            stmts.sort(key=lambda s: (-(s.get('impact_days') or 0), -len(s.get('text', ''))))
+            result[cat] = {
+                'count': len(stmts),
+                'statements': [
+                    {
+                        'text': s['text'][:200] + ('...' if len(s['text']) > 200 else ''),
+                        'parties': s.get('parties', []),
+                        'impact_days': s.get('impact_days'),
+                        'source': s.get('source_file', '')[:40],
+                    }
+                    for s in stmts[:top_n]
+                ]
+            }
+
+        return {
+            'status': 'ok',
+            'period': loader.period_str,
+            'categories': result,
+        }
+
+    @staticmethod
+    def delay_claims(loader: PeriodDataLoader, top_n: int = DEFAULT_TOP_N) -> dict:
+        """Get delay-related statements with impact days."""
+        statements = loader.load_narratives()
+
+        if not statements:
+            return {'status': 'no_data', 'period': loader.period_str}
+
+        # Filter to delay-related categories
+        delay_categories = ['delay', 'coordination', 'quality_issue', 'design_issue', 'resource']
+        delay_stmts = [s for s in statements if s.get('category') in delay_categories]
+
+        # Sort by impact_days
+        delay_stmts.sort(key=lambda s: -(s.get('impact_days') or 0))
+
+        return {
+            'status': 'ok',
+            'period': loader.period_str,
+            'total_delay_statements': len(delay_stmts),
+            'statements': [
+                {
+                    'category': s.get('category'),
+                    'text': s['text'][:300] + ('...' if len(s['text']) > 300 else ''),
+                    'parties': s.get('parties', []),
+                    'locations': s.get('locations', []),
+                    'impact_days': s.get('impact_days'),
+                    'source': s.get('source_file', '')[:40],
+                }
+                for s in delay_stmts[:top_n]
+            ],
+        }
+
+
 ###############################################################################
 # HELPER UTILITIES FOR LLM DRILL-DOWN
 ###############################################################################
@@ -614,7 +812,7 @@ def generate_period_summary(
     Args:
         year: Year (e.g., 2024)
         month: Month (1-12)
-        sections: List of sections to include ('labor', 'schedule', 'quality', 'all')
+        sections: List of sections to include ('labor', 'schedule', 'quality', 'narratives', 'all')
         top_n: Maximum items per category
         detail_level: 'summary' or 'detail'
 
@@ -625,7 +823,7 @@ def generate_period_summary(
         sections = ['all']
 
     if 'all' in sections:
-        sections = ['labor', 'schedule', 'quality']
+        sections = ['labor', 'schedule', 'quality', 'narratives']
 
     loader = PeriodDataLoader(year, month)
 
@@ -658,6 +856,14 @@ def generate_period_summary(
         }
         if detail_level == 'detail':
             result['quality']['failures'] = QualitySummary.failures(loader, top_n)
+
+    if 'narratives' in sections:
+        result['narratives'] = {
+            'overview': NarrativeSummary.overview(loader),
+        }
+        if detail_level == 'detail':
+            result['narratives']['delay_claims'] = NarrativeSummary.delay_claims(loader, top_n)
+            result['narratives']['by_category'] = NarrativeSummary.by_category(loader, top_n=5)
 
     # Estimate token count
     json_str = json.dumps(result, default=str)
@@ -785,6 +991,48 @@ def format_markdown(summary: dict) -> str:
                 lines.append(f"| {f.get('source', '')} | {f.get('date', '')} | {f.get('building', '')} | {f.get('level', '')} | {f.get('trade', '')[:15]} | {reason} |")
             lines.append("")
 
+    # Narratives section
+    if 'narratives' in summary:
+        lines.append("## Narrative Statements")
+        lines.append("")
+
+        overview = summary['narratives'].get('overview', {})
+        if overview.get('status') == 'ok':
+            lines.append(f"**Total Statements:** {overview.get('total_statements', 0)}")
+            lines.append(f"**Statements with Impact Claims:** {overview.get('statements_with_impact', 0)}")
+            lines.append(f"**Total Impact Days Claimed:** {overview.get('total_impact_days_claimed', 0)}")
+            lines.append("")
+
+            # By category
+            by_cat = overview.get('by_category', {})
+            if by_cat:
+                lines.append("### By Category")
+                lines.append("")
+                lines.append("| Category | Count |")
+                lines.append("|----------|------:|")
+                for cat, count in sorted(by_cat.items(), key=lambda x: -x[1]):
+                    lines.append(f"| {cat} | {count} |")
+                lines.append("")
+
+            # Parties
+            parties = overview.get('parties', [])
+            if parties:
+                lines.append(f"**Parties Mentioned:** {', '.join(parties[:8])}")
+                lines.append("")
+
+        # Detail: delay claims
+        delay_claims = summary['narratives'].get('delay_claims', {})
+        if delay_claims.get('status') == 'ok' and delay_claims.get('statements'):
+            lines.append("### Delay-Related Statements")
+            lines.append("")
+            for stmt in delay_claims.get('statements', [])[:10]:
+                impact = f" ({stmt.get('impact_days')} days)" if stmt.get('impact_days') else ""
+                parties = ', '.join(stmt.get('parties', [])[:3])
+                lines.append(f"- **[{stmt.get('category', '').upper()}]** {stmt.get('text', '')[:150]}...{impact}")
+                if parties:
+                    lines.append(f"  - Parties: {parties}")
+            lines.append("")
+
     # Meta
     meta = summary.get('_meta', {})
     lines.append("---")
@@ -797,7 +1045,7 @@ def main():
     parser = argparse.ArgumentParser(description='Generate period summary for LLM analysis')
     parser.add_argument('period', nargs='?', help='Period in YYYY-MM format (e.g., 2024-06)')
     parser.add_argument('--section', '-s', action='append', dest='sections',
-                        choices=['labor', 'schedule', 'quality', 'all'],
+                        choices=['labor', 'schedule', 'quality', 'narratives', 'all'],
                         help='Sections to include (can specify multiple)')
     parser.add_argument('--top-n', '-n', type=int, default=DEFAULT_TOP_N,
                         help=f'Max items per category (default: {DEFAULT_TOP_N})')
