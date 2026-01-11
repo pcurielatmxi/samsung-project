@@ -158,6 +158,30 @@ The script includes what-if analysis to estimate schedule recovery potential:
 - Groups by float bands (0-2d, 2-5d, 5-10d, etc.)
 - Calculates cumulative tasks to address for each recovery level
 
+### Attribution Report
+
+The `--attribution` flag generates a comprehensive report that accounts for ALL days of project slippage:
+
+**Slippage Accounting:**
+```
+Driving Path Own Delay (tasks took longer):     +31 days
+Driving Path Early Finishes (tasks helped):     -5 days
+Inherited at Driving Path Start:                +14 days
+                                                ─────────
+Theoretical Sum:                                +40 days
+Path Complexity Adjustment*:                    -4 days
+                                                ─────────
+PROJECT SLIPPAGE:                              +36 days
+```
+
+**Driver Table columns:**
+- **Own Delay**: Days the task took longer than planned
+- **Solo Recov**: How much project recovers if ONLY this task is accelerated (limited by parallel paths)
+- **Limiting Task**: Parallel path task that caps recovery
+- **Investigation**: What to look for in documentation
+
+**Investigation Checklist:** Guides analysts on what documents to collect for each driver.
+
 ### CLI Usage
 
 ```bash
@@ -170,8 +194,11 @@ python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --m
 # With recovery sequence (bottleneck cascade)
 python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --sequence
 
-# Full analysis
-python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence
+# With full attribution report (recommended for documentation)
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --attribution
+
+# Full analysis (all reports)
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence --attribution
 
 # List available schedules
 python -m scripts.integrated_analysis.schedule_slippage_analysis --list-schedules
@@ -199,6 +226,12 @@ print(whatif['whatif_table'][['task_code', 'own_delay_days', 'recovery_days', 'c
 sequence = analyzer.analyze_recovery_sequence(result)
 print(sequence['recovery_bands'])  # Shows tasks per float band
 print(sequence['bottleneck_sequence'].head(10))  # First 10 bottlenecks
+
+# Get full attribution report (recommended for documentation)
+attribution = analyzer.generate_attribution_report(result, top_n=10)
+print(attribution['report'])  # Formatted report with investigation checklist
+print(attribution['accounting'])  # Dict with slippage breakdown
+print(attribution['drivers'])  # DataFrame of top delay drivers
 ```
 
 ### Key Methods
@@ -210,7 +243,8 @@ print(sequence['bottleneck_sequence'].head(10))  # First 10 bottlenecks
 | `generate_whatif_table(result)` | Calculate recovery potential per task |
 | `analyze_parallel_constraints(result)` | Detect parallel path bottlenecks |
 | `analyze_recovery_sequence(result)` | Full bottleneck cascade analysis |
-| `generate_slippage_report(result)` | Formatted text report |
+| `generate_attribution_report(result)` | Full slippage accounting with investigation checklist |
+| `generate_slippage_report(result)` | Basic formatted text report |
 
 ### Output Structure
 
@@ -230,6 +264,16 @@ sequence = analyzer.analyze_recovery_sequence(result)
 # sequence['recovery_bands'] - DataFrame of float bands with task counts
 # sequence['bottleneck_sequence'] - DataFrame of all near-critical tasks
 # sequence['summary'] - Free recovery, total bottlenecks, etc.
+
+attribution = analyzer.generate_attribution_report(result)
+# attribution['report'] - Formatted text report
+# attribution['drivers'] - DataFrame of top delay drivers with solo recovery potential
+# attribution['accounting'] - Dict with full slippage breakdown:
+#   - project_slippage: total days of project slip
+#   - driving_own_delay: sum of own_delay from driving path tasks
+#   - driving_early_finish: sum of negative own_delay (tasks helping)
+#   - inherited_at_start: inherited delay at first driving path task
+#   - first_driving_task: task code where inherited delay enters
 ```
 
 ### Limitations

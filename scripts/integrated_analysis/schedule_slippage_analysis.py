@@ -1128,6 +1128,285 @@ class ScheduleSlippageAnalyzer:
 
         return "\n".join(lines)
 
+    def generate_attribution_report(self, comparison_result, top_n=10):
+        """
+        Generate a comprehensive slippage attribution report that accounts for ALL days of slippage.
+
+        This report is designed to be self-explanatory for analysts collecting documentation.
+        It shows:
+        1. Full accounting of project slippage (driving path + inherited + offsets = total)
+        2. Top N drivers with individual recovery potential and parallel constraints
+        3. "Others" category for remaining contributors
+        4. Investigation checklist for each driver
+
+        Args:
+            comparison_result: Output from compare_schedules() or analyze_month()
+            top_n: Number of top drivers to show individually
+
+        Returns:
+            Dict with 'report' (formatted string) and 'drivers' (DataFrame)
+        """
+        if comparison_result is None:
+            return {'report': "No data available.", 'drivers': pd.DataFrame()}
+
+        tasks = comparison_result['tasks']
+        project_metrics = comparison_result['project_metrics']
+
+        if tasks is None or len(tasks) == 0:
+            return {'report': "No tasks to analyze.", 'drivers': pd.DataFrame()}
+
+        project_slippage = project_metrics.get('project_slippage_days', 0)
+
+        # Get driving path tasks
+        driving_path = tasks[tasks['on_driving_path'] == True].copy()
+
+        # Calculate slippage components
+        # 1. Own delay from driving path tasks
+        driving_own_delay = driving_path[driving_path['own_delay_days'] > 0]['own_delay_days'].sum()
+
+        # 2. Tasks finishing early on driving path (negative own_delay = helping)
+        driving_early_finish = driving_path[driving_path['own_delay_days'] < 0]['own_delay_days'].sum()
+
+        # 3. Inherited delay at the earliest driving path task
+        if len(driving_path) > 0:
+            # Find the first driving path task by early_start
+            driving_path_sorted = driving_path.sort_values('early_start_curr')
+            first_driving_task = driving_path_sorted.iloc[0]
+            inherited_at_start = first_driving_task['inherited_delay_days']
+            first_task_code = first_driving_task['task_code']
+            first_task_name = first_driving_task['task_name']
+        else:
+            inherited_at_start = 0
+            first_task_code = "N/A"
+            first_task_name = "N/A"
+
+        # The theoretical sum (may not exactly match due to path complexity)
+        theoretical_sum = driving_own_delay + driving_early_finish + inherited_at_start
+        accounting_diff = project_slippage - theoretical_sum
+
+        # Get parallel constraints analysis
+        whatif_result = self.generate_whatif_table(comparison_result, include_non_driving=True, analyze_parallel=True)
+        parallel_constraints = whatif_result.get('parallel_constraints', pd.DataFrame()) if whatif_result else pd.DataFrame()
+
+        # Build drivers table with recovery potential
+        drivers = []
+
+        # Get tasks with positive own_delay, sorted by impact
+        delay_tasks = tasks[tasks['own_delay_days'] > 0].copy()
+        delay_tasks['is_driving'] = delay_tasks['on_driving_path'] == True
+        delay_tasks['is_critical'] = delay_tasks['is_critical'] == True
+
+        # Sort: driving path first, then by own_delay
+        delay_tasks = delay_tasks.sort_values(
+            ['is_driving', 'is_critical', 'own_delay_days'],
+            ascending=[False, False, False]
+        )
+
+        for _, task in delay_tasks.head(top_n * 2).iterrows():  # Get extra to ensure we have top_n good ones
+            task_code = task['task_code']
+
+            # Find parallel constraints for this task
+            task_constraints = parallel_constraints[
+                parallel_constraints['driving_task'] == task_code
+            ] if len(parallel_constraints) > 0 else pd.DataFrame()
+
+            if len(task_constraints) > 0:
+                # Get the most limiting constraint
+                min_constraint = task_constraints.loc[task_constraints['parallel_float_days'].idxmin()]
+                solo_recovery = min(task['own_delay_days'], min_constraint['parallel_float_days'])
+                limiting_task = min_constraint['parallel_task']
+                limiting_float = min_constraint['parallel_float_days']
+            else:
+                # No parallel constraint - full recovery possible
+                if task['is_driving'] or task['is_critical']:
+                    solo_recovery = task['own_delay_days']
+                    limiting_task = None
+                    limiting_float = None
+                else:
+                    # Non-critical: recovery limited by float
+                    float_curr = task['float_curr_days'] if pd.notna(task['float_curr_days']) else 0
+                    solo_recovery = max(0, task['own_delay_days'] - float_curr)
+                    limiting_task = "float" if float_curr > 0 else None
+                    limiting_float = float_curr
+
+            drivers.append({
+                'task_code': task_code,
+                'task_name': task['task_name'],
+                'own_delay_days': task['own_delay_days'],
+                'inherited_delay_days': task['inherited_delay_days'],
+                'solo_recovery_days': solo_recovery,
+                'limiting_task': limiting_task,
+                'limiting_float_days': limiting_float,
+                'is_driving_path': task['is_driving'],
+                'is_critical': task['is_critical'],
+                'status': task['status'],
+                'category': task['delay_category'],
+            })
+
+        drivers_df = pd.DataFrame(drivers)
+
+        # Separate top N driving path vs others
+        driving_drivers = drivers_df[drivers_df['is_driving_path'] == True].head(top_n)
+        other_drivers = drivers_df[drivers_df['is_driving_path'] == False].head(top_n)
+
+        # Calculate "others" aggregate
+        shown_tasks = set(drivers_df.head(top_n * 2)['task_code'])
+        others = delay_tasks[~delay_tasks['task_code'].isin(shown_tasks)]
+        others_count = len(others)
+        others_own_delay = others['own_delay_days'].sum()
+
+        # Build report
+        lines = [
+            "=" * 100,
+            "SLIPPAGE ATTRIBUTION REPORT - FULL ACCOUNTING",
+            "=" * 100,
+            "",
+            f"Project Slippage: {project_slippage:.0f} days",
+            f"Period: {project_metrics.get('date_prev', 'N/A')} → {project_metrics.get('date_curr', 'N/A')}",
+            "",
+            "-" * 100,
+            "SLIPPAGE ACCOUNTING (where did the days come from?)",
+            "-" * 100,
+            "",
+            f"  Driving Path Own Delay (tasks took longer):     {driving_own_delay:+.0f} days",
+            f"  Driving Path Early Finishes (tasks helped):     {driving_early_finish:+.0f} days",
+            f"  Inherited at Driving Path Start:                {inherited_at_start:+.0f} days",
+            f"                                                  ─────────",
+            f"  Theoretical Sum:                                {theoretical_sum:+.0f} days",
+        ]
+
+        if abs(accounting_diff) > 1:
+            lines.extend([
+                f"  Path Complexity Adjustment*:                   {accounting_diff:+.0f} days",
+                f"                                                  ─────────",
+                f"  PROJECT SLIPPAGE:                              {project_slippage:+.0f} days",
+                "",
+                "  *Adjustment accounts for parallel path merging, calendar differences,",
+                "   and network complexity not captured in simple sum.",
+            ])
+        else:
+            lines.extend([
+                f"                                                  ═════════",
+                f"  PROJECT SLIPPAGE:                              {project_slippage:+.0f} days  ✓",
+            ])
+
+        lines.extend([
+            "",
+            f"  Inherited delay source: {first_task_code}",
+            f"    {first_task_name[:80]}",
+            "",
+        ])
+
+        # Driving path drivers section
+        lines.extend([
+            "-" * 100,
+            "DRIVING PATH DELAY DRIVERS (directly impact project finish)",
+            "-" * 100,
+            "",
+            f"{'#':<3} {'Task Code':<25} {'Own':>6} {'Solo':>6} {'Limiting Task':<25} {'Limit':>6} {'Investigation'}",
+            f"{'':3} {'':25} {'Delay':>6} {'Recov':>6} {'':25} {'Float':>6} {''}",
+            "-" * 100,
+        ])
+
+        for i, (_, row) in enumerate(driving_drivers.iterrows(), 1):
+            limiting = row['limiting_task'] if row['limiting_task'] else "—"
+            limit_float = f"{row['limiting_float_days']:.0f}d" if pd.notna(row['limiting_float_days']) else "—"
+
+            if row['status'] == 'TK_Active':
+                investigate = "← Check progress, remaining work"
+            elif row['status'] == 'TK_NotStart':
+                investigate = "← Check predecessors, constraints"
+            else:
+                investigate = "← Review what caused duration growth"
+
+            lines.append(
+                f"{i:<3} {row['task_code'][:24]:<25} {row['own_delay_days']:>6.0f} "
+                f"{row['solo_recovery_days']:>6.0f} {str(limiting)[:24]:<25} {limit_float:>6} {investigate}"
+            )
+            lines.append(f"    └─ {row['task_name'][:90]}")
+
+        if len(driving_drivers) == 0:
+            lines.append("    (No driving path tasks with own_delay > 0)")
+
+        # Other significant drivers
+        if len(other_drivers) > 0:
+            lines.extend([
+                "",
+                "-" * 100,
+                "OTHER SIGNIFICANT DELAY DRIVERS (may become critical if parallel paths addressed)",
+                "-" * 100,
+                "",
+                f"{'#':<3} {'Task Code':<25} {'Own':>6} {'Float':>6} {'Project':>8} {'Status':<12} {'Category'}",
+                f"{'':3} {'':25} {'Delay':>6} {'Curr':>6} {'Impact':>8} {'':12} {''}",
+                "-" * 100,
+            ])
+
+            for i, (_, row) in enumerate(other_drivers.head(top_n).iterrows(), 1):
+                float_curr = row['limiting_float_days'] if pd.notna(row['limiting_float_days']) else 0
+                project_impact = row['solo_recovery_days']
+
+                lines.append(
+                    f"{i:<3} {row['task_code'][:24]:<25} {row['own_delay_days']:>6.0f} "
+                    f"{float_curr:>6.0f} {project_impact:>8.0f} {row['status'][:12]:<12} {row['category'][:15]}"
+                )
+
+        # Others aggregate
+        if others_count > 0:
+            lines.extend([
+                "",
+                "-" * 100,
+                f"REMAINING TASKS WITH DELAY ({others_count} tasks)",
+                "-" * 100,
+                f"  Combined own_delay: {others_own_delay:.0f} days",
+                f"  Note: These tasks have delay but are not in top drivers.",
+                f"  Most are absorbed by float or on non-critical paths.",
+            ])
+
+        # Investigation checklist
+        lines.extend([
+            "",
+            "=" * 100,
+            "INVESTIGATION CHECKLIST",
+            "=" * 100,
+            "",
+            "For each DRIVING PATH driver above, collect:",
+            "",
+            "  □ Task status in P6 (% complete, remaining duration)",
+            "  □ Reason for duration growth (RFI, change order, resource issue?)",
+            "  □ Predecessor status (are predecessors complete?)",
+            "  □ Weekly report references (was this delay discussed?)",
+            "  □ Responsible party (GC, subcontractor, owner, design team?)",
+            "",
+            "For INHERITED DELAY, trace the chain:",
+            "",
+            f"  The driving path starts with inherited delay of {inherited_at_start:.0f} days.",
+            f"  First task on driving path: {first_task_code}",
+            "  → Identify what predecessor(s) pushed this task's start date",
+            "  → Check if those predecessors have own_delay or inherited_delay",
+            "",
+            "For PARALLEL PATH constraints (limiting tasks):",
+            "",
+            "  These tasks will become critical if you accelerate the driving path.",
+            "  → Verify they can maintain their current schedule",
+            "  → Consider accelerating them in parallel with driving path work",
+            "",
+            "=" * 100,
+        ])
+
+        return {
+            'report': "\n".join(lines),
+            'drivers': drivers_df,
+            'accounting': {
+                'project_slippage': project_slippage,
+                'driving_own_delay': driving_own_delay,
+                'driving_early_finish': driving_early_finish,
+                'inherited_at_start': inherited_at_start,
+                'theoretical_sum': theoretical_sum,
+                'accounting_diff': accounting_diff,
+                'first_driving_task': first_task_code,
+            }
+        }
+
     def generate_whatif_table(self, comparison_result, include_non_driving=True, analyze_parallel=True):
         """
         Generate a what-if impact table showing potential schedule recovery.
@@ -1793,6 +2072,7 @@ def main():
     parser.add_argument('--top-n', type=int, default=25, help='Number of top contributors')
     parser.add_argument('--whatif', action='store_true', help='Generate what-if impact analysis table')
     parser.add_argument('--sequence', action='store_true', help='Generate recovery sequence analysis (bottleneck cascade)')
+    parser.add_argument('--attribution', action='store_true', help='Generate full slippage attribution report with investigation checklist')
 
     args = parser.parse_args()
 
@@ -1852,6 +2132,12 @@ def main():
                 if sequence_result:
                     sequence_report = analyzer.format_recovery_sequence_report(sequence_result, top_n=args.top_n)
                     print("\n" + sequence_report)
+
+            # Generate attribution report if requested
+            if args.attribution:
+                attribution_result = analyzer.generate_attribution_report(comparison, top_n=args.top_n)
+                if attribution_result:
+                    print("\n" + attribution_result['report'])
 
             # Also show top contributors with category
             print("\nTOP SLIPPAGE CONTRIBUTORS (detailed):")
