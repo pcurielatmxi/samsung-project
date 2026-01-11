@@ -799,22 +799,137 @@ class ScheduleSlippageAnalyzer:
 
         return df.head(top_n)
 
-    def generate_whatif_table(self, comparison_result, include_non_driving=True):
+    def analyze_parallel_constraints(self, comparison_result, target_task_code=None):
+        """
+        Analyze near-critical parallel paths that could limit recovery potential.
+
+        When you recover time on a driving path task, parallel paths with less
+        float become the new critical path. This method identifies those constraints.
+
+        Args:
+            comparison_result: Output from compare_schedules() or analyze_month()
+            target_task_code: Specific task to analyze (optional, analyzes all driving path if None)
+
+        Returns:
+            dict with:
+                'constraints': DataFrame with near-critical tasks and their float
+                'recovery_caps': dict mapping task_code -> max effective recovery
+                'summary': Overall parallel path statistics
+        """
+        if comparison_result is None:
+            return None
+
+        tasks = comparison_result['tasks']
+        project_metrics = comparison_result['project_metrics']
+        project_slip = project_metrics.get('project_slippage_days', 0)
+
+        if tasks is None or len(tasks) == 0:
+            return None
+
+        # Get driving path tasks with delay
+        driving_delayers = tasks[
+            (tasks['on_driving_path']) &
+            (tasks['own_delay_days'] > 0)
+        ].copy()
+
+        if target_task_code:
+            driving_delayers = driving_delayers[driving_delayers['task_code'] == target_task_code]
+
+        if len(driving_delayers) == 0:
+            return {'constraints': pd.DataFrame(), 'recovery_caps': {}, 'summary': {}}
+
+        # Find potential parallel path constraints:
+        # - Not on driving path
+        # - Not complete (status != TK_Complete)
+        # - Has valid float (not NaN)
+        # - Float is positive but less than max driving path delay
+        max_delay = driving_delayers['own_delay_days'].max()
+
+        parallel_candidates = tasks[
+            (~tasks['on_driving_path']) &
+            (tasks['status'] != 'TK_Complete') &
+            (tasks['float_curr_days'].notna()) &
+            (tasks['float_curr_days'] > 0) &
+            (tasks['float_curr_days'] < max_delay)
+        ].copy()
+
+        # Sort by float (lowest first - these become critical soonest)
+        parallel_candidates = parallel_candidates.sort_values('float_curr_days')
+
+        # For each driving path delayer, calculate effective recovery cap
+        recovery_caps = {}
+        constraint_details = []
+
+        for _, dp_row in driving_delayers.iterrows():
+            task_code = dp_row['task_code']
+            own_delay = dp_row['own_delay_days']
+
+            # Find tasks that would become critical before full recovery
+            limiters = parallel_candidates[parallel_candidates['float_curr_days'] < own_delay]
+
+            if len(limiters) > 0:
+                # The minimum float caps the recovery
+                min_float = limiters['float_curr_days'].min()
+                effective_recovery = min(min_float, own_delay, project_slip)
+                limiting_count = len(limiters)
+
+                # Get the most constraining tasks (lowest float)
+                top_limiters = limiters.head(5)
+                for _, lim_row in top_limiters.iterrows():
+                    constraint_details.append({
+                        'driving_task': task_code,
+                        'driving_own_delay': own_delay,
+                        'parallel_task': lim_row['task_code'],
+                        'parallel_task_name': lim_row['task_name'],
+                        'parallel_float_days': lim_row['float_curr_days'],
+                        'becomes_critical_after': lim_row['float_curr_days'],
+                    })
+            else:
+                # No parallel constraints found
+                effective_recovery = min(own_delay, project_slip)
+                limiting_count = 0
+
+            recovery_caps[task_code] = {
+                'own_delay': own_delay,
+                'uncapped_recovery': min(own_delay, project_slip),
+                'effective_recovery': effective_recovery if len(limiters) > 0 else min(own_delay, project_slip),
+                'capped_by_parallel': len(limiters) > 0,
+                'limiting_task_count': limiting_count,
+                'min_parallel_float': limiters['float_curr_days'].min() if len(limiters) > 0 else None,
+            }
+
+        constraints_df = pd.DataFrame(constraint_details) if constraint_details else pd.DataFrame()
+
+        # Summary statistics
+        summary = {
+            'driving_tasks_analyzed': len(driving_delayers),
+            'driving_tasks_with_parallel_constraints': sum(1 for v in recovery_caps.values() if v['capped_by_parallel']),
+            'total_near_critical_tasks': len(parallel_candidates),
+            'min_parallel_float_overall': parallel_candidates['float_curr_days'].min() if len(parallel_candidates) > 0 else None,
+        }
+
+        return {
+            'constraints': constraints_df,
+            'recovery_caps': recovery_caps,
+            'summary': summary,
+        }
+
+    def generate_whatif_table(self, comparison_result, include_non_driving=True, analyze_parallel=True):
         """
         Generate a what-if impact table showing potential schedule recovery.
 
         For each task with positive own_delay, calculates:
         - How many days the project would recover if that task finished on time
         - The resulting project slip after recovery
+        - Parallel path constraints that may limit actual recovery
 
-        This is a SIMPLIFIED model that avoids building a full CPM engine by
-        leveraging P6's existing calculations. It assumes:
-        - Driving path tasks: Recovery ≈ own_delay (serial path assumption)
-        - Non-driving tasks: Recovery = max(0, own_delay - float) (float absorbs delay)
+        This model leverages P6's existing calculations and analyzes near-critical
+        parallel paths to estimate realistic recovery potential.
 
         Args:
             comparison_result: Output from compare_schedules() or analyze_month()
             include_non_driving: If True, include tasks not on driving path (default: True)
+            analyze_parallel: If True, detect parallel path constraints (default: True)
 
         Returns:
             dict with:
@@ -824,26 +939,25 @@ class ScheduleSlippageAnalyzer:
                     - on_driving_path: Whether task is on the driving path
                     - is_critical: Whether task has zero/negative float
                     - float_days: Current total float (buffer before impacting project)
-                    - recovery_days: Project days recovered if task finishes on time
+                    - uncapped_recovery: Recovery assuming no parallel constraints
+                    - parallel_cap: Float of nearest parallel path (limits recovery)
+                    - recovery_days: Effective recovery (capped by parallel paths)
                     - new_project_slip: Resulting project slip after recovery
-                    - confidence: HIGH (driving path) or MEDIUM (float-based estimate)
+                    - limiting_tasks: Count of parallel tasks that would become critical
+                    - confidence: HIGH/HIGH-CAPPED/MEDIUM
 
-                'summary': dict with:
-                    - project_slippage_days: Current total slippage
-                    - max_single_recovery: Largest recovery from one task
-                    - total_driving_path_delay: Sum of own_delays on driving path
-                    - driving_path_tasks_with_delay: Count of driving path delayers
+                'summary': dict with project-level statistics
+                'parallel_constraints': DataFrame with detailed constraint info
 
         Example:
             >>> result = analyzer.analyze_month(2025, 9)
             >>> whatif = analyzer.generate_whatif_table(result)
             >>> print(whatif['whatif_table'].to_string())
 
-        Limitations:
-            - Assumes serial driving path (no parallel critical paths)
-            - Does not account for resource constraints
-            - Non-driving path estimates are upper bounds
-            - For complex scenarios, re-run P6 with modified durations
+        Confidence Levels:
+            - HIGH: Driving/critical path, no parallel constraints detected
+            - HIGH-CAPPED: Driving/critical path, but parallel paths limit recovery
+            - MEDIUM: Non-critical task, float-based estimate
         """
         if comparison_result is None:
             return None
@@ -866,8 +980,14 @@ class ScheduleSlippageAnalyzer:
                     'max_single_recovery': 0,
                     'total_driving_path_delay': 0,
                     'driving_path_tasks_with_delay': 0
-                }
+                },
+                'parallel_constraints': pd.DataFrame()
             }
+
+        # Analyze parallel constraints if requested
+        parallel_analysis = None
+        if analyze_parallel:
+            parallel_analysis = self.analyze_parallel_constraints(comparison_result)
 
         # Optionally filter to driving/critical path only
         if not include_non_driving:
@@ -877,42 +997,57 @@ class ScheduleSlippageAnalyzer:
         whatif_rows = []
 
         for _, row in delaying.iterrows():
+            task_code = row['task_code']
             own_delay = row['own_delay_days']
             on_driving = row['on_driving_path']
             is_critical = row['is_critical']
             float_days = row['float_curr_days'] if pd.notna(row['float_curr_days']) else 0
 
+            # Default values for parallel analysis
+            parallel_cap = None
+            limiting_tasks = 0
+            uncapped_recovery = 0
+
             # Calculate recovery based on path position
-            if on_driving:
-                # Driving path: recovery is approximately equal to own_delay
-                # (Can't recover more than total project slip)
-                recovery = min(own_delay, project_slip)
-                confidence = 'HIGH'
-            elif is_critical:
-                # Critical but not driving: similar logic
-                recovery = min(own_delay, project_slip)
-                confidence = 'HIGH'
+            if on_driving or is_critical:
+                # Driving/critical path: base recovery is own_delay
+                uncapped_recovery = min(own_delay, project_slip)
+
+                # Check for parallel path constraints
+                if parallel_analysis and task_code in parallel_analysis['recovery_caps']:
+                    caps = parallel_analysis['recovery_caps'][task_code]
+                    if caps['capped_by_parallel']:
+                        parallel_cap = caps['min_parallel_float']
+                        limiting_tasks = caps['limiting_task_count']
+                        recovery = min(caps['effective_recovery'], project_slip)
+                        confidence = 'HIGH-CAPPED'
+                    else:
+                        recovery = uncapped_recovery
+                        confidence = 'HIGH'
+                else:
+                    recovery = uncapped_recovery
+                    confidence = 'HIGH'
             else:
                 # Non-driving path: float absorbs delay first
-                # Only the portion exceeding float impacts project
-                if float_days >= own_delay:
-                    recovery = 0  # Float fully absorbs the delay
-                else:
-                    recovery = min(own_delay - float_days, project_slip)
+                uncapped_recovery = 0 if float_days >= own_delay else min(own_delay - float_days, project_slip)
+                recovery = uncapped_recovery
                 confidence = 'MEDIUM'
 
             new_slip = project_slip - recovery
 
             whatif_rows.append({
-                'task_code': row['task_code'],
+                'task_code': task_code,
                 'task_name': row['task_name'],
                 'status': row['status'],
                 'own_delay_days': own_delay,
                 'on_driving_path': on_driving,
                 'is_critical': is_critical,
                 'float_days': float_days,
+                'uncapped_recovery': uncapped_recovery,
+                'parallel_cap': parallel_cap,
                 'recovery_days': recovery,
                 'new_project_slip': new_slip,
+                'limiting_tasks': limiting_tasks,
                 'confidence': confidence
             })
 
@@ -923,17 +1058,26 @@ class ScheduleSlippageAnalyzer:
 
         # Calculate summary statistics
         driving_delayers = whatif_df[whatif_df['on_driving_path']]
+        capped_tasks = whatif_df[whatif_df['confidence'] == 'HIGH-CAPPED']
+
         summary = {
             'project_slippage_days': project_slip,
             'max_single_recovery': whatif_df['recovery_days'].max() if len(whatif_df) > 0 else 0,
+            'max_uncapped_recovery': whatif_df['uncapped_recovery'].max() if len(whatif_df) > 0 else 0,
             'total_driving_path_delay': driving_delayers['own_delay_days'].sum() if len(driving_delayers) > 0 else 0,
-            'driving_path_tasks_with_delay': len(driving_delayers)
+            'driving_path_tasks_with_delay': len(driving_delayers),
+            'tasks_with_parallel_constraints': len(capped_tasks),
         }
 
-        return {
+        result = {
             'whatif_table': whatif_df,
             'summary': summary
         }
+
+        if parallel_analysis:
+            result['parallel_constraints'] = parallel_analysis['constraints']
+
+        return result
 
     def format_whatif_report(self, whatif_result, top_n=20):
         """
@@ -951,41 +1095,97 @@ class ScheduleSlippageAnalyzer:
 
         whatif_df = whatif_result['whatif_table']
         summary = whatif_result['summary']
+        parallel_constraints = whatif_result.get('parallel_constraints', pd.DataFrame())
 
         if len(whatif_df) == 0:
             return "No tasks with positive own_delay found."
 
+        # Check for parallel constraint info
+        has_parallel_analysis = 'tasks_with_parallel_constraints' in summary
+        tasks_capped = summary.get('tasks_with_parallel_constraints', 0)
+
         lines = [
-            "=" * 90,
+            "=" * 100,
             "WHAT-IF IMPACT ANALYSIS",
-            "=" * 90,
+            "=" * 100,
             "",
             "Shows potential schedule recovery if each delaying task finishes on time.",
             "",
             f"Current Project Slippage: {summary['project_slippage_days']} days",
             f"Max Single-Task Recovery: {summary['max_single_recovery']:.0f} days",
-            f"Driving Path Tasks with Delay: {summary['driving_path_tasks_with_delay']}",
-            f"Total Driving Path Delay: {summary['total_driving_path_delay']:.0f} days",
-            "",
-            "-" * 90,
-            "DRIVING PATH TASKS (HIGH confidence - serial path assumption)",
-            "-" * 90,
-            f"{'Task Code':<40} {'Own Delay':>10} {'Recovery':>10} {'New Slip':>10}",
-            "-" * 90,
         ]
 
-        # Show driving path tasks first
+        if has_parallel_analysis and 'max_uncapped_recovery' in summary:
+            if summary['max_uncapped_recovery'] != summary['max_single_recovery']:
+                lines.append(f"Max Uncapped Recovery: {summary['max_uncapped_recovery']:.0f} days (before parallel path limits)")
+
+        lines.extend([
+            f"Driving Path Tasks with Delay: {summary['driving_path_tasks_with_delay']}",
+            f"Total Driving Path Delay: {summary['total_driving_path_delay']:.0f} days",
+        ])
+
+        if has_parallel_analysis and tasks_capped > 0:
+            lines.append(f"Tasks with Parallel Constraints: {tasks_capped}")
+
+        # Show driving path tasks with parallel constraint info
+        lines.extend([
+            "",
+            "-" * 100,
+            "DRIVING PATH TASKS",
+            "-" * 100,
+        ])
+
         driving = whatif_df[whatif_df['on_driving_path']].head(top_n)
-        for _, row in driving.iterrows():
-            lines.append(
-                f"{row['task_code'][:39]:<40} "
-                f"{row['own_delay_days']:>10.0f} "
-                f"{row['recovery_days']:>10.0f} "
-                f"{row['new_project_slip']:>10.0f}"
-            )
+
+        # Check if any driving tasks have parallel constraints
+        has_capped = 'parallel_cap' in whatif_df.columns and driving['parallel_cap'].notna().any()
+
+        if has_capped:
+            lines.append(f"{'Task Code':<35} {'Own Delay':>10} {'Uncapped':>10} {'Par.Limit':>10} {'Recovery':>10} {'New Slip':>10} {'Conf':<12}")
+            lines.append("-" * 100)
+            for _, row in driving.iterrows():
+                par_cap = f"{row['parallel_cap']:.0f}" if pd.notna(row['parallel_cap']) else "-"
+                lines.append(
+                    f"{row['task_code'][:34]:<35} "
+                    f"{row['own_delay_days']:>10.0f} "
+                    f"{row['uncapped_recovery']:>10.0f} "
+                    f"{par_cap:>10} "
+                    f"{row['recovery_days']:>10.0f} "
+                    f"{row['new_project_slip']:>10.0f} "
+                    f"{row['confidence']:<12}"
+                )
+        else:
+            lines.append(f"{'Task Code':<40} {'Own Delay':>10} {'Recovery':>10} {'New Slip':>10} {'Confidence':<12}")
+            lines.append("-" * 100)
+            for _, row in driving.iterrows():
+                lines.append(
+                    f"{row['task_code'][:39]:<40} "
+                    f"{row['own_delay_days']:>10.0f} "
+                    f"{row['recovery_days']:>10.0f} "
+                    f"{row['new_project_slip']:>10.0f} "
+                    f"{row['confidence']:<12}"
+                )
 
         if len(driving) == 0:
             lines.append("  (No driving path tasks with delay)")
+
+        # Show parallel constraint details if any tasks are capped
+        if has_capped and len(parallel_constraints) > 0:
+            lines.extend([
+                "",
+                "-" * 100,
+                "PARALLEL PATH CONSTRAINTS (tasks that would become critical)",
+                "-" * 100,
+                f"{'Driving Task':<25} {'Parallel Task':<30} {'Par.Float':>10} {'Becomes Critical After':>25}",
+                "-" * 100,
+            ])
+            for _, row in parallel_constraints.head(15).iterrows():
+                lines.append(
+                    f"{row['driving_task'][:24]:<25} "
+                    f"{row['parallel_task'][:29]:<30} "
+                    f"{row['parallel_float_days']:>10.0f} "
+                    f"{row['becomes_critical_after']:>22.0f} days"
+                )
 
         # Show critical (non-driving) tasks
         critical_non_driving = whatif_df[
@@ -995,11 +1195,11 @@ class ScheduleSlippageAnalyzer:
         if len(critical_non_driving) > 0:
             lines.extend([
                 "",
-                "-" * 90,
-                "CRITICAL PATH TASKS - NOT ON DRIVING PATH (HIGH confidence)",
-                "-" * 90,
+                "-" * 100,
+                "CRITICAL PATH TASKS - NOT ON DRIVING PATH",
+                "-" * 100,
                 f"{'Task Code':<40} {'Own Delay':>10} {'Recovery':>10} {'New Slip':>10}",
-                "-" * 90,
+                "-" * 100,
             ])
             for _, row in critical_non_driving.iterrows():
                 lines.append(
@@ -1018,11 +1218,11 @@ class ScheduleSlippageAnalyzer:
         if len(non_critical) > 0:
             lines.extend([
                 "",
-                "-" * 90,
-                "NON-CRITICAL TASKS WITH PROJECT IMPACT (MEDIUM confidence - float exceeded)",
-                "-" * 90,
+                "-" * 100,
+                "NON-CRITICAL TASKS WITH PROJECT IMPACT (float exceeded)",
+                "-" * 100,
                 f"{'Task Code':<35} {'Own Delay':>8} {'Float':>8} {'Recovery':>10} {'New Slip':>10}",
-                "-" * 90,
+                "-" * 100,
             ])
             for _, row in non_critical.iterrows():
                 lines.append(
@@ -1046,13 +1246,12 @@ class ScheduleSlippageAnalyzer:
 
         lines.extend([
             "",
-            "-" * 90,
-            "INTERPRETATION",
-            "-" * 90,
-            "• Recovery: Days the project would recover if task finishes on original date",
-            "• New Slip: Resulting project slippage after recovery",
-            "• HIGH confidence: Task is on driving/critical path (serial assumption)",
-            "• MEDIUM confidence: Float-based estimate (delay exceeds available buffer)",
+            "-" * 100,
+            "CONFIDENCE LEVELS",
+            "-" * 100,
+            "• HIGH: Driving/critical path, no parallel constraints - recovery estimate is reliable",
+            "• HIGH-CAPPED: Driving/critical path, but parallel paths limit max recovery",
+            "• MEDIUM: Non-critical task, float-based estimate (less certain)",
             "",
             "LIMITATIONS",
             "-" * 90,

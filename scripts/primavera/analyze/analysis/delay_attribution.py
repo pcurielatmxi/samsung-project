@@ -40,22 +40,22 @@ def attribute_delays(
     """
     if verbose:
         print(f"Loading baseline schedule (file_id={baseline_file_id})...")
-    baseline_network, baseline_cals = load_schedule(baseline_file_id, data_dir, verbose=verbose)
+    baseline_network, baseline_cals, baseline_info = load_schedule(baseline_file_id, data_dir, verbose=verbose)
 
     if verbose:
         print(f"\nLoading current schedule (file_id={current_file_id})...")
-    current_network, current_cals = load_schedule(current_file_id, data_dir, verbose=verbose)
+    current_network, current_cals, current_info = load_schedule(current_file_id, data_dir, verbose=verbose)
 
-    # Run CPM on both
+    # Run CPM on both (using their respective data_dates)
     if verbose:
         print("\nRunning CPM on baseline...")
     baseline_engine = CPMEngine(baseline_network, baseline_cals)
-    baseline_result = baseline_engine.run()
+    baseline_result = baseline_engine.run(data_date=baseline_info.get('data_date'))
 
     if verbose:
         print("Running CPM on current...")
     current_engine = CPMEngine(current_network, current_cals)
-    current_result = current_engine.run()
+    current_result = current_engine.run(data_date=current_info.get('data_date'))
 
     # Match tasks by task_code (task_id includes file_id prefix)
     baseline_by_code = {t.task_code: t for t in baseline_network.tasks.values()}
@@ -181,16 +181,16 @@ def attribute_delays_marginal(
     if verbose:
         print("Loading schedules...")
 
-    baseline_network, baseline_cals = load_schedule(baseline_file_id, data_dir)
-    current_network, current_cals = load_schedule(current_file_id, data_dir)
+    baseline_network, baseline_cals, baseline_info = load_schedule(baseline_file_id, data_dir)
+    current_network, current_cals, current_info = load_schedule(current_file_id, data_dir)
 
     # Get baseline CPM
     baseline_engine = CPMEngine(baseline_network, baseline_cals)
-    baseline_result = baseline_engine.run()
+    baseline_result = baseline_engine.run(data_date=baseline_info.get('data_date'))
 
     # Get current CPM
     current_engine = CPMEngine(current_network, current_cals)
-    current_result = current_engine.run()
+    current_result = current_engine.run(data_date=current_info.get('data_date'))
 
     # Match tasks
     baseline_by_code = {t.task_code: t for t in baseline_network.tasks.values()}
@@ -239,9 +239,9 @@ def attribute_delays_marginal(
         test_network = current_network.clone()
         test_network.modify_task_duration(current_task.task_id, baseline_task.duration_hours)
 
-        # Run CPM on test network
+        # Run CPM on test network (use current schedule's data_date)
         test_engine = CPMEngine(test_network, current_cals)
-        test_result = test_engine.run()
+        test_result = test_engine.run(data_date=current_info.get('data_date'))
 
         # Marginal impact = current finish - test finish
         if calendar and current_result.project_finish > test_result.project_finish:

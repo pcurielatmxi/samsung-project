@@ -20,6 +20,7 @@ def analyze_critical_path(
     calendars: dict[str, P6Calendar],
     near_critical_threshold_hours: float = 40.0,  # 5 work days
     project_start: datetime = None,
+    data_date: datetime = None,
 ) -> CriticalPathResult:
     """
     Analyze critical path and near-critical tasks.
@@ -29,13 +30,18 @@ def analyze_critical_path(
         calendars: Calendar lookup dict
         near_critical_threshold_hours: Float threshold for near-critical classification
         project_start: Project start date (auto-detected if None)
+        data_date: Schedule status date (P6's "data date"). If provided, used as
+                   data_date for CPM. If None and project_start provided, uses
+                   project_start as data_date.
 
     Returns:
         CriticalPathResult with critical path, near-critical tasks, and statistics
     """
     # Run CPM
     engine = CPMEngine(network, calendars)
-    result = engine.run(project_start)
+    # If data_date not specified but project_start is, use project_start as data_date
+    effective_data_date = data_date if data_date is not None else project_start
+    result = engine.run(project_start, data_date=effective_data_date)
 
     # Categorize tasks by float
     critical = []
@@ -88,6 +94,7 @@ def get_critical_path_by_wbs(
     network: TaskNetwork,
     calendars: dict[str, P6Calendar],
     wbs_level: int = 3,
+    data_date: datetime = None,
 ) -> dict[str, list[Task]]:
     """
     Get critical tasks grouped by WBS.
@@ -96,13 +103,14 @@ def get_critical_path_by_wbs(
         network: Task network
         calendars: Calendar lookup
         wbs_level: WBS hierarchy level for grouping
+        data_date: Schedule status date (P6's "data date")
 
     Returns:
         Dict mapping WBS name to list of critical tasks
     """
     # Run CPM
     engine = CPMEngine(network, calendars)
-    engine.run()
+    engine.run(data_date=data_date)
 
     # Group critical tasks by WBS
     by_wbs = defaultdict(list)
@@ -123,6 +131,7 @@ def identify_risk_tasks(
     calendars: dict[str, P6Calendar],
     float_threshold_hours: float = 40.0,
     min_duration_hours: float = 40.0,
+    data_date: datetime = None,
 ) -> list[Task]:
     """
     Identify high-risk tasks that could become critical.
@@ -137,12 +146,13 @@ def identify_risk_tasks(
         calendars: Calendar lookup
         float_threshold_hours: Float threshold for near-critical
         min_duration_hours: Minimum duration to consider
+        data_date: Schedule status date (P6's "data date")
 
     Returns:
         List of risk tasks sorted by (float, duration desc)
     """
     engine = CPMEngine(network, calendars)
-    engine.run()
+    engine.run(data_date=data_date)
 
     risk_tasks = []
     for task in network.tasks.values():

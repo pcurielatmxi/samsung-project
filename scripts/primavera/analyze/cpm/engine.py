@@ -46,15 +46,24 @@ class CPMEngine:
             return self.calendars[self._default_calendar_id]
         raise ValueError(f"Calendar {calendar_id} not found and no default available")
 
-    def forward_pass(self, project_start: datetime) -> None:
+    def forward_pass(self, project_start: datetime, data_date: datetime = None) -> None:
         """
         Calculate early start and early finish for all tasks.
 
         Processes tasks in topological order. For each task:
         - Completed tasks: use actual dates
-        - In-progress tasks: early_start = actual_start, calculate early_finish
-        - Not started: early_start = max(predecessor-driven dates), calculate early_finish
+        - In-progress tasks: early_start = actual_start, remaining work from data_date
+        - Not started: early_start = max(data_date, predecessor-driven dates)
+
+        Args:
+            project_start: Project start date
+            data_date: Schedule status date (P6's "data date"). Remaining work
+                       for incomplete tasks is scheduled from this date forward.
+                       If None, uses project_start.
         """
+        if data_date is None:
+            data_date = project_start
+
         task_order = self.network.topological_sort()
 
         for task_id in task_order:
@@ -68,7 +77,8 @@ class CPMEngine:
                 continue
 
             # Calculate early start from predecessors
-            early_start = project_start
+            # Start with data_date as minimum for incomplete work
+            early_start = data_date
             predecessors = self.network.get_predecessors(task_id)
 
             if predecessors:
@@ -83,19 +93,25 @@ class CPMEngine:
                 early_start = max(early_start, task.constraint_date)
 
             # Handle in-progress tasks
-            if task.is_in_progress() and task.actual_start:
-                task.early_start = task.actual_start
+            if task.is_in_progress():
+                # For in-progress tasks, P6 schedules remaining work from data_date
+                # (or later if driven by predecessors), not from actual_start
+                remaining_start = max(data_date, early_start)
+                task.early_start = remaining_start
                 duration = task.remaining_duration_hours
+                if duration > 0:
+                    task.early_finish = calendar.add_work_hours(remaining_start, duration)
+                else:
+                    task.early_finish = remaining_start
             else:
+                # Not-started task: starts at calculated early_start (>= data_date)
                 task.early_start = early_start
                 duration = task.duration_hours
-
-            # Calculate early finish
-            if duration > 0:
-                task.early_finish = calendar.add_work_hours(task.early_start, duration)
-            else:
-                # Milestone - finish equals start
-                task.early_finish = task.early_start
+                if duration > 0:
+                    task.early_finish = calendar.add_work_hours(task.early_start, duration)
+                else:
+                    # Milestone - finish equals start
+                    task.early_finish = task.early_start
 
     def _get_driven_early_start(self, pred: Task, dep: Dependency,
                                  succ: Task, calendar: P6Calendar) -> Optional[datetime]:
@@ -237,8 +253,17 @@ class CPMEngine:
 
         Total Float = Late Finish - Early Finish (in work hours)
         Free Float = min(successor early start) - Early Finish - lag (for FS)
+
+        Note: Completed tasks have no float (their dates are fixed actuals).
         """
         for task in self.network.tasks.values():
+            # Bug fix: Skip completed tasks - their dates are actuals, not calculated
+            if task.is_completed():
+                task.total_float_hours = None
+                task.free_float_hours = None
+                task.is_critical = False  # Completed tasks can't be critical
+                continue
+
             if task.early_finish is None or task.late_finish is None:
                 continue
 
@@ -291,13 +316,19 @@ class CPMEngine:
                     min_start = task.early_start
         return min_start
 
-    def run(self, project_start: datetime = None) -> CPMResult:
+    def run(self, project_start: datetime = None, data_date: datetime = None,
+            target_finish: datetime = None) -> CPMResult:
         """
         Execute full CPM calculation.
 
         Args:
             project_start: Project start date. If None, uses earliest actual start
                           or constraint date found in tasks.
+            data_date: Schedule status date (P6's "data date"). Remaining work
+                       for incomplete tasks is scheduled from this date forward.
+                       If None, uses project_start.
+            target_finish: Target/contractual finish date for backward pass.
+                          If None, uses the calculated project finish (max early_finish).
 
         Returns:
             CPMResult with all calculated values
@@ -307,8 +338,8 @@ class CPMEngine:
             project_start = self._find_project_start()
 
         # Run CPM passes
-        self.forward_pass(project_start)
-        self.backward_pass()
+        self.forward_pass(project_start, data_date)
+        self.backward_pass(target_finish)
         self.calculate_float()
 
         # Compile results

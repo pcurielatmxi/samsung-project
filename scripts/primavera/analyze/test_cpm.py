@@ -61,7 +61,7 @@ def test_network_building():
     print("=" * 60)
 
     file_id = get_latest_file_id()
-    network, calendars = load_schedule(file_id, verbose=True)
+    network, calendars, project_info = load_schedule(file_id, verbose=True)
 
     stats = network.get_statistics()
     print(f"\nNetwork Statistics:")
@@ -87,11 +87,13 @@ def test_cpm_calculation():
     print("=" * 60)
 
     file_id = get_latest_file_id()
-    network, calendars = load_schedule(file_id, verbose=True)
+    network, calendars, project_info = load_schedule(file_id, verbose=True)
 
     print("\nRunning CPM...")
+    data_date = project_info.get('data_date')
+    print(f"  Using data_date: {data_date}")
     engine = CPMEngine(network, calendars)
-    result = engine.run()
+    result = engine.run(data_date=data_date)
 
     print(f"\nCPM Results:")
     print(f"  Project Start: {result.project_start}")
@@ -130,9 +132,10 @@ def test_critical_path_analysis():
     print("=" * 60)
 
     file_id = get_latest_file_id()
-    network, calendars = load_schedule(file_id, verbose=True)
+    network, calendars, project_info = load_schedule(file_id, verbose=True)
 
-    result = analyze_critical_path(network, calendars)
+    data_date = project_info.get('data_date')
+    result = analyze_critical_path(network, calendars, data_date=data_date)
     print_critical_path_report(result)
 
     return True

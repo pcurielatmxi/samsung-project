@@ -20,6 +20,7 @@ def analyze_task_impact(
     task_id: str,
     duration_delta_hours: float,
     project_start: datetime = None,
+    data_date: datetime = None,
 ) -> TaskImpactResult:
     """
     Calculate impact of changing one task's duration.
@@ -30,6 +31,7 @@ def analyze_task_impact(
         task_id: ID of task to modify
         duration_delta_hours: Change in duration (positive = increase)
         project_start: Project start date (auto-detected if None)
+        data_date: Schedule status date (P6's "data date")
 
     Returns:
         TaskImpactResult with original vs new finish dates and affected tasks
@@ -41,7 +43,7 @@ def analyze_task_impact(
 
     # Run baseline CPM
     baseline_engine = CPMEngine(network, calendars)
-    baseline_result = baseline_engine.run(project_start)
+    baseline_result = baseline_engine.run(project_start, data_date=data_date)
 
     # Clone network and modify task
     modified_network = network.clone()
@@ -52,7 +54,7 @@ def analyze_task_impact(
 
     # Run modified CPM
     modified_engine = CPMEngine(modified_network, calendars)
-    modified_result = modified_engine.run(project_start)
+    modified_result = modified_engine.run(project_start, data_date=data_date)
 
     # Find affected tasks (tasks whose early_finish changed)
     affected = []
@@ -106,6 +108,7 @@ def analyze_task_sensitivity(
     task_ids: list[str] = None,
     duration_delta_hours: float = 40.0,  # 5 days default
     project_start: datetime = None,
+    data_date: datetime = None,
 ) -> list[TaskImpactResult]:
     """
     Analyze sensitivity of multiple tasks.
@@ -119,6 +122,7 @@ def analyze_task_sensitivity(
         task_ids: List of task IDs to analyze (default: all incomplete tasks)
         duration_delta_hours: Duration increase to test
         project_start: Project start date
+        data_date: Schedule status date (P6's "data date")
 
     Returns:
         List of TaskImpactResult sorted by slip_hours (descending)
@@ -135,7 +139,7 @@ def analyze_task_sensitivity(
         try:
             result = analyze_task_impact(
                 network, calendars, task_id,
-                duration_delta_hours, project_start
+                duration_delta_hours, project_start, data_date
             )
             results.append(result)
         except Exception as e:
@@ -153,6 +157,7 @@ def analyze_critical_task_sensitivity(
     calendars: dict[str, P6Calendar],
     duration_delta_hours: float = 40.0,
     project_start: datetime = None,
+    data_date: datetime = None,
 ) -> list[TaskImpactResult]:
     """
     Analyze sensitivity of critical path tasks only.
@@ -162,13 +167,14 @@ def analyze_critical_task_sensitivity(
         calendars: Calendar lookup dict
         duration_delta_hours: Duration increase to test
         project_start: Project start date
+        data_date: Schedule status date (P6's "data date")
 
     Returns:
         List of TaskImpactResult for critical tasks
     """
     # Run CPM to identify critical tasks
     engine = CPMEngine(network, calendars)
-    result = engine.run(project_start)
+    result = engine.run(project_start, data_date=data_date)
 
     critical_ids = [
         tid for tid in result.critical_path
@@ -177,7 +183,7 @@ def analyze_critical_task_sensitivity(
 
     return analyze_task_sensitivity(
         network, calendars, critical_ids,
-        duration_delta_hours, project_start
+        duration_delta_hours, project_start, data_date
     )
 
 

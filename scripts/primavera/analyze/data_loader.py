@@ -147,12 +147,52 @@ def load_dependencies(file_id: int, data_dir: Path = None) -> list[Dependency]:
     return dependencies
 
 
+def load_project_info(file_id: int, data_dir: Path = None) -> dict:
+    """
+    Load project-level information including data date.
+
+    Args:
+        file_id: The schedule version file_id
+        data_dir: Directory containing CSV files
+
+    Returns:
+        Dict with project info including data_date, target_finish, etc.
+    """
+    if data_dir is None:
+        data_dir = Settings.PRIMAVERA_PROCESSED_DIR
+
+    df = pd.read_csv(data_dir / 'project.csv')
+    df = df[df['file_id'] == file_id]
+
+    if len(df) == 0:
+        return {}
+
+    row = df.iloc[0]
+
+    def parse_date(val):
+        if pd.isna(val) or val == '':
+            return None
+        try:
+            return pd.to_datetime(val)
+        except Exception:
+            return None
+
+    return {
+        'data_date': parse_date(row.get('last_recalc_date')),
+        'plan_start_date': parse_date(row.get('plan_start_date')),
+        'plan_end_date': parse_date(row.get('plan_end_date')),
+        'target_finish_date': parse_date(row.get('scd_end_date')),
+        'proj_id': str(row.get('proj_id', '')),
+        'proj_short_name': str(row.get('proj_short_name', '')),
+    }
+
+
 def load_schedule(
     file_id: int,
     data_dir: Path = None,
     include_p6_values: bool = True,
     verbose: bool = False,
-) -> tuple[TaskNetwork, dict[str, P6Calendar]]:
+) -> tuple[TaskNetwork, dict[str, P6Calendar], dict]:
     """
     Load a complete schedule version.
 
@@ -163,13 +203,18 @@ def load_schedule(
         verbose: Print progress messages
 
     Returns:
-        Tuple of (TaskNetwork, calendars dict)
+        Tuple of (TaskNetwork, calendars dict, project_info dict)
     """
     if data_dir is None:
         data_dir = Settings.PRIMAVERA_PROCESSED_DIR
 
     if verbose:
         print(f"Loading schedule file_id={file_id} from {data_dir}")
+
+    # Load project info (includes data_date)
+    project_info = load_project_info(file_id, data_dir)
+    if verbose and project_info.get('data_date'):
+        print(f"  Data date: {project_info['data_date']}")
 
     # Load calendars
     calendars = load_calendars(file_id, data_dir)
@@ -203,7 +248,7 @@ def load_schedule(
         print(f"  Network: {stats['total_tasks']} tasks, {stats['total_dependencies']} deps")
         print(f"  Start tasks: {stats['start_tasks']}, End tasks: {stats['end_tasks']}")
 
-    return network, calendars
+    return network, calendars, project_info
 
 
 def get_file_id_for_date(target_date: str, data_dir: Path = None) -> int:
