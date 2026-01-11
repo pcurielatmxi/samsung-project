@@ -850,6 +850,10 @@ class ScheduleSlippageAnalyzer:
         When you recover time on a driving path task, parallel paths with less
         float become the new critical path. This method identifies those constraints.
 
+        IMPORTANT: A task only constrains recovery if its late_end is near the
+        project finish. Tasks that finish early (even with low float) cannot
+        become the project constraint because their path merges before project finish.
+
         Args:
             comparison_result: Output from compare_schedules() or analyze_month()
             target_task_code: Specific task to analyze (optional, analyzes all driving path if None)
@@ -866,6 +870,7 @@ class ScheduleSlippageAnalyzer:
         tasks = comparison_result['tasks']
         project_metrics = comparison_result['project_metrics']
         project_slip = project_metrics.get('project_slippage_days', 0)
+        project_finish = project_metrics.get('project_finish_curr')
 
         if tasks is None or len(tasks) == 0:
             return None
@@ -882,19 +887,37 @@ class ScheduleSlippageAnalyzer:
         if len(driving_delayers) == 0:
             return {'constraints': pd.DataFrame(), 'recovery_caps': {}, 'summary': {}}
 
+        max_delay = driving_delayers['own_delay_days'].max()
+
+        # Calculate late_end for all tasks: late_end = early_end + float
+        # A task can only constrain project recovery if its late_end is at or near project finish
+        tasks_with_late = tasks.copy()
+        tasks_with_late['late_end_curr'] = tasks_with_late['early_end_curr'] + pd.to_timedelta(
+            tasks_with_late['float_curr_days'].fillna(0), unit='D'
+        )
+
+        # Calculate days between task's late_end and project finish
+        if project_finish is not None:
+            tasks_with_late['days_before_project_finish'] = (
+                project_finish - tasks_with_late['late_end_curr']
+            ).dt.days
+        else:
+            tasks_with_late['days_before_project_finish'] = 0
+
         # Find potential parallel path constraints:
         # - Not on driving path
         # - Not complete (status != TK_Complete)
         # - Has valid float (not NaN)
         # - Float is positive but less than max driving path delay
-        max_delay = driving_delayers['own_delay_days'].max()
-
-        parallel_candidates = tasks[
-            (~tasks['on_driving_path']) &
-            (tasks['status'] != 'TK_Complete') &
-            (tasks['float_curr_days'].notna()) &
-            (tasks['float_curr_days'] > 0) &
-            (tasks['float_curr_days'] < max_delay)
+        # - CRITICAL FIX: late_end must be near project finish (within max_delay days)
+        #   Otherwise the task finishes early and cannot become the new project constraint
+        parallel_candidates = tasks_with_late[
+            (~tasks_with_late['on_driving_path']) &
+            (tasks_with_late['status'] != 'TK_Complete') &
+            (tasks_with_late['float_curr_days'].notna()) &
+            (tasks_with_late['float_curr_days'] > 0) &
+            (tasks_with_late['float_curr_days'] < max_delay) &
+            (tasks_with_late['days_before_project_finish'] <= max_delay)  # Key constraint!
         ].copy()
 
         # Sort by float (lowest first - these become critical soonest)
@@ -957,7 +980,6 @@ class ScheduleSlippageAnalyzer:
             'recovery_caps': recovery_caps,
             'summary': summary,
         }
-
     def analyze_recovery_sequence(self, comparison_result, float_bands=None):
         """
         Analyze the sequence of bottlenecks that limit schedule recovery.
@@ -1502,9 +1524,6 @@ class ScheduleSlippageAnalyzer:
         - How many days the project would recover if that task finished on time
         - The resulting project slip after recovery
         - Parallel path constraints that may limit actual recovery
-
-        This model leverages P6's existing calculations and analyzes near-critical
-        parallel paths to estimate realistic recovery potential.
 
         Args:
             comparison_result: Output from compare_schedules() or analyze_month()
