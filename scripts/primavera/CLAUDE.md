@@ -13,15 +13,19 @@ primavera/
 ├── process/    # XER parsing -> processed/primavera/
 ├── derive/     # Task taxonomy, WBS enrichment -> derived/primavera/
 │   └── task_taxonomy/  # Modular taxonomy inference system
-├── analyze/    # Schedule analysis scripts (planned)
+├── analyze/    # CPM engine and critical path analysis
 └── docs/       # Analysis documentation
 ```
 
+**Note:** Schedule slippage analysis (comparing P6 snapshots) is in [`scripts/integrated_analysis/`](../integrated_analysis/) since it integrates with other data sources for cross-reference analysis.
+
 ## Planning Documents
 
-| Document | Description |
-|----------|-------------|
-| [Schedule Slippage Analysis](docs/schedule_slippage_analysis.md) | Plan for analyzing schedule slippage using milestone and task-level tracking across 72 schedule versions |
+| Document | Description | Status |
+|----------|-------------|--------|
+| [Schedule Slippage Analysis](docs/schedule_slippage_analysis.md) | Original plan for milestone and task-level tracking | ✅ Implemented |
+
+**Implemented:** Schedule slippage analysis with own_delay/inherited_delay decomposition, what-if impact analysis, and recovery sequence analysis. See [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py).
 
 ## Key Scripts
 
@@ -143,7 +147,67 @@ See [docs/SOURCES.md](../../docs/SOURCES.md) for XER field mapping.
 
 ---
 
+## CPM Analysis Engine
+
+**Location:** `primavera/analyze/`
+
+A Python implementation of Critical Path Method (CPM) calculations for P6 schedule analysis.
+
+### Structure
+
+```
+analyze/
+├── cpm/                     # Core CPM implementation
+│   ├── models.py            # Task, Dependency, CriticalPathResult dataclasses
+│   ├── network.py           # TaskNetwork graph structure
+│   ├── engine.py            # CPMEngine - forward/backward pass calculations
+│   └── calendar.py          # P6Calendar - work day/hour calculations
+├── analysis/                # Analysis modules
+│   ├── critical_path.py     # Critical path identification and float analysis
+│   ├── single_task_impact.py # What-if for single task duration changes
+│   └── delay_attribution.py  # Delay source attribution
+├── data_loader.py           # Load P6 CSV exports into TaskNetwork
+└── test_cpm.py              # Validation tests
+```
+
+### Key Functions
+
+| Module | Function | Purpose |
+|--------|----------|---------|
+| `data_loader` | `load_schedule(file_id)` | Load complete schedule → (TaskNetwork, calendars, project_info) |
+| `data_loader` | `list_schedule_versions()` | List all available P6 snapshots |
+| `critical_path` | `analyze_critical_path(network, calendars)` | Identify critical/near-critical tasks |
+| `single_task_impact` | `analyze_task_impact(network, task_code, delta)` | What-if duration change |
+| `delay_attribution` | `attribute_delays(network)` | Identify delay sources |
+
+### Usage
+
+```python
+from scripts.primavera.analyze.data_loader import load_schedule, get_latest_file_id
+from scripts.primavera.analyze.analysis.critical_path import analyze_critical_path
+
+# Load latest schedule
+file_id = get_latest_file_id()
+network, calendars, project_info = load_schedule(file_id)
+
+# Analyze critical path
+result = analyze_critical_path(network, calendars, data_date=project_info['data_date'])
+print(f"Critical tasks: {len(result.critical_path)}")
+print(f"Project finish: {result.project_finish}")
+```
+
+### Note on Schedule Slippage
+
+For snapshot-to-snapshot comparison (schedule slippage analysis), use [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py) which:
+- Compares two P6 snapshots to identify what changed
+- Decomposes delay into own_delay (task-caused) vs inherited_delay (predecessor-pushed)
+- Provides what-if recovery estimates with parallel path constraints
+
+---
+
 ## Schedule Slippage Analysis
+
+**Implementation:** See [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py) for the production script with CLI and programmatic API. Full documentation is in [`scripts/integrated_analysis/CLAUDE.md`](../integrated_analysis/CLAUDE.md).
 
 ### Context
 

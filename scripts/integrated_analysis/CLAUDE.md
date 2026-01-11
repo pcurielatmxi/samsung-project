@@ -110,3 +110,132 @@ Per project guidelines, outputs are classified as **derived** data:
 - NOT fully traceable to raw sources
 - Company aliases are curated
 - Location inference uses statistical distribution
+
+---
+
+## Schedule Slippage Analysis
+
+**Script:** `schedule_slippage_analysis.py`
+
+Analyzes schedule slippage between P6 snapshots to identify which tasks contributed most to project delay.
+
+### Core Concepts
+
+| Metric | Formula | Meaning |
+|--------|---------|---------|
+| **finish_slip** | `early_end[curr] - early_end[prev]` | How much the task's finish date moved |
+| **start_slip** | `early_start[curr] - early_start[prev]` | How much the task's start date moved (inherited delay) |
+| **own_delay** | `finish_slip - start_slip` | Delay caused by THIS task (duration growth) |
+| **inherited_delay** | `start_slip` | Delay pushed from predecessor tasks |
+
+**Key insight:** `finish_slip = own_delay + inherited_delay`
+
+### Task Categories
+
+| Category | Condition | Meaning |
+|----------|-----------|---------|
+| ACTIVE_DELAYER | Active, own_delay > 1d, finish_slip > 0 | In-progress task causing delay |
+| COMPLETED_DELAYER | Complete, own_delay > 1d, finish_slip > 0 | Finished late, pushed successors |
+| WAITING_INHERITED | Not started, inherited > 1d | Delayed by predecessors |
+| WAITING_SQUEEZED | Not started, float_change < -5d | Buffer eroding |
+| *_OK | Within thresholds | Not causing delay |
+
+### What-If Analysis
+
+The script includes what-if analysis to estimate schedule recovery potential:
+
+**Simple model:**
+- Driving path tasks: `recovery ≈ own_delay`
+- Non-driving tasks: `recovery = max(0, own_delay - float)`
+
+**Parallel path detection:**
+- Identifies near-critical tasks that would become bottlenecks
+- Caps recovery estimates based on parallel path float
+- Confidence levels: HIGH, HIGH-CAPPED, MEDIUM
+
+**Recovery sequence analysis:**
+- Shows all bottlenecks in order of when they become critical
+- Groups by float bands (0-2d, 2-5d, 5-10d, etc.)
+- Calculates cumulative tasks to address for each recovery level
+
+### CLI Usage
+
+```bash
+# Basic analysis
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9
+
+# With what-if analysis
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif
+
+# With recovery sequence (bottleneck cascade)
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --sequence
+
+# Full analysis
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence
+
+# List available schedules
+python -m scripts.integrated_analysis.schedule_slippage_analysis --list-schedules
+
+# Analyze specific file pair
+python -m scripts.integrated_analysis.schedule_slippage_analysis --prev-file 82 --curr-file 83
+```
+
+### Programmatic Usage
+
+```python
+from scripts.integrated_analysis.schedule_slippage_analysis import ScheduleSlippageAnalyzer
+
+analyzer = ScheduleSlippageAnalyzer()
+
+# Analyze a month
+result = analyzer.analyze_month(2025, 9)
+print(f"Project slippage: {result['project_metrics']['project_slippage_days']} days")
+
+# Get what-if table
+whatif = analyzer.generate_whatif_table(result)
+print(whatif['whatif_table'][['task_code', 'own_delay_days', 'recovery_days', 'confidence']])
+
+# Get recovery sequence
+sequence = analyzer.analyze_recovery_sequence(result)
+print(sequence['recovery_bands'])  # Shows tasks per float band
+print(sequence['bottleneck_sequence'].head(10))  # First 10 bottlenecks
+```
+
+### Key Methods
+
+| Method | Purpose |
+|--------|---------|
+| `analyze_month(year, month)` | Compare snapshots for a calendar month |
+| `compare_schedules(prev_id, curr_id)` | Compare two specific snapshots |
+| `generate_whatif_table(result)` | Calculate recovery potential per task |
+| `analyze_parallel_constraints(result)` | Detect parallel path bottlenecks |
+| `analyze_recovery_sequence(result)` | Full bottleneck cascade analysis |
+| `generate_slippage_report(result)` | Formatted text report |
+
+### Output Structure
+
+```python
+result = analyzer.analyze_month(2025, 9)
+
+# result['tasks'] - DataFrame with all task-level metrics
+# result['project_metrics'] - dict with project slippage, driving path info
+# result['new_tasks'] - DataFrame of tasks added in current snapshot
+
+whatif = analyzer.generate_whatif_table(result)
+# whatif['whatif_table'] - DataFrame with recovery estimates
+# whatif['summary'] - Project-level recovery stats
+# whatif['parallel_constraints'] - DataFrame of limiting parallel paths
+
+sequence = analyzer.analyze_recovery_sequence(result)
+# sequence['recovery_bands'] - DataFrame of float bands with task counts
+# sequence['bottleneck_sequence'] - DataFrame of all near-critical tasks
+# sequence['summary'] - Free recovery, total bottlenecks, etc.
+```
+
+### Limitations
+
+1. **No baseline comparison** - Compares snapshot-to-snapshot, not plan-to-baseline
+2. **Driving path changes** - P6's driving path is recalculated each snapshot
+3. **Parallel path approximation** - Uses float-based detection, not full network analysis
+4. **No resource constraints** - Doesn't account for resource leveling effects
+5. **Calendar days** - Date differences use calendar days, not working days
