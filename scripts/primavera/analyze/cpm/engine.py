@@ -188,6 +188,13 @@ class CPMEngine:
             task = self.network.tasks[task_id]
             calendar = self.get_calendar(task.calendar_id)
 
+            # Handle completed tasks - P6 sets late dates to project_end
+            # Completed tasks don't constrain predecessors in backward pass
+            if task.is_completed():
+                task.late_finish = project_end
+                task.late_start = project_end
+                continue
+
             # Calculate late finish from successors
             successors = self.network.get_successors(task_id)
 
@@ -198,6 +205,9 @@ class CPMEngine:
                 late_finish = project_end
                 for dep in successors:
                     succ_task = self.network.tasks[dep.succ_task_id]
+                    # Skip completed successors - they don't constrain predecessors
+                    if succ_task.is_completed():
+                        continue
                     driven_date = self._get_driven_late_finish(succ_task, dep, task, calendar)
                     if driven_date and driven_date < late_finish:
                         late_finish = driven_date
@@ -272,7 +282,19 @@ class CPMEngine:
 
         elif dep.is_finish_to_finish():
             # FF: pred finishes before successor finishes - lag
-            return calendar.subtract_work_hours(succ.late_finish, lag)
+            result = calendar.subtract_work_hours(succ.late_finish, lag)
+            # If result is at start of work period, retreat to end of previous period
+            # This matches P6's convention that tasks finish at end of day, not start of next
+            if result is not None:
+                periods = calendar.get_work_periods(result.date())
+                for period in periods:
+                    period_start = datetime.combine(result.date(), period.start)
+                    if result == period_start:
+                        prev_end = calendar.get_previous_work_period_end(result)
+                        if prev_end:
+                            return prev_end
+                        break
+            return result
 
         elif dep.is_start_to_finish():
             # SF: pred starts before successor finishes - lag

@@ -213,14 +213,18 @@ The CPM engine achieves **96-98% accuracy** compared to P6's calculated values (
 
 1. **Data Date Handling**: Completed tasks get early dates set to `data_date`, ensuring successors are driven from data_date forward (not historical actual dates).
 
-2. **Lag Rules by Relationship Type**:
+2. **Target Finish Date**: The backward pass uses `scd_end_date` (target/contractual finish) from project settings when available, not the calculated project finish. This matters when projects are ahead of schedule.
+
+3. **Completed Task Handling**: Completed tasks get late dates set to project end and don't constrain predecessors in backward pass - their work is done.
+
+4. **Lag Rules by Relationship Type**:
    - FS/SS from completed predecessor: lag=0 (start constraint satisfied)
    - FF/SF from completed predecessor: lag applies (finish constraint still relevant)
    - In-progress predecessor + in-progress successor: lag=0 for FS/SS (both already running)
 
-3. **Milestone Handling**: Zero-duration milestones finish at exact driven time (including end-of-day), without advancing to next work period.
+5. **Milestone Handling**: Zero-duration milestones finish at exact driven time (including end-of-day), without advancing to next work period.
 
-4. **Work Period Boundaries**: Late finish for FS relationships retreats to end of previous work period (P6 convention: tasks finish at 17:00, not 07:00 next day).
+6. **Work Period Boundaries**: Late finish for FS and FF relationships retreats to end of previous work period (P6 convention: tasks finish at 17:00, not 07:00 next day).
 
 **Known Limitations (~3% mismatch):**
 

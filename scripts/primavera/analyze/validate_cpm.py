@@ -176,8 +176,13 @@ def validate_cpm(file_id: int, verbose: bool = True) -> CPMValidationResult:
     if verbose:
         print("\nRunning CPM engine...")
 
+    # Get target finish date for backward pass (P6 uses this when project is ahead of schedule)
+    target_finish = project_info.get('target_finish_date')
+    if verbose and target_finish:
+        print(f"  Target Finish: {target_finish}")
+
     engine = CPMEngine(network, calendars)
-    cpm_result = engine.run(data_date=result.data_date)
+    cpm_result = engine.run(data_date=result.data_date, target_finish=target_finish)
 
     if verbose:
         print(f"  Project Start: {cpm_result.project_start}")
