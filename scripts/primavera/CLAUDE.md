@@ -279,6 +279,27 @@ Overall Date Match Rate: 97.0%
 4. Excludes completed tasks (their dates are actuals, not calculated)
 5. Reports match rates and detailed mismatch analysis
 
+### Cross-Schedule Validation Results
+
+Validation across all 90 schedule versions (159,852 tasks compared) reveals a strong temporal pattern:
+
+| Period | Schedules | Overall Accuracy | Notes |
+|--------|-----------|------------------|-------|
+| Oct-Dec 2022 | 7-18 | 7-50% | Early schedules, minimal data |
+| Jan-Sep 2023 | 19-38 | 27-94% | High variance, evolving data |
+| Oct 2023+ | 39-88 | 85-98% | Stable, high accuracy |
+
+**High-Accuracy Schedules (≥95%):** 26 schedules (mostly Oct 2023 onwards)
+
+The accuracy pattern correlates with schedule maturity:
+- Early schedules have sparse activity code assignments and calendar data
+- P6 stored values may reflect different calculation settings in early versions
+- Recent schedules (2024-2025) consistently achieve 93-98% accuracy
+
+**Validation results saved to:** `cpm_validation_all_schedules.csv`
+
+For production analysis, the CPM engine is validated for schedules from Oct 2023 onwards.
+
 ### Note on Schedule Slippage
 
 For snapshot-to-snapshot comparison (schedule slippage analysis), use [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py) which:
