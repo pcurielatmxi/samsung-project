@@ -799,6 +799,272 @@ class ScheduleSlippageAnalyzer:
 
         return df.head(top_n)
 
+    def generate_whatif_table(self, comparison_result, include_non_driving=True):
+        """
+        Generate a what-if impact table showing potential schedule recovery.
+
+        For each task with positive own_delay, calculates:
+        - How many days the project would recover if that task finished on time
+        - The resulting project slip after recovery
+
+        This is a SIMPLIFIED model that avoids building a full CPM engine by
+        leveraging P6's existing calculations. It assumes:
+        - Driving path tasks: Recovery ≈ own_delay (serial path assumption)
+        - Non-driving tasks: Recovery = max(0, own_delay - float) (float absorbs delay)
+
+        Args:
+            comparison_result: Output from compare_schedules() or analyze_month()
+            include_non_driving: If True, include tasks not on driving path (default: True)
+
+        Returns:
+            dict with:
+                'whatif_table': DataFrame with columns:
+                    - task_code, task_name, status
+                    - own_delay_days: Days this task is behind its original duration
+                    - on_driving_path: Whether task is on the driving path
+                    - is_critical: Whether task has zero/negative float
+                    - float_days: Current total float (buffer before impacting project)
+                    - recovery_days: Project days recovered if task finishes on time
+                    - new_project_slip: Resulting project slip after recovery
+                    - confidence: HIGH (driving path) or MEDIUM (float-based estimate)
+
+                'summary': dict with:
+                    - project_slippage_days: Current total slippage
+                    - max_single_recovery: Largest recovery from one task
+                    - total_driving_path_delay: Sum of own_delays on driving path
+                    - driving_path_tasks_with_delay: Count of driving path delayers
+
+        Example:
+            >>> result = analyzer.analyze_month(2025, 9)
+            >>> whatif = analyzer.generate_whatif_table(result)
+            >>> print(whatif['whatif_table'].to_string())
+
+        Limitations:
+            - Assumes serial driving path (no parallel critical paths)
+            - Does not account for resource constraints
+            - Non-driving path estimates are upper bounds
+            - For complex scenarios, re-run P6 with modified durations
+        """
+        if comparison_result is None:
+            return None
+
+        tasks = comparison_result['tasks']
+        project_metrics = comparison_result['project_metrics']
+        project_slip = project_metrics.get('project_slippage_days', 0)
+
+        if tasks is None or len(tasks) == 0 or project_slip is None:
+            return None
+
+        # Filter to tasks with positive own_delay (causing delay)
+        delaying = tasks[tasks['own_delay_days'] > 0].copy()
+
+        if len(delaying) == 0:
+            return {
+                'whatif_table': pd.DataFrame(),
+                'summary': {
+                    'project_slippage_days': project_slip,
+                    'max_single_recovery': 0,
+                    'total_driving_path_delay': 0,
+                    'driving_path_tasks_with_delay': 0
+                }
+            }
+
+        # Optionally filter to driving/critical path only
+        if not include_non_driving:
+            delaying = delaying[delaying['on_driving_path'] | delaying['is_critical']]
+
+        # Calculate recovery for each task
+        whatif_rows = []
+
+        for _, row in delaying.iterrows():
+            own_delay = row['own_delay_days']
+            on_driving = row['on_driving_path']
+            is_critical = row['is_critical']
+            float_days = row['float_curr_days'] if pd.notna(row['float_curr_days']) else 0
+
+            # Calculate recovery based on path position
+            if on_driving:
+                # Driving path: recovery is approximately equal to own_delay
+                # (Can't recover more than total project slip)
+                recovery = min(own_delay, project_slip)
+                confidence = 'HIGH'
+            elif is_critical:
+                # Critical but not driving: similar logic
+                recovery = min(own_delay, project_slip)
+                confidence = 'HIGH'
+            else:
+                # Non-driving path: float absorbs delay first
+                # Only the portion exceeding float impacts project
+                if float_days >= own_delay:
+                    recovery = 0  # Float fully absorbs the delay
+                else:
+                    recovery = min(own_delay - float_days, project_slip)
+                confidence = 'MEDIUM'
+
+            new_slip = project_slip - recovery
+
+            whatif_rows.append({
+                'task_code': row['task_code'],
+                'task_name': row['task_name'],
+                'status': row['status'],
+                'own_delay_days': own_delay,
+                'on_driving_path': on_driving,
+                'is_critical': is_critical,
+                'float_days': float_days,
+                'recovery_days': recovery,
+                'new_project_slip': new_slip,
+                'confidence': confidence
+            })
+
+        whatif_df = pd.DataFrame(whatif_rows)
+
+        # Sort by recovery potential (highest first)
+        whatif_df = whatif_df.sort_values('recovery_days', ascending=False)
+
+        # Calculate summary statistics
+        driving_delayers = whatif_df[whatif_df['on_driving_path']]
+        summary = {
+            'project_slippage_days': project_slip,
+            'max_single_recovery': whatif_df['recovery_days'].max() if len(whatif_df) > 0 else 0,
+            'total_driving_path_delay': driving_delayers['own_delay_days'].sum() if len(driving_delayers) > 0 else 0,
+            'driving_path_tasks_with_delay': len(driving_delayers)
+        }
+
+        return {
+            'whatif_table': whatif_df,
+            'summary': summary
+        }
+
+    def format_whatif_report(self, whatif_result, top_n=20):
+        """
+        Format the what-if table as a readable text report.
+
+        Args:
+            whatif_result: Output from generate_whatif_table()
+            top_n: Maximum number of tasks to include (default: 20)
+
+        Returns:
+            Formatted string report
+        """
+        if whatif_result is None:
+            return "No what-if data available."
+
+        whatif_df = whatif_result['whatif_table']
+        summary = whatif_result['summary']
+
+        if len(whatif_df) == 0:
+            return "No tasks with positive own_delay found."
+
+        lines = [
+            "=" * 90,
+            "WHAT-IF IMPACT ANALYSIS",
+            "=" * 90,
+            "",
+            "Shows potential schedule recovery if each delaying task finishes on time.",
+            "",
+            f"Current Project Slippage: {summary['project_slippage_days']} days",
+            f"Max Single-Task Recovery: {summary['max_single_recovery']:.0f} days",
+            f"Driving Path Tasks with Delay: {summary['driving_path_tasks_with_delay']}",
+            f"Total Driving Path Delay: {summary['total_driving_path_delay']:.0f} days",
+            "",
+            "-" * 90,
+            "DRIVING PATH TASKS (HIGH confidence - serial path assumption)",
+            "-" * 90,
+            f"{'Task Code':<40} {'Own Delay':>10} {'Recovery':>10} {'New Slip':>10}",
+            "-" * 90,
+        ]
+
+        # Show driving path tasks first
+        driving = whatif_df[whatif_df['on_driving_path']].head(top_n)
+        for _, row in driving.iterrows():
+            lines.append(
+                f"{row['task_code'][:39]:<40} "
+                f"{row['own_delay_days']:>10.0f} "
+                f"{row['recovery_days']:>10.0f} "
+                f"{row['new_project_slip']:>10.0f}"
+            )
+
+        if len(driving) == 0:
+            lines.append("  (No driving path tasks with delay)")
+
+        # Show critical (non-driving) tasks
+        critical_non_driving = whatif_df[
+            whatif_df['is_critical'] & ~whatif_df['on_driving_path']
+        ].head(top_n)
+
+        if len(critical_non_driving) > 0:
+            lines.extend([
+                "",
+                "-" * 90,
+                "CRITICAL PATH TASKS - NOT ON DRIVING PATH (HIGH confidence)",
+                "-" * 90,
+                f"{'Task Code':<40} {'Own Delay':>10} {'Recovery':>10} {'New Slip':>10}",
+                "-" * 90,
+            ])
+            for _, row in critical_non_driving.iterrows():
+                lines.append(
+                    f"{row['task_code'][:39]:<40} "
+                    f"{row['own_delay_days']:>10.0f} "
+                    f"{row['recovery_days']:>10.0f} "
+                    f"{row['new_project_slip']:>10.0f}"
+                )
+
+        # Show non-critical tasks with impact
+        non_critical = whatif_df[
+            ~whatif_df['is_critical'] & ~whatif_df['on_driving_path'] &
+            (whatif_df['recovery_days'] > 0)
+        ].head(top_n)
+
+        if len(non_critical) > 0:
+            lines.extend([
+                "",
+                "-" * 90,
+                "NON-CRITICAL TASKS WITH PROJECT IMPACT (MEDIUM confidence - float exceeded)",
+                "-" * 90,
+                f"{'Task Code':<35} {'Own Delay':>8} {'Float':>8} {'Recovery':>10} {'New Slip':>10}",
+                "-" * 90,
+            ])
+            for _, row in non_critical.iterrows():
+                lines.append(
+                    f"{row['task_code'][:34]:<35} "
+                    f"{row['own_delay_days']:>8.0f} "
+                    f"{row['float_days']:>8.0f} "
+                    f"{row['recovery_days']:>10.0f} "
+                    f"{row['new_project_slip']:>10.0f}"
+                )
+
+        # Show tasks fully absorbed by float (summary only)
+        absorbed = whatif_df[
+            ~whatif_df['is_critical'] & ~whatif_df['on_driving_path'] &
+            (whatif_df['recovery_days'] == 0)
+        ]
+        if len(absorbed) > 0:
+            lines.extend([
+                "",
+                f"Note: {len(absorbed)} additional tasks have delay absorbed by float (no project impact).",
+            ])
+
+        lines.extend([
+            "",
+            "-" * 90,
+            "INTERPRETATION",
+            "-" * 90,
+            "• Recovery: Days the project would recover if task finishes on original date",
+            "• New Slip: Resulting project slippage after recovery",
+            "• HIGH confidence: Task is on driving/critical path (serial assumption)",
+            "• MEDIUM confidence: Float-based estimate (delay exceeds available buffer)",
+            "",
+            "LIMITATIONS",
+            "-" * 90,
+            "• Assumes serial driving path - parallel paths may shift after recovery",
+            "• Does not account for resource constraints or calendars",
+            "• For complex scenarios, re-run P6 with modified task durations",
+            "",
+            "=" * 90,
+        ])
+
+        return "\n".join(lines)
+
     def analyze_month(self, year, month):
         """
         Analyze schedule slippage for a specific calendar month.
@@ -1112,6 +1378,7 @@ def main():
     parser.add_argument('--output', type=str, help='Output path for report')
     parser.add_argument('--list-schedules', action='store_true', help='List available schedules')
     parser.add_argument('--top-n', type=int, default=25, help='Number of top contributors')
+    parser.add_argument('--whatif', action='store_true', help='Generate what-if impact analysis table')
 
     args = parser.parse_args()
 
@@ -1154,9 +1421,16 @@ def main():
         tasks_df = comparison['tasks'] if isinstance(comparison, dict) else comparison
 
         if tasks_df is not None and len(tasks_df) > 0:
-            # Generate report
+            # Generate main slippage report
             report = analyzer.generate_slippage_report(comparison, args.output)
             print("\n" + report)
+
+            # Generate what-if table if requested
+            if args.whatif:
+                whatif_result = analyzer.generate_whatif_table(comparison)
+                if whatif_result:
+                    whatif_report = analyzer.format_whatif_report(whatif_result, top_n=args.top_n)
+                    print("\n" + whatif_report)
 
             # Also show top contributors with category
             print("\nTOP SLIPPAGE CONTRIBUTORS (detailed):")
