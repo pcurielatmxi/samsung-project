@@ -641,8 +641,8 @@ def format_quality_section(quality: Dict[str, Any], quality_pass_rates: Dict[str
     return "\n".join(lines)
 
 
-def format_narratives_section(narratives: Dict[str, Any], delay_tasks: pd.DataFrame = None) -> str:
-    """Format narrative statements section with counts, deduplication, and task cross-reference."""
+def format_narratives_section(narratives: Dict[str, Any]) -> str:
+    """Format narrative statements section with counts and deduplication."""
     lines = []
     lines.append("## 4. Narrative Statements")
     lines.append("")
@@ -843,66 +843,6 @@ def format_narratives_section(narratives: Dict[str, Any], delay_tasks: pd.DataFr
                 lines.append("     Full dataset: data/processed/narratives/narrative_statements.csv -->")
                 lines.append("")
 
-    # Cross-reference: Link narratives to delay tasks
-    if delay_tasks is not None and not delay_tasks.empty and not statements.empty:
-        lines.append("### Narrative-to-Task Cross-Reference")
-        lines.append("")
-        lines.append("*Potential links between narrative statements and delay-causing tasks (keyword matching):*")
-        lines.append("")
-
-        # Build keyword search from delay tasks
-        cross_refs = []
-        for _, task in delay_tasks.head(5).iterrows():
-            task_code = str(task.get('task_code', ''))
-            task_name = str(task.get('task_name', ''))
-            own_delay = task.get('own_delay_days', task.get('total_float_hr_cnt', 0))
-
-            # Extract keywords from task name
-            keywords = []
-            name_lower = task_name.lower()
-
-            # Look for common construction terms
-            search_terms = ['steel', 'concrete', 'slab', 'truss', 'precast', 'column', 'pier',
-                           'foundation', 'roof', 'deck', 'erect', 'pour', 'fab', 'install']
-            for term in search_terms:
-                if term in name_lower:
-                    keywords.append(term)
-
-            # Search statements for matching keywords
-            if keywords and text_col in statements.columns:
-                matching_statements = []
-                for kw in keywords:
-                    mask = statements[text_col].str.lower().str.contains(kw, na=False)
-                    matches = statements[mask]
-                    for _, stmt in matches.iterrows():
-                        stmt_text = str(stmt.get(text_col, ''))[:100]
-                        if stmt_text not in [m[1] for m in matching_statements]:
-                            matching_statements.append((kw, stmt_text))
-
-                if matching_statements:
-                    delay_str = f"{own_delay:+.0f}d" if pd.notna(own_delay) else "?"
-                    cross_refs.append({
-                        'task_code': task_code,
-                        'task_name': task_name[:40],
-                        'delay': delay_str,
-                        'matches': matching_statements[:3]  # Top 3 matches
-                    })
-
-        if cross_refs:
-            lines.append("| Delay Task | Own Delay | Related Narrative (keyword match) |")
-            lines.append("|------------|-----------|-----------------------------------|")
-            for ref in cross_refs:
-                first_match = ref['matches'][0] if ref['matches'] else ('', 'No matches')
-                kw, stmt = first_match
-                lines.append(f"| {ref['task_code']} | {ref['delay']} | *{kw}*: {stmt}... |")
-                # Additional matches as sub-rows
-                for kw, stmt in ref['matches'][1:]:
-                    lines.append(f"| | | *{kw}*: {stmt}... |")
-            lines.append("")
-        else:
-            lines.append("*No keyword matches found between delay tasks and narratives.*")
-            lines.append("")
-
     return "\n".join(lines)
 
 
@@ -1045,7 +985,7 @@ def generate_report(period: SnapshotPeriod, previous_period: SnapshotPeriod = No
     lines.append(format_schedule_section(schedule, period, quality_pass_rates))
     lines.append(format_labor_section(labor, period))
     lines.append(format_quality_section(quality, quality_pass_rates))
-    lines.append(format_narratives_section(narratives, delay_tasks=schedule.get('delay_tasks')))
+    lines.append(format_narratives_section(narratives))
     lines.append(format_availability_section(schedule, labor, quality, narratives))
     lines.append(format_company_reference_section())
 
