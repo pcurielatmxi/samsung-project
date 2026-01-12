@@ -28,18 +28,54 @@ from scripts.integrated_analysis.snapshot_reports.data_loaders import (
     load_quality_data,
     load_narrative_data,
 )
+from scripts.integrated_analysis.snapshot_reports.data_loaders.dimensions import (
+    get_company_lookup,
+    resolve_company_id,
+)
+
+
+def _load_company_trade_reference() -> pd.DataFrame:
+    """Load company-trade reference from dimension tables."""
+    dim_dir = Settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+
+    company_path = dim_dir / 'dim_company.csv'
+    trade_path = dim_dir / 'dim_trade.csv'
+
+    if not company_path.exists() or not trade_path.exists():
+        return pd.DataFrame()
+
+    companies = pd.read_csv(company_path)
+    trades = pd.read_csv(trade_path)
+
+    # Merge to get trade names
+    merged = companies.merge(
+        trades[['trade_id', 'trade_name']],
+        left_on='primary_trade_id',
+        right_on='trade_id',
+        how='left'
+    )
+
+    # Select relevant columns
+    result = merged[['canonical_name', 'short_code', 'tier', 'trade_name', 'notes']].copy()
+    result['trade_name'] = result['trade_name'].fillna('General')
+
+    return result
 
 
 def get_output_dir(period: SnapshotPeriod) -> Path:
-    """Get output directory for a snapshot report."""
-    output_base = Settings.PROJECT_ROOT / 'data' / 'analysis' / 'snapshot_reports'
+    """Get output directory for a snapshot report.
+
+    Output goes to external data directory (not git-tracked):
+    {WINDOWS_DATA_DIR}/processed/integrated_analysis/1_snapshot_consolidated_reports/{period_label}/
+    """
+    output_base = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / '1_snapshot_consolidated_reports'
     output_dir = output_base / period.label
     output_dir.mkdir(parents=True, exist_ok=True)
     return output_dir
 
 
-def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod) -> str:
-    """Format schedule progress section."""
+def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, quality_pass_rates: Dict[str, float] = None) -> str:
+    """Format schedule progress section with consolidated snapshot comparison."""
     lines = []
     lines.append("## 1. Schedule Progress & Delays")
     lines.append("")
@@ -47,30 +83,64 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod) ->
     overall = schedule['overall']
     snapshots = schedule['snapshots']
 
-    # Snapshot info
-    lines.append("### Snapshots")
+    # Consolidated Progress Table
+    lines.append("### Schedule Comparison")
     lines.append("")
-    lines.append(f"| Snapshot | File ID | Data Date | Tasks |")
-    lines.append(f"|----------|---------|-----------|-------|")
-    if snapshots['start']:
-        lines.append(f"| Start | {snapshots['start']['file_id']} | {snapshots['start']['data_date']} | {snapshots['start']['task_count']:,} |")
-    if snapshots['end']:
-        lines.append(f"| End | {snapshots['end']['file_id']} | {snapshots['end']['data_date']} | {snapshots['end']['task_count']:,} |")
-    lines.append(f"| **Period** | | **{period.duration_days} days** | |")
+    lines.append("| Metric | Start Snapshot | End Snapshot | Delta |")
+    lines.append("|--------|----------------|--------------|-------|")
+
+    start = snapshots.get('start', {})
+    end = snapshots.get('end', {})
+    delta = snapshots.get('delta', {})
+
+    # Data Date
+    lines.append(f"| Data Date | {start.get('data_date', '-')} | {end.get('data_date', '-')} | {delta.get('days', 0):+d} days |")
+
+    # File ID
+    lines.append(f"| File ID | {start.get('file_id', '-')} | {end.get('file_id', '-')} | - |")
+
+    # Total Tasks
+    lines.append(f"| Total Tasks | {start.get('task_count', 0):,} | {end.get('task_count', 0):,} | {delta.get('task_count', 0):+,} |")
+
+    # % Complete
+    lines.append(f"| % Complete | {start.get('pct_complete', 0):.1f}% | {end.get('pct_complete', 0):.1f}% | {delta.get('pct_complete', 0):+.1f}% |")
+
+    # Tasks Completed
+    lines.append(f"| Tasks Completed | {start.get('completed_tasks', 0):,} | {end.get('completed_tasks', 0):,} | {delta.get('completed_tasks', 0):+,} |")
+
+    # Critical Path Tasks
+    lines.append(f"| Critical Path Tasks | {start.get('critical_path_tasks', 0):,} | {end.get('critical_path_tasks', 0):,} | {delta.get('critical_path_tasks', 0):+,} |")
+
+    # Project End Date
+    start_end = start.get('project_end_date', '-') or '-'
+    end_end = end.get('project_end_date', '-') or '-'
+    slip_days = delta.get('project_slip_days', 0)
+    slip_str = f"{slip_days:+d} days" if slip_days != 0 else "0 days"
+    lines.append(f"| Project End Date | {start_end} | {end_end} | {slip_str} |")
+
+    # Quality Pass Rate (if provided)
+    if quality_pass_rates:
+        prev_rate = quality_pass_rates.get('previous', None)
+        curr_rate = quality_pass_rates.get('current', None)
+        prev_str = f"{prev_rate:.1f}%" if prev_rate is not None else "-"
+        curr_str = f"{curr_rate:.1f}%" if curr_rate is not None else "-"
+        if prev_rate is not None and curr_rate is not None:
+            delta_rate = curr_rate - prev_rate
+            delta_str = f"{delta_rate:+.1f}%"
+        else:
+            delta_str = "-"
+        lines.append(f"| Quality Pass Rate | {prev_str} | {curr_str} | {delta_str} |")
+
     lines.append("")
 
-    # Overall progress
-    lines.append("### Overall Progress")
+    # Schedule Health Summary
+    lines.append("### Schedule Health")
     lines.append("")
-    lines.append(f"| Metric | Value |")
-    lines.append(f"|--------|-------|")
-    lines.append(f"| Total Tasks | {overall.total_tasks:,} |")
-    lines.append(f"| % Complete (Start) | {overall.pct_complete_start:.1f}% |")
-    lines.append(f"| % Complete (End) | {overall.pct_complete_end:.1f}% |")
-    lines.append(f"| Change | {overall.pct_complete_change:+.1f}% |")
-    lines.append(f"| Tasks Completed This Period | {overall.completed_this_period:,} |")
-    lines.append(f"| Tasks Behind Schedule | {overall.tasks_behind_schedule:,} |")
-    lines.append(f"| Tasks with Negative Float | {overall.tasks_with_negative_float:,} |")
+    lines.append("| Metric | Count | Description |")
+    lines.append("|--------|-------|-------------|")
+    lines.append(f"| Tasks Behind Schedule | {overall.tasks_behind_schedule:,} | Incomplete tasks past their target end date |")
+    lines.append(f"| Tasks with Negative Float | {overall.tasks_with_negative_float:,} | Tasks requiring acceleration to meet project end date |")
+    lines.append(f"| Critical Path Tasks | {overall.critical_path_tasks:,} | Tasks on the driving path |")
     lines.append("")
 
     # Progress by floor
@@ -102,93 +172,232 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod) ->
             lines.append(f"| {s.group_name} | {s.total_tasks:,} | {s.completed_end:,} | {s.completed_this_period:+,} | {s.pct_complete_end:.1f}% | {s.tasks_behind_schedule:,} |")
         lines.append("")
 
-    # Delay-causing tasks
+    # Delay-causing tasks (Top 10) - Using schedule slippage methodology
     if not schedule['delay_tasks'].empty:
-        lines.append("### Delay-Causing Tasks (Top 20)")
-        lines.append("")
-        lines.append("Tasks with negative float or past target end date:")
+        lines.append("### Top 10 Delay-Causing Tasks")
         lines.append("")
 
         df = schedule['delay_tasks']
-        cols = [c for c in ['task_code', 'task_name', 'floor', 'trade_name', 'phys_complete_pct', 'total_float_hr_cnt'] if c in df.columns]
 
-        if cols:
-            header = " | ".join(cols)
-            lines.append(f"| {header} |")
-            lines.append("|" + "|".join(["---"] * len(cols)) + "|")
+        # Check if we have slippage metrics (own_delay) or just float (first snapshot)
+        has_slippage_metrics = 'own_delay_days' in df.columns
 
-            for _, row in df.head(20).iterrows():
-                values = []
-                for c in cols:
-                    v = row[c]
-                    if c == 'phys_complete_pct':
-                        values.append(f"{v:.0f}%" if pd.notna(v) else "-")
-                    elif c == 'total_float_hr_cnt':
-                        values.append(f"{v:.0f}h" if pd.notna(v) else "-")
-                    elif c == 'task_name':
-                        # Truncate long names
-                        values.append(str(v)[:50] + "..." if len(str(v)) > 50 else str(v))
-                    else:
-                        values.append(str(v) if pd.notna(v) else "-")
-                lines.append("| " + " | ".join(values) + " |")
+        if has_slippage_metrics:
+            lines.append("Tasks with highest own_delay (delay caused by the task itself, not inherited from predecessors):")
+        else:
+            lines.append("Tasks with most negative float (first snapshot - no comparison available):")
+        lines.append("")
+
+        # Helper to format dates as MM-DD-YY
+        def fmt_date(dt):
+            if pd.isna(dt):
+                return '-'
+            if hasattr(dt, 'strftime'):
+                return dt.strftime('%m-%d-%y')
+            try:
+                return pd.Timestamp(dt).strftime('%m-%d-%y')
+            except Exception:
+                return '-'
+
+        if has_slippage_metrics:
+            # Enhanced table with slippage metrics
+            lines.append("| Task Code | Task Name | Trade | Status | Own Delay | Inherited | Category | Tgt Start | Act Start | Tgt End | Act End | Plan Dur |")
+            lines.append("|-----------|-----------|-------|--------|-----------|-----------|----------|-----------|-----------|---------|---------|----------|")
+
+            for _, row in df.head(10).iterrows():
+                task_code = str(row.get('task_code', '-'))
+                task_name = str(row.get('task_name', '-'))[:30]
+                if len(str(row.get('task_name', ''))) > 30:
+                    task_name += "..."
+                trade = str(row.get('trade_name', '-'))[:10] if pd.notna(row.get('trade_name')) else '-'
+
+                # Status (abbreviated)
+                status = str(row.get('status_code', '-'))
+                status_short = {'TK_Complete': 'Done', 'TK_Active': 'Active', 'TK_NotStart': 'Wait'}.get(status, status[:6])
+
+                # Slippage metrics
+                own_delay = row.get('own_delay_days')
+                own_delay_str = f"{own_delay:+.0f}d" if pd.notna(own_delay) else '-'
+
+                inherited = row.get('inherited_delay_days')
+                inherited_str = f"{inherited:+.0f}d" if pd.notna(inherited) else '-'
+
+                category = str(row.get('delay_category', '-'))[:12] if pd.notna(row.get('delay_category')) else '-'
+
+                # Date columns (MM-DD-YY format)
+                tgt_start = fmt_date(row.get('target_start_date'))
+                act_start = fmt_date(row.get('act_start_date'))
+                tgt_end = fmt_date(row.get('target_end_date'))
+                act_end = fmt_date(row.get('act_end_date'))
+
+                # Planned duration (in hours)
+                plan_dur = row.get('target_drtn_hr_cnt')
+                plan_dur_str = f"{plan_dur:.0f}h" if pd.notna(plan_dur) else '-'
+
+                lines.append(f"| {task_code} | {task_name} | {trade} | {status_short} | {own_delay_str} | {inherited_str} | {category} | {tgt_start} | {act_start} | {tgt_end} | {act_end} | {plan_dur_str} |")
+        else:
+            # Fallback table (no slippage metrics)
+            lines.append("| Task Code | Task Name | Trade | % | Float | Tgt Start | Act Start | Tgt End | Act End | Late Start | Late End | Plan Dur |")
+            lines.append("|-----------|-----------|-------|---|-------|-----------|-----------|---------|---------|------------|----------|----------|")
+
+            for _, row in df.head(10).iterrows():
+                task_code = str(row.get('task_code', '-'))
+                task_name = str(row.get('task_name', '-'))[:35]
+                if len(str(row.get('task_name', ''))) > 35:
+                    task_name += "..."
+                trade = str(row.get('trade_name', '-'))[:12] if pd.notna(row.get('trade_name')) else '-'
+                pct = f"{row['phys_complete_pct']:.0f}" if pd.notna(row.get('phys_complete_pct')) else '-'
+                float_hr = f"{row['total_float_hr_cnt']:.0f}h" if pd.notna(row.get('total_float_hr_cnt')) else '-'
+
+                tgt_start = fmt_date(row.get('target_start_date'))
+                act_start = fmt_date(row.get('act_start_date'))
+                tgt_end = fmt_date(row.get('target_end_date'))
+                act_end = fmt_date(row.get('act_end_date'))
+                late_start = fmt_date(row.get('late_start_date'))
+                late_end = fmt_date(row.get('late_end_date'))
+                plan_dur = row.get('target_drtn_hr_cnt')
+                plan_dur_str = f"{plan_dur:.0f}h" if pd.notna(plan_dur) else '-'
+
+                lines.append(f"| {task_code} | {task_name} | {trade} | {pct} | {float_hr} | {tgt_start} | {act_start} | {tgt_end} | {act_end} | {late_start} | {late_end} | {plan_dur_str} |")
+
+        lines.append("")
+
+    # All Others by Trade (aggregated delay tasks beyond top 10)
+    delay_by_trade = schedule.get('delay_by_trade', pd.DataFrame())
+    if not delay_by_trade.empty:
+        lines.append("### Other Delay Tasks by Trade")
+        lines.append("")
+        lines.append("Remaining delay-causing tasks aggregated by trade:")
+        lines.append("")
+
+        # Check if we have slippage metrics or float metrics
+        has_own_delay = 'total_own_delay' in delay_by_trade.columns
+
+        if has_own_delay:
+            lines.append("| Trade | Tasks | Total Own Delay | Avg Own Delay | Avg % Complete |")
+            lines.append("|-------|-------|-----------------|---------------|----------------|")
+
+            for _, row in delay_by_trade.iterrows():
+                trade = str(row.get('trade_name', '-'))
+                count = int(row.get('task_count', 0))
+                total_delay = f"{row['total_own_delay']:.0f}d" if pd.notna(row.get('total_own_delay')) else '-'
+                avg_delay = f"{row['avg_own_delay']:.1f}d" if pd.notna(row.get('avg_own_delay')) else '-'
+                avg_pct = f"{row['avg_complete_pct']:.1f}%" if pd.notna(row.get('avg_complete_pct')) else '-'
+                lines.append(f"| {trade} | {count:,} | {total_delay} | {avg_delay} | {avg_pct} |")
+        else:
+            lines.append("| Trade | Tasks | Worst Float | Avg Float | Avg % Complete |")
+            lines.append("|-------|-------|-------------|-----------|----------------|")
+
+            for _, row in delay_by_trade.iterrows():
+                trade = str(row.get('trade_name', '-'))
+                count = int(row.get('task_count', 0))
+                worst = f"{row['worst_float_hr']:.0f}h" if pd.notna(row.get('worst_float_hr')) else '-'
+                avg_float = f"{row['avg_float_hr']:.0f}h" if pd.notna(row.get('avg_float_hr')) else '-'
+                avg_pct = f"{row['avg_complete_pct']:.1f}%" if pd.notna(row.get('avg_complete_pct')) else '-'
+                lines.append(f"| {trade} | {count:,} | {worst} | {avg_float} | {avg_pct} |")
+
         lines.append("")
 
     return "\n".join(lines)
 
 
 def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
-    """Format labor hours section."""
+    """Format labor hours section.
+
+    ProjectSight is the authoritative source for labor hours quantity.
+    TBM provides location allocation context (% by building/level per company).
+    Weekly Reports are excluded due to data quality concerns.
+    """
     lines = []
     lines.append("## 2. Labor Hours & Consumption")
     lines.append("")
 
-    # Summary
-    total_hours = 0
-    if not labor['labor'].empty and 'hours' in labor['labor'].columns:
-        total_hours = labor['labor']['hours'].sum()
+    ps_df = labor['projectsight']
+    tbm_df = labor['tbm']
 
-    lines.append("### Summary by Source")
-    lines.append("")
-    lines.append(f"| Source | Records | Hours |")
-    lines.append(f"|--------|---------|-------|")
-
-    for avail in labor['availability']:
-        source_hours = "-"
-        if avail.source == 'ProjectSight' and not labor['projectsight'].empty:
-            if 'hours' in labor['projectsight'].columns:
-                source_hours = f"{labor['projectsight']['hours'].sum():,.0f}"
-        elif avail.source == 'TBM' and not labor['tbm'].empty:
-            if 'hours' in labor['tbm'].columns:
-                source_hours = f"{labor['tbm']['hours'].sum():,.0f}"
-        elif avail.source == 'WeeklyReports' and not labor['weekly_reports'].empty:
-            if 'hours' in labor['weekly_reports'].columns:
-                source_hours = f"{labor['weekly_reports']['hours'].sum():,.0f}"
-
-        lines.append(f"| {avail.source} | {avail.record_count:,} | {source_hours} |")
-
-    lines.append(f"| **Total** | {len(labor['labor']):,} | {total_hours:,.0f} |")
+    # === PROJECTSIGHT SECTION: Source of truth for hours ===
+    lines.append("### ProjectSight Hours")
     lines.append("")
 
-    # Hours by company (top 20)
-    if not labor['labor'].empty and 'hours' in labor['labor'].columns:
-        lines.append("### Hours by Company (Top 20)")
+    if ps_df.empty or 'hours' not in ps_df.columns:
+        lines.append("*No ProjectSight data available for this period.*")
+        lines.append("")
+    else:
+        ps_hours = ps_df['hours'].sum()
+        ps_records = len(ps_df)
+
+        lines.append(f"**Total:** {ps_hours:,.0f} hours from {ps_records:,} records")
         lines.append("")
 
-        company_col = 'dim_company_id' if 'dim_company_id' in labor['labor'].columns else 'company'
-        if company_col in labor['labor'].columns:
-            by_company = labor['labor'].groupby(company_col)['hours'].sum().sort_values(ascending=False)
+        # Hours by company
+        company_col = 'dim_company_id' if 'dim_company_id' in ps_df.columns else 'company'
+        if company_col in ps_df.columns:
+            by_company = ps_df.groupby(company_col)['hours'].sum().sort_values(ascending=False)
 
             lines.append("| Company | Hours | % of Total |")
             lines.append("|---------|-------|------------|")
 
-            for company, hours in by_company.head(20).items():
-                pct = (hours / total_hours * 100) if total_hours > 0 else 0
-                lines.append(f"| {company} | {hours:,.0f} | {pct:.1f}% |")
+            for company_id, hours in by_company.head(15).items():
+                pct = (hours / ps_hours * 100) if ps_hours > 0 else 0
+                company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
+                lines.append(f"| {company_name} | {hours:,.0f} | {pct:.1f}% |")
 
-            if len(by_company) > 20:
-                other_hours = by_company.iloc[20:].sum()
-                other_pct = (other_hours / total_hours * 100) if total_hours > 0 else 0
-                lines.append(f"| (Other {len(by_company) - 20} companies) | {other_hours:,.0f} | {other_pct:.1f}% |")
+            if len(by_company) > 15:
+                other_hours = by_company.iloc[15:].sum()
+                other_pct = (other_hours / ps_hours * 100) if ps_hours > 0 else 0
+                lines.append(f"| *(Other {len(by_company) - 15} companies)* | {other_hours:,.0f} | {other_pct:.1f}% |")
+
+            lines.append("")
+
+    # === TBM SECTION: Location allocation context ===
+    lines.append("### TBM Location Allocation")
+    lines.append("")
+    lines.append("*TBM shows where each company allocated workers (% by location). Does not represent actual hours.*")
+    lines.append("")
+
+    if tbm_df.empty:
+        lines.append("*No TBM data available for this period.*")
+        lines.append("")
+    else:
+        tbm_records = len(tbm_df)
+        lines.append(f"**Entries:** {tbm_records:,} work assignments")
+        lines.append("")
+
+        # Find company and location columns
+        company_col = 'dim_company_id' if 'dim_company_id' in tbm_df.columns else 'company'
+        location_col = None
+        for col in ['building_level', 'dim_location_id', 'location', 'building']:
+            if col in tbm_df.columns:
+                location_col = col
+                break
+
+        if company_col in tbm_df.columns and location_col:
+            # Get top companies by entry count
+            company_counts = tbm_df[company_col].value_counts()
+            top_companies = company_counts.head(10).index.tolist()
+
+            lines.append("| Company | Total Entries | Top Locations (% of company's work) |")
+            lines.append("|---------|---------------|-------------------------------------|")
+
+            for company_id in top_companies:
+                company_data = tbm_df[tbm_df[company_col] == company_id]
+                total_entries = len(company_data)
+                company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
+
+                # Get location breakdown for this company
+                loc_breakdown = company_data[location_col].value_counts()
+                top_locs = []
+                for loc, count in loc_breakdown.head(3).items():
+                    pct = (count / total_entries * 100) if total_entries > 0 else 0
+                    loc_str = str(loc) if pd.notna(loc) else 'Unknown'
+                    top_locs.append(f"{loc_str}: {pct:.0f}%")
+
+                loc_summary = ", ".join(top_locs) if top_locs else "-"
+                lines.append(f"| {company_name} | {total_entries:,} | {loc_summary} |")
+
+            if len(company_counts) > 10:
+                lines.append(f"| *(Other {len(company_counts) - 10} companies)* | {company_counts.iloc[10:].sum():,} | - |")
+
             lines.append("")
 
     return "\n".join(lines)
@@ -274,25 +483,31 @@ def format_quality_section(quality: Dict[str, Any]) -> str:
                 lines.append("| Company | Failures |")
                 lines.append("|---------|----------|")
 
-                for company, count in by_company.head(15).items():
-                    lines.append(f"| {company} | {count:,} |")
+                for company_id, count in by_company.head(15).items():
+                    # Resolve company ID to name
+                    company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
+                    lines.append(f"| {company_name} | {count:,} |")
                 lines.append("")
 
     return "\n".join(lines)
 
 
 def format_narratives_section(narratives: Dict[str, Any]) -> str:
-    """Format narrative statements section."""
+    """Format narrative statements section with counts and LLM instructions."""
     lines = []
     lines.append("## 4. Narrative Statements")
     lines.append("")
 
     statements = narratives['statements']
+    total_statements = len(statements) if not statements.empty else 0
 
     if statements.empty:
         lines.append("*No statements with dates in this period.*")
         lines.append("")
         return "\n".join(lines)
+
+    lines.append(f"**Total statements in period:** {total_statements}")
+    lines.append("")
 
     # Summary by category
     lines.append("### Summary by Category")
@@ -311,46 +526,113 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
     # Helper to format dates cleanly
     def fmt_date(dt):
         if pd.isna(dt):
-            return "Unknown date"
+            return "Unknown"
         if hasattr(dt, 'strftime'):
-            return dt.strftime('%Y-%m-%d')
+            return dt.strftime('%m-%d-%y')
         return str(dt).split(' ')[0]
 
-    # Statements with impact
+    # Helper to get source file name (truncated)
+    def get_source(row):
+        source = row.get('filename', row.get('source_file', ''))
+        if pd.isna(source) or not source:
+            return 'Unknown'
+        # Truncate long filenames
+        source = str(source)
+        if len(source) > 50:
+            return source[:47] + "..."
+        return source
+
+    # Statements with schedule impact (Top 20)
+    IMPACT_LIMIT = 20
     if 'impact_days' in statements.columns:
-        with_impact = statements[statements['impact_days'].notna()]
+        with_impact = statements[statements['impact_days'].notna()].copy()
+        with_impact = with_impact.sort_values('impact_days', key=abs, ascending=False)
+        total_with_impact = len(with_impact)
 
         if not with_impact.empty:
-            lines.append("### Statements with Schedule Impact")
+            shown = min(IMPACT_LIMIT, total_with_impact)
+            lines.append(f"### Statements with Schedule Impact (showing {shown} of {total_with_impact})")
             lines.append("")
 
-            for _, row in with_impact.iterrows():
+            for _, row in with_impact.head(IMPACT_LIMIT).iterrows():
                 event_date = fmt_date(row.get('event_date'))
                 category = row.get('category', 'Unknown')
                 impact = row.get('impact_days', 0)
-                statement = row.get('statement_text', row.get('text', ''))[:200]
-                source = row.get('filename', row.get('source_file', 'Unknown source'))
+                statement = row.get('statement_text', row.get('text', ''))[:250]
+                source = get_source(row)
 
-                lines.append(f"- **{event_date}** [{category}] ({impact:+.0f} days)")
+                lines.append(f"- **[{source}]** {event_date} - [{category}] ({impact:+.0f} days)")
                 lines.append(f"  > {statement}")
-                lines.append(f"  > *Source: {source}*")
                 lines.append("")
 
-    # Delay statements
+            if total_with_impact > IMPACT_LIMIT:
+                lines.append(f"*{total_with_impact - IMPACT_LIMIT} additional statements with schedule impact not shown.*")
+                lines.append("")
+                lines.append("<!-- LLM: To retrieve all statements with schedule impact, use:")
+                lines.append("     load_narrative_data(period)['statements'][statements['impact_days'].notna()]")
+                lines.append("     The full dataset is in data/processed/narratives/narrative_statements.csv -->")
+                lines.append("")
+
+    # Delay-related statements (Top 10)
+    DELAY_LIMIT = 10
     if 'category' in statements.columns:
-        delay_statements = statements[statements['category'].str.lower().str.contains('delay', na=False)]
+        delay_statements = statements[statements['category'].str.lower().str.contains('delay', na=False)].copy()
+        total_delay = len(delay_statements)
 
         if not delay_statements.empty:
-            lines.append("### Delay-Related Statements")
+            shown = min(DELAY_LIMIT, total_delay)
+            lines.append(f"### Delay-Related Statements (showing {shown} of {total_delay})")
             lines.append("")
 
-            for _, row in delay_statements.head(10).iterrows():
+            for _, row in delay_statements.head(DELAY_LIMIT).iterrows():
                 event_date = fmt_date(row.get('event_date'))
                 statement = row.get('statement_text', row.get('text', ''))[:300]
                 justification = row.get('delay_justified', 'UNKNOWN')
+                source = get_source(row)
 
-                lines.append(f"- **{event_date}** [{justification}]")
+                lines.append(f"- **[{source}]** {event_date} - [{justification}]")
                 lines.append(f"  > {statement}")
+                lines.append("")
+
+            if total_delay > DELAY_LIMIT:
+                lines.append(f"*{total_delay - DELAY_LIMIT} additional delay-related statements not shown.*")
+                lines.append("")
+                lines.append("<!-- LLM: To retrieve all delay statements, use:")
+                lines.append("     load_narrative_data(period)['statements'][statements['category'].str.contains('delay', case=False)]")
+                lines.append("     The full dataset is in data/processed/narratives/narrative_statements.csv -->")
+                lines.append("")
+
+    # Other statements (Top 10 of remaining)
+    OTHER_LIMIT = 10
+    if 'category' in statements.columns:
+        # Exclude impact and delay statements already shown
+        other_mask = ~(
+            (statements['impact_days'].notna() if 'impact_days' in statements.columns else False) |
+            statements['category'].str.lower().str.contains('delay', na=False)
+        )
+        other_statements = statements[other_mask].copy()
+        total_other = len(other_statements)
+
+        if not other_statements.empty and total_other > 0:
+            shown = min(OTHER_LIMIT, total_other)
+            lines.append(f"### Other Statements (showing {shown} of {total_other})")
+            lines.append("")
+
+            for _, row in other_statements.head(OTHER_LIMIT).iterrows():
+                event_date = fmt_date(row.get('event_date'))
+                category = row.get('category', 'Unknown')
+                statement = row.get('statement_text', row.get('text', ''))[:250]
+                source = get_source(row)
+
+                lines.append(f"- **[{source}]** {event_date} - [{category}]")
+                lines.append(f"  > {statement}")
+                lines.append("")
+
+            if total_other > OTHER_LIMIT:
+                lines.append(f"*{total_other - OTHER_LIMIT} additional statements not shown.*")
+                lines.append("")
+                lines.append("<!-- LLM: To retrieve all statements, use load_narrative_data(period)['statements']")
+                lines.append("     Full dataset: data/processed/narratives/narrative_statements.csv -->")
                 lines.append("")
 
     return "\n".join(lines)
@@ -392,7 +674,58 @@ def format_availability_section(schedule: Dict, labor: Dict, quality: Dict, narr
     return "\n".join(lines)
 
 
-def generate_report(period: SnapshotPeriod) -> str:
+def format_company_reference_section() -> str:
+    """Format company-trade reference section."""
+    lines = []
+    lines.append("## 6. Company Reference")
+    lines.append("")
+    lines.append("Key contractors and their primary trades:")
+    lines.append("")
+
+    ref_df = _load_company_trade_reference()
+
+    if ref_df.empty:
+        lines.append("*Company reference data not available.*")
+        lines.append("")
+        return "\n".join(lines)
+
+    # Group by tier for better organization
+    tier_order = ['OWNER', 'GC', 'T1_SUB', 'T2_SUB', 'OTHER']
+
+    lines.append("| Company | Code | Tier | Primary Trade | Notes |")
+    lines.append("|---------|------|------|---------------|-------|")
+
+    for tier in tier_order:
+        tier_companies = ref_df[ref_df['tier'] == tier].sort_values('canonical_name')
+        for _, row in tier_companies.iterrows():
+            name = row['canonical_name']
+            code = row['short_code'] if pd.notna(row['short_code']) else '-'
+            trade = row['trade_name'] if pd.notna(row['trade_name']) else '-'
+            notes = str(row['notes'])[:50] if pd.notna(row['notes']) else '-'
+            lines.append(f"| {name} | {code} | {tier} | {trade} | {notes} |")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _calculate_quality_pass_rate(quality: Dict[str, Any]) -> float:
+    """Calculate pass rate from quality data."""
+    combined = quality.get('inspections', pd.DataFrame())
+    if combined.empty:
+        return None
+
+    if 'outcome_normalized' not in combined.columns:
+        return None
+
+    total = len(combined)
+    if total == 0:
+        return None
+
+    passed = (combined['outcome_normalized'] == 'PASS').sum()
+    return (passed / total) * 100
+
+
+def generate_report(period: SnapshotPeriod, previous_period: SnapshotPeriod = None) -> str:
     """Generate consolidated snapshot report."""
     print(f"Loading data for period {period.label}...")
 
@@ -409,6 +742,23 @@ def generate_report(period: SnapshotPeriod) -> str:
     print("  Loading narrative data...")
     narratives = load_narrative_data(period)
 
+    # Calculate quality pass rates
+    current_pass_rate = _calculate_quality_pass_rate(quality)
+
+    # Try to get previous period pass rate if we have a previous period
+    previous_pass_rate = None
+    if previous_period:
+        print("  Loading previous period quality data...")
+        prev_quality = load_quality_data(previous_period)
+        previous_pass_rate = _calculate_quality_pass_rate(prev_quality)
+
+    quality_pass_rates = None
+    if current_pass_rate is not None:
+        quality_pass_rates = {
+            'current': current_pass_rate,
+            'previous': previous_pass_rate,
+        }
+
     # Build report
     lines = []
 
@@ -424,18 +774,39 @@ def generate_report(period: SnapshotPeriod) -> str:
     lines.append("")
 
     # Sections
-    lines.append(format_schedule_section(schedule, period))
+    lines.append(format_schedule_section(schedule, period, quality_pass_rates))
     lines.append(format_labor_section(labor, period))
     lines.append(format_quality_section(quality))
     lines.append(format_narratives_section(narratives))
     lines.append(format_availability_section(schedule, labor, quality, narratives))
+    lines.append(format_company_reference_section())
 
     return "\n".join(lines)
 
 
-def consolidate_snapshot(period: SnapshotPeriod, dry_run: bool = False) -> Path:
-    """Generate and save consolidated report for a snapshot period."""
-    report = generate_report(period)
+def consolidate_snapshot(period: SnapshotPeriod, dry_run: bool = False, all_periods: List[SnapshotPeriod] = None) -> Path:
+    """Generate and save consolidated report for a snapshot period.
+
+    Args:
+        period: The snapshot period to generate report for
+        dry_run: If True, preview output without saving
+        all_periods: Optional list of all periods (to find previous period for quality pass rate comparison)
+
+    Returns:
+        Path to saved report, or None if dry_run
+    """
+    # Find previous period for comparison
+    previous_period = None
+    if all_periods:
+        try:
+            idx = next(i for i, p in enumerate(all_periods) if p.label == period.label)
+            if idx > 0:
+                previous_period = all_periods[idx - 1]
+                print(f"  Using previous period for comparison: {previous_period.label}")
+        except StopIteration:
+            pass
+
+    report = generate_report(period, previous_period=previous_period)
 
     if dry_run:
         print("\n--- DRY RUN OUTPUT ---")
@@ -504,7 +875,7 @@ def main():
         print(f"Generating {len(all_periods)} reports...")
         for period in all_periods:
             try:
-                consolidate_snapshot(period, dry_run=args.dry_run)
+                consolidate_snapshot(period, dry_run=args.dry_run, all_periods=all_periods)
             except Exception as e:
                 print(f"  Error for {period.label}: {e}")
     elif args.last:
@@ -512,25 +883,25 @@ def main():
         print(f"Generating {len(periods)} reports...")
         for period in periods:
             try:
-                consolidate_snapshot(period, dry_run=args.dry_run)
+                consolidate_snapshot(period, dry_run=args.dry_run, all_periods=all_periods)
             except Exception as e:
                 print(f"  Error for {period.label}: {e}")
     elif args.file_id:
         period = get_snapshot_period(file_id=args.file_id)
         if period:
-            consolidate_snapshot(period, dry_run=args.dry_run)
+            consolidate_snapshot(period, dry_run=args.dry_run, all_periods=all_periods)
         else:
             print(f"No period found ending at file_id {args.file_id}")
     elif args.data_date:
         period = get_snapshot_period(data_date=args.data_date)
         if period:
-            consolidate_snapshot(period, dry_run=args.dry_run)
+            consolidate_snapshot(period, dry_run=args.dry_run, all_periods=all_periods)
         else:
             print(f"No period found near date {args.data_date}")
     elif args.latest:
         period = all_periods[-1] if all_periods else None
         if period:
-            consolidate_snapshot(period, dry_run=args.dry_run)
+            consolidate_snapshot(period, dry_run=args.dry_run, all_periods=all_periods)
         else:
             print("No periods found")
     else:

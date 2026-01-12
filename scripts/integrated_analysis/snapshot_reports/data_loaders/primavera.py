@@ -39,6 +39,14 @@ class ProgressSummary:
     tasks_behind_schedule: int = 0
     tasks_with_negative_float: int = 0
 
+    # Critical path
+    critical_path_tasks: int = 0
+
+    # Project dates
+    project_end_date_start: Optional[str] = None
+    project_end_date_end: Optional[str] = None
+    project_end_date_slip_days: int = 0
+
     # Top completions (for narrative)
     top_completions: List[str] = field(default_factory=list)
 
@@ -55,8 +63,36 @@ class ProgressSummary:
             'pct_complete_change': round(self.pct_complete_change, 1),
             'tasks_behind_schedule': self.tasks_behind_schedule,
             'tasks_with_negative_float': self.tasks_with_negative_float,
+            'critical_path_tasks': self.critical_path_tasks,
+            'project_end_date_start': self.project_end_date_start,
+            'project_end_date_end': self.project_end_date_end,
+            'project_end_date_slip_days': self.project_end_date_slip_days,
             'top_completions': self.top_completions,
         }
+
+
+def _get_project_end_date(tasks: pd.DataFrame) -> Optional[str]:
+    """Get the project end date from tasks (latest early_end_date or from substantial completion milestone)."""
+    if tasks.empty:
+        return None
+
+    # First try to find substantial completion milestone
+    if 'task_name' in tasks.columns:
+        milestone_patterns = ['SUBSTANTIAL COMPLETION', 'PROJECT COMPLETE', 'BUILDING SUBSTANTIAL']
+        for pattern in milestone_patterns:
+            milestone = tasks[tasks['task_name'].str.upper().str.contains(pattern, na=False)]
+            if not milestone.empty and 'early_end_date' in milestone.columns:
+                end_date = milestone['early_end_date'].max()
+                if pd.notna(end_date):
+                    return end_date.strftime('%Y-%m-%d')
+
+    # Fall back to latest early_end_date in schedule
+    if 'early_end_date' in tasks.columns:
+        max_date = tasks['early_end_date'].max()
+        if pd.notna(max_date):
+            return max_date.strftime('%Y-%m-%d')
+
+    return None
 
 
 def _load_tasks_for_snapshot(file_id: int, taxonomy: pd.DataFrame) -> pd.DataFrame:
@@ -156,6 +192,10 @@ def _calculate_progress_summary(
         )
         summary.tasks_behind_schedule = overdue.sum()
 
+    # Critical path tasks (driving_path_flag = 'Y')
+    if 'driving_path_flag' in end_group.columns:
+        summary.critical_path_tasks = (end_group['driving_path_flag'] == 'Y').sum()
+
     # Top completions this period (tasks completed in end but not in start)
     if not start_group.empty:
         start_complete_ids = set(start_group[start_group['is_complete']]['task_id'])
@@ -218,10 +258,29 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
 
     data_date = pd.Timestamp(period.end_data_date)
 
+    # Calculate project end dates
+    project_end_start = _get_project_end_date(start_tasks)
+    project_end_end = _get_project_end_date(end_tasks)
+
+    # Calculate slip in days
+    project_slip_days = 0
+    if project_end_start and project_end_end:
+        try:
+            start_dt = pd.Timestamp(project_end_start)
+            end_dt = pd.Timestamp(project_end_end)
+            project_slip_days = (end_dt - start_dt).days
+        except Exception:
+            pass
+
     # Calculate overall progress
     overall = _calculate_progress_summary(
         start_tasks, end_tasks, None, 'Overall', 'overall', data_date
     )
+
+    # Add project end dates to overall summary
+    overall.project_end_date_start = project_end_start
+    overall.project_end_date_end = project_end_end
+    overall.project_end_date_slip_days = project_slip_days
 
     # Calculate progress by floor
     by_floor = []
@@ -247,39 +306,200 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                 if summary.total_tasks > 0:
                     by_scope.append(summary)
 
-    # Identify delay-causing tasks (negative float, behind schedule)
+    # Identify delay-causing tasks using schedule slippage methodology
+    # Primary: Show tasks with positive own_delay (CAUSING delay through execution)
+    # Fallback: Show tasks with negative float (schedule pressure) if no execution delays found
+    #
+    # Formula: own_delay = finish_slip - start_slip
+    # - finish_slip = early_end[curr] - early_end[prev]
+    # - start_slip = early_start[curr] - early_start[prev]
+    # - inherited_delay = start_slip (delay from predecessors)
+    # - own_delay = delay caused by THIS task
     delay_tasks = pd.DataFrame()
-    if not end_tasks.empty:
-        delay_mask = (
-            (end_tasks['total_float_hr_cnt'] < 0) |
-            (
-                (end_tasks['target_end_date'] < data_date) &
-                (~end_tasks['is_complete'])
+    delay_by_trade = pd.DataFrame()
+    delay_type = 'none'  # Track which type of delay analysis was used
+
+    if not end_tasks.empty and not start_tasks.empty:
+        # Merge end tasks with start tasks to calculate slippage
+        # Use task_code for matching (stable across snapshots)
+        prev_data = start_tasks[[
+            'task_code', 'early_start_date', 'early_end_date',
+            'target_start_date', 'target_end_date', 'target_drtn_hr_cnt',
+            'phys_complete_pct', 'status_code'
+        ]].copy()
+        prev_data = prev_data.rename(columns={
+            'early_start_date': 'prev_early_start',
+            'early_end_date': 'prev_early_end',
+            'target_start_date': 'prev_target_start',
+            'target_end_date': 'prev_target_end',
+            'target_drtn_hr_cnt': 'prev_duration_hr',
+            'phys_complete_pct': 'prev_pct_complete',
+            'status_code': 'prev_status'
+        })
+
+        # Merge on task_code (stable across snapshots, unlike task_id which includes file_id)
+        common_tasks = end_tasks.merge(prev_data, on='task_code', how='inner')
+
+        if not common_tasks.empty:
+            # Calculate slippage metrics (in days)
+            common_tasks['finish_slip_days'] = (
+                (common_tasks['early_end_date'] - common_tasks['prev_early_end']).dt.days
             )
-        )
+            common_tasks['start_slip_days'] = (
+                (common_tasks['early_start_date'] - common_tasks['prev_early_start']).dt.days
+            )
+            common_tasks['own_delay_days'] = (
+                common_tasks['finish_slip_days'] - common_tasks['start_slip_days']
+            )
+            common_tasks['inherited_delay_days'] = common_tasks['start_slip_days']
+
+            # Categorize tasks
+            def categorize_delay(row):
+                own_delay = row.get('own_delay_days', 0) or 0
+                finish_slip = row.get('finish_slip_days', 0) or 0
+                status = row.get('status_code', '')
+
+                if status == 'TK_Complete':
+                    if own_delay > 1 and finish_slip > 0:
+                        return 'COMPLETED_DELAYER'
+                    return 'COMPLETED_OK'
+                elif status == 'TK_Active':
+                    if own_delay > 1 and finish_slip > 0:
+                        return 'ACTIVE_DELAYER'
+                    return 'ACTIVE_OK'
+                else:  # Not started
+                    if row.get('inherited_delay_days', 0) > 1:
+                        return 'WAITING_INHERITED'
+                    return 'WAITING_OK'
+
+            common_tasks['delay_category'] = common_tasks.apply(categorize_delay, axis=1)
+
+            # Primary: Filter to tasks causing delay (positive own_delay AND finish slipped)
+            delay_candidates = common_tasks[
+                (common_tasks['own_delay_days'] > 1) &
+                (common_tasks['finish_slip_days'] > 0)
+            ].copy()
+
+            if not delay_candidates.empty:
+                delay_type = 'own_delay'
+
+                # Sort by own_delay, weight by driving path
+                delay_candidates['impact_score'] = delay_candidates['own_delay_days'].abs()
+                delay_candidates.loc[
+                    delay_candidates['driving_path_flag'] == 'Y', 'impact_score'
+                ] *= 1.5
+                delay_candidates = delay_candidates.sort_values('impact_score', ascending=False)
+
+                # Select key columns (top 10)
+                delay_cols = [
+                    'task_code', 'task_name', 'floor', 'trade_name',
+                    'status_code', 'phys_complete_pct', 'total_float_hr_cnt',
+                    'own_delay_days', 'inherited_delay_days', 'finish_slip_days',
+                    'delay_category',
+                    'target_start_date', 'act_start_date', 'late_start_date', 'early_start_date',
+                    'target_end_date', 'act_end_date', 'late_end_date', 'early_end_date',
+                    'target_drtn_hr_cnt', 'driving_path_flag'
+                ]
+                available_cols = [c for c in delay_cols if c in delay_candidates.columns]
+                delay_tasks = delay_candidates[available_cols].head(10)
+
+                # Aggregate "All Others" by trade
+                if 'trade_name' in delay_candidates.columns:
+                    other_delay = delay_candidates.iloc[10:]
+                    if not other_delay.empty:
+                        delay_by_trade = other_delay.groupby('trade_name').agg({
+                            'task_id': 'count',
+                            'own_delay_days': ['sum', 'mean'],
+                            'phys_complete_pct': 'mean',
+                        }).round(1)
+                        delay_by_trade.columns = ['task_count', 'total_own_delay', 'avg_own_delay', 'avg_complete_pct']
+                        delay_by_trade = delay_by_trade.sort_values('total_own_delay', ascending=False).reset_index()
+
+            else:
+                # Fallback: No execution delays found - show schedule pressure (negative float)
+                # This happens early in projects when tasks haven't started executing
+                delay_type = 'float'
+                float_candidates = end_tasks[end_tasks['total_float_hr_cnt'] < 0].copy()
+
+                if not float_candidates.empty:
+                    float_candidates = float_candidates.sort_values('total_float_hr_cnt', ascending=True)
+
+                    delay_cols = [
+                        'task_code', 'task_name', 'floor', 'trade_name',
+                        'status_code', 'phys_complete_pct', 'total_float_hr_cnt',
+                        'target_start_date', 'act_start_date', 'late_start_date', 'early_start_date',
+                        'target_end_date', 'act_end_date', 'late_end_date', 'early_end_date',
+                        'target_drtn_hr_cnt', 'driving_path_flag'
+                    ]
+                    available_cols = [c for c in delay_cols if c in float_candidates.columns]
+                    delay_tasks = float_candidates[available_cols].head(10)
+
+                    # Aggregate by trade for float-based
+                    if 'trade_name' in float_candidates.columns:
+                        other_float = float_candidates.iloc[10:]
+                        if not other_float.empty:
+                            delay_by_trade = other_float.groupby('trade_name').agg({
+                                'task_id': 'count',
+                                'total_float_hr_cnt': ['min', 'mean'],
+                                'phys_complete_pct': 'mean',
+                            }).round(1)
+                            delay_by_trade.columns = ['task_count', 'worst_float_hr', 'avg_float_hr', 'avg_complete_pct']
+                            delay_by_trade = delay_by_trade.sort_values('task_count', ascending=False).reset_index()
+
+    elif not end_tasks.empty:
+        # No start snapshot to compare - fall back to negative float
+        delay_type = 'float'
+        delay_mask = end_tasks['total_float_hr_cnt'] < 0
         delay_candidates = end_tasks[delay_mask].copy()
 
         if not delay_candidates.empty:
-            # Sort by float (most negative first)
             delay_candidates = delay_candidates.sort_values('total_float_hr_cnt', ascending=True)
 
-            # Select key columns for output
-            delay_cols = ['task_code', 'task_name', 'floor', 'trade_name', 'location_code',
-                         'phys_complete_pct', 'total_float_hr_cnt', 'target_end_date', 'status_code']
+            delay_cols = [
+                'task_code', 'task_name', 'floor', 'trade_name',
+                'status_code', 'phys_complete_pct', 'total_float_hr_cnt',
+                'target_start_date', 'act_start_date', 'late_start_date', 'early_start_date',
+                'target_end_date', 'act_end_date', 'late_end_date', 'early_end_date',
+                'target_drtn_hr_cnt', 'driving_path_flag'
+            ]
             available_cols = [c for c in delay_cols if c in delay_candidates.columns]
-            delay_tasks = delay_candidates[available_cols].head(20)
+            delay_tasks = delay_candidates[available_cols].head(10)
 
-    # Build snapshot info
+    # Calculate critical path tasks for each snapshot
+    critical_start = 0
+    critical_end = 0
+    if not start_tasks.empty and 'driving_path_flag' in start_tasks.columns:
+        critical_start = (start_tasks['driving_path_flag'] == 'Y').sum()
+    if not end_tasks.empty and 'driving_path_flag' in end_tasks.columns:
+        critical_end = (end_tasks['driving_path_flag'] == 'Y').sum()
+
+    # Build snapshot info with enhanced data
     snapshot_info = {
         'start': {
             'file_id': period.start_file_id,
             'data_date': period.start_data_date.isoformat(),
             'task_count': len(start_tasks),
+            'pct_complete': round(overall.pct_complete_start, 1),
+            'completed_tasks': overall.completed_start,
+            'critical_path_tasks': critical_start,
+            'project_end_date': project_end_start,
         },
         'end': {
             'file_id': period.end_file_id,
             'data_date': period.end_data_date.isoformat(),
             'task_count': len(end_tasks),
+            'pct_complete': round(overall.pct_complete_end, 1),
+            'completed_tasks': overall.completed_end,
+            'critical_path_tasks': critical_end,
+            'project_end_date': project_end_end,
+        },
+        'delta': {
+            'days': period.duration_days,
+            'task_count': len(end_tasks) - len(start_tasks),
+            'pct_complete': round(overall.pct_complete_change, 1),
+            'completed_tasks': overall.completed_this_period,
+            'critical_path_tasks': critical_end - critical_start,
+            'project_slip_days': project_slip_days,
         },
     }
 
@@ -287,8 +507,6 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
     coverage_notes = [
         f"Start: {period.start_data_date} (file_id={period.start_file_id}, {len(start_tasks):,} tasks)",
         f"End: {period.end_data_date} (file_id={period.end_file_id}, {len(end_tasks):,} tasks)",
-        f"Period: {period.duration_days} days",
-        f"Completed this period: {overall.completed_this_period:,}",
     ]
 
     availability = DataAvailability(
@@ -304,6 +522,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
         'by_floor': by_floor,
         'by_scope': by_scope,
         'delay_tasks': delay_tasks,
+        'delay_by_trade': delay_by_trade,
         'snapshots': snapshot_info,
         'tasks_start': start_tasks,
         'tasks_end': end_tasks,

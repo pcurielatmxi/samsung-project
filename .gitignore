@@ -143,3 +143,6 @@ playwright-screenshots/
 .git/
 .gitmodules
 data/derived/
+
+# Snapshot reports (output goes to external processed dir)
+data/analysis/snapshot_reports/

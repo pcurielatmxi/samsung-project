@@ -31,6 +31,12 @@ from .narratives import (
     load_narrative_data,
 )
 
+from .dimensions import (
+    get_company_lookup,
+    resolve_company_id,
+    resolve_trade_id,
+)
+
 __all__ = [
     # Base utilities
     'SnapshotPeriod',
@@ -49,4 +55,8 @@ __all__ = [
     'load_labor_data',
     # Narratives
     'load_narrative_data',
+    # Dimensions
+    'get_company_lookup',
+    'resolve_company_id',
+    'resolve_trade_id',
 ]
