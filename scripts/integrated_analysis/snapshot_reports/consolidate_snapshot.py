@@ -62,16 +62,34 @@ def _load_company_trade_reference() -> pd.DataFrame:
     return result
 
 
-def get_output_dir(period: SnapshotPeriod) -> Path:
-    """Get output directory for a snapshot report.
+def _get_companies_by_trade() -> Dict[str, str]:
+    """Get a mapping of trade names to company short codes."""
+    ref_df = _load_company_trade_reference()
+    if ref_df.empty:
+        return {}
+
+    # Group companies by trade, use short_code for brevity
+    trade_companies = {}
+    for trade_name in ref_df['trade_name'].unique():
+        trade_df = ref_df[ref_df['trade_name'] == trade_name]
+        # Get short codes, filter out None/empty
+        codes = [str(c) for c in trade_df['short_code'].dropna().tolist() if c and str(c) != 'nan']
+        if codes:
+            trade_companies[trade_name] = ', '.join(codes[:4])  # Limit to 4 companies
+            if len(codes) > 4:
+                trade_companies[trade_name] += f' +{len(codes)-4}'
+    return trade_companies
+
+
+def get_output_path(period: SnapshotPeriod) -> Path:
+    """Get output file path for a snapshot report.
 
     Output goes to external data directory (not git-tracked):
-    {WINDOWS_DATA_DIR}/processed/integrated_analysis/1_snapshot_consolidated_reports/{period_label}/
+    {WINDOWS_DATA_DIR}/processed/integrated_analysis/1_snapshot_consolidated_reports/{period_label}.md
     """
-    output_base = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / '1_snapshot_consolidated_reports'
-    output_dir = output_base / period.label
+    output_dir = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / '1_snapshot_consolidated_reports'
     output_dir.mkdir(parents=True, exist_ok=True)
-    return output_dir
+    return output_dir / f"{period.label}.md"
 
 
 def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, quality_pass_rates: Dict[str, float] = None) -> str:
@@ -164,15 +182,15 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
         behind_tasks = tasks_end[behind_mask].copy()
 
         if not behind_tasks.empty:
-            lines.append("### Tasks Behind Schedule")
+            lines.append("### Tasks Behind Schedule (Top 10)")
             lines.append("")
-            lines.append("*Tasks not complete past their target end date:*")
+            behind_tasks['days_behind'] = (data_date - pd.to_datetime(behind_tasks['target_end_date'])).dt.days
+            behind_tasks = behind_tasks.sort_values('days_behind', ascending=False)
+            total_behind = len(behind_tasks)
+            lines.append(f"*Top 10 of {total_behind} tasks not complete past their target end date:*")
             lines.append("")
             lines.append("| Task Code | Task Name | Trade | Target End | Days Behind | % Complete |")
             lines.append("|-----------|-----------|-------|------------|-------------|------------|")
-
-            behind_tasks['days_behind'] = (data_date - pd.to_datetime(behind_tasks['target_end_date'])).dt.days
-            behind_tasks = behind_tasks.sort_values('days_behind', ascending=False)
 
             for _, row in behind_tasks.head(10).iterrows():
                 task_code = str(row.get('task_code', '-'))
@@ -185,18 +203,45 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
                 pct = f"{row['phys_complete_pct']:.0f}%" if pd.notna(row.get('phys_complete_pct')) else '-'
                 lines.append(f"| {task_code} | {task_name} | {trade} | {tgt_end} | {days_behind:,}d | {pct} |")
 
-            if len(behind_tasks) > 10:
-                lines.append(f"| ... | *({len(behind_tasks) - 10} more tasks)* | | | | |")
             lines.append("")
+
+            # Remaining behind-schedule tasks by trade
+            if total_behind > 10:
+                remaining = behind_tasks.iloc[10:]
+                trade_col = 'trade_name' if 'trade_name' in remaining.columns else None
+                if trade_col:
+                    by_trade = remaining.groupby(trade_col).agg({
+                        'days_behind': ['count', 'sum', 'mean']
+                    }).reset_index()
+                    by_trade.columns = ['trade', 'count', 'total_days', 'avg_days']
+                    by_trade = by_trade.sort_values('total_days', ascending=False)
+
+                    # Get companies by trade for context
+                    trade_companies = _get_companies_by_trade()
+
+                    lines.append("### Other Behind-Schedule Tasks by Trade")
+                    lines.append("")
+                    lines.append(f"*{total_behind - 10} additional tasks summarized by trade:*")
+                    lines.append("")
+                    lines.append("| Trade | Companies | Tasks | Total Days Behind | Avg Days |")
+                    lines.append("|-------|-----------|-------|-------------------|----------|")
+
+                    for _, row in by_trade.iterrows():
+                        trade = str(row['trade'])[:20] if pd.notna(row['trade']) else 'Unknown'
+                        companies = trade_companies.get(row['trade'], '-')
+                        lines.append(f"| {trade} | {companies} | {int(row['count']):,} | {int(row['total_days']):,} | {row['avg_days']:.0f} |")
+
+                    lines.append("")
 
     # Critical Path Tasks (top 10)
     if not tasks_end.empty and 'driving_path_flag' in tasks_end.columns:
         critical_tasks = tasks_end[tasks_end['driving_path_flag'] == 'Y'].copy()
 
         if not critical_tasks.empty:
-            lines.append("### Critical Path Tasks (Driving Path)")
+            lines.append("### Critical Path Tasks (Top 10)")
             lines.append("")
-            lines.append(f"*{len(critical_tasks)} tasks on the driving path. Top 10 by target end date:*")
+            total_critical = len(critical_tasks)
+            lines.append(f"*Top 10 of {total_critical} tasks on the driving path (sorted by target end date):*")
             lines.append("")
             lines.append("| Task Code | Task Name | Trade | Status | Target End | Float |")
             lines.append("|-----------|-----------|-------|--------|------------|-------|")
@@ -219,6 +264,31 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
                 lines.append(f"| {task_code} | {task_name} | {trade} | {status_short} | {tgt_end} | {float_str} |")
 
             lines.append("")
+
+            # Remaining critical path tasks by trade
+            if total_critical > 10:
+                remaining = critical_tasks.iloc[10:]
+                trade_col = 'trade_name' if 'trade_name' in remaining.columns else None
+                if trade_col:
+                    by_trade = remaining.groupby(trade_col).size().reset_index(name='count')
+                    by_trade = by_trade.sort_values('count', ascending=False)
+
+                    # Get companies by trade for context
+                    trade_companies = _get_companies_by_trade()
+
+                    lines.append("### Other Critical Path Tasks by Trade")
+                    lines.append("")
+                    lines.append(f"*{total_critical - 10} additional critical path tasks summarized by trade:*")
+                    lines.append("")
+                    lines.append("| Trade | Companies | Tasks |")
+                    lines.append("|-------|-----------|-------|")
+
+                    for _, row in by_trade.iterrows():
+                        trade = str(row[trade_col])[:20] if pd.notna(row[trade_col]) else 'Unknown'
+                        companies = trade_companies.get(row[trade_col], '-')
+                        lines.append(f"| {trade} | {companies} | {int(row['count']):,} |")
+
+                    lines.append("")
 
     # Float Distribution
     if not tasks_end.empty and 'total_float_hr_cnt' in tasks_end.columns:
@@ -263,11 +333,9 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
         # Sort by completed_this_period descending
         by_floor = sorted(schedule['by_floor'], key=lambda x: x.completed_this_period, reverse=True)
 
-        for f in by_floor[:20]:  # Top 20 floors
+        for f in by_floor:
             lines.append(f"| {f.group_name} | {f.total_tasks:,} | {f.completed_end:,} | {f.completed_this_period:+,} | {f.pct_complete_end:.1f}% | {f.tasks_behind_schedule:,} |")
 
-        if len(by_floor) > 20:
-            lines.append(f"| ... | ({len(by_floor) - 20} more floors) | | | | |")
         lines.append("")
 
     # Progress by scope
@@ -282,9 +350,9 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
             lines.append(f"| {s.group_name} | {s.total_tasks:,} | {s.completed_end:,} | {s.completed_this_period:+,} | {s.pct_complete_end:.1f}% | {s.tasks_behind_schedule:,} |")
         lines.append("")
 
-    # Delay-causing tasks (Top 10) - Using schedule slippage methodology
+    # Delay-causing tasks (all) - Using schedule slippage methodology
     if not schedule['delay_tasks'].empty:
-        lines.append("### Top 10 Delay-Causing Tasks")
+        lines.append("### Delay-Causing Tasks")
         lines.append("")
 
         df = schedule['delay_tasks']
@@ -293,9 +361,9 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
         has_slippage_metrics = 'own_delay_days' in df.columns
 
         if has_slippage_metrics:
-            lines.append("Tasks with highest own_delay (delay caused by the task itself, not inherited from predecessors):")
+            lines.append(f"*{len(df)} tasks with own_delay (delay caused by the task itself, not inherited from predecessors):*")
         else:
-            lines.append("Tasks with most negative float (first snapshot - no comparison available):")
+            lines.append(f"*{len(df)} tasks with negative float (first snapshot - no comparison available):*")
         lines.append("")
 
         # Helper to format dates as MM-DD-YY
@@ -314,7 +382,7 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
             lines.append("| Task Code | Task Name | Trade | Status | Own Delay | Inherited | Category | Tgt Start | Act Start | Tgt End | Act End | Plan Dur |")
             lines.append("|-----------|-----------|-------|--------|-----------|-----------|----------|-----------|-----------|---------|---------|----------|")
 
-            for _, row in df.head(10).iterrows():
+            for _, row in df.iterrows():
                 task_code = str(row.get('task_code', '-'))
                 task_name = str(row.get('task_name', '-'))[:30]
                 if len(str(row.get('task_name', ''))) > 30:
@@ -350,7 +418,7 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
             lines.append("| Task Code | Task Name | Trade | % | Float | Tgt Start | Act Start | Tgt End | Act End | Late Start | Late End | Plan Dur |")
             lines.append("|-----------|-----------|-------|---|-------|-----------|-----------|---------|---------|------------|----------|----------|")
 
-            for _, row in df.head(10).iterrows():
+            for _, row in df.iterrows():
                 task_code = str(row.get('task_code', '-'))
                 task_name = str(row.get('task_name', '-'))[:35]
                 if len(str(row.get('task_name', ''))) > 35:
@@ -369,42 +437,6 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
                 plan_dur_str = f"{plan_dur:.0f}h" if pd.notna(plan_dur) else '-'
 
                 lines.append(f"| {task_code} | {task_name} | {trade} | {pct} | {float_hr} | {tgt_start} | {act_start} | {tgt_end} | {act_end} | {late_start} | {late_end} | {plan_dur_str} |")
-
-        lines.append("")
-
-    # All Others by Trade (aggregated delay tasks beyond top 10)
-    delay_by_trade = schedule.get('delay_by_trade', pd.DataFrame())
-    if not delay_by_trade.empty:
-        lines.append("### Other Delay Tasks by Trade")
-        lines.append("")
-        lines.append("Remaining delay-causing tasks aggregated by trade:")
-        lines.append("")
-
-        # Check if we have slippage metrics or float metrics
-        has_own_delay = 'total_own_delay' in delay_by_trade.columns
-
-        if has_own_delay:
-            lines.append("| Trade | Tasks | Total Own Delay | Avg Own Delay | Avg % Complete |")
-            lines.append("|-------|-------|-----------------|---------------|----------------|")
-
-            for _, row in delay_by_trade.iterrows():
-                trade = str(row.get('trade_name', '-'))
-                count = int(row.get('task_count', 0))
-                total_delay = f"{row['total_own_delay']:.0f}d" if pd.notna(row.get('total_own_delay')) else '-'
-                avg_delay = f"{row['avg_own_delay']:.1f}d" if pd.notna(row.get('avg_own_delay')) else '-'
-                avg_pct = f"{row['avg_complete_pct']:.1f}%" if pd.notna(row.get('avg_complete_pct')) else '-'
-                lines.append(f"| {trade} | {count:,} | {total_delay} | {avg_delay} | {avg_pct} |")
-        else:
-            lines.append("| Trade | Tasks | Worst Float | Avg Float | Avg % Complete |")
-            lines.append("|-------|-------|-------------|-----------|----------------|")
-
-            for _, row in delay_by_trade.iterrows():
-                trade = str(row.get('trade_name', '-'))
-                count = int(row.get('task_count', 0))
-                worst = f"{row['worst_float_hr']:.0f}h" if pd.notna(row.get('worst_float_hr')) else '-'
-                avg_float = f"{row['avg_float_hr']:.0f}h" if pd.notna(row.get('avg_float_hr')) else '-'
-                avg_pct = f"{row['avg_complete_pct']:.1f}%" if pd.notna(row.get('avg_complete_pct')) else '-'
-                lines.append(f"| {trade} | {count:,} | {worst} | {avg_float} | {avg_pct} |")
 
         lines.append("")
 
@@ -469,15 +501,10 @@ def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
             lines.append("| Company | Hours | % of Total |")
             lines.append("|---------|-------|------------|")
 
-            for company_id, hours in by_company.head(15).items():
+            for company_id, hours in by_company.items():
                 pct = (hours / ps_hours * 100) if ps_hours > 0 else 0
                 company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
                 lines.append(f"| {company_name} | {hours:,.0f} | {pct:.1f}% |")
-
-            if len(by_company) > 15:
-                other_hours = by_company.iloc[15:].sum()
-                other_pct = (other_hours / ps_hours * 100) if ps_hours > 0 else 0
-                lines.append(f"| *(Other {len(by_company) - 15} companies)* | {other_hours:,.0f} | {other_pct:.1f}% |")
 
             lines.append("")
 
@@ -504,14 +531,13 @@ def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
                 break
 
         if company_col in tbm_df.columns and location_col:
-            # Get top companies by entry count
+            # Get all companies by entry count
             company_counts = tbm_df[company_col].value_counts()
-            top_companies = company_counts.head(10).index.tolist()
 
             lines.append("| Company | Total Entries | Top Locations (% of company's work) |")
             lines.append("|---------|---------------|-------------------------------------|")
 
-            for company_id in top_companies:
+            for company_id in company_counts.index:
                 company_data = tbm_df[tbm_df[company_col] == company_id]
                 total_entries = len(company_data)
                 company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
@@ -526,9 +552,6 @@ def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
 
                 loc_summary = ", ".join(top_locs) if top_locs else "-"
                 lines.append(f"| {company_name} | {total_entries:,} | {loc_summary} |")
-
-            if len(company_counts) > 10:
-                lines.append(f"| *(Other {len(company_counts) - 10} companies)* | {company_counts.iloc[10:].sum():,} | - |")
 
             lines.append("")
 
@@ -602,6 +625,66 @@ def format_quality_section(quality: Dict[str, Any], quality_pass_rates: Dict[str
             lines.append(f"| **Combined** | {total:,} | {pass_count:,} | {fail_count:,} | {partial_count:,} |")
     lines.append("")
 
+    # Inspections by Type/Template
+    if not combined.empty:
+        type_col = None
+        for col in ['inspection_type', 'type', 'template', 'inspection_template']:
+            if col in combined.columns:
+                type_col = col
+                break
+
+        if type_col:
+            lines.append("### Inspections by Type")
+            lines.append("")
+
+            by_type = combined.groupby(type_col).agg({
+                'outcome_normalized': lambda x: (x == 'PASS').sum() if 'outcome_normalized' in combined.columns else 0
+            }).reset_index()
+            by_type['total'] = combined.groupby(type_col).size().values
+            by_type['pass_rate'] = (by_type['outcome_normalized'] / by_type['total'] * 100).round(1)
+            by_type = by_type.sort_values('total', ascending=False)
+
+            lines.append("| Inspection Type | Total | Pass | Pass Rate |")
+            lines.append("|-----------------|-------|------|-----------|")
+
+            for _, row in by_type.iterrows():
+                type_name = str(row[type_col])[:40]
+                lines.append(f"| {type_name} | {int(row['total']):,} | {int(row['outcome_normalized']):,} | {row['pass_rate']:.1f}% |")
+
+            lines.append("")
+
+    # Inspections by Trade
+    if not combined.empty:
+        trade_col = None
+        for col in ['dim_trade_id', 'trade', 'trade_name', 'discipline']:
+            if col in combined.columns:
+                trade_col = col
+                break
+
+        if trade_col:
+            lines.append("### Inspections by Trade")
+            lines.append("")
+
+            by_trade = combined.groupby(trade_col).agg({
+                'outcome_normalized': lambda x: (x == 'PASS').sum() if 'outcome_normalized' in combined.columns else 0
+            }).reset_index()
+            by_trade['total'] = combined.groupby(trade_col).size().values
+            by_trade['fail'] = combined.groupby(trade_col).apply(
+                lambda x: (x['outcome_normalized'] == 'FAIL').sum() if 'outcome_normalized' in x.columns else 0,
+                include_groups=False
+            ).values
+            by_trade['pass_rate'] = (by_trade['outcome_normalized'] / by_trade['total'] * 100).round(1)
+            by_trade = by_trade.sort_values('total', ascending=False)
+
+            lines.append("| Trade | Total | Pass | Fail | Pass Rate |")
+            lines.append("|-------|-------|------|------|-----------|")
+
+            for _, row in by_trade.iterrows():
+                trade_name = str(row[trade_col])[:30] if pd.notna(row[trade_col]) else 'Unknown'
+                lines.append(f"| {trade_name} | {int(row['total']):,} | {int(row['outcome_normalized']):,} | {int(row['fail']):,} | {row['pass_rate']:.1f}% |")
+
+            lines.append("")
+
     # Failures by location
     if not combined.empty and 'outcome_normalized' in combined.columns:
         failures = combined[combined['outcome_normalized'] == 'FAIL']
@@ -617,7 +700,7 @@ def format_quality_section(quality: Dict[str, Any], quality_pass_rates: Dict[str
                 lines.append("| Location | Failures |")
                 lines.append("|----------|----------|")
 
-                for loc, count in by_location.head(15).items():
+                for loc, count in by_location.items():
                     lines.append(f"| {loc} | {count:,} |")
                 lines.append("")
 
@@ -632,10 +715,31 @@ def format_quality_section(quality: Dict[str, Any], quality_pass_rates: Dict[str
                 lines.append("| Company | Failures |")
                 lines.append("|---------|----------|")
 
-                for company_id, count in by_company.head(15).items():
+                for company_id, count in by_company.items():
                     # Resolve company ID to name
                     company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
                     lines.append(f"| {company_name} | {count:,} |")
+                lines.append("")
+
+            # Failure reasons if available
+            reason_col = None
+            for col in ['failure_reason', 'reason', 'defect_type', 'defect', 'findings']:
+                if col in failures.columns:
+                    reason_col = col
+                    break
+
+            if reason_col:
+                lines.append("### Failure Reasons")
+                lines.append("")
+
+                by_reason = failures.groupby(reason_col).size().sort_values(ascending=False)
+
+                lines.append("| Reason | Count |")
+                lines.append("|--------|-------|")
+
+                for reason, count in by_reason.items():
+                    reason_str = str(reason)[:60] if pd.notna(reason) else 'Unknown'
+                    lines.append(f"| {reason_str} | {count:,} |")
                 lines.append("")
 
     return "\n".join(lines)
@@ -746,70 +850,27 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
             return source[:47] + "..."
         return source
 
-    # Statements with schedule impact (Top 20)
-    IMPACT_LIMIT = 20
-    if 'impact_days' in statements.columns:
-        with_impact = statements[statements['impact_days'].notna()].copy()
-        with_impact = with_impact.sort_values('impact_days', key=abs, ascending=False)
-        total_with_impact = len(with_impact)
-
-        if not with_impact.empty:
-            shown = min(IMPACT_LIMIT, total_with_impact)
-            lines.append(f"### Statements with Schedule Impact (showing {shown} of {total_with_impact})")
-            lines.append("")
-            lines.append("*Schedule impact (days) indicates the delay or acceleration mentioned in the narrative.*")
-            lines.append("")
-
-            for _, row in with_impact.head(IMPACT_LIMIT).iterrows():
-                event_date = fmt_date(row.get('event_date'))
-                impact = row.get('impact_days', 0)
-                statement = row.get('statement_text', row.get('text', ''))[:250]
-                source = get_source(row)
-
-                lines.append(f"- **[{source}]** {event_date} — Impact: {impact:+.0f} days")
-                lines.append(f"  > {statement}")
-                lines.append("")
-
-            if total_with_impact > IMPACT_LIMIT:
-                lines.append(f"*{total_with_impact - IMPACT_LIMIT} additional statements with schedule impact not shown.*")
-                lines.append("")
-                lines.append("<!-- LLM: To retrieve all statements with schedule impact, use:")
-                lines.append("     load_narrative_data(period)['statements'][statements['impact_days'].notna()]")
-                lines.append("     The full dataset is in data/processed/narratives/narrative_statements.csv -->")
-                lines.append("")
-
-    # Delay-related statements (Top 10)
-    DELAY_LIMIT = 10
+    # Delay-related statements (all)
     if 'category' in statements.columns:
         delay_statements = statements[statements['category'].str.lower().str.contains('delay', na=False)].copy()
         total_delay = len(delay_statements)
 
         if not delay_statements.empty:
-            shown = min(DELAY_LIMIT, total_delay)
-            lines.append(f"### Delay-Related Statements (showing {shown} of {total_delay})")
+            lines.append(f"### Delay-Related Statements ({total_delay})")
             lines.append("")
             lines.append("*Statements categorized as delay-related by LLM extraction.*")
             lines.append("")
 
-            for _, row in delay_statements.head(DELAY_LIMIT).iterrows():
+            for _, row in delay_statements.iterrows():
                 event_date = fmt_date(row.get('event_date'))
-                statement = row.get('statement_text', row.get('text', ''))[:300]
+                statement = row.get('statement_text', row.get('text', ''))
                 source = get_source(row)
 
                 lines.append(f"- **[{source}]** {event_date}")
                 lines.append(f"  > {statement}")
                 lines.append("")
 
-            if total_delay > DELAY_LIMIT:
-                lines.append(f"*{total_delay - DELAY_LIMIT} additional delay-related statements not shown.*")
-                lines.append("")
-                lines.append("<!-- LLM: To retrieve all delay statements, use:")
-                lines.append("     load_narrative_data(period)['statements'][statements['category'].str.contains('delay', case=False)]")
-                lines.append("     The full dataset is in data/processed/narratives/narrative_statements.csv -->")
-                lines.append("")
-
-    # Other statements (Top 10 of remaining)
-    OTHER_LIMIT = 10
+    # Other statements (all remaining)
     if 'category' in statements.columns:
         # Exclude impact and delay statements already shown
         other_mask = ~(
@@ -820,27 +881,19 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
         total_other = len(other_statements)
 
         if not other_statements.empty and total_other > 0:
-            shown = min(OTHER_LIMIT, total_other)
-            lines.append(f"### Other Statements (showing {shown} of {total_other})")
+            lines.append(f"### Other Statements ({total_other})")
             lines.append("")
             lines.append("*Statements not categorized as delay-related or having explicit schedule impact.*")
             lines.append("")
 
-            for _, row in other_statements.head(OTHER_LIMIT).iterrows():
+            for _, row in other_statements.iterrows():
                 event_date = fmt_date(row.get('event_date'))
                 category = row.get('category', 'Unknown')
-                statement = row.get('statement_text', row.get('text', ''))[:250]
+                statement = row.get('statement_text', row.get('text', ''))
                 source = get_source(row)
 
                 lines.append(f"- **[{source}]** {event_date} — Category: {category}")
                 lines.append(f"  > {statement}")
-                lines.append("")
-
-            if total_other > OTHER_LIMIT:
-                lines.append(f"*{total_other - OTHER_LIMIT} additional statements not shown.*")
-                lines.append("")
-                lines.append("<!-- LLM: To retrieve all statements, use load_narrative_data(period)['statements']")
-                lines.append("     Full dataset: data/processed/narratives/narrative_statements.csv -->")
                 lines.append("")
 
     return "\n".join(lines)
@@ -1106,9 +1159,7 @@ def consolidate_snapshot(period: SnapshotPeriod, dry_run: bool = False, all_peri
         print(f"\n[Total length: {len(report):,} characters]")
         return None
 
-    output_dir = get_output_dir(period)
-    output_path = output_dir / "consolidated_data.md"
-
+    output_path = get_output_path(period)
     output_path.write_text(report)
     print(f"\nReport saved to: {output_path}")
 
