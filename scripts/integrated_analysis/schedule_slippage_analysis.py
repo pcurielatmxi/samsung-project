@@ -855,24 +855,47 @@ class ScheduleSlippageAnalyzer:
         # -------------------------------------------------------------------------
         # KEY FORMULA: finish_slip = own_delay + inherited_delay
         #
-        # own_delay = finish_slip - start_slip
-        #   = (end_curr - end_prev) - (start_curr - start_prev)
-        #   = (end_curr - start_curr) - (end_prev - start_prev)
-        #   = duration_curr - duration_prev  (approximately)
+        # IMPORTANT: The formula differs by task status!
         #
-        # This measures how much the task ITSELF contributed to the delay,
-        # independent of what its predecessors did.
+        # For NOT_STARTED tasks (TK_NotStart):
+        #   own_delay = finish_slip - start_slip
+        #   inherited_delay = start_slip
+        #   Rationale: Start can be pushed by predecessors, so start_slip = inherited
+        #
+        # For ACTIVE tasks (TK_Active in BOTH snapshots):
+        #   own_delay = finish_slip  (ALL slip is the task's fault)
+        #   inherited_delay = 0
+        #   Rationale: Task already started, can't be "pushed" by predecessors.
+        #   The early_start moving is just P6 recalculating from data date,
+        #   not actual predecessor delay. The task is responsible for ALL its slip.
+        #
+        # For COMPLETED tasks or tasks that changed status:
+        #   Use the standard formula as a reasonable approximation
         #
         # INTERPRETATION:
         #   own_delay > 0: Task took longer than planned (scope growth, slow progress)
         #   own_delay < 0: Task completed faster than planned (acceleration, scope cut)
         #   own_delay = 0: Task duration unchanged; any slip is from predecessors
-        common['own_delay_days'] = common['finish_slip_days'] - common['start_slip_days']
 
-        # inherited_delay = start_slip
-        # This is the delay pushed onto this task by its predecessors.
-        # It's not this task's "fault" - it's waiting for upstream work.
-        common['inherited_delay_days'] = common['start_slip_days']
+        # Identify tasks that were ACTIVE in BOTH snapshots (already in progress)
+        was_active_both = (
+            (common['status_code_prev'] == 'TK_Active') &
+            (common['status_code_curr'] == 'TK_Active')
+        )
+
+        # For active tasks: all slip is own delay, no inherited
+        # For other tasks: use the standard formula
+        common['own_delay_days'] = np.where(
+            was_active_both,
+            common['finish_slip_days'],  # Active: all slip is own delay
+            common['finish_slip_days'] - common['start_slip_days']  # Standard formula
+        )
+
+        common['inherited_delay_days'] = np.where(
+            was_active_both,
+            0,  # Active: no inherited delay (can't be pushed if already started)
+            common['start_slip_days']  # Standard: start_slip = inherited
+        )
 
         # -------------------------------------------------------------------------
         # 4c. Calculate duration and float changes

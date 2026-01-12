@@ -40,11 +40,32 @@ Float represents schedule buffer. When float decreases:
 | Metric | Formula | Meaning |
 |--------|---------|---------|
 | `finish_slip_days` | `early_end[curr] - early_end[prev]` | Total movement of task's finish date |
-| `start_slip_days` | `early_start[curr] - early_start[prev]` | Movement of task's start date (inherited) |
-| `own_delay_days` | `finish_slip - start_slip` | Delay caused by THIS task's duration change |
-| `inherited_delay_days` | `start_slip` | Delay pushed from predecessor tasks |
+| `start_slip_days` | `early_start[curr] - early_start[prev]` | Movement of task's start date |
+| `own_delay_days` | See below | Delay caused by THIS task |
+| `inherited_delay_days` | See below | Delay from predecessor tasks |
 
 **Key relationship:** `finish_slip = own_delay + inherited_delay`
+
+#### Status-Dependent Calculation (v2.1)
+
+The formula for `own_delay` and `inherited_delay` differs by task status:
+
+| Status | own_delay | inherited_delay | Rationale |
+|--------|-----------|-----------------|-----------|
+| **Not Started** | `finish_slip - start_slip` | `start_slip` | Start can be pushed by predecessors |
+| **Active (in both snapshots)** | `finish_slip` | `0` | Already started - can't be "pushed" |
+| **Completed** | `finish_slip - start_slip` | `start_slip` | Standard formula |
+
+**Why Active tasks are different:**
+
+For an active task, P6 sets `early_start` to approximately the data date (when remaining work can resume). The "start slip" between snapshots is just calendar time passing, NOT predecessor delay. The task is already in progress - its actual start date is fixed.
+
+Example:
+- Task A1500 started Nov 13, 2023
+- At Mar 22, 2024: early_start = Mar 23 (data date)
+- At Apr 8, 2024: early_start = Apr 8 (data date)
+- Old method: start_slip = 15 days → "inherited" (WRONG)
+- New method: Task is active, so inherited = 0, own_delay = 17 days (CORRECT)
 
 ### Enhanced Metrics (Backward Pass)
 
@@ -610,5 +631,6 @@ Use this as a template for analyzing other periods.
 
 ## Version History
 
+- **v2.1** (2026-01): Fixed own_delay calculation for active tasks - active tasks now correctly show full finish_slip as own_delay (not split with inherited)
 - **v2.0** (2026-01): Enhanced with backward pass analysis, relationship tracking, constraint detection, root cause tracing
 - **v1.0** (Original): Forward pass only, own_delay vs inherited decomposition
