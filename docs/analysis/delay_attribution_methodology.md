@@ -46,14 +46,15 @@ Float represents schedule buffer. When float decreases:
 
 **Key relationship:** `finish_slip = own_delay + inherited_delay`
 
-#### Status-Dependent Calculation (v2.1)
+#### Status-Dependent Calculation (v2.1, updated v2.3)
 
-The formula for `own_delay` and `inherited_delay` differs by task status:
+The formula for `own_delay` and `inherited_delay` differs by task status transition:
 
-| Status | own_delay | inherited_delay | Rationale |
-|--------|-----------|-----------------|-----------|
-| **Not Started** | `finish_slip - start_slip` | `start_slip` | Start can be pushed by predecessors |
-| **Active (in both snapshots)** | `finish_slip` | `0` | Already started - can't be "pushed" |
+| Status Transition | own_delay | inherited_delay | Rationale |
+|-------------------|-----------|-----------------|-----------|
+| **Not Started → *** | `finish_slip - start_slip` | `start_slip` | Start can be pushed by predecessors |
+| **Active → Active** | `finish_slip` | `0` | Already started - can't be "pushed" |
+| **Complete → Active** | `finish_slip` | `0` | Reopened - all slip from reopening |
 | **Completed** | `finish_slip - start_slip` | `start_slip` | Standard formula |
 
 **Why Active tasks are different:**
@@ -66,6 +67,48 @@ Example:
 - At Apr 8, 2024: early_start = Apr 8 (data date)
 - Old method: start_slip = 15 days → "inherited" (WRONG)
 - New method: Task is active, so inherited = 0, own_delay = 17 days (CORRECT)
+
+#### Reopened Task Detection (v2.3)
+
+**What is a reopened task?**
+
+A reopened task was marked Complete in the previous snapshot but is now Active. This happens when:
+- Rework is required (quality issues, punch list items)
+- Scope was added to a "finished" task
+- Task was prematurely marked complete
+
+**Why it matters for attribution:**
+
+For completed tasks, P6 sets `early_start` and `early_end` to the data date. When reopened:
+- New `early_start` = current data date
+- New `early_end` = data date + remaining duration
+- The "start_slip" is just calendar time between snapshots, NOT inherited delay
+
+The **real impact** is the remaining duration that now needs completion.
+
+**Detection:**
+
+| Metric | Meaning |
+|--------|---------|
+| `was_reopened` | True if task was Complete in prev snapshot, Active in current |
+
+**Example:**
+```
+Task: CN.AB3.ST.2050 (Fiberglass Insulation)
+
+Previous (Mar 22):
+  Status: TK_Complete
+  Remain Duration: 0 hours
+  Early Start/End: Mar 22 (P6 sets to data date)
+
+Current (Apr 8):
+  Status: TK_Active (REOPENED!)
+  Remain Duration: 50 hours (new work added)
+  Early Start: Apr 8, Early End: Apr 13
+
+Old formula: own_delay = 21-16 = 5 days, inherited = 16 days (WRONG)
+New formula: own_delay = 21 days, inherited = 0 (CORRECT - all from reopening)
+```
 
 #### Fast-Tracking Detection (v2.2)
 

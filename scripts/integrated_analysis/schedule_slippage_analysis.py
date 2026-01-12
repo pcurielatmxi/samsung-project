@@ -883,19 +883,34 @@ class ScheduleSlippageAnalyzer:
             (common['status_code_curr'] == 'TK_Active')
         )
 
+        # Identify tasks that were REOPENED (Complete → Active)
+        # These tasks were done, then reopened with new remaining work.
+        # For completed tasks, P6 sets early dates to data date. When reopened,
+        # dates move to new data date + remaining. The "start_slip" is just
+        # calendar time between snapshots, NOT inherited delay.
+        # The REAL impact is the remaining duration that now needs completion.
+        was_reopened = (
+            (common['status_code_prev'] == 'TK_Complete') &
+            (common['status_code_curr'] == 'TK_Active')
+        )
+
         # For active tasks: all slip is own delay, no inherited
+        # For reopened tasks: all slip is own delay (caused by reopening), no inherited
         # For other tasks: use the standard formula
         common['own_delay_days'] = np.where(
-            was_active_both,
-            common['finish_slip_days'],  # Active: all slip is own delay
+            was_active_both | was_reopened,
+            common['finish_slip_days'],  # Active/Reopened: all slip is own delay
             common['finish_slip_days'] - common['start_slip_days']  # Standard formula
         )
 
         common['inherited_delay_days'] = np.where(
-            was_active_both,
-            0,  # Active: no inherited delay (can't be pushed if already started)
+            was_active_both | was_reopened,
+            0,  # Active/Reopened: no inherited delay
             common['start_slip_days']  # Standard: start_slip = inherited
         )
+
+        # Flag reopened tasks for visibility
+        common['was_reopened'] = was_reopened
 
         # -------------------------------------------------------------------------
         # 4b.2. FAST-TRACKING DETECTION: Active tasks with incomplete predecessors
@@ -1281,8 +1296,11 @@ class ScheduleSlippageAnalyzer:
             'own_delay_days': common['own_delay_days'],          # Delay caused by THIS task (full attribution for active)
             'inherited_delay_days': common['inherited_delay_days'],  # Delay from predecessors (0 for active)
 
-            # Fast-tracking adjusted metrics (for active tasks with incomplete predecessors)
+            # Status transition flags
+            'was_reopened': common['was_reopened'],                    # Complete → Active (task was reopened)
             'is_fast_tracked': common['is_fast_tracked'],              # Active with incomplete predecessors
+
+            # Fast-tracking adjusted metrics (for active tasks with incomplete predecessors)
             'own_delay_adj_days': common['own_delay_adj_days'],        # Adjusted own delay (considers fast-tracking)
             'inherited_delay_adj_days': common['inherited_delay_adj_days'],  # Adjusted inherited (non-zero if fast-tracked)
 

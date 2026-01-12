@@ -130,12 +130,18 @@ Analyzes schedule slippage between P6 snapshots to identify which tasks contribu
 
 **Key insight:** `finish_slip = own_delay + inherited_delay`
 
-**Status-Dependent Calculation (v2.1):**
-| Status | own_delay | inherited_delay | Rationale |
-|--------|-----------|-----------------|-----------|
-| Not Started | `finish_slip - start_slip` | `start_slip` | Start can be pushed by predecessors |
-| Active (both snapshots) | `finish_slip` | `0` | Already started - can't be "pushed" |
+**Status-Dependent Calculation (v2.1, v2.3):**
+| Status Transition | own_delay | inherited_delay | Rationale |
+|-------------------|-----------|-----------------|-----------|
+| Not Started → * | `finish_slip - start_slip` | `start_slip` | Start can be pushed by predecessors |
+| Active → Active | `finish_slip` | `0` | Already started - can't be "pushed" |
+| Complete → Active | `finish_slip` | `0` | Reopened - all slip from reopening |
 | Completed | `finish_slip - start_slip` | `start_slip` | Standard formula |
+
+**Reopened Task Detection (v2.3):**
+| Metric | Meaning |
+|--------|---------|
+| `was_reopened` | Task was Complete in prev, Active in current (rework) |
 
 **Fast-Tracking Detection (v2.2):**
 | Metric | Meaning |
