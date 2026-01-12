@@ -476,40 +476,72 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                 else:
                     tasks_with_float_loss = 0
 
-                # Count CAUSE_DURATION (tasks that took longer)
-                cause_duration_tasks = common_tasks[
-                    (common_tasks['own_delay_days'] > 1) &
-                    (common_tasks['finish_slip_days'] > 0)
-                ]
-                total_own_delay = cause_duration_tasks['own_delay_days'].sum() if not cause_duration_tasks.empty else 0
+                # Focus on driving path tasks that explain the project slip
+                driving_tasks = common_tasks[common_tasks['driving_path_flag'] == 'Y'].copy()
 
-                # Driving path own delay (most important for project slip)
-                driving_delay = common_tasks[
-                    (common_tasks['driving_path_flag'] == 'Y') &
-                    (common_tasks['own_delay_days'] > 1)
-                ]
-                driving_own_delay = driving_delay['own_delay_days'].sum() if not driving_delay.empty else 0
+                # Split into contributors (positive own_delay) and recoveries (negative own_delay)
+                # Only include tasks with meaningful delay (> 0.5 days)
+                contributors = driving_tasks[driving_tasks['own_delay_days'] > 0.5].copy()
+                recoveries = driving_tasks[driving_tasks['own_delay_days'] < -0.5].copy()
+
+                # Sort and get top contributors/recoveries
+                if not contributors.empty:
+                    contributors = contributors.sort_values('own_delay_days', ascending=False)
+                if not recoveries.empty:
+                    recoveries = recoveries.sort_values('own_delay_days', ascending=True)
+
+                # Build top contributors list (task_code, task_name, own_delay, trade)
+                top_contributors = []
+                for _, row in contributors.head(5).iterrows():
+                    top_contributors.append({
+                        'task_code': row['task_code'],
+                        'task_name': str(row.get('task_name', ''))[:40],
+                        'own_delay': int(row['own_delay_days']),
+                        'trade': row.get('trade_name', '-'),
+                    })
+
+                # Build top recoveries list
+                top_recoveries = []
+                for _, row in recoveries.head(3).iterrows():
+                    top_recoveries.append({
+                        'task_code': row['task_code'],
+                        'task_name': str(row.get('task_name', ''))[:40],
+                        'recovery': int(abs(row['own_delay_days'])),
+                        'trade': row.get('trade_name', '-'),
+                    })
+
+                # Calculate net driving path change
+                total_contributors = int(contributors['own_delay_days'].sum()) if not contributors.empty else 0
+                total_recoveries = int(abs(recoveries['own_delay_days'].sum())) if not recoveries.empty else 0
+                net_driving_change = total_contributors - total_recoveries
+
+                # Determine primary cause pattern
+                forward_pct = float_drivers.get('FORWARD_PUSH', 0) / total_tasks if total_tasks > 0 else 0
+                backward_pct = float_drivers.get('BACKWARD_PULL', 0) / total_tasks if total_tasks > 0 else 0
+
+                if forward_pct > 0.5:
+                    pattern = 'execution_delays'
+                    pattern_desc = 'Execution delays (tasks taking longer)'
+                elif backward_pct > 0.5:
+                    pattern = 'deadline_pressure'
+                    pattern_desc = 'Deadline compression (constraints tightened)'
+                elif forward_pct > 0.2 and backward_pct > 0.2:
+                    pattern = 'mixed'
+                    pattern_desc = 'Mixed (execution delays + deadline pressure)'
+                else:
+                    pattern = 'stable'
+                    pattern_desc = 'Minimal changes this period'
 
                 attribution_summary = {
                     'project_slip_days': project_slip_days,
-                    'total_tasks_compared': total_tasks,
-                    'tasks_with_float_loss': tasks_with_float_loss,
-                    'float_driver_distribution': {
-                        'FORWARD_PUSH': int(float_drivers.get('FORWARD_PUSH', 0)),
-                        'BACKWARD_PULL': int(float_drivers.get('BACKWARD_PULL', 0)),
-                        'DUAL_SQUEEZE': int(float_drivers.get('DUAL_SQUEEZE', 0)),
-                        'NONE': int(float_drivers.get('NONE', 0)),
-                    },
-                    'dominant_driver': float_drivers.index[0] if not float_drivers.empty else 'NONE',
-                    'cause_duration_tasks': len(cause_duration_tasks),
-                    'total_own_delay_days': int(total_own_delay),
-                    'driving_path_own_delay': int(driving_own_delay),
-                    'interpretation': _interpret_attribution(
-                        project_slip_days,
-                        float_drivers.get('FORWARD_PUSH', 0) / total_tasks if total_tasks > 0 else 0,
-                        float_drivers.get('BACKWARD_PULL', 0) / total_tasks if total_tasks > 0 else 0,
-                        len(cause_duration_tasks),
-                    )
+                    'top_contributors': top_contributors,
+                    'top_recoveries': top_recoveries,
+                    'total_contributors_days': total_contributors,
+                    'total_recoveries_days': total_recoveries,
+                    'net_driving_change': net_driving_change,
+                    'pattern': pattern,
+                    'pattern_desc': pattern_desc,
+                    'forward_push_pct': int(forward_pct * 100),
                 }
 
             # Categorize tasks

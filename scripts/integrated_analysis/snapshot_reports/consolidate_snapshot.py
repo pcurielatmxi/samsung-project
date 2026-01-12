@@ -234,54 +234,59 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
     if attribution and slip_days != 0:
         lines.append("### Delay Attribution")
         lines.append("")
-        lines.append(f"**Why the project end date moved {slip_days:+d} days:**")
+        lines.append(f"**Project end date moved {slip_days:+d} days this period.**")
         lines.append("")
 
-        # Interpretation
-        interpretation = attribution.get('interpretation', '')
-        if interpretation:
-            lines.append(f"> {interpretation}")
+        # Pattern summary
+        pattern_desc = attribution.get('pattern_desc', '')
+        forward_pct = attribution.get('forward_push_pct', 0)
+        if pattern_desc:
+            lines.append(f"**Primary cause:** {pattern_desc} ({forward_pct}% of tasks pushed forward)")
             lines.append("")
 
-        # Float driver distribution
-        drivers = attribution.get('float_driver_distribution', {})
-        if drivers:
-            total = sum(drivers.values())
-            if total > 0:
-                lines.append("| Float Driver | Tasks | % | Meaning |")
-                lines.append("|--------------|-------|---|---------|")
+        # Top contributors (tasks that caused the slip)
+        contributors = attribution.get('top_contributors', [])
+        if contributors:
+            lines.append("**Critical Path Tasks Contributing to Delay:**")
+            lines.append("")
+            lines.append("| Task Code | Task Name | Own Delay | Trade |")
+            lines.append("|-----------|-----------|-----------|-------|")
 
-                driver_meanings = {
-                    'FORWARD_PUSH': 'Tasks delayed (execution issues)',
-                    'BACKWARD_PULL': 'Deadline pressure (schedule compression)',
-                    'DUAL_SQUEEZE': 'Squeezed both directions (stressed)',
-                    'NONE': 'Stable (minimal float change)',
-                }
+            for task in contributors:
+                code = task.get('task_code', '-')
+                name = task.get('task_name', '-')[:35]
+                delay = task.get('own_delay', 0)
+                trade = str(task.get('trade', '-'))[:15] if task.get('trade') else '-'
+                lines.append(f"| {code} | {name} | +{delay}d | {trade} |")
 
-                for driver in ['FORWARD_PUSH', 'BACKWARD_PULL', 'DUAL_SQUEEZE', 'NONE']:
-                    count = drivers.get(driver, 0)
-                    if count > 0:
-                        pct = count / total * 100
-                        meaning = driver_meanings.get(driver, '')
-                        lines.append(f"| {driver} | {count:,} | {pct:.0f}% | {meaning} |")
+            lines.append("")
 
-                lines.append("")
+        # Top recoveries (tasks that helped)
+        recoveries = attribution.get('top_recoveries', [])
+        if recoveries:
+            lines.append("**Critical Path Tasks That Helped (Early Finishes):**")
+            lines.append("")
+            lines.append("| Task Code | Task Name | Recovery | Trade |")
+            lines.append("|-----------|-----------|----------|-------|")
 
-        # Key metrics
-        cause_tasks = attribution.get('cause_duration_tasks', 0)
-        driving_delay = attribution.get('driving_path_own_delay', 0)
+            for task in recoveries:
+                code = task.get('task_code', '-')
+                name = task.get('task_name', '-')[:35]
+                recovery = task.get('recovery', 0)
+                trade = str(task.get('trade', '-'))[:15] if task.get('trade') else '-'
+                lines.append(f"| {code} | {name} | -{recovery}d | {trade} |")
 
-        if cause_tasks > 0 or driving_delay > 0:
-            lines.append("| Metric | Value | Significance |")
-            lines.append("|--------|-------|--------------|")
+            lines.append("")
 
-            if cause_tasks > 0:
-                total_own = attribution.get('total_own_delay_days', 0)
-                lines.append(f"| Tasks Taking Longer | {cause_tasks:,} | {total_own:,} days of own delay (execution grew) |")
+        # Net calculation
+        total_contrib = attribution.get('total_contributors_days', 0)
+        total_recov = attribution.get('total_recoveries_days', 0)
+        net_change = attribution.get('net_driving_change', 0)
 
-            if driving_delay > 0:
-                lines.append(f"| Driving Path Own Delay | {driving_delay:,} days | Delay on critical path (directly impacts end date) |")
-
+        if total_contrib > 0 or total_recov > 0:
+            lines.append(f"**Net:** +{total_contrib}d (delays) - {total_recov}d (recoveries) = {net_change:+d}d driving path change")
+            if abs(net_change - slip_days) <= 2:
+                lines.append(" ✓ Reconciles with project slip")
             lines.append("")
 
     # Helper to format dates as MM-DD-YY
@@ -295,67 +300,162 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
         except Exception:
             return '-'
 
-    # Behind Schedule Tasks (explicit list)
+    # Ongoing Tasks Duration Performance
+    # Track tasks that were active (in progress in either snapshot) and compare actual vs planned duration
     tasks_end = schedule.get('tasks_end', pd.DataFrame())
-    if not tasks_end.empty and overall.tasks_behind_schedule > 0:
+    tasks_start = schedule.get('tasks_start', pd.DataFrame())
+
+    if not tasks_end.empty and not tasks_start.empty:
         data_date = pd.Timestamp(end.get('data_date'))
-        behind_mask = (
-            (tasks_end['status_code'] != 'TK_Complete') &
-            (pd.to_datetime(tasks_end['target_end_date']) < data_date)
-        )
-        behind_tasks = tasks_end[behind_mask].copy()
 
-        if not behind_tasks.empty:
-            lines.append("### Tasks Behind Schedule (Top 10)")
-            lines.append("")
-            behind_tasks['days_behind'] = (data_date - pd.to_datetime(behind_tasks['target_end_date'])).dt.days
-            behind_tasks = behind_tasks.sort_values('days_behind', ascending=False)
-            total_behind = len(behind_tasks)
-            lines.append(f"*Top 10 of {total_behind} tasks not complete past their target end date:*")
-            lines.append("")
-            lines.append("| Task Code | Task Name | Trade | Target End | Days Behind | % Complete |")
-            lines.append("|-----------|-----------|-------|------------|-------------|------------|")
+        # Get planned duration and target dates from snapshot 1
+        start_cols = ['task_code', 'target_drtn_hr_cnt', 'status_code', 'target_start_date', 'target_end_date']
+        start_cols = [c for c in start_cols if c in tasks_start.columns]
+        start_duration = tasks_start[start_cols].copy()
+        start_duration = start_duration.rename(columns={
+            'target_drtn_hr_cnt': 'planned_duration_hr',
+            'status_code': 'status_start',
+            'target_start_date': 'target_start_s1',
+            'target_end_date': 'target_end_s1'
+        })
 
-            for _, row in behind_tasks.head(10).iterrows():
-                task_code = str(row.get('task_code', '-'))
-                task_name = str(row.get('task_name', '-'))[:35]
-                if len(str(row.get('task_name', ''))) > 35:
-                    task_name += "..."
-                trade = str(row.get('trade_name', '-'))[:12] if pd.notna(row.get('trade_name')) else '-'
-                tgt_end = fmt_date_short(row.get('target_end_date'))
-                days_behind = row.get('days_behind', 0)
-                pct = f"{row['phys_complete_pct']:.0f}%" if pd.notna(row.get('phys_complete_pct')) else '-'
-                lines.append(f"| {task_code} | {task_name} | {trade} | {tgt_end} | {days_behind:,}d | {pct} |")
+        # Merge with end snapshot
+        ongoing = tasks_end.merge(start_duration, on='task_code', how='inner')
 
-            lines.append("")
+        # Filter to tasks that were active in either snapshot
+        # Active means: was in progress in snapshot 1 OR snapshot 2
+        ongoing = ongoing[
+            (ongoing['status_start'] == 'TK_Active') |
+            (ongoing['status_code'] == 'TK_Active') |
+            ((ongoing['status_start'] != 'TK_Complete') & (ongoing['status_code'] == 'TK_Complete'))
+        ].copy()
 
-            # Remaining behind-schedule tasks by trade
-            if total_behind > 10:
-                remaining = behind_tasks.iloc[10:]
-                trade_col = 'trade_name' if 'trade_name' in remaining.columns else None
-                if trade_col:
-                    by_trade = remaining.groupby(trade_col).agg({
-                        'days_behind': ['count', 'sum', 'mean']
-                    }).reset_index()
-                    by_trade.columns = ['trade', 'count', 'total_days', 'avg_days']
-                    by_trade = by_trade.sort_values('total_days', ascending=False)
+        if not ongoing.empty and 'act_start_date' in ongoing.columns:
+            # Calculate actual duration
+            # - Completed: act_end_date - act_start_date
+            # - In progress: data_date - act_start_date
+            def calc_actual_duration(row):
+                act_start = row.get('act_start_date')
+                if pd.isna(act_start):
+                    return None
+                act_start = pd.Timestamp(act_start)
 
-                    # Get companies by trade for context
-                    trade_companies = _get_companies_by_trade()
+                if row.get('status_code') == 'TK_Complete' and pd.notna(row.get('act_end_date')):
+                    act_end = pd.Timestamp(row.get('act_end_date'))
+                    return (act_end - act_start).days
+                else:
+                    return (data_date - act_start).days
 
-                    lines.append("### Other Behind-Schedule Tasks by Trade")
-                    lines.append("")
-                    lines.append(f"*{total_behind - 10} additional tasks summarized by trade:*")
-                    lines.append("")
-                    lines.append("| Trade | Companies | Tasks | Total Days Behind | Avg Days |")
-                    lines.append("|-------|-----------|-------|-------------------|----------|")
+            ongoing['actual_duration_days'] = ongoing.apply(calc_actual_duration, axis=1)
 
-                    for _, row in by_trade.iterrows():
-                        trade = str(row['trade'])[:20] if pd.notna(row['trade']) else 'Unknown'
-                        companies = trade_companies.get(row['trade'], '-')
-                        lines.append(f"| {trade} | {companies} | {int(row['count']):,} | {int(row['total_days']):,} | {row['avg_days']:.0f} |")
+            # Convert planned duration from hours to days (8 hours per day)
+            ongoing['planned_duration_days'] = (ongoing['planned_duration_hr'] / 8).round(0)
 
-                    lines.append("")
+            # Calculate variance (positive = over, negative = under)
+            ongoing['duration_variance'] = ongoing['actual_duration_days'] - ongoing['planned_duration_days']
+
+            # Filter to tasks with meaningful variance and valid data
+            ongoing = ongoing[
+                (ongoing['actual_duration_days'].notna()) &
+                (ongoing['planned_duration_days'] > 0) &
+                (ongoing['actual_duration_days'] > 0)
+            ].copy()
+
+            # Tasks running over planned duration (top 10 by variance)
+            # Exclude IMPACT tasks - these are coordination/tracking tasks with years-long durations
+            over_plan = ongoing[
+                (ongoing['duration_variance'] > 0) &
+                (~ongoing['task_name'].str.upper().str.startswith('IMPACT', na=False))
+            ].copy()
+            over_plan = over_plan.sort_values('duration_variance', ascending=False)
+
+            if not over_plan.empty:
+                lines.append("### Ongoing Tasks Running Over Planned Duration")
+                lines.append("")
+                lines.append("*Tasks that were active this period with actual duration exceeding planned duration:*")
+                lines.append("")
+                lines.append("| Task Code | Task Name | Target Start | Target Finish | Late Start | Late Finish | Actual Start | Actual Finish | Over By |")
+                lines.append("|-----------|-----------|--------------|---------------|------------|-------------|--------------|---------------|---------|")
+
+                for _, row in over_plan.head(10).iterrows():
+                    task_code = str(row.get('task_code', '-'))
+                    task_name = str(row.get('task_name', '-'))[:22]
+                    if len(str(row.get('task_name', ''))) > 22:
+                        task_name += "..."
+                    tgt_start = fmt_date_short(row.get('target_start_s1'))
+                    tgt_end = fmt_date_short(row.get('target_end_s1'))
+                    late_start = fmt_date_short(row.get('late_start_date'))
+                    late_end = fmt_date_short(row.get('late_end_date'))
+                    act_start = fmt_date_short(row.get('act_start_date'))
+                    if row.get('status_code') == 'TK_Complete' and pd.notna(row.get('act_end_date')):
+                        act_end = fmt_date_short(row.get('act_end_date'))
+                    else:
+                        act_end = 'Ongoing'
+                    variance = int(row.get('duration_variance', 0))
+                    lines.append(f"| {task_code} | {task_name} | {tgt_start} | {tgt_end} | {late_start} | {late_end} | {act_start} | {act_end} | +{variance}d |")
+
+                lines.append("")
+
+                # Summary by trade for remaining tasks
+                total_over = len(over_plan)
+                if total_over > 10:
+                    remaining = over_plan.iloc[10:]
+                    if 'trade_name' in remaining.columns:
+                        by_trade = remaining.groupby('trade_name').agg({
+                            'duration_variance': ['count', 'sum', 'mean']
+                        }).reset_index()
+                        by_trade.columns = ['trade', 'count', 'total_over', 'avg_over']
+                        by_trade = by_trade.sort_values('total_over', ascending=False)
+
+                        trade_companies = _get_companies_by_trade()
+
+                        lines.append("### Other Over-Duration Tasks by Trade")
+                        lines.append("")
+                        lines.append(f"*{total_over - 10} additional tasks summarized:*")
+                        lines.append("")
+                        lines.append("| Trade | Companies | Tasks | Total Days Over | Avg Days Over |")
+                        lines.append("|-------|-----------|-------|-----------------|---------------|")
+
+                        for _, row in by_trade.iterrows():
+                            trade = str(row['trade'])[:20] if pd.notna(row['trade']) else 'Unknown'
+                            companies = trade_companies.get(row['trade'], '-')
+                            lines.append(f"| {trade} | {companies} | {int(row['count']):,} | {int(row['total_over']):,} | {row['avg_over']:.0f} |")
+
+                        lines.append("")
+
+            # IMPACT tasks (coordination/tracking tasks) shown separately
+            impact_tasks = ongoing[
+                (ongoing['duration_variance'] > 0) &
+                (ongoing['task_name'].str.upper().str.startswith('IMPACT', na=False))
+            ].copy()
+
+            if not impact_tasks.empty:
+                impact_tasks = impact_tasks.sort_values('duration_variance', ascending=False)
+                lines.append("### IMPACT Tasks (Coordination/Tracking)")
+                lines.append("")
+                lines.append(f"*{len(impact_tasks)} active IMPACT tasks - these track coordination issues and external dependencies:*")
+                lines.append("")
+                lines.append("| Task Code | Task Name | Target Start | Target Finish | Late Start | Late Finish | Actual Start | Actual Finish | Over By |")
+                lines.append("|-----------|-----------|--------------|---------------|------------|-------------|--------------|---------------|---------|")
+
+                for _, row in impact_tasks.head(15).iterrows():
+                    task_code = str(row.get('task_code', '-'))
+                    task_name = str(row.get('task_name', '-'))[:22]
+                    if len(str(row.get('task_name', ''))) > 22:
+                        task_name += "..."
+                    tgt_start = fmt_date_short(row.get('target_start_s1'))
+                    tgt_end = fmt_date_short(row.get('target_end_s1'))
+                    late_start = fmt_date_short(row.get('late_start_date'))
+                    late_end = fmt_date_short(row.get('late_end_date'))
+                    act_start = fmt_date_short(row.get('act_start_date'))
+                    if row.get('status_code') == 'TK_Complete' and pd.notna(row.get('act_end_date')):
+                        act_end = fmt_date_short(row.get('act_end_date'))
+                    else:
+                        act_end = 'Ongoing'
+                    variance = int(row.get('duration_variance', 0))
+                    lines.append(f"| {task_code} | {task_name} | {tgt_start} | {tgt_end} | {late_start} | {late_end} | {act_start} | {act_end} | +{variance}d |")
+
+                lines.append("")
 
     # Critical Path Tasks (top 10)
     if not tasks_end.empty and 'driving_path_flag' in tasks_end.columns:
