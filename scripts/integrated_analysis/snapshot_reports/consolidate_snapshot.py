@@ -80,6 +80,18 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
     lines.append("## 1. Schedule Progress & Delays")
     lines.append("")
 
+    # Metric Definitions
+    lines.append("### Metric Definitions")
+    lines.append("")
+    lines.append("| Term | Definition |")
+    lines.append("|------|------------|")
+    lines.append("| **Own Delay** | Days the task's finish slipped beyond its start slip. Indicates delay caused BY this task (duration growth, execution issues). |")
+    lines.append("| **Inherited Delay** | Days the task's start date moved due to predecessor delays. Delay pushed TO this task from upstream. |")
+    lines.append("| **Behind Schedule** | Tasks where target end date < data date AND task is not complete. |")
+    lines.append("| **Negative Float** | Tasks where late finish < early finish, requiring acceleration to meet project end. |")
+    lines.append("| **Critical Path** | Tasks on the longest path determining project end date (driving path). |")
+    lines.append("")
+
     overall = schedule['overall']
     snapshots = schedule['snapshots']
 
@@ -118,19 +130,6 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
     slip_str = f"{slip_days:+d} days" if slip_days != 0 else "0 days"
     lines.append(f"| Project End Date | {start_end} | {end_end} | {slip_str} |")
 
-    # Quality Pass Rate (if provided)
-    if quality_pass_rates:
-        prev_rate = quality_pass_rates.get('previous', None)
-        curr_rate = quality_pass_rates.get('current', None)
-        prev_str = f"{prev_rate:.1f}%" if prev_rate is not None else "-"
-        curr_str = f"{curr_rate:.1f}%" if curr_rate is not None else "-"
-        if prev_rate is not None and curr_rate is not None:
-            delta_rate = curr_rate - prev_rate
-            delta_str = f"{delta_rate:+.1f}%"
-        else:
-            delta_str = "-"
-        lines.append(f"| Quality Pass Rate | {prev_str} | {curr_str} | {delta_str} |")
-
     lines.append("")
 
     # Schedule Health Summary
@@ -142,6 +141,117 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
     lines.append(f"| Tasks with Negative Float | {overall.tasks_with_negative_float:,} | Tasks requiring acceleration to meet project end date |")
     lines.append(f"| Critical Path Tasks | {overall.critical_path_tasks:,} | Tasks on the driving path |")
     lines.append("")
+
+    # Helper to format dates as MM-DD-YY
+    def fmt_date_short(dt):
+        if pd.isna(dt):
+            return '-'
+        if hasattr(dt, 'strftime'):
+            return dt.strftime('%m-%d-%y')
+        try:
+            return pd.Timestamp(dt).strftime('%m-%d-%y')
+        except Exception:
+            return '-'
+
+    # Behind Schedule Tasks (explicit list)
+    tasks_end = schedule.get('tasks_end', pd.DataFrame())
+    if not tasks_end.empty and overall.tasks_behind_schedule > 0:
+        data_date = pd.Timestamp(end.get('data_date'))
+        behind_mask = (
+            (tasks_end['status_code'] != 'TK_Complete') &
+            (pd.to_datetime(tasks_end['target_end_date']) < data_date)
+        )
+        behind_tasks = tasks_end[behind_mask].copy()
+
+        if not behind_tasks.empty:
+            lines.append("### Tasks Behind Schedule")
+            lines.append("")
+            lines.append("*Tasks not complete past their target end date:*")
+            lines.append("")
+            lines.append("| Task Code | Task Name | Trade | Target End | Days Behind | % Complete |")
+            lines.append("|-----------|-----------|-------|------------|-------------|------------|")
+
+            behind_tasks['days_behind'] = (data_date - pd.to_datetime(behind_tasks['target_end_date'])).dt.days
+            behind_tasks = behind_tasks.sort_values('days_behind', ascending=False)
+
+            for _, row in behind_tasks.head(10).iterrows():
+                task_code = str(row.get('task_code', '-'))
+                task_name = str(row.get('task_name', '-'))[:35]
+                if len(str(row.get('task_name', ''))) > 35:
+                    task_name += "..."
+                trade = str(row.get('trade_name', '-'))[:12] if pd.notna(row.get('trade_name')) else '-'
+                tgt_end = fmt_date_short(row.get('target_end_date'))
+                days_behind = row.get('days_behind', 0)
+                pct = f"{row['phys_complete_pct']:.0f}%" if pd.notna(row.get('phys_complete_pct')) else '-'
+                lines.append(f"| {task_code} | {task_name} | {trade} | {tgt_end} | {days_behind:,}d | {pct} |")
+
+            if len(behind_tasks) > 10:
+                lines.append(f"| ... | *({len(behind_tasks) - 10} more tasks)* | | | | |")
+            lines.append("")
+
+    # Critical Path Tasks (top 10)
+    if not tasks_end.empty and 'driving_path_flag' in tasks_end.columns:
+        critical_tasks = tasks_end[tasks_end['driving_path_flag'] == 'Y'].copy()
+
+        if not critical_tasks.empty:
+            lines.append("### Critical Path Tasks (Driving Path)")
+            lines.append("")
+            lines.append(f"*{len(critical_tasks)} tasks on the driving path. Top 10 by target end date:*")
+            lines.append("")
+            lines.append("| Task Code | Task Name | Trade | Status | Target End | Float |")
+            lines.append("|-----------|-----------|-------|--------|------------|-------|")
+
+            # Sort by target end date
+            if 'target_end_date' in critical_tasks.columns:
+                critical_tasks = critical_tasks.sort_values('target_end_date')
+
+            for _, row in critical_tasks.head(10).iterrows():
+                task_code = str(row.get('task_code', '-'))
+                task_name = str(row.get('task_name', '-'))[:35]
+                if len(str(row.get('task_name', ''))) > 35:
+                    task_name += "..."
+                trade = str(row.get('trade_name', '-'))[:12] if pd.notna(row.get('trade_name')) else '-'
+                status = str(row.get('status_code', '-'))
+                status_short = {'TK_Complete': 'Done', 'TK_Active': 'Active', 'TK_NotStart': 'Wait'}.get(status, status[:6])
+                tgt_end = fmt_date_short(row.get('target_end_date'))
+                float_hr = row.get('total_float_hr_cnt', 0)
+                float_str = f"{float_hr/8:.0f}d" if pd.notna(float_hr) else '-'
+                lines.append(f"| {task_code} | {task_name} | {trade} | {status_short} | {tgt_end} | {float_str} |")
+
+            lines.append("")
+
+    # Float Distribution
+    if not tasks_end.empty and 'total_float_hr_cnt' in tasks_end.columns:
+        # Exclude completed tasks for float analysis
+        active_tasks = tasks_end[tasks_end['status_code'] != 'TK_Complete'].copy()
+
+        if not active_tasks.empty:
+            float_hrs = active_tasks['total_float_hr_cnt'].dropna()
+            float_days = float_hrs / 8  # Convert hours to days
+
+            lines.append("### Float Distribution")
+            lines.append("")
+            lines.append("*Distribution of schedule float (buffer) across incomplete tasks:*")
+            lines.append("")
+            lines.append("| Float Range | Tasks | % of Active | Risk Level |")
+            lines.append("|-------------|-------|-------------|------------|")
+
+            # Define float bands
+            bands = [
+                ('< 0 days (Critical)', float_days < 0, 'HIGH'),
+                ('0-5 days (Near-critical)', (float_days >= 0) & (float_days <= 5), 'MEDIUM'),
+                ('6-15 days', (float_days > 5) & (float_days <= 15), 'LOW'),
+                ('16-30 days', (float_days > 15) & (float_days <= 30), 'LOW'),
+                ('> 30 days', float_days > 30, 'LOW'),
+            ]
+
+            total_active = len(active_tasks)
+            for label, mask, risk in bands:
+                count = mask.sum()
+                pct = (count / total_active * 100) if total_active > 0 else 0
+                lines.append(f"| {label} | {count:,} | {pct:.1f}% | {risk} |")
+
+            lines.append("")
 
     # Progress by floor
     if schedule['by_floor']:
@@ -298,6 +408,28 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
 
         lines.append("")
 
+    # Investigation Checklist for top delay tasks
+    if not schedule['delay_tasks'].empty:
+        df = schedule['delay_tasks']
+        lines.append("### Investigation Checklist")
+        lines.append("")
+        lines.append("*Recommended documentation to review for root cause analysis:*")
+        lines.append("")
+
+        for _, row in df.head(3).iterrows():
+            task_code = str(row.get('task_code', '-'))
+            task_name = str(row.get('task_name', '-'))[:40]
+            own_delay = row.get('own_delay_days', row.get('total_float_hr_cnt', 0))
+            delay_str = f"{own_delay:+.0f}d" if pd.notna(own_delay) else "?"
+            trade = str(row.get('trade_name', '-'))[:15] if pd.notna(row.get('trade_name')) else '-'
+
+            lines.append(f"**{task_code}** ({task_name}) — {delay_str} delay")
+            lines.append(f"- [ ] Review weekly reports for {trade} activities during period")
+            lines.append(f"- [ ] Check RABA/PSI inspections for related location")
+            lines.append(f"- [ ] Review RFI/submittal log for design issues")
+            lines.append(f"- [ ] Identify responsible contractor from labor data")
+            lines.append("")
+
     return "\n".join(lines)
 
 
@@ -418,14 +550,31 @@ def _normalize_outcome(outcome_series: pd.Series) -> pd.Series:
     )
 
 
-def format_quality_section(quality: Dict[str, Any]) -> str:
+def format_quality_section(quality: Dict[str, Any], quality_pass_rates: Dict[str, float] = None) -> str:
     """Format quality metrics section."""
     lines = []
     lines.append("## 3. Quality Metrics & Issues")
     lines.append("")
 
+    # Pass Rate Summary (moved from schedule section)
+    if quality_pass_rates:
+        curr_rate = quality_pass_rates.get('current')
+        prev_rate = quality_pass_rates.get('previous')
+        if curr_rate is not None:
+            lines.append("### Quality Pass Rate")
+            lines.append("")
+            if prev_rate is not None:
+                delta = curr_rate - prev_rate
+                trend = "↑" if delta > 0 else "↓" if delta < 0 else "→"
+                lines.append(f"**Current Period:** {curr_rate:.1f}% {trend} (Previous: {prev_rate:.1f}%, Change: {delta:+.1f}%)")
+            else:
+                lines.append(f"**Current Period:** {curr_rate:.1f}%")
+            lines.append("")
+            lines.append("*Pass rate = PASS / (PASS + FAIL + PARTIAL)*")
+            lines.append("")
+
     # Summary
-    lines.append("### Summary")
+    lines.append("### Inspection Summary")
     lines.append("")
     lines.append(f"| Source | Inspections | Pass | Fail | Partial |")
     lines.append(f"|--------|-------------|------|------|---------|")
@@ -492,8 +641,8 @@ def format_quality_section(quality: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def format_narratives_section(narratives: Dict[str, Any]) -> str:
-    """Format narrative statements section with counts and LLM instructions."""
+def format_narratives_section(narratives: Dict[str, Any], delay_tasks: pd.DataFrame = None) -> str:
+    """Format narrative statements section with counts, deduplication, and task cross-reference."""
     lines = []
     lines.append("## 4. Narrative Statements")
     lines.append("")
@@ -501,15 +650,28 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
     lines.append("Each statement shows: **[Source File]** Date - Statement text")
     lines.append("")
 
-    statements = narratives['statements']
-    total_statements = len(statements) if not statements.empty else 0
+    statements = narratives['statements'].copy() if not narratives['statements'].empty else pd.DataFrame()
 
     if statements.empty:
         lines.append("*No statements with dates in this period.*")
         lines.append("")
         return "\n".join(lines)
 
+    # Deduplicate statements by text content
+    text_col = 'statement_text' if 'statement_text' in statements.columns else 'text'
+    dedup_count = 0
+    if text_col in statements.columns:
+        original_count = len(statements)
+        # Keep first occurrence, track duplicate sources
+        statements['text_normalized'] = statements[text_col].str.strip().str.lower()
+        statements = statements.drop_duplicates(subset=['text_normalized'], keep='first')
+        dedup_count = original_count - len(statements)
+        statements = statements.drop(columns=['text_normalized'])
+
+    total_statements = len(statements)
     lines.append(f"**Total statements in period:** {total_statements}")
+    if dedup_count > 0:
+        lines.append(f"*({dedup_count} duplicate statements removed)*")
     lines.append("")
 
     # Summary by category (LLM-assigned during extraction)
@@ -681,6 +843,66 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
                 lines.append("     Full dataset: data/processed/narratives/narrative_statements.csv -->")
                 lines.append("")
 
+    # Cross-reference: Link narratives to delay tasks
+    if delay_tasks is not None and not delay_tasks.empty and not statements.empty:
+        lines.append("### Narrative-to-Task Cross-Reference")
+        lines.append("")
+        lines.append("*Potential links between narrative statements and delay-causing tasks (keyword matching):*")
+        lines.append("")
+
+        # Build keyword search from delay tasks
+        cross_refs = []
+        for _, task in delay_tasks.head(5).iterrows():
+            task_code = str(task.get('task_code', ''))
+            task_name = str(task.get('task_name', ''))
+            own_delay = task.get('own_delay_days', task.get('total_float_hr_cnt', 0))
+
+            # Extract keywords from task name
+            keywords = []
+            name_lower = task_name.lower()
+
+            # Look for common construction terms
+            search_terms = ['steel', 'concrete', 'slab', 'truss', 'precast', 'column', 'pier',
+                           'foundation', 'roof', 'deck', 'erect', 'pour', 'fab', 'install']
+            for term in search_terms:
+                if term in name_lower:
+                    keywords.append(term)
+
+            # Search statements for matching keywords
+            if keywords and text_col in statements.columns:
+                matching_statements = []
+                for kw in keywords:
+                    mask = statements[text_col].str.lower().str.contains(kw, na=False)
+                    matches = statements[mask]
+                    for _, stmt in matches.iterrows():
+                        stmt_text = str(stmt.get(text_col, ''))[:100]
+                        if stmt_text not in [m[1] for m in matching_statements]:
+                            matching_statements.append((kw, stmt_text))
+
+                if matching_statements:
+                    delay_str = f"{own_delay:+.0f}d" if pd.notna(own_delay) else "?"
+                    cross_refs.append({
+                        'task_code': task_code,
+                        'task_name': task_name[:40],
+                        'delay': delay_str,
+                        'matches': matching_statements[:3]  # Top 3 matches
+                    })
+
+        if cross_refs:
+            lines.append("| Delay Task | Own Delay | Related Narrative (keyword match) |")
+            lines.append("|------------|-----------|-----------------------------------|")
+            for ref in cross_refs:
+                first_match = ref['matches'][0] if ref['matches'] else ('', 'No matches')
+                kw, stmt = first_match
+                lines.append(f"| {ref['task_code']} | {ref['delay']} | *{kw}*: {stmt}... |")
+                # Additional matches as sub-rows
+                for kw, stmt in ref['matches'][1:]:
+                    lines.append(f"| | | *{kw}*: {stmt}... |")
+            lines.append("")
+        else:
+            lines.append("*No keyword matches found between delay tasks and narratives.*")
+            lines.append("")
+
     return "\n".join(lines)
 
 
@@ -822,8 +1044,8 @@ def generate_report(period: SnapshotPeriod, previous_period: SnapshotPeriod = No
     # Sections
     lines.append(format_schedule_section(schedule, period, quality_pass_rates))
     lines.append(format_labor_section(labor, period))
-    lines.append(format_quality_section(quality))
-    lines.append(format_narratives_section(narratives))
+    lines.append(format_quality_section(quality, quality_pass_rates))
+    lines.append(format_narratives_section(narratives, delay_tasks=schedule.get('delay_tasks')))
     lines.append(format_availability_section(schedule, labor, quality, narratives))
     lines.append(format_company_reference_section())
 
