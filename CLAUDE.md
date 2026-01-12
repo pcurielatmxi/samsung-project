@@ -26,7 +26,7 @@ Established data pipelines for 9 primary sources:
 | PSI | Quality inspections (Construction Hive) | 6,309 reports | ✅ Scraped |
 | QC Logs | Inspection request tracking (CPMS exports) | 61K+ records, 141 files | 📁 Raw |
 | Fieldwire | Punch lists, field tasks | TBD | 🔄 In Progress |
-| Narratives | P6 narratives, weekly report narratives, milestone variance | ~80 documents | 🔄 Processing |
+| Narratives | P6 narratives, weekly report narratives, milestone variance | 108 documents, 2.5K statements | ✅ Processed |
 
 **Key Deliverables:**
 - Parsed CSV tables for all sources in `data/processed/`
@@ -237,7 +237,7 @@ samsung-project/
 │   ├── quality/                 # Quality record processing
 │   ├── raba/                    # RABA scraper + document_processing config
 │   ├── psi/                     # PSI scraper + document_processing config
-│   ├── narratives/              # Narratives document_processing config
+│   ├── narratives/              # Narratives document_processing + embeddings search
 │   └── integrated_analysis/     # Phase 2 - cross-source integration
 │       └── monthly_reports/     # Monthly report consolidation scripts
 ├── src/
@@ -636,3 +636,86 @@ Additional fields include: Author Company, Module, Reasons for failure, Week, Ye
 - Failure rate analysis by template/discipline
 - Contractor performance comparison
 - Re-inspection tracking and rework quantification
+
+### Narrative Embeddings Search
+
+**Location:** [scripts/narratives/embeddings/](scripts/narratives/embeddings/)
+
+Semantic search tool for narrative documents using Gemini embeddings and ChromaDB. Enables quick investigation of documentary evidence by searching across document summaries and individual forensic statements.
+
+**Index Contents:**
+- 108 documents (schedule narratives, milestone variance reports, meeting minutes, correspondence)
+- 2,540 statements (extracted forensic claims with category, parties, locations, dates)
+
+**Features:**
+- Semantic search using `gemini-embedding-001` (768 dimensions)
+- Search at document or statement level
+- Rich metadata filtering (category, party, location, date range)
+- Context navigation (show surrounding statements)
+- Idempotent build with content hash change detection
+
+**Statement Categories:**
+`delay`, `scope_change`, `quality_issue`, `safety`, `owner_direction`, `progress`, `resource`, `weather`, `design_issue`, `coordination`, `dispute`, `commitment`, `other`
+
+**Usage:**
+```bash
+# Build/rebuild index (idempotent)
+python -m scripts.narratives.embeddings build
+python -m scripts.narratives.embeddings build --force  # Rebuild all
+
+# Search statements (default)
+python -m scripts.narratives.embeddings search "HVAC delays"
+python -m scripts.narratives.embeddings search "scope changes" --category scope_change
+python -m scripts.narratives.embeddings search "Samsung" --party Samsung
+python -m scripts.narratives.embeddings search "FAB issues" --location FAB
+
+# Search with date filters
+python -m scripts.narratives.embeddings search "delay" --after 2024-01-01 --before 2024-06-30
+
+# Search documents (summaries)
+python -m scripts.narratives.embeddings search "milestone variance" --documents
+
+# Show context (surrounding statements)
+python -m scripts.narratives.embeddings search "delay" --context 2 --limit 5
+
+# Check index status
+python -m scripts.narratives.embeddings status
+```
+
+**Python API:**
+```python
+from scripts.narratives.embeddings import search_statements, search_documents
+
+# Search statements with filters
+results = search_statements(
+    query="HVAC delay",
+    category="delay",
+    party="Yates",
+    limit=10,
+    context=1
+)
+
+# Search document summaries
+docs = search_documents(query="schedule narrative", limit=5)
+```
+
+**Output Format:**
+```
+[1] Score: 0.89
+    Statement: "HVAC work delayed 14 days due to design revision RFI-2847"
+    Category: delay | Event: 2024-03-15 | Impact: 14 days
+    Parties: Samsung, Yates | Location: FAB L2
+    Source: NAR-042 (page 4)
+
+    Context:
+      [prev] "Mechanical rough-in completed ahead of schedule"
+      [next] "Samsung issued revised HVAC drawings on 2024-03-18"
+```
+
+**Storage:**
+```
+{WINDOWS_DATA_DIR}/derived/narratives/embeddings/
+└── chroma.sqlite3   # Persistent ChromaDB vector store
+```
+
+**Dependencies:** `chromadb`, `google-genai` (in requirements.txt)
