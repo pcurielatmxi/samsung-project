@@ -276,11 +276,13 @@ class ScheduleSlippageAnalyzer:
         # Define columns needed for analysis
         # NOTE: We load all date fields even though we primarily use early_start/end
         # because target dates may be useful for baseline comparison in future
+        # ENHANCED: Added constraint columns (cstr_type, cstr_date) for constraint change detection
         cols_needed = [
             'file_id', 'task_id', 'task_code', 'task_name', 'status_code',
             'early_start_date', 'early_end_date', 'late_start_date', 'late_end_date',
             'target_start_date', 'target_end_date', 'act_start_date', 'act_end_date',
-            'total_float_hr_cnt', 'remain_drtn_hr_cnt', 'driving_path_flag'
+            'total_float_hr_cnt', 'remain_drtn_hr_cnt', 'driving_path_flag',
+            'cstr_type', 'cstr_date'  # Constraint type and date for enhanced attribution
         ]
 
         # Load tasks with date parsing
@@ -291,7 +293,8 @@ class ScheduleSlippageAnalyzer:
             parse_dates=['early_start_date', 'early_end_date',
                         'late_start_date', 'late_end_date',
                         'target_start_date', 'target_end_date',
-                        'act_start_date', 'act_end_date']
+                        'act_start_date', 'act_end_date',
+                        'cstr_date']  # Parse constraint date
         )
 
         print(f"  Loaded {len(self.tasks_df):,} task records across {self.tasks_df['file_id'].nunique()} schedules")
@@ -339,6 +342,301 @@ class ScheduleSlippageAnalyzer:
         taxonomy = taxonomy.set_index('task_code')
 
         return taxonomy[['scope_desc', 'trade_name', 'building', 'level']]
+
+    def _compare_relationships(self, file_id_prev: int, file_id_curr: int) -> dict:
+        """
+        Compare predecessor relationships between two schedule snapshots.
+
+        This method identifies logic changes (new/removed predecessor relationships)
+        which can cause inherited delays that aren't from predecessor task duration
+        growth but from network restructuring.
+
+        Args:
+            file_id_prev: file_id of the earlier schedule snapshot
+            file_id_curr: file_id of the later schedule snapshot
+
+        Returns:
+            dict with:
+                'added_relationships': list of (pred_task_code, succ_task_code, pred_type)
+                'removed_relationships': list of (pred_task_code, succ_task_code, pred_type)
+                'tasks_with_new_preds': set of task_codes that gained predecessors
+                'tasks_with_removed_preds': set of task_codes that lost predecessors
+                'new_pred_count': dict mapping task_code -> number of new predecessors
+
+        Note:
+            P6 relationships use task_id (internal numeric IDs), not task_code.
+            This method joins with task data to translate to task_codes for
+            cross-snapshot comparison.
+        """
+        # Load relationship data (taskpred.csv)
+        taskpred_path = self.primavera_dir / 'taskpred.csv'
+        if not taskpred_path.exists():
+            return {
+                'added_relationships': [],
+                'removed_relationships': [],
+                'tasks_with_new_preds': set(),
+                'tasks_with_removed_preds': set(),
+                'new_pred_count': {}
+            }
+
+        taskpred_df = pd.read_csv(taskpred_path)
+
+        # Get relationships for each file_id
+        rels_prev = taskpred_df[taskpred_df['file_id'] == file_id_prev][
+            ['task_id', 'pred_task_id', 'pred_type']
+        ].copy()
+        rels_curr = taskpred_df[taskpred_df['file_id'] == file_id_curr][
+            ['task_id', 'pred_task_id', 'pred_type']
+        ].copy()
+
+        # Build task_id -> task_code mappings for both snapshots
+        tasks_prev = self.tasks_df[self.tasks_df['file_id'] == file_id_prev][
+            ['task_id', 'task_code']
+        ].copy()
+        tasks_curr = self.tasks_df[self.tasks_df['file_id'] == file_id_curr][
+            ['task_id', 'task_code']
+        ].copy()
+
+        # Create lookup dicts
+        id_to_code_prev = dict(zip(tasks_prev['task_id'].astype(str), tasks_prev['task_code']))
+        id_to_code_curr = dict(zip(tasks_curr['task_id'].astype(str), tasks_curr['task_code']))
+
+        # Convert relationships to (pred_code, succ_code, type) tuples
+        def rel_to_tuple(row, id_to_code):
+            pred_id = str(row['pred_task_id'])
+            succ_id = str(row['task_id'])
+            pred_code = id_to_code.get(pred_id)
+            succ_code = id_to_code.get(succ_id)
+            if pred_code and succ_code:
+                return (pred_code, succ_code, row['pred_type'])
+            return None
+
+        rels_prev_set = set(
+            t for t in (rel_to_tuple(row, id_to_code_prev) for _, row in rels_prev.iterrows())
+            if t is not None
+        )
+        rels_curr_set = set(
+            t for t in (rel_to_tuple(row, id_to_code_curr) for _, row in rels_curr.iterrows())
+            if t is not None
+        )
+
+        # Find added and removed relationships
+        added = rels_curr_set - rels_prev_set
+        removed = rels_prev_set - rels_curr_set
+
+        # Extract affected tasks
+        tasks_with_new_preds = {rel[1] for rel in added}  # succ_task_code
+        tasks_with_removed_preds = {rel[1] for rel in removed}
+
+        # Count new predecessors per task
+        new_pred_count = {}
+        for rel in added:
+            succ_code = rel[1]
+            new_pred_count[succ_code] = new_pred_count.get(succ_code, 0) + 1
+
+        return {
+            'added_relationships': list(added),
+            'removed_relationships': list(removed),
+            'tasks_with_new_preds': tasks_with_new_preds,
+            'tasks_with_removed_preds': tasks_with_removed_preds,
+            'new_pred_count': new_pred_count
+        }
+
+    def trace_root_causes(self, comparison_result: dict, file_id_curr: int,
+                          own_delay_threshold: float = 0.8) -> pd.DataFrame:
+        """
+        Trace delay propagation chains to identify root cause tasks.
+
+        For each task with float decrease, this method determines whether the
+        task is a ROOT CAUSE (originated the delay) or PROPAGATED (inherited
+        the delay from upstream tasks).
+
+        Algorithm:
+            1. Build predecessor lookup from taskpred.csv
+            2. For each task with float decrease:
+               a. If own_delay >= threshold × float_decrease → ROOT_CAUSE
+               b. Else, trace upstream through predecessors
+               c. Find the first task in the chain that is a ROOT_CAUSE
+            3. Calculate propagation depth from root cause
+
+        Args:
+            comparison_result: Output from compare_schedules()
+            file_id_curr: Current schedule file_id (for loading relationships)
+            own_delay_threshold: Fraction of float decrease that own_delay must
+                                 explain to be considered a root cause (default 0.8 = 80%)
+
+        Returns:
+            DataFrame with columns:
+                - task_code: The task being analyzed
+                - is_root_cause: True if this task originated the delay
+                - root_cause_task: task_code of the originating task (self if root cause)
+                - cause_type: DURATION, CONSTRAINT, LOGIC_CHANGE, or UNKNOWN
+                - propagation_depth: Distance from root cause (0 for root cause itself)
+                - downstream_impact_count: Number of tasks affected by this root cause
+        """
+        tasks_df = comparison_result['tasks']
+
+        if tasks_df is None or len(tasks_df) == 0:
+            return pd.DataFrame()
+
+        # Filter to tasks with significant float decrease
+        float_decrease_threshold = -1  # At least 1 day of float loss
+        affected_tasks = tasks_df[
+            tasks_df['float_change_days'].fillna(0) < float_decrease_threshold
+        ].copy()
+
+        if len(affected_tasks) == 0:
+            return pd.DataFrame()
+
+        # Load predecessor relationships for the current schedule
+        taskpred_path = self.primavera_dir / 'taskpred.csv'
+        if not taskpred_path.exists():
+            # No relationship data - mark all as root causes
+            result = affected_tasks[['task_code']].copy()
+            result['is_root_cause'] = True
+            result['root_cause_task'] = result['task_code']
+            result['cause_type'] = 'UNKNOWN'
+            result['propagation_depth'] = 0
+            result['downstream_impact_count'] = 0
+            return result
+
+        taskpred_df = pd.read_csv(taskpred_path)
+        rels_curr = taskpred_df[taskpred_df['file_id'] == file_id_curr][
+            ['task_id', 'pred_task_id']
+        ].copy()
+
+        # Build task_id -> task_code mapping
+        tasks_curr = self.tasks_df[self.tasks_df['file_id'] == file_id_curr][
+            ['task_id', 'task_code']
+        ].copy()
+        id_to_code = dict(zip(tasks_curr['task_id'].astype(str), tasks_curr['task_code']))
+
+        # Build predecessor adjacency: task_code -> list of predecessor task_codes
+        pred_adjacency = {}
+        for _, row in rels_curr.iterrows():
+            succ_code = id_to_code.get(str(row['task_id']))
+            pred_code = id_to_code.get(str(row['pred_task_id']))
+            if succ_code and pred_code:
+                if succ_code not in pred_adjacency:
+                    pred_adjacency[succ_code] = []
+                pred_adjacency[succ_code].append(pred_code)
+
+        # Create lookup dict for task metrics
+        task_metrics = {}
+        for _, row in tasks_df.iterrows():
+            task_metrics[row['task_code']] = {
+                'own_delay': row.get('own_delay_days', 0) or 0,
+                'float_change': row.get('float_change_days', 0) or 0,
+                'constraint_tightened': row.get('constraint_tightened', False),
+                'has_new_predecessors': row.get('has_new_predecessors', False),
+            }
+
+        # Memoization for root cause tracing
+        root_cause_cache = {}  # task_code -> (root_cause_task, cause_type, depth)
+
+        def determine_cause_type(task_code: str) -> str:
+            """Determine the type of cause for a root cause task."""
+            metrics = task_metrics.get(task_code, {})
+            if metrics.get('constraint_tightened', False):
+                return 'CONSTRAINT'
+            if metrics.get('has_new_predecessors', False):
+                return 'LOGIC_CHANGE'
+            if abs(metrics.get('own_delay', 0)) > 1:
+                return 'DURATION'
+            return 'UNKNOWN'
+
+        def trace_upstream(task_code: str, visited: set = None, depth: int = 0) -> tuple:
+            """
+            Recursively trace upstream to find root cause.
+
+            Returns (root_cause_task, cause_type, propagation_depth)
+            """
+            if visited is None:
+                visited = set()
+
+            # Prevent infinite loops in cyclic graphs
+            if task_code in visited:
+                return (task_code, 'UNKNOWN', depth)
+            visited.add(task_code)
+
+            # Check cache
+            if task_code in root_cause_cache:
+                cached = root_cause_cache[task_code]
+                return (cached[0], cached[1], cached[2] + depth)
+
+            metrics = task_metrics.get(task_code, {})
+            own_delay = abs(metrics.get('own_delay', 0))
+            float_decrease = abs(metrics.get('float_change', 0))
+
+            # Task is ROOT_CAUSE if own_delay explains the float decrease
+            if float_decrease > 0 and own_delay >= own_delay_threshold * float_decrease:
+                cause_type = determine_cause_type(task_code)
+                root_cause_cache[task_code] = (task_code, cause_type, 0)
+                return (task_code, cause_type, depth)
+
+            # Task is ROOT_CAUSE if it has constraint or logic change
+            if metrics.get('constraint_tightened', False):
+                root_cause_cache[task_code] = (task_code, 'CONSTRAINT', 0)
+                return (task_code, 'CONSTRAINT', depth)
+
+            if metrics.get('has_new_predecessors', False):
+                root_cause_cache[task_code] = (task_code, 'LOGIC_CHANGE', 0)
+                return (task_code, 'LOGIC_CHANGE', depth)
+
+            # Otherwise, trace upstream through predecessors
+            predecessors = pred_adjacency.get(task_code, [])
+            if not predecessors:
+                # No predecessors - this task is the root cause by default
+                cause_type = determine_cause_type(task_code)
+                root_cause_cache[task_code] = (task_code, cause_type, 0)
+                return (task_code, cause_type, depth)
+
+            # Find predecessor with most float decrease
+            max_pred_float_decrease = 0
+            max_pred = None
+            for pred_code in predecessors:
+                pred_metrics = task_metrics.get(pred_code, {})
+                pred_float_decrease = abs(pred_metrics.get('float_change', 0))
+                if pred_float_decrease > max_pred_float_decrease:
+                    max_pred_float_decrease = pred_float_decrease
+                    max_pred = pred_code
+
+            # If a predecessor has significant float decrease, trace upstream
+            if max_pred and max_pred_float_decrease >= float_decrease * 0.5:
+                result = trace_upstream(max_pred, visited, depth + 1)
+                root_cause_cache[task_code] = (result[0], result[1], result[2] - depth)
+                return result
+
+            # No predecessor with significant float decrease - this task is root cause
+            cause_type = determine_cause_type(task_code)
+            root_cause_cache[task_code] = (task_code, cause_type, 0)
+            return (task_code, cause_type, depth)
+
+        # Trace root causes for all affected tasks
+        results = []
+        for _, row in affected_tasks.iterrows():
+            task_code = row['task_code']
+            root_cause, cause_type, prop_depth = trace_upstream(task_code)
+            results.append({
+                'task_code': task_code,
+                'is_root_cause': root_cause == task_code,
+                'root_cause_task': root_cause,
+                'cause_type': cause_type,
+                'propagation_depth': prop_depth,
+            })
+
+        result_df = pd.DataFrame(results)
+
+        # Calculate downstream impact for each root cause
+        if len(result_df) > 0:
+            root_cause_counts = result_df.groupby('root_cause_task').size()
+            result_df['downstream_impact_count'] = result_df['root_cause_task'].map(
+                lambda x: root_cause_counts.get(x, 0)
+            )
+        else:
+            result_df['downstream_impact_count'] = 0
+
+        return result_df
 
     def get_ordered_schedules(self, schedule_type='YATES'):
         """
@@ -437,6 +735,22 @@ class ScheduleSlippageAnalyzer:
 
         print(f"  Previous schedule (file_id={file_id_prev}): {len(tasks_prev):,} tasks")
         print(f"  Current schedule (file_id={file_id_curr}): {len(tasks_curr):,} tasks")
+
+        # =========================================================================
+        # STEP 1.5: ENHANCED - Compare predecessor relationships
+        # =========================================================================
+        # Detect logic changes (new/removed predecessor relationships)
+        # This helps distinguish inherited delays from predecessor duration growth
+        # vs. inherited delays from network restructuring (new predecessors added)
+        relationship_changes = self._compare_relationships(file_id_prev, file_id_curr)
+        tasks_with_new_preds = relationship_changes['tasks_with_new_preds']
+        new_pred_count = relationship_changes['new_pred_count']
+
+        if len(tasks_with_new_preds) > 0:
+            print(f"\n  RELATIONSHIP CHANGES:")
+            print(f"    Tasks with new predecessors: {len(tasks_with_new_preds):,}")
+            print(f"    Total new relationships: {len(relationship_changes['added_relationships']):,}")
+            print(f"    Total removed relationships: {len(relationship_changes['removed_relationships']):,}")
 
         # =========================================================================
         # STEP 2: Calculate PROJECT-LEVEL SLIPPAGE
@@ -582,6 +896,88 @@ class ScheduleSlippageAnalyzer:
         common['float_change_days'] = common['float_change_hrs'] / HOURS_PER_WORKDAY
 
         # -------------------------------------------------------------------------
+        # 4c.5. ENHANCED: Backward pass analysis - late date changes
+        # -------------------------------------------------------------------------
+        # The forward pass (early dates) shows how predecessors push dates.
+        # The backward pass (late dates) shows how successors/project constraints pull dates.
+        #
+        # Float = Late Finish - Early Finish
+        # When float decreases, it's because:
+        #   1. Early Finish moved later (forward push) - predecessors or own duration
+        #   2. Late Finish moved earlier (backward pull) - successors or project constraint
+        #
+        # This decomposition identifies whether float loss came from "in front" or "behind"
+        common['late_end_change_days'] = (
+            common['late_end_date_curr'] - common['late_end_date_prev']
+        ).dt.days
+
+        common['late_start_change_days'] = (
+            common['late_start_date_curr'] - common['late_start_date_prev']
+        ).dt.days
+
+        # Float compression attribution:
+        # - float_loss_from_front: Early dates moved later (finish_slip > 0)
+        # - float_loss_from_back: Late dates moved earlier (late_end_change < 0)
+        common['float_loss_from_front'] = common['finish_slip_days'].clip(lower=0)
+        common['float_loss_from_back'] = (-common['late_end_change_days'].fillna(0)).clip(lower=0)
+
+        # Determine primary float driver
+        # FORWARD_PUSH: Predecessors or own duration pushed early dates
+        # BACKWARD_PULL: Successors or project constraint pulled late dates
+        # MIXED: Both directions contributed significantly
+        common['float_driver'] = np.where(
+            common['float_loss_from_front'] > common['float_loss_from_back'] + 1,  # +1 day tolerance
+            'FORWARD_PUSH',
+            np.where(
+                common['float_loss_from_back'] > common['float_loss_from_front'] + 1,
+                'BACKWARD_PULL',
+                np.where(
+                    (common['float_loss_from_front'] > 0) | (common['float_loss_from_back'] > 0),
+                    'MIXED',
+                    'NONE'
+                )
+            )
+        )
+
+        # -------------------------------------------------------------------------
+        # 4c.6. ENHANCED: Constraint change detection
+        # -------------------------------------------------------------------------
+        # Detect if task constraints changed between snapshots
+        # This helps identify if schedule pressure came from new/tightened constraints
+        common['constraint_type_changed'] = (
+            common['cstr_type_prev'].fillna('') != common['cstr_type_curr'].fillna('')
+        )
+        common['constraint_date_changed'] = (
+            common['cstr_date_prev'].notna() & common['cstr_date_curr'].notna() &
+            (common['cstr_date_prev'] != common['cstr_date_curr'])
+        ) | (
+            common['cstr_date_prev'].isna() != common['cstr_date_curr'].isna()
+        )
+        common['constraint_changed'] = (
+            common['constraint_type_changed'] | common['constraint_date_changed']
+        )
+        # Constraint tightened = constraint changed AND (new date is earlier OR new constraint added)
+        common['constraint_tightened'] = (
+            common['constraint_changed'] &
+            (
+                (common['cstr_date_curr'].notna() & common['cstr_date_prev'].notna() &
+                 (common['cstr_date_curr'] < common['cstr_date_prev'])) |
+                (common['cstr_date_curr'].notna() & common['cstr_date_prev'].isna())
+            )
+        )
+
+        # -------------------------------------------------------------------------
+        # 4c.7. ENHANCED: Relationship change detection
+        # -------------------------------------------------------------------------
+        # Flag tasks that gained new predecessors (logic changes)
+        # This helps distinguish inherited delay from predecessor execution issues
+        # vs. inherited delay from network restructuring
+        common['has_new_predecessors'] = common['task_code'].isin(tasks_with_new_preds)
+        common['new_predecessor_count'] = common['task_code'].map(
+            lambda x: new_pred_count.get(x, 0)
+        )
+
+        # -------------------------------------------------------------------------
         # 4d. Determine criticality status
         # -------------------------------------------------------------------------
         # is_critical: Task currently has zero or negative float
@@ -685,6 +1081,91 @@ class ScheduleSlippageAnalyzer:
 
         common['delay_category'] = common.apply(categorize_task, axis=1)
 
+        # -------------------------------------------------------------------------
+        # STEP 5.5: ENHANCED categorization with multi-dimensional attribution
+        # -------------------------------------------------------------------------
+        def categorize_task_enhanced(row):
+            """
+            Enhanced categorization with full multi-dimensional attribution.
+
+            This provides more granular categories than the original categorize_task()
+            by considering backward pass (late date changes), constraint changes,
+            and relationship changes.
+
+            Categories:
+                CAUSE_DURATION: Task took longer (own_delay > threshold, no significant inherited)
+                CAUSE_CONSTRAINT: Task constraint was tightened
+                CAUSE_LOGIC_CHANGE: New predecessors added that pushed dates
+                INHERITED_FROM_PRED: Pushed by predecessors (start_slip > 0, own_delay ~ 0)
+                INHERITED_LOGIC_CHANGE: Inherited delay from new predecessor relationship
+                SQUEEZED_FROM_SUCC: Float loss from backward pull (successors/project constraint)
+                CAUSE_PLUS_INHERITED: Both own delay and inherited delay
+                DUAL_SQUEEZE: Float compressed from both directions
+                COMPLETED_OK: Completed without delay impact
+                ACTIVE_OK: Active without delay impact
+                WAITING_OK: Waiting without delay impact
+            """
+            status = row['status_curr']
+            own_delay = row['own_delay_days'] if pd.notna(row['own_delay_days']) else 0
+            inherited = row['inherited_delay_days'] if pd.notna(row['inherited_delay_days']) else 0
+            float_change = row['float_change_days'] if pd.notna(row['float_change_days']) else 0
+            finish_slip = row['finish_slip_days'] if pd.notna(row['finish_slip_days']) else 0
+            float_loss_front = row.get('float_loss_from_front', 0) or 0
+            float_loss_back = row.get('float_loss_from_back', 0) or 0
+            constraint_tightened = row.get('constraint_tightened', False)
+            has_new_preds = row.get('has_new_predecessors', False)
+
+            # Completed tasks - simpler logic
+            if status == 'TK_Complete':
+                if own_delay > OWN_DELAY_THRESHOLD_DAYS and finish_slip > 0:
+                    if constraint_tightened:
+                        return 'CAUSE_CONSTRAINT'
+                    return 'CAUSE_DURATION'
+                return 'COMPLETED_OK'
+
+            # Active tasks - check what's causing the delay
+            if status == 'TK_Active':
+                if own_delay > OWN_DELAY_THRESHOLD_DAYS and finish_slip > 0:
+                    if constraint_tightened:
+                        return 'CAUSE_CONSTRAINT'
+                    if inherited > OWN_DELAY_THRESHOLD_DAYS:
+                        return 'CAUSE_PLUS_INHERITED'
+                    return 'CAUSE_DURATION'
+                return 'ACTIVE_OK'
+
+            # Not-started tasks - full multi-dimensional analysis
+            # Priority order: constraint > logic change > own duration > inherited > squeezed
+
+            # Constraint tightening is a direct cause
+            if constraint_tightened and float_change < FLOAT_SQUEEZE_THRESHOLD_DAYS:
+                return 'CAUSE_CONSTRAINT'
+
+            # New predecessors causing delay
+            if has_new_preds and inherited > INHERITED_DELAY_THRESHOLD_DAYS:
+                return 'INHERITED_LOGIC_CHANGE'
+
+            # Check for dual squeeze (both forward and backward pressure)
+            if float_loss_front > 1 and float_loss_back > 1:
+                return 'DUAL_SQUEEZE'
+
+            # Primarily backward pull (squeezed by successors/project constraint)
+            if float_loss_back > float_loss_front + 1 and float_change < FLOAT_SQUEEZE_THRESHOLD_DAYS:
+                return 'SQUEEZED_FROM_SUCC'
+
+            # Standard inherited delay
+            if inherited > INHERITED_DELAY_THRESHOLD_DAYS:
+                return 'INHERITED_FROM_PRED'
+
+            # Float squeeze without clear direction
+            if float_change < FLOAT_SQUEEZE_THRESHOLD_DAYS:
+                if float_loss_back > float_loss_front:
+                    return 'SQUEEZED_FROM_SUCC'
+                return 'WAITING_SQUEEZED'
+
+            return 'WAITING_OK'
+
+        common['delay_category_enhanced'] = common.apply(categorize_task_enhanced, axis=1)
+
         # =========================================================================
         # STEP 6: Build result DataFrame with all calculated metrics
         # =========================================================================
@@ -710,6 +1191,26 @@ class ScheduleSlippageAnalyzer:
             'duration_change_days': common['duration_change_days'],  # Scope/estimate change
             'float_change_days': common['float_change_days'],        # Buffer erosion
 
+            # ENHANCED: Backward pass metrics - late date changes
+            'late_end_prev': common['late_end_date_prev'],
+            'late_end_curr': common['late_end_date_curr'],
+            'late_end_change_days': common['late_end_change_days'],  # Late end movement
+            'float_loss_from_front': common['float_loss_from_front'],  # Float lost via forward push
+            'float_loss_from_back': common['float_loss_from_back'],    # Float lost via backward pull
+            'float_driver': common['float_driver'],  # FORWARD_PUSH, BACKWARD_PULL, MIXED, NONE
+
+            # ENHANCED: Constraint change detection
+            'constraint_changed': common['constraint_changed'],
+            'constraint_tightened': common['constraint_tightened'],
+            'cstr_type_prev': common['cstr_type_prev'],
+            'cstr_type_curr': common['cstr_type_curr'],
+            'cstr_date_prev': common['cstr_date_prev'],
+            'cstr_date_curr': common['cstr_date_curr'],
+
+            # ENHANCED: Relationship change detection
+            'has_new_predecessors': common['has_new_predecessors'],
+            'new_predecessor_count': common['new_predecessor_count'],
+
             # Criticality indicators
             'float_curr_days': common['total_float_hr_cnt_curr'] / HOURS_PER_WORKDAY,
             'is_critical': common['is_critical_curr'],           # Currently on critical path
@@ -719,6 +1220,7 @@ class ScheduleSlippageAnalyzer:
             # Ranking and categorization
             'impact_score': common['impact_score'],
             'delay_category': common['delay_category'],
+            'delay_category_enhanced': common['delay_category_enhanced'],  # ENHANCED: multi-dimensional
 
             # Reference back to source snapshots
             'file_id_prev': file_id_prev,

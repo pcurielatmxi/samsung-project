@@ -140,6 +140,52 @@ Analyzes schedule slippage between P6 snapshots to identify which tasks contribu
 | WAITING_SQUEEZED | Not started, float_change < -5d | Buffer eroding |
 | *_OK | Within thresholds | Not causing delay |
 
+### Enhanced Attribution (v2.0)
+
+The enhanced attribution system adds multi-dimensional analysis:
+
+**Backward Pass Metrics:**
+| Metric | Meaning |
+|--------|---------|
+| `late_end_change_days` | Movement of late finish date |
+| `float_loss_from_front` | Float consumed by forward push |
+| `float_loss_from_back` | Float consumed by backward pull |
+| `float_driver` | FORWARD_PUSH, BACKWARD_PULL, MIXED, NONE |
+
+**Constraint & Relationship Detection:**
+| Metric | Meaning |
+|--------|---------|
+| `constraint_changed` | Task constraint was modified |
+| `constraint_tightened` | Constraint date moved earlier |
+| `has_new_predecessors` | New predecessor relationships added |
+| `new_predecessor_count` | Number of new predecessors |
+
+**Enhanced Categories (`delay_category_enhanced`):**
+| Category | Meaning |
+|----------|---------|
+| CAUSE_DURATION | Task took longer (own_delay dominant) |
+| CAUSE_CONSTRAINT | Constraint was tightened |
+| INHERITED_FROM_PRED | Pushed by predecessors |
+| INHERITED_LOGIC_CHANGE | New predecessor caused delay |
+| SQUEEZED_FROM_SUCC | Pulled by successors/project constraint |
+| CAUSE_PLUS_INHERITED | Both own delay and inherited |
+| DUAL_SQUEEZE | Compressed from both directions |
+
+**Root Cause Tracing:**
+```python
+# Trace delay chains to identify root causes
+root_causes = analyzer.trace_root_causes(result, file_id_curr)
+
+# Output columns:
+# - is_root_cause: True if task originated the delay
+# - root_cause_task: task_code of origin
+# - cause_type: DURATION, CONSTRAINT, LOGIC_CHANGE
+# - propagation_depth: distance from root cause
+# - downstream_impact_count: tasks affected
+```
+
+**Full Documentation:** See [docs/analysis/delay_attribution_methodology.md](../../docs/analysis/delay_attribution_methodology.md)
+
 ### What-If Analysis
 
 The script includes what-if analysis to estimate schedule recovery potential:
@@ -250,6 +296,7 @@ print(attribution['drivers'])  # DataFrame of top delay drivers
 |--------|---------|
 | `analyze_month(year, month)` | Compare snapshots for a calendar month |
 | `compare_schedules(prev_id, curr_id)` | Compare two specific snapshots |
+| `trace_root_causes(result, file_id)` | **NEW:** Identify root cause tasks in delay chains |
 | `generate_whatif_table(result)` | Calculate recovery potential per task |
 | `analyze_parallel_constraints(result)` | Detect parallel path bottlenecks |
 | `analyze_recovery_sequence(result)` | Full bottleneck cascade analysis |
