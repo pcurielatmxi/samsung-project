@@ -204,37 +204,216 @@ python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2024 --m
 python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2024 --month 6 --attribution
 ```
 
-## Interpretation Guide
+## Interpretation Guide for Analysts
+
+This section provides practical guidance for interpreting delay attribution results and drawing actionable conclusions.
+
+### Understanding the Period Summary
+
+When analyzing a period (comparing two schedule snapshots), the key question is: **"Why did the project end date move?"**
+
+The answer falls into one of these patterns:
+
+| Pattern | What It Means | Primary Investigation |
+|---------|---------------|----------------------|
+| **High FORWARD_PUSH %** | Tasks took longer or predecessors delayed | Look at CAUSE_DURATION tasks - these are the culprits |
+| **High BACKWARD_PULL %** | Project deadline tightened or aggressive re-baselining | Check if project end constraint changed; may be schedule compression |
+| **High DUAL_SQUEEZE %** | Both happening simultaneously | Complex period - investigate both directions |
+| **High LOGIC_CHANGE count** | Many new predecessor relationships added | Schedule restructuring occurred - check if scope or sequencing changed |
 
 ### Float Driver Analysis
 
-| float_driver | Interpretation |
-|--------------|----------------|
-| FORWARD_PUSH | Delay came from predecessors or task's own duration |
-| BACKWARD_PULL | Pressure from successors or project constraint |
-| MIXED | Both forward and backward compression |
-| NONE | No significant float change |
+| float_driver | What Happened | Typical Causes | What to Investigate |
+|--------------|---------------|----------------|---------------------|
+| **FORWARD_PUSH** | Task's early finish moved later | Duration growth, predecessor delays | Why did the task take longer? Was there rework, scope change, or resource issues? |
+| **BACKWARD_PULL** | Task's late finish moved earlier | Project deadline tightened, successor constraints | Was the project end date pulled in? Did a downstream milestone get accelerated? |
+| **MIXED** | Both early and late dates moved unfavorably | Compressed from both directions | Task is getting squeezed - check if schedule is still feasible |
+| **NONE** | Float didn't change significantly | Task is stable | No immediate concern for this task |
 
-### Investigation Priority
+### Drawing Conclusions from Categories
 
-1. **CAUSE_DURATION** tasks: Investigate why task took longer
-2. **CAUSE_CONSTRAINT** tasks: Verify if constraint change was justified
-3. **ROOT_CAUSE tasks with high downstream_impact_count**: Most important to address
-4. **SQUEEZED_FROM_SUCC** tasks: Check if project deadline is realistic
+#### CAUSE Categories (Tasks That Drove Delay)
 
-### Common Patterns
+| Category | Conclusion | Investigation Checklist |
+|----------|------------|------------------------|
+| **CAUSE_DURATION** | This task's actual/planned duration increased, pushing the schedule | ☐ Was there scope growth? ☐ Did productivity drop? ☐ Were there quality issues requiring rework? ☐ Was there resource shortage? |
+| **CAUSE_CONSTRAINT** | A constraint on this task was tightened | ☐ Who changed the constraint and why? ☐ Was it a client directive? ☐ Is the new constraint achievable? |
+| **CAUSE_PLUS_INHERITED** | Task both caused delay AND received delay from predecessors | ☐ Investigate both the task itself AND its predecessors ☐ May indicate a problem area affecting multiple tasks |
 
-**Single Root Cause, Many Propagated:**
-- One task delayed → cascaded through the network
-- Focus investigation on the root cause
+#### INHERITED Categories (Tasks Affected by Others)
 
-**Multiple Independent Root Causes:**
-- Several tasks contributing to delay independently
-- May indicate systemic issues (e.g., resource shortage)
+| Category | Conclusion | Investigation Checklist |
+|----------|------------|------------------------|
+| **INHERITED_FROM_PRED** | Task is delayed because upstream work is delayed | ☐ Follow the predecessor chain to find root cause ☐ This task is a victim, not a cause |
+| **INHERITED_LOGIC_CHANGE** | New predecessor relationships were added that delayed this task | ☐ Why were new predecessors added? ☐ Was there scope change or sequencing revision? ☐ Were previously parallel tasks made sequential? |
+| **SQUEEZED_FROM_SUCC** | Task's float was consumed by downstream pressure | ☐ Check if project end date was moved earlier ☐ Check if successor tasks have hard constraints ☐ May indicate schedule is unrealistic |
+| **DUAL_SQUEEZE** | Task compressed from both directions | ☐ High-risk task - investigate urgently ☐ May need schedule relief or additional resources |
 
-**High SQUEEZED_FROM_SUCC count:**
-- Project end constraint is creating pressure
-- May need to evaluate overall schedule feasibility
+### Identifying the "Why" - Root Cause Analysis
+
+The root cause tracing identifies **which tasks originated the delay chain**. Use this hierarchy:
+
+```
+Priority 1: Root causes with highest downstream_impact_count
+           → These tasks affected the most other tasks
+           → Fixing/understanding these has largest benefit
+
+Priority 2: Root causes on the driving path
+           → These directly impact project end date
+           → May need acceleration or recovery plan
+
+Priority 3: Root causes by cause_type:
+           → DURATION: Investigate execution issues
+           → CONSTRAINT: Investigate constraint changes
+           → LOGIC_CHANGE: Investigate scope/sequencing changes
+```
+
+### Period Summary Template
+
+When summarizing a period's schedule movement, use this structure:
+
+```
+PERIOD: [Previous Snapshot Date] → [Current Snapshot Date]
+
+PROJECT IMPACT:
+- Project end date moved: [+X days / -X days / unchanged]
+- From: [Previous date] → To: [Current date]
+
+PRIMARY DRIVER:
+- [X]% of tasks show [FORWARD_PUSH/BACKWARD_PULL/MIXED]
+- Interpretation: [Schedule slipped due to task delays / Schedule compressed due to deadline pressure / Both]
+
+TOP DELAY CONTRIBUTORS:
+1. [Task Code] - [Task Name]
+   - Own delay: +X days
+   - Downstream impact: Y tasks affected
+   - Cause type: [DURATION/CONSTRAINT/LOGIC_CHANGE]
+   - Investigation needed: [What to look into]
+
+2. [Task Code] - [Task Name]
+   ...
+
+CATEGORY BREAKDOWN:
+- CAUSE_DURATION: X tasks (Y total days of own delay)
+- INHERITED: X tasks (victims of upstream delays)
+- DUAL_SQUEEZE: X tasks (high-risk, compressed both ways)
+
+RECOMMENDED ACTIONS:
+1. [Specific investigation or mitigation]
+2. [...]
+```
+
+### Common Patterns and What They Mean
+
+#### Pattern 1: Single Root Cause, Many Propagated
+```
+Root causes: 5-10 tasks
+Propagated: 500+ tasks
+```
+**Interpretation:** A small number of tasks delayed, and the impact cascaded through the network.
+
+**Action:** Focus investigation on the few root causes. Fixing these few tasks' issues could prevent hundreds of downstream delays.
+
+**Example:** Foundation work delayed → all superstructure tasks pushed → all finishes pushed
+
+#### Pattern 2: Many Independent Root Causes
+```
+Root causes: 100+ tasks
+Propagated: 200 tasks
+```
+**Interpretation:** Delays are widespread and independent, not cascading from a few sources.
+
+**Action:** Look for systemic issues: resource shortage, weather, quality problems affecting many areas simultaneously.
+
+**Example:** Labor shortage affecting all trades → many tasks delayed independently
+
+#### Pattern 3: High BACKWARD_PULL Percentage (>60%)
+```
+Float driver: 75% BACKWARD_PULL
+```
+**Interpretation:** The schedule is being compressed from the end, not pushed from the beginning. The project deadline moved earlier or was tightened.
+
+**Action:**
+- Check if the project end constraint changed
+- Evaluate if compression is achievable
+- May indicate aggressive re-baselining rather than actual execution delay
+
+**Example:** Client moved substantial completion date earlier → all tasks' late dates pulled in → float consumed
+
+#### Pattern 4: High LOGIC_CHANGE Count
+```
+INHERITED_LOGIC_CHANGE: 300+ tasks
+New predecessors detected: 500+ relationships
+```
+**Interpretation:** Significant schedule restructuring occurred. Many tasks gained new predecessors.
+
+**Action:**
+- Check if scope changed (new work items added as predecessors)
+- Check if sequencing was revised (parallel work made sequential)
+- This may be legitimate schedule refinement, not delay
+
+**Example:** MEP coordination identified new sequence requirements → tasks that were parallel now sequential
+
+#### Pattern 5: DUAL_SQUEEZE Dominates
+```
+DUAL_SQUEEZE: 60% of tasks with float decrease
+```
+**Interpretation:** Tasks are being compressed from both directions - very stressed schedule.
+
+**Action:**
+- High-priority review needed
+- Schedule may be unrealistic
+- Look for tasks that need immediate attention or schedule relief
+
+**Example:** Project delay + deadline pressure = tasks squeezed with no buffer
+
+### Investigation Priorities
+
+When reviewing a period, investigate in this order:
+
+1. **Project-Level First**
+   - Did the project end date change?
+   - By how much? (project_slippage_days)
+   - What's the dominant float_driver pattern?
+
+2. **Root Causes Second**
+   - Which tasks are marked is_root_cause = True?
+   - Sort by downstream_impact_count
+   - Focus on top 5-10 root causes
+
+3. **Category Patterns Third**
+   - What's the distribution of enhanced categories?
+   - High CAUSE_DURATION → execution problems
+   - High LOGIC_CHANGE → schedule restructuring
+   - High SQUEEZED → deadline pressure
+
+4. **Specific Tasks Last**
+   - For top contributors, pull supporting documentation
+   - Weekly reports from that period
+   - Quality inspection records
+   - Daily plans
+
+### Connecting to Source Documents
+
+For each significant root cause task, collect:
+
+| Document Type | What to Find |
+|---------------|--------------|
+| **Weekly Reports** | Was this task discussed? Any issues mentioned? |
+| **Daily Plans (TBM)** | Was the crew working on this task? Any notes? |
+| **Quality Records** | Were there failed inspections requiring rework? |
+| **P6 Narratives** | Did the scheduler document the reason for delay? |
+| **Change Orders** | Was there scope change affecting this task? |
+
+### Red Flags to Watch For
+
+| Red Flag | What It Indicates |
+|----------|-------------------|
+| Same root cause appearing in multiple periods | Chronic issue not being addressed |
+| DUAL_SQUEEZE count increasing over time | Schedule becoming unrealistic |
+| LOGIC_CHANGE without scope change documentation | Undocumented schedule manipulation |
+| High own_delay on completed tasks | Work took longer than re-planned (even after updates) |
+| Constraint tightened without client directive | Internal pressure that may not be achievable |
 
 ## Limitations
 
@@ -260,6 +439,157 @@ From `task.csv`:
 From `taskpred.csv`:
 - `task_id`, `pred_task_id` - Relationship data
 - `pred_type` - Relationship type
+
+## Quick Reference Card
+
+### At a Glance: What Caused the Delay?
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    DELAY ATTRIBUTION QUICK REFERENCE                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  STEP 1: Check Project Slippage                                     │
+│  ─────────────────────────────                                      │
+│  project_slippage_days > 0?  → Schedule slipped                     │
+│  project_slippage_days < 0?  → Schedule recovered                   │
+│  project_slippage_days = 0?  → No change to end date                │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  STEP 2: Check Float Driver Distribution                            │
+│  ──────────────────────────────────────                             │
+│  Mostly FORWARD_PUSH → Tasks/predecessors delayed (execution issue) │
+│  Mostly BACKWARD_PULL → Deadline tightened (schedule compression)   │
+│  Mostly MIXED/DUAL → Both directions (stressed schedule)            │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  STEP 3: Find Root Causes                                           │
+│  ────────────────────────                                           │
+│  Sort by downstream_impact_count (descending)                       │
+│  Top 5-10 root causes explain most of the delay                     │
+│                                                                     │
+│  cause_type:                                                        │
+│    DURATION     → Task took longer than planned                     │
+│    CONSTRAINT   → Constraint was tightened                          │
+│    LOGIC_CHANGE → New predecessors added                            │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  STEP 4: Investigate Top Contributors                               │
+│  ───────────────────────────────────                                │
+│  For each top root cause:                                           │
+│    □ Check weekly reports for that period                           │
+│    □ Check quality records for rework                               │
+│    □ Check P6 narratives for scheduler notes                        │
+│    □ Check for scope changes or change orders                       │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Metrics Cheat Sheet
+
+| Metric | Positive Value Means | Negative Value Means |
+|--------|---------------------|---------------------|
+| `project_slippage_days` | End date moved LATER | End date moved EARLIER |
+| `finish_slip_days` | Task finishes LATER | Task finishes EARLIER |
+| `own_delay_days` | Task duration INCREASED | Task duration DECREASED |
+| `inherited_delay_days` | Pushed by predecessors | Pulled by predecessors |
+| `float_change_days` | Float INCREASED (good) | Float DECREASED (bad) |
+| `late_end_change_days` | Late date moved LATER | Late date moved EARLIER (squeezed) |
+
+### Category Decision Tree
+
+```
+Is float decreasing?
+├─ NO → *_OK (no concern)
+└─ YES → Check own_delay vs inherited:
+    ├─ own_delay > threshold, inherited small
+    │   └─ CAUSE_DURATION (task took longer)
+    ├─ inherited > threshold, own_delay small
+    │   ├─ has_new_predecessors?
+    │   │   ├─ YES → INHERITED_LOGIC_CHANGE
+    │   │   └─ NO → INHERITED_FROM_PRED
+    │   └─ (or check late_end_change)
+    │       └─ late_end pulled earlier? → SQUEEZED_FROM_SUCC
+    ├─ Both own_delay AND inherited significant
+    │   └─ CAUSE_PLUS_INHERITED
+    ├─ Both front AND back float loss
+    │   └─ DUAL_SQUEEZE
+    └─ constraint_tightened?
+        └─ CAUSE_CONSTRAINT
+```
+
+## Example Analysis: November 2022 Period
+
+This example shows how to interpret results from the Oct 21, 2022 → Nov 7, 2022 period comparison.
+
+### Raw Results
+
+```
+PERIOD: 2022-10-21 → 2022-11-07
+
+PROJECT METRICS:
+- Project slippage: +23 days
+- Previous end: 2023-08-30
+- Current end:  2023-09-22
+- Tasks compared: 843
+
+FLOAT DRIVER DISTRIBUTION:
+- FORWARD_PUSH:  40 tasks (5%)
+- BACKWARD_PULL: 628 tasks (75%)
+- MIXED:         174 tasks (21%)
+- NONE:          1 task
+
+ENHANCED CATEGORY DISTRIBUTION:
+- DUAL_SQUEEZE:           442 tasks
+- INHERITED_LOGIC_CHANGE: 299 tasks
+- WAITING_OK:             84 tasks
+- SQUEEZED_FROM_SUCC:     10 tasks
+- CAUSE_DURATION:         7 tasks
+- ACTIVE_OK:              1 task
+
+ROOT CAUSE ANALYSIS:
+- Root cause tasks:  107
+- Propagated tasks:  608
+- Cause types:
+  - LOGIC_CHANGE: 299
+  - DURATION:     227
+  - UNKNOWN:      188
+  - CONSTRAINT:   1
+
+TOP ROOT CAUSE:
+CN.SEB2.1020 - "PH1-BLACK BASE (NOW RAT SLAB) - SEB2"
+- Downstream impact: 56 tasks
+- Cause type: DURATION
+```
+
+### Interpretation
+
+**Why did the schedule slip 23 days?**
+
+1. **Dominant pattern is BACKWARD_PULL (75%)** - This is unusual. It indicates the project end date or late dates were moved earlier, compressing float from behind. This could be:
+   - Project deadline was tightened
+   - Aggressive schedule compression applied
+   - Early project phases where targets are being established
+
+2. **High DUAL_SQUEEZE count (442 tasks)** - Many tasks are being squeezed from both directions. Combined with the high BACKWARD_PULL, this suggests the schedule was being compressed to meet aggressive targets while also experiencing some forward push from task delays.
+
+3. **High LOGIC_CHANGE count (299 tasks)** - Significant schedule restructuring occurred. Many new predecessor relationships were added. This is common in early project phases when the schedule logic is being refined.
+
+4. **Top root cause is a duration issue** - CN.SEB2.1020 (Rat Slab at SEB2) caused a +DURATION delay that propagated to 56 downstream tasks. This specific task should be investigated:
+   - Was there a design issue?
+   - Was there a quality problem?
+   - Was there a resource constraint?
+
+**Conclusion for this period:**
+
+This appears to be an early-project schedule refinement period. The high BACKWARD_PULL and LOGIC_CHANGE suggest the schedule was being actively managed and restructured. The 23-day slip is partially due to actual task delays (like CN.SEB2.1020) but also due to schedule logic changes. Investigation should focus on:
+
+1. Why the Rat Slab task (CN.SEB2.1020) delayed
+2. What drove the significant schedule restructuring (299 logic changes)
+3. Whether the 23-day slip represents actual execution delay or schedule refinement
 
 ## Version History
 
