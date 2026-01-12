@@ -222,6 +222,61 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
     lines.append(f"| Critical Path Tasks | {overall.critical_path_tasks:,} | Tasks on the driving path |")
     lines.append("")
 
+    # Delay Attribution Summary (why the project end date moved)
+    attribution = schedule.get('attribution_summary', {})
+    if attribution and slip_days != 0:
+        lines.append("### Delay Attribution")
+        lines.append("")
+        lines.append(f"**Why the project end date moved {slip_days:+d} days:**")
+        lines.append("")
+
+        # Interpretation
+        interpretation = attribution.get('interpretation', '')
+        if interpretation:
+            lines.append(f"> {interpretation}")
+            lines.append("")
+
+        # Float driver distribution
+        drivers = attribution.get('float_driver_distribution', {})
+        if drivers:
+            total = sum(drivers.values())
+            if total > 0:
+                lines.append("| Float Driver | Tasks | % | Meaning |")
+                lines.append("|--------------|-------|---|---------|")
+
+                driver_meanings = {
+                    'FORWARD_PUSH': 'Tasks delayed (execution issues)',
+                    'BACKWARD_PULL': 'Deadline pressure (schedule compression)',
+                    'DUAL_SQUEEZE': 'Squeezed both directions (stressed)',
+                    'NONE': 'Stable (minimal float change)',
+                }
+
+                for driver in ['FORWARD_PUSH', 'BACKWARD_PULL', 'DUAL_SQUEEZE', 'NONE']:
+                    count = drivers.get(driver, 0)
+                    if count > 0:
+                        pct = count / total * 100
+                        meaning = driver_meanings.get(driver, '')
+                        lines.append(f"| {driver} | {count:,} | {pct:.0f}% | {meaning} |")
+
+                lines.append("")
+
+        # Key metrics
+        cause_tasks = attribution.get('cause_duration_tasks', 0)
+        driving_delay = attribution.get('driving_path_own_delay', 0)
+
+        if cause_tasks > 0 or driving_delay > 0:
+            lines.append("| Metric | Value | Significance |")
+            lines.append("|--------|-------|--------------|")
+
+            if cause_tasks > 0:
+                total_own = attribution.get('total_own_delay_days', 0)
+                lines.append(f"| Tasks Taking Longer | {cause_tasks:,} | {total_own:,} days of own delay (execution grew) |")
+
+            if driving_delay > 0:
+                lines.append(f"| Driving Path Own Delay | {driving_delay:,} days | Delay on critical path (directly impacts end date) |")
+
+            lines.append("")
+
     # Helper to format dates as MM-DD-YY
     def fmt_date_short(dt):
         if pd.isna(dt):

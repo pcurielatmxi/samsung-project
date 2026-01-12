@@ -71,6 +71,43 @@ class ProgressSummary:
         }
 
 
+def _interpret_attribution(project_slip: int, forward_push_pct: float, backward_pull_pct: float, cause_duration_count: int) -> str:
+    """Generate human-readable interpretation of delay attribution.
+
+    Args:
+        project_slip: Days the project end date moved (+ve = later)
+        forward_push_pct: % of tasks with FORWARD_PUSH float driver
+        backward_pull_pct: % of tasks with BACKWARD_PULL float driver
+        cause_duration_count: Number of tasks with own_delay (took longer)
+
+    Returns:
+        Brief interpretation string for the report
+    """
+    if project_slip == 0:
+        return "Project end date unchanged this period."
+
+    if project_slip < 0:
+        return f"Project end date improved by {abs(project_slip)} days (schedule recovery or acceleration)."
+
+    # Project slipped - explain why
+    parts = []
+
+    if forward_push_pct > 0.5:
+        parts.append(f"Execution delays dominated ({forward_push_pct*100:.0f}% of tasks pushed forward)")
+        if cause_duration_count > 0:
+            parts.append(f"{cause_duration_count} tasks took longer than planned")
+    elif backward_pull_pct > 0.5:
+        parts.append(f"Schedule compression dominated ({backward_pull_pct*100:.0f}% of tasks pulled back)")
+        parts.append("Deadline pressure or aggressive re-baselining may have occurred")
+    elif forward_push_pct > 0.2 and backward_pull_pct > 0.2:
+        parts.append("Mixed pressure: both execution delays and deadline compression")
+        parts.append("Schedule is stressed from both directions")
+    else:
+        parts.append("Float changes were minimal this period")
+
+    return " | ".join(parts) if parts else "Analysis inconclusive."
+
+
 def _get_project_end_date(tasks: pd.DataFrame) -> Optional[str]:
     """Get the project end date from tasks (latest early_end_date or from substantial completion milestone)."""
     if tasks.empty:
@@ -318,18 +355,23 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
     delay_tasks = pd.DataFrame()
     delay_by_trade = pd.DataFrame()
     delay_type = 'none'  # Track which type of delay analysis was used
+    attribution_summary = {}  # Summary of why the end date moved
 
     if not end_tasks.empty and not start_tasks.empty:
         # Merge end tasks with start tasks to calculate slippage
         # Use task_code for matching (stable across snapshots)
-        prev_data = start_tasks[[
-            'task_code', 'early_start_date', 'early_end_date',
-            'target_start_date', 'target_end_date', 'target_drtn_hr_cnt',
-            'phys_complete_pct', 'status_code'
-        ]].copy()
+        prev_cols = ['task_code', 'early_start_date', 'early_end_date',
+                     'late_start_date', 'late_end_date', 'total_float_hr_cnt',
+                     'target_start_date', 'target_end_date', 'target_drtn_hr_cnt',
+                     'phys_complete_pct', 'status_code']
+        prev_cols = [c for c in prev_cols if c in start_tasks.columns]
+        prev_data = start_tasks[prev_cols].copy()
         prev_data = prev_data.rename(columns={
             'early_start_date': 'prev_early_start',
             'early_end_date': 'prev_early_end',
+            'late_start_date': 'prev_late_start',
+            'late_end_date': 'prev_late_end',
+            'total_float_hr_cnt': 'prev_float_hr',
             'target_start_date': 'prev_target_start',
             'target_end_date': 'prev_target_end',
             'target_drtn_hr_cnt': 'prev_duration_hr',
@@ -352,6 +394,81 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                 common_tasks['finish_slip_days'] - common_tasks['start_slip_days']
             )
             common_tasks['inherited_delay_days'] = common_tasks['start_slip_days']
+
+            # Calculate backward pass metrics for float driver analysis
+            if 'prev_late_end' in common_tasks.columns and 'late_end_date' in common_tasks.columns:
+                common_tasks['late_end_change_days'] = (
+                    (common_tasks['late_end_date'] - common_tasks['prev_late_end']).dt.days
+                )
+
+                # Float driver: What's causing float to change?
+                # FORWARD_PUSH: Early dates moved later (execution delay)
+                # BACKWARD_PULL: Late dates moved earlier (deadline pressure)
+                def calc_float_driver(row):
+                    finish_slip = row.get('finish_slip_days', 0) or 0
+                    late_end_change = row.get('late_end_change_days', 0) or 0
+                    float_loss_front = max(0, finish_slip)
+                    float_loss_back = max(0, -late_end_change)
+
+                    if float_loss_front > 1 and float_loss_back > 1:
+                        return 'DUAL_SQUEEZE'
+                    elif float_loss_front > 1:
+                        return 'FORWARD_PUSH'
+                    elif float_loss_back > 1:
+                        return 'BACKWARD_PULL'
+                    else:
+                        return 'NONE'
+
+                common_tasks['float_driver'] = common_tasks.apply(calc_float_driver, axis=1)
+
+                # Build attribution summary
+                float_drivers = common_tasks['float_driver'].value_counts()
+                total_tasks = len(common_tasks)
+
+                # Count tasks with float decrease
+                if 'prev_float_hr' in common_tasks.columns:
+                    common_tasks['float_change_hr'] = (
+                        common_tasks['total_float_hr_cnt'] - common_tasks['prev_float_hr']
+                    )
+                    tasks_with_float_loss = (common_tasks['float_change_hr'] < -8).sum()  # More than 1 day loss
+                else:
+                    tasks_with_float_loss = 0
+
+                # Count CAUSE_DURATION (tasks that took longer)
+                cause_duration_tasks = common_tasks[
+                    (common_tasks['own_delay_days'] > 1) &
+                    (common_tasks['finish_slip_days'] > 0)
+                ]
+                total_own_delay = cause_duration_tasks['own_delay_days'].sum() if not cause_duration_tasks.empty else 0
+
+                # Driving path own delay (most important for project slip)
+                driving_delay = common_tasks[
+                    (common_tasks['driving_path_flag'] == 'Y') &
+                    (common_tasks['own_delay_days'] > 1)
+                ]
+                driving_own_delay = driving_delay['own_delay_days'].sum() if not driving_delay.empty else 0
+
+                attribution_summary = {
+                    'project_slip_days': project_slip_days,
+                    'total_tasks_compared': total_tasks,
+                    'tasks_with_float_loss': tasks_with_float_loss,
+                    'float_driver_distribution': {
+                        'FORWARD_PUSH': int(float_drivers.get('FORWARD_PUSH', 0)),
+                        'BACKWARD_PULL': int(float_drivers.get('BACKWARD_PULL', 0)),
+                        'DUAL_SQUEEZE': int(float_drivers.get('DUAL_SQUEEZE', 0)),
+                        'NONE': int(float_drivers.get('NONE', 0)),
+                    },
+                    'dominant_driver': float_drivers.index[0] if not float_drivers.empty else 'NONE',
+                    'cause_duration_tasks': len(cause_duration_tasks),
+                    'total_own_delay_days': int(total_own_delay),
+                    'driving_path_own_delay': int(driving_own_delay),
+                    'interpretation': _interpret_attribution(
+                        project_slip_days,
+                        float_drivers.get('FORWARD_PUSH', 0) / total_tasks if total_tasks > 0 else 0,
+                        float_drivers.get('BACKWARD_PULL', 0) / total_tasks if total_tasks > 0 else 0,
+                        len(cause_duration_tasks),
+                    )
+                }
 
             # Categorize tasks
             def categorize_delay(row):
@@ -523,6 +640,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
         'by_scope': by_scope,
         'delay_tasks': delay_tasks,
         'delay_by_trade': delay_by_trade,
+        'attribution_summary': attribution_summary,
         'snapshots': snapshot_info,
         'tasks_start': start_tasks,
         'tasks_end': end_tasks,
