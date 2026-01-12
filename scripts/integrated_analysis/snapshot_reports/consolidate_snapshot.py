@@ -882,8 +882,74 @@ def format_availability_section(schedule: Dict, labor: Dict, quality: Dict, narr
     return "\n".join(lines)
 
 
-def format_company_reference_section() -> str:
-    """Format company-trade reference section."""
+def _collect_relevant_companies(labor: Dict[str, Any], quality: Dict[str, Any]) -> set:
+    """Collect company names that appear in the report data."""
+    companies = set()
+
+    # From ProjectSight labor
+    ps_df = labor.get('projectsight', pd.DataFrame())
+    if not ps_df.empty:
+        company_col = 'dim_company_id' if 'dim_company_id' in ps_df.columns else 'company'
+        if company_col in ps_df.columns:
+            for company_id in ps_df[company_col].dropna().unique():
+                # Resolve to canonical name if it's an ID
+                if company_col == 'dim_company_id':
+                    name = resolve_company_id(company_id)
+                else:
+                    name = str(company_id)
+                if name:
+                    companies.add(name)
+
+    # From TBM
+    tbm_df = labor.get('tbm', pd.DataFrame())
+    if not tbm_df.empty:
+        company_col = 'dim_company_id' if 'dim_company_id' in tbm_df.columns else 'company'
+        if company_col in tbm_df.columns:
+            for company_id in tbm_df[company_col].dropna().unique():
+                if company_col == 'dim_company_id':
+                    name = resolve_company_id(company_id)
+                else:
+                    name = str(company_id)
+                if name:
+                    companies.add(name)
+
+    # From RABA quality
+    raba_df = quality.get('raba', pd.DataFrame())
+    if not raba_df.empty:
+        for col in ['dim_company_id', 'company', 'contractor', 'responsible_party']:
+            if col in raba_df.columns:
+                for company_id in raba_df[col].dropna().unique():
+                    if col == 'dim_company_id':
+                        name = resolve_company_id(company_id)
+                    else:
+                        name = str(company_id)
+                    if name:
+                        companies.add(name)
+                break
+
+    # From PSI quality
+    psi_df = quality.get('psi', pd.DataFrame())
+    if not psi_df.empty:
+        for col in ['dim_company_id', 'company', 'contractor', 'responsible_party']:
+            if col in psi_df.columns:
+                for company_id in psi_df[col].dropna().unique():
+                    if col == 'dim_company_id':
+                        name = resolve_company_id(company_id)
+                    else:
+                        name = str(company_id)
+                    if name:
+                        companies.add(name)
+                break
+
+    return companies
+
+
+def format_company_reference_section(relevant_companies: set = None) -> str:
+    """Format company-trade reference section.
+
+    Args:
+        relevant_companies: Set of company names to include. If None, shows all companies.
+    """
     lines = []
     lines.append("## 6. Company Reference")
     lines.append("")
@@ -896,6 +962,20 @@ def format_company_reference_section() -> str:
         lines.append("*Company reference data not available.*")
         lines.append("")
         return "\n".join(lines)
+
+    # Filter to relevant companies if provided
+    if relevant_companies:
+        # Match by canonical_name or short_code
+        mask = (
+            ref_df['canonical_name'].isin(relevant_companies) |
+            ref_df['short_code'].isin(relevant_companies)
+        )
+        ref_df = ref_df[mask]
+
+        if ref_df.empty:
+            lines.append("*No company reference data matches report data.*")
+            lines.append("")
+            return "\n".join(lines)
 
     # Group by tier for better organization
     tier_order = ['OWNER', 'GC', 'T1_SUB', 'T2_SUB', 'OTHER']
@@ -981,13 +1061,16 @@ def generate_report(period: SnapshotPeriod, previous_period: SnapshotPeriod = No
     lines.append("---")
     lines.append("")
 
+    # Collect relevant companies from labor and quality data
+    relevant_companies = _collect_relevant_companies(labor, quality)
+
     # Sections
     lines.append(format_schedule_section(schedule, period, quality_pass_rates))
     lines.append(format_labor_section(labor, period))
     lines.append(format_quality_section(quality, quality_pass_rates))
     lines.append(format_narratives_section(narratives))
     lines.append(format_availability_section(schedule, labor, quality, narratives))
-    lines.append(format_company_reference_section())
+    lines.append(format_company_reference_section(relevant_companies))
 
     return "\n".join(lines)
 
