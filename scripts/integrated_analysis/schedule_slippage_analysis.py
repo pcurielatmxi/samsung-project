@@ -898,6 +898,77 @@ class ScheduleSlippageAnalyzer:
         )
 
         # -------------------------------------------------------------------------
+        # 4b.2. FAST-TRACKING DETECTION: Active tasks with incomplete predecessors
+        # -------------------------------------------------------------------------
+        # An active task CAN still inherit delay if it has incomplete predecessors
+        # (e.g., SS or FF relationships where the predecessor hasn't finished).
+        # This is "fast-tracking" - the task started but is still constrained.
+        #
+        # We provide BOTH metrics:
+        #   - own_delay_days / inherited_delay_days: Full attribution (active = all own)
+        #   - own_delay_adj_days / inherited_delay_adj_days: Adjusted for fast-tracking
+        #   - is_fast_tracked: Flag for analyst review
+
+        # Load predecessor relationships for current snapshot
+        taskpred_path = self.primavera_dir / 'taskpred.csv'
+        has_incomplete_pred = pd.Series(False, index=common.index)
+
+        if taskpred_path.exists():
+            taskpred_df = pd.read_csv(taskpred_path)
+            rels_curr = taskpred_df[taskpred_df['file_id'] == file_id_curr][
+                ['task_id', 'pred_task_id', 'pred_type']
+            ].copy()
+
+            # Build mapping: task_id -> status in current snapshot
+            # Need to get task_id for each task_code in common
+            task_status_curr = self.tasks_df[self.tasks_df['file_id'] == file_id_curr][
+                ['task_id', 'task_code', 'status_code']
+            ].copy()
+            task_id_to_status = task_status_curr.set_index('task_id')['status_code'].to_dict()
+            task_code_to_id = task_status_curr.set_index('task_code')['task_id'].to_dict()
+
+            # For each task, check if it has any incomplete predecessors
+            def check_incomplete_preds(task_code):
+                task_id = task_code_to_id.get(task_code)
+                if task_id is None:
+                    return False
+
+                # Get predecessors for this task
+                preds = rels_curr[rels_curr['task_id'] == task_id]['pred_task_id'].tolist()
+                if not preds:
+                    return False
+
+                # Check if any predecessor is NOT complete
+                for pred_id in preds:
+                    pred_status = task_id_to_status.get(pred_id)
+                    if pred_status and pred_status != 'TK_Complete':
+                        return True
+                return False
+
+            # Only check for tasks that were active in both snapshots
+            active_task_codes = common[was_active_both]['task_code'].tolist()
+            incomplete_pred_flags = {tc: check_incomplete_preds(tc) for tc in active_task_codes}
+            has_incomplete_pred = common['task_code'].map(incomplete_pred_flags).fillna(False)
+
+        # is_fast_tracked: Active in both snapshots AND has incomplete predecessors
+        common['is_fast_tracked'] = was_active_both & has_incomplete_pred
+
+        # Adjusted metrics for fast-tracked tasks:
+        # If fast-tracked, use original formula (can still inherit from predecessors)
+        # If not fast-tracked (or not active), use the values we already calculated
+        common['own_delay_adj_days'] = np.where(
+            common['is_fast_tracked'],
+            common['finish_slip_days'] - common['start_slip_days'],  # Original formula
+            common['own_delay_days']  # Keep current value
+        )
+
+        common['inherited_delay_adj_days'] = np.where(
+            common['is_fast_tracked'],
+            common['start_slip_days'],  # Can inherit if fast-tracked
+            common['inherited_delay_days']  # Keep current value (0 for active)
+        )
+
+        # -------------------------------------------------------------------------
         # 4c. Calculate duration and float changes
         # -------------------------------------------------------------------------
         # Duration change: Did the remaining work estimate grow or shrink?
@@ -1207,8 +1278,13 @@ class ScheduleSlippageAnalyzer:
             # Core slippage metrics (the heart of the analysis)
             'finish_slip_days': common['finish_slip_days'],      # Total movement of finish date
             'start_slip_days': common['start_slip_days'],        # Movement of start date (inherited)
-            'own_delay_days': common['own_delay_days'],          # Delay caused by THIS task
-            'inherited_delay_days': common['inherited_delay_days'],  # Delay from predecessors
+            'own_delay_days': common['own_delay_days'],          # Delay caused by THIS task (full attribution for active)
+            'inherited_delay_days': common['inherited_delay_days'],  # Delay from predecessors (0 for active)
+
+            # Fast-tracking adjusted metrics (for active tasks with incomplete predecessors)
+            'is_fast_tracked': common['is_fast_tracked'],              # Active with incomplete predecessors
+            'own_delay_adj_days': common['own_delay_adj_days'],        # Adjusted own delay (considers fast-tracking)
+            'inherited_delay_adj_days': common['inherited_delay_adj_days'],  # Adjusted inherited (non-zero if fast-tracked)
 
             # Supporting metrics
             'duration_change_days': common['duration_change_days'],  # Scope/estimate change

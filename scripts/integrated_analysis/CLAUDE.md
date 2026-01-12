@@ -124,11 +124,25 @@ Analyzes schedule slippage between P6 snapshots to identify which tasks contribu
 | Metric | Formula | Meaning |
 |--------|---------|---------|
 | **finish_slip** | `early_end[curr] - early_end[prev]` | How much the task's finish date moved |
-| **start_slip** | `early_start[curr] - early_start[prev]` | How much the task's start date moved (inherited delay) |
-| **own_delay** | `finish_slip - start_slip` | Delay caused by THIS task (duration growth) |
-| **inherited_delay** | `start_slip` | Delay pushed from predecessor tasks |
+| **start_slip** | `early_start[curr] - early_start[prev]` | How much the task's start date moved |
+| **own_delay** | Status-dependent (see below) | Delay caused by THIS task |
+| **inherited_delay** | Status-dependent (see below) | Delay pushed from predecessor tasks |
 
 **Key insight:** `finish_slip = own_delay + inherited_delay`
+
+**Status-Dependent Calculation (v2.1):**
+| Status | own_delay | inherited_delay | Rationale |
+|--------|-----------|-----------------|-----------|
+| Not Started | `finish_slip - start_slip` | `start_slip` | Start can be pushed by predecessors |
+| Active (both snapshots) | `finish_slip` | `0` | Already started - can't be "pushed" |
+| Completed | `finish_slip - start_slip` | `start_slip` | Standard formula |
+
+**Fast-Tracking Detection (v2.2):**
+| Metric | Meaning |
+|--------|---------|
+| `is_fast_tracked` | Active task with incomplete predecessors |
+| `own_delay_adj_days` | Adjusted own delay (considers predecessor constraints for fast-tracked) |
+| `inherited_delay_adj_days` | Adjusted inherited (non-zero for fast-tracked tasks) |
 
 ### Task Categories
 

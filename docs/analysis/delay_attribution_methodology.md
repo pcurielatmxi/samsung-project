@@ -67,6 +67,60 @@ Example:
 - Old method: start_slip = 15 days → "inherited" (WRONG)
 - New method: Task is active, so inherited = 0, own_delay = 17 days (CORRECT)
 
+#### Fast-Tracking Detection (v2.2)
+
+**What is fast-tracking?**
+
+Fast-tracking occurs when a task starts before all its predecessors are complete. This is common with:
+- Start-to-Start (SS) relationships: Task can start when predecessor starts
+- Finish-to-Finish (FF) relationships: Task finish is tied to predecessor finish
+- Manual override: Task started despite incomplete predecessor
+
+**Why it matters for attribution:**
+
+For a normal active task (all predecessors complete), `inherited_delay = 0` is correct - the task is in progress and its start is fixed.
+
+But for a **fast-tracked** task (active with incomplete predecessors), the task CAN still be affected by its predecessors. If a predecessor with an SS relationship delays, it may limit how much progress the task can make.
+
+**Fast-tracking detection:**
+
+| Metric | Meaning |
+|--------|---------|
+| `is_fast_tracked` | True if task is Active AND has at least one incomplete predecessor |
+
+**Adjusted metrics:**
+
+The system provides two sets of metrics for active tasks:
+
+| Column | For Normal Active | For Fast-Tracked | Rationale |
+|--------|-------------------|------------------|-----------|
+| `own_delay_days` | `finish_slip` | `finish_slip` | Full attribution view |
+| `inherited_delay_days` | `0` | `0` | Full attribution view |
+| `own_delay_adj_days` | `finish_slip` | `finish_slip - start_slip` | Considers predecessor constraints |
+| `inherited_delay_adj_days` | `0` | `start_slip` | Considers predecessor constraints |
+
+**Interpretation:**
+
+- **Normal active task**: Use `own_delay_days`. The task is solely responsible for its delay.
+- **Fast-tracked task**: Compare both views:
+  - `own_delay_days` shows the task's total slip (conservative accountability view)
+  - `own_delay_adj_days` shows slip net of predecessor constraints (nuanced view)
+
+Example:
+```
+Task: ELEC-FAB-123 (fast-tracked, SS relationship with ROUGH-IN-456)
+  finish_slip: +20 days
+  start_slip: +8 days
+
+Full attribution:
+  own_delay_days: +20 days    (task takes full responsibility)
+  inherited_delay_days: 0
+
+Adjusted attribution:
+  own_delay_adj_days: +12 days    (task's own contribution)
+  inherited_delay_adj_days: +8 days    (from incomplete predecessor)
+```
+
 ### Enhanced Metrics (Backward Pass)
 
 | Metric | Formula | Meaning |
