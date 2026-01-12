@@ -81,6 +81,68 @@ def _get_companies_by_trade() -> Dict[str, str]:
     return trade_companies
 
 
+def _get_gc_sub_hierarchy() -> Dict[str, Dict]:
+    """Get GC to subcontractor hierarchy mapping.
+
+    Returns dict with structure:
+    {
+        'gc_lookup': {company_name: gc_name},  # Maps any company to its GC
+        'gc_subs': {gc_name: [sub_names]},     # Maps GC to list of subs
+        'gc_info': {gc_name: {short_code, tier}}  # GC metadata
+    }
+
+    For this project:
+    - Yates is the GC responsible for all T1_SUB subcontractors
+    - SECAI is the Owner (not a GC)
+    - Other GCs in dim_company are not active on this project
+    """
+    ref_df = _load_company_trade_reference()
+    if ref_df.empty:
+        return {'gc_lookup': {}, 'gc_subs': {}, 'gc_info': {}}
+
+    # Load full company data for tier info
+    dim_dir = Settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+    company_path = dim_dir / 'dim_company.csv'
+    if not company_path.exists():
+        return {'gc_lookup': {}, 'gc_subs': {}, 'gc_info': {}}
+
+    companies = pd.read_csv(company_path)
+
+    # For this project, Yates is THE GC - all T1_SUB report to Yates
+    gc_lookup = {}
+    gc_subs = {'YATES': []}
+    gc_info = {'YATES': {'short_code': 'YATES', 'tier': 'GC', 'full_name': 'W.G. Yates & Sons Construction'}}
+
+    for _, row in companies.iterrows():
+        name = row['canonical_name']
+        short = row['short_code'] if pd.notna(row['short_code']) else name
+        tier = row['tier'] if pd.notna(row['tier']) else 'OTHER'
+
+        if tier == 'T1_SUB' or tier == 'T2_SUB':
+            # Subcontractors report to Yates
+            gc_lookup[name] = 'YATES'
+            gc_lookup[short] = 'YATES'
+            gc_subs['YATES'].append(short)
+        elif tier == 'GC' and short == 'YATES':
+            # Yates is its own GC
+            gc_lookup[name] = 'YATES'
+            gc_lookup[short] = 'YATES'
+        elif tier == 'OWNER':
+            # Owner (SECAI) is separate
+            gc_lookup[name] = 'OWNER'
+            gc_lookup[short] = 'OWNER'
+        else:
+            # Other (inspectors, consultants, etc.)
+            gc_lookup[name] = 'OTHER'
+            gc_lookup[short] = 'OTHER'
+
+    return {
+        'gc_lookup': gc_lookup,
+        'gc_subs': gc_subs,
+        'gc_info': gc_info
+    }
+
+
 def get_output_path(period: SnapshotPeriod) -> Path:
     """Get output file path for a snapshot report.
 
@@ -466,21 +528,29 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
 
 
 def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
-    """Format labor hours section.
+    """Format labor hours section grouped by GC responsibility.
 
     ProjectSight is the authoritative source for labor hours quantity.
     TBM provides location allocation context (% by building/level per company).
     Weekly Reports are excluded due to data quality concerns.
+
+    Groups subcontractors under their GC to show contractual responsibility.
     """
     lines = []
     lines.append("## 2. Labor Hours & Consumption")
     lines.append("")
 
+    # Get GC hierarchy for grouping
+    hierarchy = _get_gc_sub_hierarchy()
+    gc_lookup = hierarchy['gc_lookup']
+
     ps_df = labor['projectsight']
     tbm_df = labor['tbm']
 
     # === PROJECTSIGHT SECTION: Source of truth for hours ===
-    lines.append("### ProjectSight Hours")
+    lines.append("### ProjectSight Hours by GC Responsibility")
+    lines.append("")
+    lines.append("*Hours grouped by General Contractor. Subcontractor performance is GC's contractual responsibility.*")
     lines.append("")
 
     if ps_df.empty or 'hours' not in ps_df.columns:
@@ -493,25 +563,69 @@ def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
         lines.append(f"**Total:** {ps_hours:,.0f} hours from {ps_records:,} records")
         lines.append("")
 
-        # Hours by company
+        # Hours by company with GC grouping
         company_col = 'dim_company_id' if 'dim_company_id' in ps_df.columns else 'company'
         if company_col in ps_df.columns:
             by_company = ps_df.groupby(company_col)['hours'].sum().sort_values(ascending=False)
 
-            lines.append("| Company | Hours | % of Total |")
-            lines.append("|---------|-------|------------|")
+            # Group companies by GC
+            gc_hours = {'YATES': {'total': 0, 'subs': []}, 'OWNER': {'total': 0, 'subs': []}, 'OTHER': {'total': 0, 'subs': []}}
 
             for company_id, hours in by_company.items():
-                pct = (hours / ps_hours * 100) if ps_hours > 0 else 0
                 company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
-                lines.append(f"| {company_name} | {hours:,.0f} | {pct:.1f}% |")
+                gc = gc_lookup.get(company_name, gc_lookup.get(str(company_id), 'OTHER'))
+                if gc not in gc_hours:
+                    gc = 'OTHER'
+                gc_hours[gc]['total'] += hours
+                gc_hours[gc]['subs'].append((company_name, hours))
 
-            lines.append("")
+            # Output Yates section (GC with subs)
+            if gc_hours['YATES']['total'] > 0:
+                yates_total = gc_hours['YATES']['total']
+                yates_pct = (yates_total / ps_hours * 100) if ps_hours > 0 else 0
+                lines.append(f"#### Yates (GC) — {yates_total:,.0f} hours ({yates_pct:.1f}% of total)")
+                lines.append("")
+                lines.append("| Subcontractor | Hours | % of Yates |")
+                lines.append("|---------------|-------|------------|")
+
+                for company_name, hours in sorted(gc_hours['YATES']['subs'], key=lambda x: -x[1]):
+                    pct = (hours / yates_total * 100) if yates_total > 0 else 0
+                    lines.append(f"| {company_name} | {hours:,.0f} | {pct:.1f}% |")
+
+                lines.append("")
+
+            # Output Owner section (SECAI direct)
+            if gc_hours['OWNER']['total'] > 0:
+                owner_total = gc_hours['OWNER']['total']
+                owner_pct = (owner_total / ps_hours * 100) if ps_hours > 0 else 0
+                lines.append(f"#### Owner (SECAI) — {owner_total:,.0f} hours ({owner_pct:.1f}% of total)")
+                lines.append("")
+                lines.append("| Company | Hours |")
+                lines.append("|---------|-------|")
+
+                for company_name, hours in sorted(gc_hours['OWNER']['subs'], key=lambda x: -x[1]):
+                    lines.append(f"| {company_name} | {hours:,.0f} |")
+
+                lines.append("")
+
+            # Output Other section (inspectors, etc.)
+            if gc_hours['OTHER']['total'] > 0:
+                other_total = gc_hours['OTHER']['total']
+                other_pct = (other_total / ps_hours * 100) if ps_hours > 0 else 0
+                lines.append(f"#### Other — {other_total:,.0f} hours ({other_pct:.1f}% of total)")
+                lines.append("")
+                lines.append("| Company | Hours |")
+                lines.append("|---------|-------|")
+
+                for company_name, hours in sorted(gc_hours['OTHER']['subs'], key=lambda x: -x[1]):
+                    lines.append(f"| {company_name} | {hours:,.0f} |")
+
+                lines.append("")
 
     # === TBM SECTION: Location allocation context ===
     lines.append("### TBM Location Allocation")
     lines.append("")
-    lines.append("*TBM shows where each company allocated workers (% by location). Does not represent actual hours.*")
+    lines.append("*TBM shows where Yates subcontractors allocated workers (% by location). Does not represent actual hours.*")
     lines.append("")
 
     if tbm_df.empty:
@@ -534,8 +648,8 @@ def format_labor_section(labor: Dict[str, Any], period: SnapshotPeriod) -> str:
             # Get all companies by entry count
             company_counts = tbm_df[company_col].value_counts()
 
-            lines.append("| Company | Total Entries | Top Locations (% of company's work) |")
-            lines.append("|---------|---------------|-------------------------------------|")
+            lines.append("| Subcontractor | Entries | Top Locations (% of company's work) |")
+            lines.append("|---------------|---------|-------------------------------------|")
 
             for company_id in company_counts.index:
                 company_data = tbm_df[tbm_df[company_col] == company_id]
@@ -704,43 +818,148 @@ def format_quality_section(quality: Dict[str, Any], quality_pass_rates: Dict[str
                     lines.append(f"| {loc} | {count:,} |")
                 lines.append("")
 
-            # Failures by company
-            lines.append("### Failures by Company")
+            # Failures by GC responsibility
+            lines.append("### Failures by GC Responsibility")
+            lines.append("")
+            lines.append("*Quality failures grouped by General Contractor. Subcontractor quality is GC's contractual responsibility.*")
             lines.append("")
 
             company_col = 'dim_company_id' if 'dim_company_id' in failures.columns else 'company'
             if company_col in failures.columns:
                 by_company = failures.groupby(company_col).size().sort_values(ascending=False)
 
-                lines.append("| Company | Failures |")
-                lines.append("|---------|----------|")
+                # Get GC hierarchy for grouping
+                hierarchy = _get_gc_sub_hierarchy()
+                gc_lookup = hierarchy['gc_lookup']
+
+                # Group failures by GC
+                gc_failures = {'YATES': {'total': 0, 'subs': []}, 'OWNER': {'total': 0, 'subs': []}, 'OTHER': {'total': 0, 'subs': []}}
 
                 for company_id, count in by_company.items():
-                    # Resolve company ID to name
                     company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
-                    lines.append(f"| {company_name} | {count:,} |")
-                lines.append("")
+                    gc = gc_lookup.get(company_name, gc_lookup.get(str(company_id), 'OTHER'))
+                    if gc not in gc_failures:
+                        gc = 'OTHER'
+                    gc_failures[gc]['total'] += count
+                    gc_failures[gc]['subs'].append((company_name, count))
 
-            # Failure reasons if available
+                total_failures = len(failures)
+
+                # Output Yates section (GC with subs)
+                if gc_failures['YATES']['total'] > 0:
+                    yates_total = gc_failures['YATES']['total']
+                    yates_pct = (yates_total / total_failures * 100) if total_failures > 0 else 0
+                    lines.append(f"#### Yates (GC) — {yates_total:,} failures ({yates_pct:.1f}% of total)")
+                    lines.append("")
+                    lines.append("| Subcontractor | Failures | % of Yates |")
+                    lines.append("|---------------|----------|------------|")
+
+                    for company_name, count in sorted(gc_failures['YATES']['subs'], key=lambda x: -x[1]):
+                        pct = (count / yates_total * 100) if yates_total > 0 else 0
+                        lines.append(f"| {company_name} | {count:,} | {pct:.1f}% |")
+
+                    lines.append("")
+
+                # Output Owner section (SECAI direct)
+                if gc_failures['OWNER']['total'] > 0:
+                    owner_total = gc_failures['OWNER']['total']
+                    owner_pct = (owner_total / total_failures * 100) if total_failures > 0 else 0
+                    lines.append(f"#### Owner (SECAI) — {owner_total:,} failures ({owner_pct:.1f}% of total)")
+                    lines.append("")
+                    lines.append("| Company | Failures |")
+                    lines.append("|---------|----------|")
+
+                    for company_name, count in sorted(gc_failures['OWNER']['subs'], key=lambda x: -x[1]):
+                        lines.append(f"| {company_name} | {count:,} |")
+
+                    lines.append("")
+
+                # Output Other section
+                if gc_failures['OTHER']['total'] > 0:
+                    other_total = gc_failures['OTHER']['total']
+                    other_pct = (other_total / total_failures * 100) if total_failures > 0 else 0
+                    lines.append(f"#### Other — {other_total:,} failures ({other_pct:.1f}% of total)")
+                    lines.append("")
+                    lines.append("| Company | Failures |")
+                    lines.append("|---------|----------|")
+
+                    for company_name, count in sorted(gc_failures['OTHER']['subs'], key=lambda x: -x[1]):
+                        lines.append(f"| {company_name} | {count:,} |")
+
+                    lines.append("")
+
+            # Failure reasons by GC/Sub
             reason_col = None
             for col in ['failure_reason', 'reason', 'defect_type', 'defect', 'findings']:
                 if col in failures.columns:
                     reason_col = col
                     break
 
-            if reason_col:
-                lines.append("### Failure Reasons")
+            if reason_col and company_col in failures.columns:
+                lines.append("### Failure Reasons by Contractor")
+                lines.append("")
+                lines.append("*Failure reasons grouped by responsible contractor under each GC.*")
                 lines.append("")
 
-                by_reason = failures.groupby(reason_col).size().sort_values(ascending=False)
+                # Group by company and reason
+                company_reasons = failures.groupby([company_col, reason_col]).size().reset_index(name='count')
 
-                lines.append("| Reason | Count |")
-                lines.append("|--------|-------|")
+                # Build GC-grouped structure
+                gc_reasons = {'YATES': {}, 'OWNER': {}, 'OTHER': {}}
 
-                for reason, count in by_reason.items():
-                    reason_str = str(reason)[:60] if pd.notna(reason) else 'Unknown'
-                    lines.append(f"| {reason_str} | {count:,} |")
-                lines.append("")
+                for _, row in company_reasons.iterrows():
+                    company_id = row[company_col]
+                    reason = row[reason_col]
+                    count = row['count']
+
+                    company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
+                    gc = gc_lookup.get(company_name, gc_lookup.get(str(company_id), 'OTHER'))
+                    if gc not in gc_reasons:
+                        gc = 'OTHER'
+
+                    if company_name not in gc_reasons[gc]:
+                        gc_reasons[gc][company_name] = []
+                    reason_str = str(reason)[:50] if pd.notna(reason) else 'Unknown'
+                    gc_reasons[gc][company_name].append((reason_str, count))
+
+                # Output Yates section
+                if gc_reasons['YATES']:
+                    lines.append("#### Yates (GC) Subcontractor Failures")
+                    lines.append("")
+
+                    for company_name in sorted(gc_reasons['YATES'].keys()):
+                        reasons = gc_reasons['YATES'][company_name]
+                        total = sum(c for _, c in reasons)
+                        lines.append(f"**{company_name}** ({total} failures)")
+                        for reason, count in sorted(reasons, key=lambda x: -x[1]):
+                            lines.append(f"- {reason}: {count}")
+                        lines.append("")
+
+                # Output Owner section
+                if gc_reasons['OWNER']:
+                    lines.append("#### Owner (SECAI) Failures")
+                    lines.append("")
+
+                    for company_name in sorted(gc_reasons['OWNER'].keys()):
+                        reasons = gc_reasons['OWNER'][company_name]
+                        total = sum(c for _, c in reasons)
+                        lines.append(f"**{company_name}** ({total} failures)")
+                        for reason, count in sorted(reasons, key=lambda x: -x[1]):
+                            lines.append(f"- {reason}: {count}")
+                        lines.append("")
+
+                # Output Other section
+                if gc_reasons['OTHER']:
+                    lines.append("#### Other Failures")
+                    lines.append("")
+
+                    for company_name in sorted(gc_reasons['OTHER'].keys()):
+                        reasons = gc_reasons['OTHER'][company_name]
+                        total = sum(c for _, c in reasons)
+                        lines.append(f"**{company_name}** ({total} failures)")
+                        for reason, count in sorted(reasons, key=lambda x: -x[1]):
+                            lines.append(f"- {reason}: {count}")
+                        lines.append("")
 
     return "\n".join(lines)
 
@@ -997,16 +1216,22 @@ def _collect_relevant_companies(labor: Dict[str, Any], quality: Dict[str, Any]) 
     return companies
 
 
-def format_company_reference_section(relevant_companies: set = None) -> str:
-    """Format company-trade reference section.
+def format_company_reference_section(
+    relevant_companies: set = None,
+    labor: Dict[str, Any] = None,
+    quality: Dict[str, Any] = None
+) -> str:
+    """Format company-trade reference section with hours and QC KPIs.
 
     Args:
         relevant_companies: Set of company names to include. If None, shows all companies.
+        labor: Labor data dict with 'projectsight' DataFrame for hours
+        quality: Quality data dict with 'inspections' DataFrame for QC metrics
     """
     lines = []
     lines.append("## 6. Company Reference")
     lines.append("")
-    lines.append("Key contractors and their primary trades:")
+    lines.append("*Contractors with their trades, labor hours, and quality metrics for this period.*")
     lines.append("")
 
     ref_df = _load_company_trade_reference()
@@ -1030,22 +1255,146 @@ def format_company_reference_section(relevant_companies: set = None) -> str:
             lines.append("")
             return "\n".join(lines)
 
-    # Group by tier for better organization
-    tier_order = ['OWNER', 'GC', 'T1_SUB', 'T2_SUB', 'OTHER']
+    # Build hours lookup from ProjectSight
+    hours_by_company = {}
+    if labor and 'projectsight' in labor:
+        ps_df = labor['projectsight']
+        if not ps_df.empty and 'hours' in ps_df.columns:
+            company_col = 'dim_company_id' if 'dim_company_id' in ps_df.columns else 'company'
+            if company_col in ps_df.columns:
+                for company_id, hours in ps_df.groupby(company_col)['hours'].sum().items():
+                    company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
+                    hours_by_company[company_name] = hours
 
-    lines.append("| Company | Code | Tier | Primary Trade | Notes |")
-    lines.append("|---------|------|------|---------------|-------|")
+    # Build QC metrics lookup from quality data
+    qc_by_company = {}  # {company: {inspections, pass, fail, pass_rate}}
+    if quality and 'inspections' in quality:
+        combined = quality['inspections']
+        if not combined.empty:
+            company_col = 'dim_company_id' if 'dim_company_id' in combined.columns else 'company'
+            if company_col in combined.columns:
+                for company_id in combined[company_col].dropna().unique():
+                    company_name = resolve_company_id(company_id) if company_col == 'dim_company_id' else str(company_id)
+                    company_data = combined[combined[company_col] == company_id]
+                    total = len(company_data)
+                    if 'outcome_normalized' in company_data.columns:
+                        passed = (company_data['outcome_normalized'] == 'PASS').sum()
+                        failed = (company_data['outcome_normalized'] == 'FAIL').sum()
+                        pass_rate = (passed / total * 100) if total > 0 else 0
+                    else:
+                        passed = 0
+                        failed = 0
+                        pass_rate = 0
+                    qc_by_company[company_name] = {
+                        'inspections': total,
+                        'pass': passed,
+                        'fail': failed,
+                        'pass_rate': pass_rate
+                    }
 
-    for tier in tier_order:
-        tier_companies = ref_df[ref_df['tier'] == tier].sort_values('canonical_name')
-        for _, row in tier_companies.iterrows():
-            name = row['canonical_name']
-            code = row['short_code'] if pd.notna(row['short_code']) else '-'
-            trade = row['trade_name'] if pd.notna(row['trade_name']) else '-'
-            notes = str(row['notes'])[:50] if pd.notna(row['notes']) else '-'
-            lines.append(f"| {name} | {code} | {tier} | {trade} | {notes} |")
+    # Get GC hierarchy
+    hierarchy = _get_gc_sub_hierarchy()
+    gc_lookup = hierarchy['gc_lookup']
+
+    # Group by GC for organization
+    lines.append("### Yates (GC) Subcontractors")
+    lines.append("")
+    lines.append("| Company | Code | Trade | Hours | Inspections | Pass Rate | Failures |")
+    lines.append("|---------|------|-------|-------|-------------|-----------|----------|")
+
+    # Get Yates subs from ref_df
+    yates_companies = []
+    for _, row in ref_df.iterrows():
+        name = row['canonical_name']
+        gc = gc_lookup.get(name, gc_lookup.get(row['short_code'], 'OTHER'))
+        if gc == 'YATES':
+            yates_companies.append(row)
+
+    # Sort by hours descending
+    yates_companies.sort(key=lambda r: hours_by_company.get(r['canonical_name'], 0), reverse=True)
+
+    for row in yates_companies:
+        name = row['canonical_name']
+        code = row['short_code'] if pd.notna(row['short_code']) else '-'
+        trade = str(row['trade_name'])[:15] if pd.notna(row['trade_name']) else '-'
+
+        hours = hours_by_company.get(name, 0)
+        hours_str = f"{hours:,.0f}" if hours > 0 else "-"
+
+        qc = qc_by_company.get(name, {})
+        insp = qc.get('inspections', 0)
+        insp_str = f"{insp:,}" if insp > 0 else "-"
+        pass_rate = qc.get('pass_rate', 0)
+        pass_str = f"{pass_rate:.0f}%" if insp > 0 else "-"
+        fail = qc.get('fail', 0)
+        fail_str = f"{fail:,}" if fail > 0 else "-"
+
+        lines.append(f"| {name} | {code} | {trade} | {hours_str} | {insp_str} | {pass_str} | {fail_str} |")
 
     lines.append("")
+
+    # Owner section
+    owner_companies = []
+    for _, row in ref_df.iterrows():
+        name = row['canonical_name']
+        gc = gc_lookup.get(name, gc_lookup.get(row['short_code'], 'OTHER'))
+        if gc == 'OWNER':
+            owner_companies.append(row)
+
+    if owner_companies:
+        lines.append("### Owner")
+        lines.append("")
+        lines.append("| Company | Code | Hours | Inspections | Pass Rate | Failures |")
+        lines.append("|---------|------|-------|-------------|-----------|----------|")
+
+        for row in owner_companies:
+            name = row['canonical_name']
+            code = row['short_code'] if pd.notna(row['short_code']) else '-'
+
+            hours = hours_by_company.get(name, 0)
+            hours_str = f"{hours:,.0f}" if hours > 0 else "-"
+
+            qc = qc_by_company.get(name, {})
+            insp = qc.get('inspections', 0)
+            insp_str = f"{insp:,}" if insp > 0 else "-"
+            pass_rate = qc.get('pass_rate', 0)
+            pass_str = f"{pass_rate:.0f}%" if insp > 0 else "-"
+            fail = qc.get('fail', 0)
+            fail_str = f"{fail:,}" if fail > 0 else "-"
+
+            lines.append(f"| {name} | {code} | {hours_str} | {insp_str} | {pass_str} | {fail_str} |")
+
+        lines.append("")
+
+    # Other section (inspectors, testing, etc.)
+    other_companies = []
+    for _, row in ref_df.iterrows():
+        name = row['canonical_name']
+        gc = gc_lookup.get(name, gc_lookup.get(row['short_code'], 'OTHER'))
+        if gc == 'OTHER':
+            other_companies.append(row)
+
+    if other_companies:
+        lines.append("### Other (Inspectors, Testing, Consultants)")
+        lines.append("")
+        lines.append("| Company | Code | Role | Inspections | Failures |")
+        lines.append("|---------|------|------|-------------|----------|")
+
+        for row in other_companies:
+            name = row['canonical_name']
+            code = row['short_code'] if pd.notna(row['short_code']) else '-'
+            tier = row['tier'] if pd.notna(row['tier']) else '-'
+
+            qc = qc_by_company.get(name, {})
+            insp = qc.get('inspections', 0)
+            insp_str = f"{insp:,}" if insp > 0 else "-"
+            fail = qc.get('fail', 0)
+            fail_str = f"{fail:,}" if fail > 0 else "-"
+
+            lines.append(f"| {name} | {code} | {tier} | {insp_str} | {fail_str} |")
+
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -1123,7 +1472,7 @@ def generate_report(period: SnapshotPeriod, previous_period: SnapshotPeriod = No
     lines.append(format_quality_section(quality, quality_pass_rates))
     lines.append(format_narratives_section(narratives))
     lines.append(format_availability_section(schedule, labor, quality, narratives))
-    lines.append(format_company_reference_section(relevant_companies))
+    lines.append(format_company_reference_section(relevant_companies, labor, quality))
 
     return "\n".join(lines)
 
