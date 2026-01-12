@@ -591,6 +591,23 @@ This appears to be an early-project schedule refinement period. The high BACKWAR
 2. What drove the significant schedule restructuring (299 logic changes)
 3. Whether the 23-day slip represents actual execution delay or schedule refinement
 
+## Comprehensive Example Analyses
+
+For full worked examples showing the complete analysis workflow from raw metrics to investigation checklists, see:
+
+| Period | Slip | Primary Pattern | Document |
+|--------|------|-----------------|----------|
+| Feb → Apr 2024 | +108 days | FORWARD_PUSH (execution delays) | [period_analysis_2024-04.md](examples/period_analysis_2024-04.md) |
+
+The April 2024 example demonstrates:
+- Step-by-step interpretation of each metric
+- Pattern recognition (IMPACT tasks, clustered delays, procurement issues)
+- How to build investigation checklists from analysis results
+- Accountability assessment framework
+- Connecting schedule data to source documents
+
+Use this as a template for analyzing other periods.
+
 ## Version History
 
 - **v2.0** (2026-01): Enhanced with backward pass analysis, relationship tracking, constraint detection, root cause tracing
