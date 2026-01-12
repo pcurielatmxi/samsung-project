@@ -203,12 +203,19 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
     # Critical Path Tasks
     lines.append(f"| Critical Path Tasks | {start.get('critical_path_tasks', 0):,} | {end.get('critical_path_tasks', 0):,} | {delta.get('critical_path_tasks', 0):+,} |")
 
-    # Project End Date
+    # Project End Date (Early End - when project will finish)
     start_end = start.get('project_end_date', '-') or '-'
     end_end = end.get('project_end_date', '-') or '-'
     slip_days = delta.get('project_slip_days', 0)
     slip_str = f"{slip_days:+d} days" if slip_days != 0 else "0 days"
     lines.append(f"| Project End Date | {start_end} | {end_end} | {slip_str} |")
+
+    # Project Late End Date (Finish By - deadline/constraint)
+    start_late = start.get('project_late_end_date', '-') or '-'
+    end_late = end.get('project_late_end_date', '-') or '-'
+    late_slip_days = delta.get('late_end_slip_days', 0)
+    late_slip_str = f"{late_slip_days:+d} days" if late_slip_days != 0 else "0 days"
+    lines.append(f"| Finish By Date | {start_late} | {end_late} | {late_slip_str} |")
 
     lines.append("")
 

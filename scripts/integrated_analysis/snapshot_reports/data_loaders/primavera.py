@@ -132,6 +132,34 @@ def _get_project_end_date(tasks: pd.DataFrame) -> Optional[str]:
     return None
 
 
+def _get_project_late_end_date(tasks: pd.DataFrame) -> Optional[str]:
+    """Get the project late end date (finish by date) from tasks.
+
+    This is the latest allowable finish date - if the project finishes after this,
+    it will be late relative to the project constraint/deadline.
+    """
+    if tasks.empty:
+        return None
+
+    # First try to find substantial completion milestone
+    if 'task_name' in tasks.columns:
+        milestone_patterns = ['SUBSTANTIAL COMPLETION', 'PROJECT COMPLETE', 'BUILDING SUBSTANTIAL']
+        for pattern in milestone_patterns:
+            milestone = tasks[tasks['task_name'].str.upper().str.contains(pattern, na=False)]
+            if not milestone.empty and 'late_end_date' in milestone.columns:
+                end_date = milestone['late_end_date'].max()
+                if pd.notna(end_date):
+                    return end_date.strftime('%Y-%m-%d')
+
+    # Fall back to latest late_end_date in schedule
+    if 'late_end_date' in tasks.columns:
+        max_date = tasks['late_end_date'].max()
+        if pd.notna(max_date):
+            return max_date.strftime('%Y-%m-%d')
+
+    return None
+
+
 def _load_tasks_for_snapshot(file_id: int, taxonomy: pd.DataFrame) -> pd.DataFrame:
     """Load tasks for a specific snapshot and enrich with taxonomy."""
     task_path = Settings.PRIMAVERA_PROCESSED_DIR / 'task.csv'
@@ -299,13 +327,27 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
     project_end_start = _get_project_end_date(start_tasks)
     project_end_end = _get_project_end_date(end_tasks)
 
-    # Calculate slip in days
+    # Calculate late end dates (finish by date / deadline)
+    project_late_end_start = _get_project_late_end_date(start_tasks)
+    project_late_end_end = _get_project_late_end_date(end_tasks)
+
+    # Calculate slip in days (early end date movement)
     project_slip_days = 0
     if project_end_start and project_end_end:
         try:
             start_dt = pd.Timestamp(project_end_start)
             end_dt = pd.Timestamp(project_end_end)
             project_slip_days = (end_dt - start_dt).days
+        except Exception:
+            pass
+
+    # Calculate late end date movement (deadline/constraint movement)
+    late_end_slip_days = 0
+    if project_late_end_start and project_late_end_end:
+        try:
+            late_start_dt = pd.Timestamp(project_late_end_start)
+            late_end_dt = pd.Timestamp(project_late_end_end)
+            late_end_slip_days = (late_end_dt - late_start_dt).days
         except Exception:
             pass
 
@@ -600,6 +642,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
             'completed_tasks': overall.completed_start,
             'critical_path_tasks': critical_start,
             'project_end_date': project_end_start,
+            'project_late_end_date': project_late_end_start,
         },
         'end': {
             'file_id': period.end_file_id,
@@ -609,6 +652,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
             'completed_tasks': overall.completed_end,
             'critical_path_tasks': critical_end,
             'project_end_date': project_end_end,
+            'project_late_end_date': project_late_end_end,
         },
         'delta': {
             'days': period.duration_days,
@@ -617,6 +661,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
             'completed_tasks': overall.completed_this_period,
             'critical_path_tasks': critical_end - critical_start,
             'project_slip_days': project_slip_days,
+            'late_end_slip_days': late_end_slip_days,
         },
     }
 
