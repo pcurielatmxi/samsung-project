@@ -16,54 +16,6 @@ from src.config.settings import Settings
 from .base import SnapshotPeriod, DataAvailability, filter_by_period, get_date_range
 
 
-# Delay categorization patterns
-JUSTIFIED_PATTERNS = [
-    'weather', 'rain', 'storm', 'flood', 'hurricane',
-    'owner change', 'design change', 'scope change', 'rfi',
-    'material delay', 'supply chain', 'shipping',
-    'permit', 'inspection', 'authority',
-    'covid', 'pandemic',
-    'holiday', 'shutdown',
-]
-
-UNJUSTIFIED_PATTERNS = [
-    'rework', 'quality', 'defect', 'failure', 'rejection',
-    'coordination', 'conflict', 'interference',
-    'manpower', 'staffing', 'labor shortage',
-    'equipment breakdown', 'equipment failure',
-    'productivity', 'performance',
-    'schedule', 'sequence', 'predecessor',
-]
-
-
-def _categorize_delay(statement_text: str, category: str = None) -> str:
-    """Categorize delay statement as JUSTIFIED or UNJUSTIFIED."""
-    if pd.isna(statement_text):
-        return 'UNKNOWN'
-
-    text_lower = str(statement_text).lower()
-
-    # Check justified patterns
-    for pattern in JUSTIFIED_PATTERNS:
-        if pattern in text_lower:
-            return 'JUSTIFIED'
-
-    # Check unjustified patterns
-    for pattern in UNJUSTIFIED_PATTERNS:
-        if pattern in text_lower:
-            return 'UNJUSTIFIED'
-
-    # Use category if available
-    if category:
-        cat_lower = str(category).lower()
-        if 'weather' in cat_lower or 'owner' in cat_lower:
-            return 'JUSTIFIED'
-        if 'quality' in cat_lower or 'rework' in cat_lower or 'coordination' in cat_lower:
-            return 'UNJUSTIFIED'
-
-    return 'UNKNOWN'
-
-
 def load_narrative_data(period: SnapshotPeriod) -> Dict[str, Any]:
     """Load narrative statements for a snapshot period.
 
@@ -144,20 +96,6 @@ def load_narrative_data(period: SnapshotPeriod) -> Dict[str, Any]:
         filtered = filter_by_period(dated_df, 'event_date', period)
     else:
         filtered = pd.DataFrame()
-
-    # Add delay categorization
-    if not filtered.empty:
-        text_col = 'statement_text' if 'statement_text' in filtered.columns else 'text'
-        cat_col = 'category' if 'category' in filtered.columns else None
-
-        if text_col in filtered.columns:
-            filtered['delay_justified'] = filtered.apply(
-                lambda row: _categorize_delay(
-                    row.get(text_col, ''),
-                    row.get(cat_col, '') if cat_col else None
-                ),
-                axis=1
-            )
 
     # Use file metadata as documents (already loaded above)
     documents = files_df

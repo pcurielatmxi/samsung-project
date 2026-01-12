@@ -497,6 +497,9 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
     lines = []
     lines.append("## 4. Narrative Statements")
     lines.append("")
+    lines.append("Statements extracted from P6 schedule narratives and weekly reports.")
+    lines.append("Each statement shows: **[Source File]** Date - Statement text")
+    lines.append("")
 
     statements = narratives['statements']
     total_statements = len(statements) if not statements.empty else 0
@@ -509,8 +512,10 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
     lines.append(f"**Total statements in period:** {total_statements}")
     lines.append("")
 
-    # Summary by category
+    # Summary by category (LLM-assigned during extraction)
     lines.append("### Summary by Category")
+    lines.append("")
+    lines.append("*Categories assigned by LLM during extraction. Review statements for accuracy.*")
     lines.append("")
 
     if 'category' in statements.columns:
@@ -521,6 +526,43 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
 
         for cat, count in by_category.items():
             lines.append(f"| {cat} | {count:,} |")
+        lines.append("")
+
+    # Summary by source file
+    file_col = 'filename' if 'filename' in statements.columns else 'source_file'
+    if file_col in statements.columns and 'category' in statements.columns:
+        lines.append("### Summary by Source File")
+        lines.append("")
+
+        # Group by file and category
+        by_file = statements.groupby(file_col)['category'].value_counts().unstack(fill_value=0)
+
+        # Get unique categories for columns
+        categories = statements['category'].unique().tolist()
+
+        # Build header
+        header = "| Source File | Total |"
+        separator = "|-------------|-------|"
+        for cat in categories:
+            header += f" {cat} |"
+            separator += "------|"
+        lines.append(header)
+        lines.append(separator)
+
+        # Add rows (sorted by total count descending)
+        file_totals = statements.groupby(file_col).size().sort_values(ascending=False)
+        for filename in file_totals.index:
+            total = file_totals[filename]
+            # Truncate long filenames
+            display_name = str(filename)
+            if len(display_name) > 45:
+                display_name = display_name[:42] + "..."
+            row = f"| {display_name} | {total} |"
+            for cat in categories:
+                count = by_file.loc[filename, cat] if cat in by_file.columns else 0
+                row += f" {count} |"
+            lines.append(row)
+
         lines.append("")
 
     # Helper to format dates cleanly
@@ -553,15 +595,16 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
             shown = min(IMPACT_LIMIT, total_with_impact)
             lines.append(f"### Statements with Schedule Impact (showing {shown} of {total_with_impact})")
             lines.append("")
+            lines.append("*Schedule impact (days) indicates the delay or acceleration mentioned in the narrative.*")
+            lines.append("")
 
             for _, row in with_impact.head(IMPACT_LIMIT).iterrows():
                 event_date = fmt_date(row.get('event_date'))
-                category = row.get('category', 'Unknown')
                 impact = row.get('impact_days', 0)
                 statement = row.get('statement_text', row.get('text', ''))[:250]
                 source = get_source(row)
 
-                lines.append(f"- **[{source}]** {event_date} - [{category}] ({impact:+.0f} days)")
+                lines.append(f"- **[{source}]** {event_date} — Impact: {impact:+.0f} days")
                 lines.append(f"  > {statement}")
                 lines.append("")
 
@@ -583,14 +626,15 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
             shown = min(DELAY_LIMIT, total_delay)
             lines.append(f"### Delay-Related Statements (showing {shown} of {total_delay})")
             lines.append("")
+            lines.append("*Statements categorized as delay-related by LLM extraction.*")
+            lines.append("")
 
             for _, row in delay_statements.head(DELAY_LIMIT).iterrows():
                 event_date = fmt_date(row.get('event_date'))
                 statement = row.get('statement_text', row.get('text', ''))[:300]
-                justification = row.get('delay_justified', 'UNKNOWN')
                 source = get_source(row)
 
-                lines.append(f"- **[{source}]** {event_date} - [{justification}]")
+                lines.append(f"- **[{source}]** {event_date}")
                 lines.append(f"  > {statement}")
                 lines.append("")
 
@@ -617,6 +661,8 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
             shown = min(OTHER_LIMIT, total_other)
             lines.append(f"### Other Statements (showing {shown} of {total_other})")
             lines.append("")
+            lines.append("*Statements not categorized as delay-related or having explicit schedule impact.*")
+            lines.append("")
 
             for _, row in other_statements.head(OTHER_LIMIT).iterrows():
                 event_date = fmt_date(row.get('event_date'))
@@ -624,7 +670,7 @@ def format_narratives_section(narratives: Dict[str, Any]) -> str:
                 statement = row.get('statement_text', row.get('text', ''))[:250]
                 source = get_source(row)
 
-                lines.append(f"- **[{source}]** {event_date} - [{category}]")
+                lines.append(f"- **[{source}]** {event_date} — Category: {category}")
                 lines.append(f"  > {statement}")
                 lines.append("")
 
