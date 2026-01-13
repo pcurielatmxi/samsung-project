@@ -115,6 +115,7 @@ def main():
             'location': ('dim_location_id', 'building_normalized'),
             'company': ('dim_company_id', 'tier2_sc'),
             'trade': ('dim_trade_id', 'trade_inferred'),
+            'grid': ('grid_row_min', 'grid_raw'),
         },
         'ProjectSight': {
             'location': ('dim_location_id', None),  # No location in source
