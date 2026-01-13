@@ -61,14 +61,34 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
 
     val = str(location_row).strip().upper()
 
-    # Skip descriptive values (whole building/area references)
-    if re.search(r'^(ALL|VARIOUS|WHOLE|WORKING|OUTSIDE|LAYDOWN|QC\b|ACM|FIZZ|SUW\s|SUE\s|FAB\s)', val):
+    # Strip level prefixes like "L1- ", "1F-"
+    val = re.sub(r'^L?\d+[F]?[-\s]+', '', val).strip()
+
+    # Strip building prefixes like "SUW ", "SUE ", "FAB "
+    val = re.sub(r'^(SUW|SUE|FAB)\s+', '', val).strip()
+    # Also strip level in building prefix like "SUW L4 "
+    val = re.sub(r'^L\d+\s+', '', val).strip()
+
+    # Multi-level references like "L1,2,3,4" should be AREA
+    if re.match(r'^L?\d+[,\d]+$', val):
         result['grid_type'] = 'AREA'
         return result
 
-    # Named locations (stair, elevator, vestibule, room names)
-    if re.search(r'^(STAIR|ELEVATOR|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING)', val):
+    # Skip descriptive values (whole building/area references)
+    if re.search(r'^(ALL|VARIOUS|WHOLE|WORKING|OUTSIDE|LAYDOWN|QC\b|ACM|FIZZ|SUW\s*$|SUE\s*$|FAB\s|NORTH|SOUTH|EAST|WEST|NW\s|NE\s|SW\s|SE\s|DATA CENTER|PENTHOUSE|THROUGHOUT|AREAS?\s|BUILDING)', val):
+        result['grid_type'] = 'AREA'
+        return result
+
+    # Named locations (stair, elevator, vestibule, room names, equipment)
+    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|L\d+\s*\(|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT)', val):
         result['grid_type'] = 'NAMED'
+        return result
+
+    # Pattern like "L17 (Stair)" where L17 is gridline, not level
+    m = re.match(r'^L(\d+)\s*\(', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
         return result
 
     # === ROW RANGE PATTERNS ===
@@ -98,6 +118,52 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_row_min'], result['grid_row_max'] = rows
         result['grid_col_min'] = result['grid_col_max'] = float(m.group(3))
         result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "B/C17 LINE" → rows B-C, col 17 (no space between letters and col)
+    m = re.match(r'^([A-N])[/]([A-N])(\d+)', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(3))
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "A-/B 13-17" or "A/B- 13-17" → rows A-B, cols 13-17 (with misplaced dash)
+    m = re.match(r'^([A-N])[-/]+([A-N])[-\s]+(\d+)[-–](\d+)', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(3)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "C/D-32 LINE" or "A/B -30" → rows C-D, col 32
+    m = re.match(r'^([A-N])[/]([A-N])[-\s]+(\d+)', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(3))
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "23/24 C-D LINE" → cols 23-24, rows C-D
+    m = re.match(r'^(\d+)[/](\d+)\s+([A-N])[-–]([A-N])', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        rows = sorted([m.group(3), m.group(4)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "A/31 LINE" → row A, col 31
+    m = re.match(r'^([A-N])[/](\d+)\s*LINE', val, re.IGNORECASE)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
         return result
 
     # Pattern: "A 30-31" → row A, col 30-31
@@ -145,6 +211,21 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_type'] = 'ROW_ONLY'
         return result
 
+    # Pattern: "A Line / description" or "N LINE / Roof Edge" → row only with description
+    m = re.match(r'^([A-N])\s*LINE\s*[/]', val, re.IGNORECASE)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_type'] = 'ROW_ONLY'
+        return result
+
+    # Pattern: "D-E description" or "D-E Troughs" → row range with description
+    m = re.match(r'^([A-N])[-–]([A-N])\s+[A-Z]', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'ROW_ONLY'
+        return result
+
     # === COLUMN ONLY PATTERNS ===
 
     # Pattern: "LINE 33" or "GL 33" → col only
@@ -152,6 +233,75 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
     if m:
         result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
         result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Pattern: "GL L 31" or "GL N 17" → row + col
+    m = re.match(r'^GL\s+([A-N])\s+(\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Pattern: "GL L.5 31-33" → row L.5, cols 31-33
+    m = re.match(r'^GL\s+([A-N])\.?(\d*)\s+(\d+)[-–](\d+)', val)
+    if m:
+        row = m.group(1) + ('.' + m.group(2) if m.group(2) else '')
+        result['grid_row_min'] = result['grid_row_max'] = row
+        cols = sorted([float(m.group(3)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "L-5 LINE" or "L- 28 LINE" → row L, col 5
+    m = re.match(r'^([A-N])[-]\s*(\d+)\s*LINE', val, re.IGNORECASE)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Pattern: "J-1,2" → row J, cols 1-2 (comma-separated columns)
+    m = re.match(r'^([A-N])[-](\d+),(\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "E.5-F" → row range with decimal
+    m = re.match(r'^([A-N])\.(\d+)[-–]([A-N])', val)
+    if m:
+        row1 = f"{m.group(1)}.{m.group(2)}"
+        result['grid_row_min'] = row1
+        result['grid_row_max'] = m.group(3)
+        result['grid_type'] = 'ROW_ONLY'
+        return result
+
+    # Pattern: "M .5 -13" or "M.5/13" → row M.5, col 13
+    m = re.match(r'^([A-N])\s*\.?(\d+)\s*[-/]\s*(\d+)', val)
+    if m:
+        row_decimal = m.group(2)
+        result['grid_row_min'] = result['grid_row_max'] = f"{m.group(1)}.{row_decimal}"
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(3))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Pattern: "33 LINE" → col only
+    m = re.match(r'^(\d+)\s*LINE', val, re.IGNORECASE)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Pattern: "GL-33/K-N" or "GL 33/K-N" → col 33, rows K-N
+    m = re.match(r'^GL[-\s]?(\d+)[/\s]+([A-N])[-–]([A-N])', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        rows = sorted([m.group(2), m.group(3)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'RANGE'
         return result
 
     # Pattern: Just "33" → col only
@@ -185,6 +335,13 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_type'] = 'ROW_ONLY'
         return result
 
+    # GL-N or GL N or GL-M (gridline row letter)
+    m = re.match(r'^GL[-\s]?([A-N])(?:\s|$)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_type'] = 'ROW_ONLY'
+        return result
+
     # Letter/letter: G/H, D/K
     m = re.match(r'^([A-N])[/&]([A-N])$', val)
     if m:
@@ -193,12 +350,53 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_type'] = 'ROW_ONLY'
         return result
 
+    # Letter + space + Column: "N 17", "A 32"
+    m = re.match(r'^([A-N])\s+(\d+)(?:\s|$)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
     # Letter + Column: J11, A-19, A19, N/17
     m = re.match(r'^([A-N])[-/]?(\d+(?:\.\d+)?)$', val)
     if m:
         result['grid_row_min'] = result['grid_row_max'] = m.group(1)
         result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
         result['grid_type'] = 'POINT'
+        return result
+
+    # Letter+Col with description: "K18 (Vestibule 3)", "D32 (Airlock 18)"
+    m = re.match(r'^([A-N])(\d+)\s*\(', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Letter+Col with trailing text: "A32 CANOPY", "N1 PASSAGE", "C28 ELEVATOR"
+    m = re.match(r'^([A-N])(\d+)\s+[A-Z]', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Letter+Col with comma description: "F23, Door Frames"
+    m = re.match(r'^([A-N])(\d+),', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Row + col range: "N-29-23" → row N, cols 23-29
+    m = re.match(r'^([A-N])-(\d+)-(\d+)(?:\s|$|;)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
         return result
 
     # Letter+Col range: K20-K32, J33-K33, L5-L11
@@ -213,8 +411,8 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_type'] = 'RANGE'
         return result
 
-    # Letter range with columns: A-N/1-3
-    m = re.match(r'^([A-N])[-–]([A-N])[/\s](\d+)[-–]?(\d+)?', val)
+    # Letter range with columns: A-N/1-3, N-P/23-29 (extended to A-Z for edge rows)
+    m = re.match(r'^([A-Z])[-–]([A-Z])[/\s](\d+)[-–]?(\d+)?', val)
     if m:
         rows = sorted([m.group(1), m.group(2)])
         result['grid_row_min'], result['grid_row_max'] = rows
