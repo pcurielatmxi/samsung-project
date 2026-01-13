@@ -133,7 +133,7 @@ def _process_file_batch(
         print(f"  Embedding and storing {len(chunk_batch)} chunks...")
 
     # Generate embeddings
-    embeddings = embed_for_index(texts, verbose=verbose)
+    embeddings = embed_for_index(texts)
 
     # Store immediately
     store.upsert_chunks(
