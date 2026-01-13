@@ -80,7 +80,8 @@ UNIFIED_COLUMNS = [
     'issue_count',               # Count of issues
 
     # Dimension keys (for integration)
-    'dim_location_id',           # Location dimension ID
+    'dim_location_id',           # Location dimension ID (integer FK)
+    'building_level',            # Building-level string for display (e.g., "FAB-1F")
     'dim_company_id',            # Company dimension ID
     'dim_trade_id',              # Trade dimension ID
     'dim_trade_code',            # Trade code

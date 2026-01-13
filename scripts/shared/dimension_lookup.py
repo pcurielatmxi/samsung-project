@@ -14,7 +14,8 @@ Mapping Tables (from processed/integrated_analysis/mappings/):
 - map_projectsight_trade: ProjectSight trade names → dim_trade_id
 
 Location Lookup:
-- get_location_id(building, level) → building_level string (e.g., "FAB-1F")
+- get_location_id(building, level) → integer location_id from dim_location
+- get_building_level(building, level) → building_level string (e.g., "FAB-1F")
 - get_locations_at_grid(building, level, row, col) → list of location_codes
 """
 
@@ -41,14 +42,34 @@ _dim_location: Optional[pd.DataFrame] = None
 _dim_company: Optional[pd.DataFrame] = None
 _dim_trade: Optional[pd.DataFrame] = None
 _map_company_aliases: Optional[pd.DataFrame] = None
+_building_level_to_id: Optional[Dict[str, int]] = None
+
+
+def _normalize_level(level: str) -> str:
+    """Normalize level string: 03F -> 3F, but keep B1, ROOF, UG as-is."""
+    if not level or pd.isna(level):
+        return level
+    level = str(level).upper().strip()
+    # Remove leading zeros from floor numbers (03F -> 3F)
+    match = re.match(r'^0*(\d+)F$', level)
+    if match:
+        return f"{match.group(1)}F"
+    return level
 
 
 def _load_dimensions():
     """Load dimension tables if not already loaded."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases
+    global _dim_location, _dim_company, _dim_trade, _map_company_aliases, _building_level_to_id
 
     if _dim_location is None:
         _dim_location = pd.read_csv(_dimensions_dir / 'dim_location.csv')
+        # Build building_level -> location_id lookup
+        # For building_levels with multiple entries, prefer LEVEL type, then lowest ID
+        _building_level_to_id = {}
+        for _, row in _dim_location.sort_values(['location_type', 'location_id']).iterrows():
+            bl = row.get('building_level')
+            if bl and pd.notna(bl) and bl not in _building_level_to_id:
+                _building_level_to_id[bl] = int(row['location_id'])
 
     if _dim_company is None:
         _dim_company = pd.read_csv(_dimensions_dir / 'dim_company.csv')
@@ -60,15 +81,44 @@ def _load_dimensions():
         _map_company_aliases = pd.read_csv(_mappings_dir / 'map_company_aliases.csv')
 
 
-def get_location_id(building: str, level: str) -> Optional[str]:
+def get_location_id(building: str, level: str) -> Optional[int]:
+    """
+    Get location_id (integer FK) from building and level.
+
+    Returns the location_id from dim_location for the given building-level.
+    Prefers LEVEL type entries over ROOM/STAIR/etc for building-level aggregation.
+
+    Args:
+        building: Building code (FAB, SUE, SUW, FIZ, OB1, GCS)
+        level: Level code (1F, 2F, B1, ROOF, etc.)
+
+    Returns:
+        Integer location_id or None if not found in dim_location
+    """
+    if not building or not level:
+        return None
+
+    _load_dimensions()
+
+    building = str(building).upper().strip()
+    level = _normalize_level(str(level).upper().strip())
+
+    # Construct the building_level
+    building_level = f"{building}-{level}"
+
+    # Look up location_id
+    return _building_level_to_id.get(building_level)
+
+
+def get_building_level(building: str, level: str) -> Optional[str]:
     """
     Get building_level string from building and level.
 
-    This returns a coarse location identifier (building+level) for aggregation.
-    For room-level resolution, use get_locations_at_grid().
+    This returns a coarse location identifier (building+level) for display/filtering.
+    For integer FK joins, use get_location_id().
 
     Args:
-        building: Building code (FAB, SUE, SUW, FIZ)
+        building: Building code (FAB, SUE, SUW, FIZ, OB1, GCS)
         level: Level code (1F, 2F, B1, ROOF, etc.)
 
     Returns:
@@ -77,21 +127,10 @@ def get_location_id(building: str, level: str) -> Optional[str]:
     if not building or not level:
         return None
 
-    _load_dimensions()
-
     building = str(building).upper().strip()
-    level = str(level).upper().strip()
+    level = _normalize_level(str(level).upper().strip())
 
-    # Construct the building_level
-    building_level = f"{building}-{level}"
-
-    # Check if it exists in dim_location
-    if building_level in _dim_location['building_level'].values:
-        return building_level
-
-    # If exact match not found, still return it for data that may not have
-    # corresponding rooms in dim_location (e.g., areas not yet mapped)
-    return building_level
+    return f"{building}-{level}"
 
 
 def _row_sort_key(r):
@@ -633,7 +672,8 @@ def enrich_dataframe(
     Enrich a dataframe with dimension IDs.
 
     Adds columns:
-    - dim_location_id: from building + level
+    - dim_location_id: integer FK from building + level
+    - building_level: string for display/filtering
     - dim_company_id: from company column (if specified)
     - dim_trade_id: from trade column (if specified)
     - dim_trade_code: trade code for readability
@@ -650,10 +690,14 @@ def enrich_dataframe(
     """
     result = df.copy()
 
-    # Add location_id
+    # Add location_id (integer FK) and building_level (string for display)
     if building_col in df.columns and level_col in df.columns:
         result['dim_location_id'] = df.apply(
             lambda row: get_location_id(row.get(building_col), row.get(level_col)),
+            axis=1
+        )
+        result['building_level'] = df.apply(
+            lambda row: get_building_level(row.get(building_col), row.get(level_col)),
             axis=1
         )
 
@@ -699,11 +743,12 @@ def get_coverage_stats(
 
 def reset_cache():
     """Reset cached dimension data (useful for testing)."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases
+    global _dim_location, _dim_company, _dim_trade, _map_company_aliases, _building_level_to_id
     _dim_location = None
     _dim_company = None
     _dim_trade = None
     _map_company_aliases = None
+    _building_level_to_id = None
 
 
 # =============================================================================

@@ -33,6 +33,7 @@ from scripts.shared.company_standardization import (
 )
 from scripts.shared.dimension_lookup import (
     get_location_id,
+    get_building_level,
     get_company_id,
     get_trade_id,
     get_trade_code,
@@ -195,6 +196,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     # Dimension lookups for integration
     building = content.get('building')
     dim_location_id = get_location_id(building, level_std)
+    building_level = get_building_level(building, level_std)
     dim_company_id = get_company_id(contractor_std)
     dim_trade_id = get_trade_id(test_category)
     dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
@@ -287,6 +289,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
 
         # Dimension IDs (for integration)
         'dim_location_id': dim_location_id,
+        'building_level': building_level,
         'dim_company_id': dim_company_id,
         'dim_trade_id': dim_trade_id,
         'dim_trade_code': dim_trade_code,
