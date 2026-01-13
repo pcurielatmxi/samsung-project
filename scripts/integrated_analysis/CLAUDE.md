@@ -69,9 +69,29 @@ The location dimension is powered by the **grid-based spatial model** in `script
 scripts/integrated_analysis/
 ├── PLAN.md              # Detailed specification
 ├── CLAUDE.md            # This file
+├── context/             # Free-form context documents
+│   ├── README.md        # Organization guidelines
+│   ├── change_orders/   # CO-XX documentation
+│   └── eot_claims/      # EOT-XX documentation
 ├── dimensions/          # Dimension table builders
 ├── mappings/            # Mapping table builders
 └── validate/            # Coverage validation
+```
+
+## Context Documents
+
+The `context/` folder contains free-form documentation about Change Orders (CO) and Extension of Time (EOT) claims. These provide essential contractual and procedural context for interpreting quantitative analysis.
+
+See [context/README.md](context/README.md) for organization guidelines and document templates.
+
+**Key documents:**
+- `context/change_orders/CO-XX_*.md` - Change order scope and impact
+- `context/eot_claims/EOT-XX_*.md` - Extension of time claims and delay attribution
+
+**Finding source materials:**
+```bash
+python -m scripts.narratives.embeddings search "extension of time" --type eot_claim
+python -m scripts.narratives.embeddings search "change order" --author Yates
 ```
 
 ## Output Location
