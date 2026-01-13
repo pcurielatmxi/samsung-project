@@ -215,9 +215,43 @@ FLOAT_SQUEEZE_THRESHOLD_DAYS = -5
 # Working hours per day for float conversion (P6 stores float in hours)
 HOURS_PER_WORKDAY = 8
 
-# Impact score weights
+# Impact score weights (legacy - kept for backwards compatibility)
 CRITICALITY_WEIGHT = 2      # Tasks on critical path weighted 2x
 DRIVING_PATH_WEIGHT = 1.5   # Tasks on driving path weighted 1.5x
+
+###############################################################################
+# TIER-BASED PRIORITY SYSTEM (Simplified Model)
+###############################################################################
+#
+# The tier system provides a clear, interpretable ranking for schedule slippage
+# analysis. It separates two orthogonal dimensions:
+#
+#   1. OWN_DELAY: How much did this task help or hurt? (magnitude)
+#   2. TIER: Does this delay matter right now? (urgency/priority)
+#
+# Tasks are ranked by: priority_score = own_delay × tier_weight
+#
+# This ensures a 10-day DRIVING delay ranks above a 100-day BUFFERED delay.
+
+# Tier definitions and weights
+# DRIVING: Task is on driving path - directly impacts project finish
+# CRITICAL: Float <= 0 but not driving - on parallel critical path
+# NEAR_CRITICAL: Float > 0 but <= threshold - at risk of becoming critical
+# ERODING: Float lost > threshold this period - accumulating issues
+# BUFFERED: Has significant float buffer - lower priority
+
+TIER_NEAR_CRITICAL_FLOAT_THRESHOLD_DAYS = 14  # Float <= this = near-critical
+TIER_ERODING_FLOAT_LOSS_THRESHOLD_DAYS = 7    # Float loss > this = eroding
+
+# Tier weights for priority score calculation
+# Higher weight = higher priority for investigation
+TIER_WEIGHTS = {
+    'DRIVING': 1000,      # Direct project impact - highest priority
+    'CRITICAL': 100,      # On critical path - high priority
+    'NEAR_CRITICAL': 10,  # At risk - medium priority
+    'ERODING': 5,         # Accumulating issues - medium-low priority
+    'BUFFERED': 1,        # Has runway - lowest priority
+}
 
 
 ###############################################################################
@@ -1418,6 +1452,75 @@ class ScheduleSlippageAnalyzer:
 
         common['delay_category_enhanced'] = common.apply(categorize_task_enhanced, axis=1)
 
+        # -------------------------------------------------------------------------
+        # STEP 5.6: TIER-BASED PRIORITY CLASSIFICATION (Simplified Model)
+        # -------------------------------------------------------------------------
+        # The tier system provides a clear, interpretable ranking for investigation.
+        # It separates two orthogonal dimensions:
+        #   1. own_delay: How much did this task help or hurt? (magnitude)
+        #   2. priority_tier: Does this delay matter right now? (urgency)
+        #
+        # Tasks with positive own_delay are ranked by: priority_score = own_delay × tier_weight
+        # This ensures a 10-day DRIVING delay ranks above a 100-day BUFFERED delay.
+
+        def classify_priority_tier(row):
+            """
+            Classify a task into a priority tier based on float status.
+
+            Tiers (in priority order):
+                DRIVING: On driving path with positive own_delay - direct project impact
+                CRITICAL: Float <= 0 (but not driving) - on parallel critical path
+                NEAR_CRITICAL: 0 < float <= 14 days - at risk of becoming critical
+                ERODING: Float lost > 7 days this period - accumulating issues
+                BUFFERED: Float > 14 days and stable - has runway
+
+            Note: Tasks with own_delay <= 0 still get tiered but will have low/zero
+            priority_score since score = own_delay × tier_weight.
+            """
+            own_delay = row['own_delay_days'] if pd.notna(row['own_delay_days']) else 0
+            # Calculate float_curr_days from raw hours (result column doesn't exist yet in common)
+            float_curr_hrs = row['total_float_hr_cnt_curr']
+            float_curr = float_curr_hrs / HOURS_PER_WORKDAY if pd.notna(float_curr_hrs) else None
+            float_change = row['float_change_days'] if pd.notna(row['float_change_days']) else 0
+            on_driving = row['on_driving_path']
+
+            # Handle NaN float (completed tasks, milestones)
+            # Treat as non-critical unless on driving path
+            if float_curr is None or pd.isna(float_curr):
+                float_curr = 999  # Effectively buffered
+
+            # Tier 1: DRIVING - on driving path with positive own_delay
+            if on_driving and own_delay > OWN_DELAY_THRESHOLD_DAYS:
+                return 'DRIVING'
+
+            # Tier 2: CRITICAL - float <= 0 (on critical path)
+            if float_curr <= 0:
+                return 'CRITICAL'
+
+            # Tier 3: NEAR_CRITICAL - float > 0 but <= threshold (at risk)
+            if float_curr <= TIER_NEAR_CRITICAL_FLOAT_THRESHOLD_DAYS:
+                return 'NEAR_CRITICAL'
+
+            # Tier 4: ERODING - losing float rapidly (accumulating issues)
+            if float_change < -TIER_ERODING_FLOAT_LOSS_THRESHOLD_DAYS:
+                return 'ERODING'
+
+            # Tier 5: BUFFERED - has runway
+            return 'BUFFERED'
+
+        common['priority_tier'] = common.apply(classify_priority_tier, axis=1)
+
+        # Calculate priority_score = own_delay × tier_weight
+        # This gives a single number for ranking that incorporates both magnitude and urgency
+        common['priority_score'] = common.apply(
+            lambda row: max(0, row['own_delay_days'] if pd.notna(row['own_delay_days']) else 0) *
+                        TIER_WEIGHTS.get(row['priority_tier'], 1),
+            axis=1
+        )
+
+        # Also calculate float_prev for the tier report
+        common['float_prev_days'] = common['total_float_hr_cnt_prev'] / HOURS_PER_WORKDAY
+
         # =========================================================================
         # STEP 6: Build result DataFrame with all calculated metrics
         # =========================================================================
@@ -1496,6 +1599,11 @@ class ScheduleSlippageAnalyzer:
             'delay_category': common['delay_category'],
             'delay_category_enhanced': common['delay_category_enhanced'],  # ENHANCED: multi-dimensional
 
+            # TIER-BASED PRIORITY (Simplified Model)
+            'priority_tier': common['priority_tier'],      # DRIVING, CRITICAL, NEAR_CRITICAL, ERODING, BUFFERED
+            'priority_score': common['priority_score'],    # own_delay × tier_weight (for ranking)
+            'float_prev_days': common['float_prev_days'],  # Float at previous snapshot (for trend analysis)
+
             # Reference back to source snapshots
             'file_id_prev': file_id_prev,
             'file_id_curr': file_id_curr,
@@ -1564,6 +1672,18 @@ class ScheduleSlippageAnalyzer:
             print(f"\n  NEW TASK CATEGORIES:")
             for cat, count in new_tasks['delay_category'].value_counts().items():
                 print(f"    {cat}: {count:,}")
+
+        # Print tier summary (tasks with positive own_delay only)
+        tasks_with_delay = result[result['own_delay_days'] > OWN_DELAY_THRESHOLD_DAYS]
+        if len(tasks_with_delay) > 0:
+            print(f"\n  PRIORITY TIERS (tasks with own_delay > {OWN_DELAY_THRESHOLD_DAYS} day):")
+            tier_order = ['DRIVING', 'CRITICAL', 'NEAR_CRITICAL', 'ERODING', 'BUFFERED']
+            tier_counts = tasks_with_delay['priority_tier'].value_counts()
+            for tier in tier_order:
+                count = tier_counts.get(tier, 0)
+                if count > 0:
+                    total_delay = tasks_with_delay[tasks_with_delay['priority_tier'] == tier]['own_delay_days'].sum()
+                    print(f"    {tier}: {count:,} tasks, {total_delay:.0f} total days")
 
         return {
             'tasks': result,
@@ -2609,6 +2729,261 @@ class ScheduleSlippageAnalyzer:
             'summary': summary,
         }
 
+    def generate_tier_report(self, comparison_result, top_n=10, tier_limits=None):
+        """
+        Generate a tier-based schedule slippage report with simplified priority ranking.
+
+        The tier system provides a clear, interpretable ranking for investigation by
+        separating two orthogonal dimensions:
+            1. own_delay: How much did this task help or hurt? (magnitude)
+            2. priority_tier: Does this delay matter right now? (urgency)
+
+        Tasks are ranked by: priority_score = own_delay × tier_weight
+
+        Tiers:
+            DRIVING (weight=1000): On driving path - direct project impact
+            CRITICAL (weight=100): Float <= 0 - on parallel critical path
+            NEAR_CRITICAL (weight=10): Float 0-14 days - at risk
+            ERODING (weight=5): Float lost > 7 days - accumulating issues
+            BUFFERED (weight=1): Float > 14 days - has runway
+
+        Args:
+            comparison_result: Output from compare_schedules() or analyze_month()
+            top_n: Default number of tasks to show per tier (default: 10)
+            tier_limits: Optional dict to override top_n per tier, e.g.:
+                         {'DRIVING': 10, 'CRITICAL': 10, 'NEAR_CRITICAL': 5, 'ERODING': 5, 'BUFFERED': 5}
+
+        Returns:
+            dict with:
+                'report': Formatted text report
+                'driving': DataFrame of DRIVING tier tasks
+                'critical': DataFrame of CRITICAL tier tasks
+                'near_critical': DataFrame of NEAR_CRITICAL tier tasks
+                'eroding': DataFrame of ERODING tier tasks
+                'buffered_summary': Summary stats for BUFFERED tier (not individual tasks)
+                'summary': dict with tier counts and totals
+        """
+        # Default tier limits: show more for high-priority tiers
+        default_tier_limits = {
+            'DRIVING': 10,
+            'CRITICAL': 10,
+            'NEAR_CRITICAL': 5,
+            'ERODING': 5,
+            'BUFFERED': 5,
+        }
+        if tier_limits:
+            default_tier_limits.update(tier_limits)
+        tier_limits = default_tier_limits
+        if comparison_result is None:
+            return None
+
+        tasks = comparison_result['tasks']
+        project_metrics = comparison_result['project_metrics']
+
+        if tasks is None or len(tasks) == 0:
+            return None
+
+        project_slip = project_metrics.get('project_slippage_days', 0)
+        project_finish_prev = project_metrics.get('project_finish_prev')
+        project_finish_curr = project_metrics.get('project_finish_curr')
+
+        # Filter to tasks with positive own_delay only
+        tasks_with_delay = tasks[tasks['own_delay_days'] > OWN_DELAY_THRESHOLD_DAYS].copy()
+
+        # Build report
+        lines = [
+            "=" * 100,
+            "TIER-BASED SCHEDULE SLIPPAGE REPORT",
+            "=" * 100,
+            "",
+            "Tasks grouped by urgency tier, ranked by own_delay within each tier.",
+            "Investigate tiers in order: DRIVING → CRITICAL → NEAR_CRITICAL → ERODING → BUFFERED",
+            "",
+        ]
+
+        # Project summary
+        lines.extend([
+            "PROJECT SUMMARY",
+            "-" * 50,
+            f"  Project Finish (prev): {project_finish_prev}",
+            f"  Project Finish (curr): {project_finish_curr}",
+            f"  PROJECT SLIPPAGE: {project_slip:.0f} DAYS",
+            "",
+        ])
+
+        # Tier summary table
+        lines.extend([
+            "TIER SUMMARY",
+            "-" * 60,
+            f"  {'Tier':<15} {'Tasks':>8} {'Total Own Delay':>16} {'Avg Delay':>12}",
+            f"  {'-'*15} {'-'*8} {'-'*16} {'-'*12}",
+        ])
+
+        tier_order = ['DRIVING', 'CRITICAL', 'NEAR_CRITICAL', 'ERODING', 'BUFFERED']
+        tier_data = {}
+        summary = {}
+
+        for tier in tier_order:
+            tier_tasks = tasks_with_delay[tasks_with_delay['priority_tier'] == tier]
+            count = len(tier_tasks)
+            total_delay = tier_tasks['own_delay_days'].sum() if count > 0 else 0
+            avg_delay = total_delay / count if count > 0 else 0
+            tier_data[tier] = tier_tasks
+            summary[f'{tier.lower()}_count'] = count
+            summary[f'{tier.lower()}_total_delay'] = total_delay
+
+            if count > 0:
+                lines.append(f"  {tier:<15} {count:>8,} {total_delay:>16,.0f} {avg_delay:>12.1f}")
+
+        lines.append("")
+
+        # Helper function to format task table
+        def format_tier_table(tier_df, tier_name):
+            if len(tier_df) == 0:
+                return [f"  (No tasks in {tier_name} tier with own_delay > {OWN_DELAY_THRESHOLD_DAYS} day)", ""]
+
+            # Get limit for this tier
+            limit = tier_limits.get(tier_name, top_n)
+
+            # Sort by priority_score descending (order conveys importance)
+            tier_df = tier_df.nlargest(limit, 'priority_score')
+
+            table_lines = []
+
+            # Header - show key slippage metrics
+            table_lines.append(f"  {'#':<3} {'Task Code':<22} {'Own Delay':>10} {'Finish Slip':>12} {'Float':>8} {'Chg':>8}")
+            table_lines.append(f"  {'-'*3} {'-'*22} {'-'*10} {'-'*12} {'-'*8} {'-'*8}")
+
+            for idx, (_, row) in enumerate(tier_df.iterrows(), 1):
+                task_code = str(row['task_code'])[:22]
+                own_delay = row['own_delay_days']
+                finish_slip = row['finish_slip_days'] if pd.notna(row['finish_slip_days']) else 0
+                float_curr = row['float_curr_days'] if pd.notna(row['float_curr_days']) else 0
+                float_chg = row['float_change_days'] if pd.notna(row['float_change_days']) else 0
+
+                table_lines.append(
+                    f"  {idx:<3} {task_code:<22} {own_delay:>10.0f} {finish_slip:>12.0f} {float_curr:>8.0f} {float_chg:>+8.0f}"
+                )
+
+                # Add task name on second line (truncated)
+                task_name = str(row['task_name'])[:95]
+                table_lines.append(f"      └─ {task_name}")
+
+            return table_lines + [""]
+
+        # TIER 1: DRIVING (direct project impact)
+        lines.extend([
+            "=" * 100,
+            "TIER 1: DRIVING PATH DELAYS (directly causing project slippage)",
+            "=" * 100,
+            "",
+            "These tasks ARE causing the project finish date to move later.",
+            "Accelerating these tasks will directly reduce project slippage.",
+            "",
+        ])
+        lines.extend(format_tier_table(tier_data['DRIVING'], 'DRIVING'))
+
+        # TIER 2: CRITICAL (parallel paths)
+        lines.extend([
+            "=" * 100,
+            "TIER 2: CRITICAL PATH DELAYS (parallel paths, may become driving)",
+            "=" * 100,
+            "",
+            "These tasks have zero/negative float but are not currently driving.",
+            "If the driving path is accelerated, these may become the new bottleneck.",
+            "",
+        ])
+        lines.extend(format_tier_table(tier_data['CRITICAL'], 'CRITICAL'))
+
+        # TIER 3: NEAR_CRITICAL (at risk)
+        lines.extend([
+            "=" * 100,
+            f"TIER 3: NEAR-CRITICAL (float <= {TIER_NEAR_CRITICAL_FLOAT_THRESHOLD_DAYS} days - at risk)",
+            "=" * 100,
+            "",
+            "These tasks have limited float buffer and are at risk of becoming critical.",
+            "Monitor closely - additional delays will push them to critical path.",
+            "",
+        ])
+        lines.extend(format_tier_table(tier_data['NEAR_CRITICAL'], 'NEAR_CRITICAL'))
+
+        # TIER 4: ERODING (accumulating issues)
+        lines.extend([
+            "=" * 100,
+            f"TIER 4: ERODING (float lost > {TIER_ERODING_FLOAT_LOSS_THRESHOLD_DAYS} days this period)",
+            "=" * 100,
+            "",
+            "These tasks are accumulating issues - their buffer is shrinking rapidly.",
+            "While not critical yet, the trend suggests future problems.",
+            "",
+        ])
+        lines.extend(format_tier_table(tier_data['ERODING'], 'ERODING'))
+
+        # TIER 5: BUFFERED (summary + top tasks)
+        buffered = tier_data['BUFFERED']
+        buffered_count = len(buffered)
+        buffered_delay = buffered['own_delay_days'].sum() if buffered_count > 0 else 0
+        lines.extend([
+            "=" * 100,
+            f"TIER 5: BUFFERED ({buffered_count:,} tasks, {buffered_delay:,.0f} days total own_delay)",
+            "=" * 100,
+            "",
+            "These tasks have significant float (> 14 days) and stable buffers.",
+            "Lower priority - delays are absorbed by the schedule.",
+            "",
+            f"  Summary: {buffered_count:,} tasks, {buffered_delay:,.0f} total days, "
+            f"{buffered_delay/buffered_count:.1f} avg days" if buffered_count > 0 else "  (No buffered tasks with delay)",
+            "",
+        ])
+        # Show top buffered tasks
+        if buffered_count > 0:
+            lines.extend(format_tier_table(tier_data['BUFFERED'], 'BUFFERED'))
+
+        # Interpretation guide
+        lines.extend([
+            "=" * 100,
+            "METRICS & INTERPRETATION",
+            "=" * 100,
+            "",
+            "COLUMN DEFINITIONS:",
+            "  Own Delay   = Finish slip - Start slip = delay caused by THIS task",
+            "  Finish Slip = How much the task's finish date moved later",
+            "  Float       = Current total float in days (0 or negative = critical path)",
+            "  Chg         = Float change from previous snapshot (negative = buffer eroding)",
+            "",
+            "TIER DEFINITIONS (tasks ordered by importance within each tier):",
+            "  DRIVING      = On driving path - directly impacts project finish date",
+            "  CRITICAL     = Float <= 0 - on parallel critical path, may become driving",
+            "  NEAR_CRITICAL = Float 1-14 days - at risk of becoming critical",
+            "  ERODING      = Float lost > 7 days this period - accumulating issues",
+            "  BUFFERED     = Float > 14 days, stable - delays absorbed by schedule",
+            "",
+            "INVESTIGATION PRIORITY:",
+            "  Work through tiers in order (DRIVING → CRITICAL → etc.)",
+            "  Within each tier, tasks are ranked by own_delay (highest first)",
+            "",
+            "=" * 100,
+        ])
+
+        # Add summary to return dict
+        summary['project_slippage_days'] = project_slip
+        summary['total_tasks_with_delay'] = len(tasks_with_delay)
+        summary['total_own_delay'] = tasks_with_delay['own_delay_days'].sum()
+
+        return {
+            'driving': tier_data['DRIVING'].nlargest(tier_limits['DRIVING'], 'priority_score') if len(tier_data['DRIVING']) > 0 else pd.DataFrame(),
+            'critical': tier_data['CRITICAL'].nlargest(tier_limits['CRITICAL'], 'priority_score') if len(tier_data['CRITICAL']) > 0 else pd.DataFrame(),
+            'near_critical': tier_data['NEAR_CRITICAL'].nlargest(tier_limits['NEAR_CRITICAL'], 'priority_score') if len(tier_data['NEAR_CRITICAL']) > 0 else pd.DataFrame(),
+            'eroding': tier_data['ERODING'].nlargest(tier_limits['ERODING'], 'priority_score') if len(tier_data['ERODING']) > 0 else pd.DataFrame(),
+            'buffered_summary': {
+                'count': buffered_count,
+                'total_delay': buffered_delay,
+                'avg_delay': buffered_delay / buffered_count if buffered_count > 0 else 0
+            },
+            'report': "\n".join(lines),
+            'summary': summary,
+        }
+
     def generate_whatif_table(self, comparison_result, include_non_driving=True, analyze_parallel=True):
         """
         Generate a what-if impact table showing potential schedule recovery.
@@ -3273,6 +3648,7 @@ def main():
     parser.add_argument('--sequence', action='store_true', help='Generate recovery sequence analysis (bottleneck cascade)')
     parser.add_argument('--attribution', action='store_true', help='Generate full slippage attribution report with investigation checklist')
     parser.add_argument('--categories', action='store_true', help='Generate category-based reports (not-started, active/completed, reopened)')
+    parser.add_argument('--tiers', action='store_true', help='Generate tier-based priority report (DRIVING, CRITICAL, NEAR_CRITICAL, ERODING, BUFFERED)')
 
     args = parser.parse_args()
 
@@ -3344,6 +3720,12 @@ def main():
                 category_result = analyzer.generate_category_reports(comparison, top_n=args.top_n)
                 if category_result:
                     print("\n" + category_result['report'])
+
+            # Generate tier-based priority report if requested
+            if args.tiers:
+                tier_result = analyzer.generate_tier_report(comparison, top_n=args.top_n)
+                if tier_result:
+                    print("\n" + tier_result['report'])
 
             # Also show top contributors with category
             print("\nTOP SLIPPAGE CONTRIBUTORS (detailed):")

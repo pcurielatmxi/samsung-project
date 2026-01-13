@@ -307,8 +307,11 @@ python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --m
 # With category-based reports (not-started, active/completed, reopened)
 python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --categories
 
+# With tier-based priority report (simplified ranking by float status)
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --tiers
+
 # Full analysis (all reports)
-python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence --attribution --categories
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence --attribution --categories --tiers
 
 # List available schedules
 python -m scripts.integrated_analysis.schedule_slippage_analysis --list-schedules
@@ -349,6 +352,16 @@ print(categories['report'])  # Formatted report
 print(categories['not_started'])  # DataFrame of top not-started tasks
 print(categories['active_completed'])  # DataFrame of top active/completed tasks
 print(categories['reopened'])  # DataFrame of reopened tasks
+
+# Get tier-based priority report (simplified ranking)
+tiers = analyzer.generate_tier_report(result, top_n=15)
+print(tiers['report'])  # Formatted report
+print(tiers['driving'])  # DataFrame of DRIVING tier tasks (direct project impact)
+print(tiers['critical'])  # DataFrame of CRITICAL tier tasks (parallel paths)
+print(tiers['near_critical'])  # DataFrame of NEAR_CRITICAL tier tasks (at risk)
+print(tiers['eroding'])  # DataFrame of ERODING tier tasks (losing float)
+print(tiers['buffered_summary'])  # Summary dict for BUFFERED tier
+print(tiers['summary'])  # Tier counts and totals
 ```
 
 ### Key Methods
@@ -363,6 +376,7 @@ print(categories['reopened'])  # DataFrame of reopened tasks
 | `analyze_recovery_sequence(result)` | Full bottleneck cascade analysis |
 | `generate_attribution_report(result)` | Full slippage accounting with investigation checklist |
 | `generate_category_reports(result)` | **NEW (v2.4):** Category-based analysis (not-started, active/completed, reopened) |
+| `generate_tier_report(result)` | **NEW (v2.5):** Tier-based priority ranking (DRIVING, CRITICAL, NEAR_CRITICAL, ERODING, BUFFERED) |
 | `generate_slippage_report(result)` | Basic formatted text report |
 
 ### Output Structure
@@ -406,6 +420,14 @@ categories = analyzer.generate_category_reports(result)
 #   - elapsed_curr_days, target_duration_curr_days: Duration calculation inputs
 #   - duration_overrun_curr_days, duration_overrun_change_days: Duration overrun metrics
 #   - remain_duration_curr_days: Remaining duration (useful for active tasks)
+
+# NEW result['tasks'] columns (v2.5) - Tier-based priority:
+#   - priority_tier: DRIVING, CRITICAL, NEAR_CRITICAL, ERODING, or BUFFERED
+#   - priority_score: own_delay × tier_weight (for unified ranking)
+#   - float_prev_days: Float at previous snapshot (for trend analysis)
+
+# Tier weights: DRIVING=1000, CRITICAL=100, NEAR_CRITICAL=10, ERODING=5, BUFFERED=1
+# Example: 10-day DRIVING delay (score=10000) > 100-day BUFFERED delay (score=100)
 ```
 
 ### Limitations
