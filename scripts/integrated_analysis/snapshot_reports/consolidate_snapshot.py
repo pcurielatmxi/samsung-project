@@ -244,20 +244,27 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
             lines.append(f"**Primary cause:** {pattern_desc} ({forward_pct}% of tasks pushed forward)")
             lines.append("")
 
+        # Show reopened tasks note if any
+        reopened_count = attribution.get('reopened_count', 0)
+        if reopened_count > 0:
+            lines.append(f"*Note: {reopened_count} task(s) were reopened (Complete→Active) this period.*")
+            lines.append("")
+
         # Top contributors (tasks that caused the slip)
         contributors = attribution.get('top_contributors', [])
         if contributors:
             lines.append("**Critical Path Tasks Contributing to Delay:**")
             lines.append("")
-            lines.append("| Task Code | Task Name | Own Delay | Trade |")
-            lines.append("|-----------|-----------|-----------|-------|")
+            lines.append("| Task Code | Task Name | Own Delay | Trade | Notes |")
+            lines.append("|-----------|-----------|-----------|-------|-------|")
 
             for task in contributors:
                 code = task.get('task_code', '-')
-                name = task.get('task_name', '-')[:35]
+                name = task.get('task_name', '-')[:30]
                 delay = task.get('own_delay', 0)
-                trade = str(task.get('trade', '-'))[:15] if task.get('trade') else '-'
-                lines.append(f"| {code} | {name} | +{delay}d | {trade} |")
+                trade = str(task.get('trade', '-'))[:12] if task.get('trade') else '-'
+                notes = 'Reopened' if task.get('was_reopened') else ''
+                lines.append(f"| {code} | {name} | +{delay}d | {trade} | {notes} |")
 
             lines.append("")
 
@@ -266,15 +273,16 @@ def format_schedule_section(schedule: Dict[str, Any], period: SnapshotPeriod, qu
         if recoveries:
             lines.append("**Critical Path Tasks That Helped (Early Finishes):**")
             lines.append("")
-            lines.append("| Task Code | Task Name | Recovery | Trade |")
-            lines.append("|-----------|-----------|----------|-------|")
+            lines.append("| Task Code | Task Name | Recovery | Trade | Notes |")
+            lines.append("|-----------|-----------|----------|-------|-------|")
 
             for task in recoveries:
                 code = task.get('task_code', '-')
-                name = task.get('task_name', '-')[:35]
+                name = task.get('task_name', '-')[:30]
                 recovery = task.get('recovery', 0)
-                trade = str(task.get('trade', '-'))[:15] if task.get('trade') else '-'
-                lines.append(f"| {code} | {name} | -{recovery}d | {trade} |")
+                trade = str(task.get('trade', '-'))[:12] if task.get('trade') else '-'
+                notes = 'Reopened' if task.get('was_reopened') else ''
+                lines.append(f"| {code} | {name} | -{recovery}d | {trade} | {notes} |")
 
             lines.append("")
 

@@ -432,10 +432,37 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
             common_tasks['start_slip_days'] = (
                 (common_tasks['early_start_date'] - common_tasks['prev_early_start']).dt.days
             )
-            common_tasks['own_delay_days'] = (
-                common_tasks['finish_slip_days'] - common_tasks['start_slip_days']
+
+            # Detect task status transitions
+            # Active in both snapshots: all slip is own delay (task is responsible)
+            was_active_both = (
+                (common_tasks['prev_status'] == 'TK_Active') &
+                (common_tasks['status_code'] == 'TK_Active')
             )
-            common_tasks['inherited_delay_days'] = common_tasks['start_slip_days']
+
+            # Reopened tasks: Complete → Active
+            # For completed tasks, P6 sets early_start/end to data date.
+            # When reopened, the "start_slip" is just calendar time, not inherited delay.
+            was_reopened = (
+                (common_tasks['prev_status'] == 'TK_Complete') &
+                (common_tasks['status_code'] == 'TK_Active')
+            )
+            common_tasks['was_reopened'] = was_reopened
+
+            # Calculate own_delay and inherited_delay with correct attribution
+            # Active/Reopened tasks: all slip is own delay
+            # Other tasks: standard formula (own_delay = finish_slip - start_slip)
+            common_tasks['own_delay_days'] = np.where(
+                was_active_both | was_reopened,
+                common_tasks['finish_slip_days'],  # Active/Reopened: all slip is own delay
+                common_tasks['finish_slip_days'] - common_tasks['start_slip_days']  # Standard formula
+            )
+
+            common_tasks['inherited_delay_days'] = np.where(
+                was_active_both | was_reopened,
+                0,  # Active/Reopened: no inherited delay
+                common_tasks['start_slip_days']  # Standard: start_slip = inherited
+            )
 
             # Calculate backward pass metrics for float driver analysis
             if 'prev_late_end' in common_tasks.columns and 'late_end_date' in common_tasks.columns:
@@ -490,7 +517,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                 if not recoveries.empty:
                     recoveries = recoveries.sort_values('own_delay_days', ascending=True)
 
-                # Build top contributors list (task_code, task_name, own_delay, trade)
+                # Build top contributors list (task_code, task_name, own_delay, trade, was_reopened)
                 top_contributors = []
                 for _, row in contributors.head(5).iterrows():
                     top_contributors.append({
@@ -498,6 +525,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                         'task_name': str(row.get('task_name', ''))[:40],
                         'own_delay': int(row['own_delay_days']),
                         'trade': row.get('trade_name', '-'),
+                        'was_reopened': bool(row.get('was_reopened', False)),
                     })
 
                 # Build top recoveries list
@@ -508,6 +536,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                         'task_name': str(row.get('task_name', ''))[:40],
                         'recovery': int(abs(row['own_delay_days'])),
                         'trade': row.get('trade_name', '-'),
+                        'was_reopened': bool(row.get('was_reopened', False)),
                     })
 
                 # Calculate net driving path change
@@ -532,6 +561,9 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                     pattern = 'stable'
                     pattern_desc = 'Minimal changes this period'
 
+                # Count reopened tasks on driving path
+                reopened_count = int(driving_tasks['was_reopened'].sum()) if 'was_reopened' in driving_tasks.columns else 0
+
                 attribution_summary = {
                     'project_slip_days': project_slip_days,
                     'top_contributors': top_contributors,
@@ -542,6 +574,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                     'pattern': pattern,
                     'pattern_desc': pattern_desc,
                     'forward_push_pct': int(forward_pct * 100),
+                    'reopened_count': reopened_count,
                 }
 
             # Categorize tasks
@@ -586,7 +619,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
                     'task_code', 'task_name', 'floor', 'trade_name',
                     'status_code', 'phys_complete_pct', 'total_float_hr_cnt',
                     'own_delay_days', 'inherited_delay_days', 'finish_slip_days',
-                    'delay_category',
+                    'delay_category', 'was_reopened',
                     'target_start_date', 'act_start_date', 'late_start_date', 'early_start_date',
                     'target_end_date', 'act_end_date', 'late_end_date', 'early_end_date',
                     'target_drtn_hr_cnt', 'driving_path_flag'
