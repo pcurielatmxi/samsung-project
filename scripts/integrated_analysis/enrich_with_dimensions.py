@@ -90,7 +90,7 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
 
     # Named locations (stair, elevator, vestibule, room names, equipment)
     # Note: L\d+ patterns handled separately to capture gridline coordinate
-    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ$|AWNING|CLEANING\s*DECK|DS$)', val):
+    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ\s*\(|AWNING|CLEANING\s*DECK|DS$|RM\s+\d|ROOM|OVER\s*BRIDGE|TRESTLE|NCR)', val):
         result['grid_type'] = 'NAMED'
         return result
 
@@ -425,6 +425,40 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
     if m:
         result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
         result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Pattern: "16-20 description" → col range with description
+    m = re.match(r'^(\d+)[-–](\d+)\s+[A-Z]', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Pattern: "N-5 to N33" → row N, cols 5-33
+    m = re.match(r'^([A-N])[-]?(\d+)\s+TO\s+([A-N])?[-]?(\d+)', val, re.IGNORECASE)
+    if m:
+        result['grid_row_min'] = m.group(1)
+        result['grid_row_max'] = m.group(3) or m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "K/D COLUMNS" or "K/D description" → multiple rows
+    m = re.match(r'^([A-N])[/]([A-N])\s+[A-Z]', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'ROW_ONLY'
+        return result
+
+    # Pattern: "K2.5 suffix" → row K.5 with building suffix
+    m = re.match(r'^([A-N])(\d+\.?\d*)\s+(SUW|SUE|FAB)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
         return result
 
     # Pattern: Just "33" → col only
