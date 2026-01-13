@@ -637,85 +637,95 @@ Additional fields include: Author Company, Module, Reasons for failure, Week, Ye
 - Contractor performance comparison
 - Re-inspection tracking and rework quantification
 
-### Narrative Embeddings Search
+### Document Embeddings Search
 
 **Location:** [scripts/narratives/embeddings/](scripts/narratives/embeddings/)
 
-Semantic search tool for narrative documents using Gemini embeddings and ChromaDB. Enables quick investigation of documentary evidence by searching across document summaries and individual forensic statements.
+Semantic search tool for project documents using Gemini embeddings and ChromaDB. Enables quick investigation of documentary evidence by searching across raw document chunks with rich metadata filtering.
 
 **Index Contents:**
-- 108 documents (schedule narratives, milestone variance reports, meeting minutes, correspondence)
-- 2,540 statements (extracted forensic claims with category, parties, locations, dates)
+- 13,687 chunks from 304 narrative documents
+- Source types: `narratives` (schedule narratives, weekly reports, expert reports, exhibits, meeting notes)
 
 **Features:**
 - Semantic search using `gemini-embedding-001` (768 dimensions)
-- Search at document or statement level
-- Rich metadata filtering (category, party, location, date range)
-- Context navigation (show surrounding statements)
-- Idempotent build with content hash change detection
+- Source-based indexing with `--source` flag
+- Rich metadata filtering (source, document type, author, date range, subfolder)
+- Context navigation (show adjacent chunks)
+- Idempotent incremental builds with deduplication
+- Cross-computer sync via OneDrive backup
 
-**Statement Categories:**
-`delay`, `scope_change`, `quality_issue`, `safety`, `owner_direction`, `progress`, `resource`, `weather`, `design_issue`, `coordination`, `dispute`, `commitment`, `other`
+**Storage Architecture:**
+```
+~/.local/share/samsung-embeddings/documents/   # WSL local (fast queries)
+    ├── chroma.sqlite3                         # SQLite metadata
+    └── {uuid}/                                # HNSW vector index
+
+{WINDOWS_DATA_DIR}/derived/embeddings/documents/  # OneDrive backup (sync)
+```
+
+- **Primary:** WSL local path for fast queries
+- **Backup:** OneDrive for cross-computer sync
+- **Auto-restore:** If WSL folder is empty, automatically copies from OneDrive on first use
 
 **Usage:**
 ```bash
-# Build/rebuild index (idempotent)
-python -m scripts.narratives.embeddings build
-python -m scripts.narratives.embeddings build --force  # Rebuild all
+# Build index (--source required)
+python -m scripts.narratives.embeddings build --source narratives
+python -m scripts.narratives.embeddings build --source narratives --force   # Rebuild all
+python -m scripts.narratives.embeddings build --source narratives --sync    # Sync to OneDrive after
 
-# Search statements (default)
+# Search all sources
 python -m scripts.narratives.embeddings search "HVAC delays"
-python -m scripts.narratives.embeddings search "scope changes" --category scope_change
-python -m scripts.narratives.embeddings search "Samsung" --party Samsung
-python -m scripts.narratives.embeddings search "FAB issues" --location FAB
+python -m scripts.narratives.embeddings search "scope changes" --limit 5
 
-# Search with date filters
+# Search with filters
+python -m scripts.narratives.embeddings search "delay" --source narratives
+python -m scripts.narratives.embeddings search "delay" --author Yates
+python -m scripts.narratives.embeddings search "delay" --type schedule_narrative
+python -m scripts.narratives.embeddings search "meeting" --subfolder meeting_notes
 python -m scripts.narratives.embeddings search "delay" --after 2024-01-01 --before 2024-06-30
 
-# Search documents (summaries)
-python -m scripts.narratives.embeddings search "milestone variance" --documents
-
-# Show context (surrounding statements)
+# Show context (adjacent chunks)
 python -m scripts.narratives.embeddings search "delay" --context 2 --limit 5
 
 # Check index status
 python -m scripts.narratives.embeddings status
+
+# Manual sync to OneDrive
+python -m scripts.narratives.embeddings sync
 ```
 
 **Python API:**
 ```python
-from scripts.narratives.embeddings import search_statements, search_documents
+from scripts.narratives.embeddings import search_chunks
 
-# Search statements with filters
-results = search_statements(
+# Search with filters
+results = search_chunks(
     query="HVAC delay",
-    category="delay",
-    party="Yates",
-    limit=10,
-    context=1
+    source_type="narratives",
+    author="Yates",
+    limit=10
 )
 
-# Search document summaries
-docs = search_documents(query="schedule narrative", limit=5)
+for r in results:
+    print(f"{r.score}: {r.text[:100]}...")
+    print(f"  Source: {r.source_file} | Date: {r.file_date}")
 ```
 
 **Output Format:**
 ```
-[1] Score: 0.89
-    Statement: "HVAC work delayed 14 days due to design revision RFI-2847"
-    Category: delay | Event: 2024-03-15 | Impact: 14 days
-    Parties: Samsung, Yates | Location: FAB L2
-    Source: NAR-042 (page 4)
-
-    Context:
-      [prev] "Mechanical rough-in completed ahead of schedule"
-      [next] "Samsung issued revised HVAC drawings on 2024-03-18"
+[1] Score: 0.72
+    Text: "However, there is still 8 missing spools of CSF pipe..."
+    Source: narratives | Type: eot_claim | Date: 2025-04-30 | Author: Yates
+    Source: 2025.04.30 - OFFICIAL NOTICE - Yates Response to LT-0793.pdf (page 1) [chunk 7/30]
 ```
 
-**Storage:**
-```
-{WINDOWS_DATA_DIR}/derived/narratives/embeddings/
-└── chroma.sqlite3   # Persistent ChromaDB vector store
-```
+**Metadata Fields:**
+- `source_type`: narratives (future: raba, psi)
+- `document_type`: schedule_narrative, weekly_report, expert_report, meeting_notes, eot_claim, etc.
+- `author`: Yates, SECAI, BRG, Samsung
+- `file_date`: Extracted from filename (YYYY-MM-DD)
+- `subfolder`: Relative path within source directory
 
 **Dependencies:** `chromadb`, `google-genai` (in requirements.txt)

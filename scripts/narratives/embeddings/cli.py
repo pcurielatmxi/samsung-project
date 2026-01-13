@@ -25,9 +25,20 @@ def cmd_build(args):
 
         if result.errors:
             sys.exit(1)
+
+        # Optionally sync to OneDrive after successful build
+        if args.sync and not result.errors:
+            print()
+            config.sync_to_onedrive()
+
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
+
+
+def cmd_sync(args):
+    """Sync local database to OneDrive."""
+    config.sync_to_onedrive()
 
 
 def cmd_search(args):
@@ -219,6 +230,11 @@ Valid sources: {valid_sources}
         default=None,
         help="Limit number of files to process (for testing)"
     )
+    build_parser.add_argument(
+        "--sync",
+        action="store_true",
+        help="Sync to OneDrive after successful build"
+    )
     build_parser.set_defaults(func=cmd_build)
 
     # Search command
@@ -270,6 +286,10 @@ Valid sources: {valid_sources}
     # Status command
     status_parser = subparsers.add_parser("status", help="Show index status")
     status_parser.set_defaults(func=cmd_status)
+
+    # Sync command
+    sync_parser = subparsers.add_parser("sync", help="Sync local database to OneDrive")
+    sync_parser.set_defaults(func=cmd_sync)
 
     args = parser.parse_args()
     args.func(args)

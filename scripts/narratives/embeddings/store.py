@@ -47,9 +47,14 @@ class EmbeddingStore:
     """ChromaDB-based embedding storage."""
 
     def __init__(self, path: Optional[str] = None):
-        """Initialize ChromaDB client."""
+        """Initialize ChromaDB client.
+
+        If no local database exists, attempts to copy from OneDrive.
+        """
+        # Ensure local WSL database exists (copy from OneDrive if needed)
+        config.ensure_local_db()
+
         self.path = path or str(config.CHROMA_PATH)
-        config.CHROMA_PATH.mkdir(parents=True, exist_ok=True)
 
         self.client = chromadb.PersistentClient(
             path=self.path,
