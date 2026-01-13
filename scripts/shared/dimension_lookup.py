@@ -94,6 +94,42 @@ def get_location_id(building: str, level: str) -> Optional[str]:
     return building_level
 
 
+def _row_sort_key(r):
+    """Convert row letter to sortable tuple (handles fractional rows like E.5)."""
+    r = str(r).upper()
+    if '.' in r:
+        base = r[0]
+        decimal = float(r[1:])
+    else:
+        base = r[0]
+        decimal = 0
+    return (base, decimal)
+
+
+def _row_in_range(row_min, row_max, target_row):
+    """Check if target_row is between row_min and row_max (inclusive)."""
+    min_parsed = _row_sort_key(row_min)
+    max_parsed = _row_sort_key(row_max)
+    target_parsed = _row_sort_key(target_row)
+    return min_parsed <= target_parsed <= max_parsed
+
+
+def _rows_overlap(row_min1, row_max1, row_min2, row_max2):
+    """Check if two row ranges overlap."""
+    # Convert to sortable tuples
+    min1 = _row_sort_key(row_min1)
+    max1 = _row_sort_key(row_max1)
+    min2 = _row_sort_key(row_min2)
+    max2 = _row_sort_key(row_max2)
+    # Ranges overlap if neither is completely before the other
+    return not (max1 < min2 or max2 < min1)
+
+
+def _cols_overlap(col_min1, col_max1, col_min2, col_max2):
+    """Check if two column ranges overlap."""
+    return not (col_max1 < col_min2 or col_max2 < col_min1)
+
+
 def get_locations_at_grid(
     building: str,
     level: str,
@@ -134,31 +170,11 @@ def get_locations_at_grid(
     if candidates.empty:
         return []
 
-    # Row comparison helper (handles fractional rows like E.5)
-    def row_in_range(row_min, row_max, target_row):
-        """Check if target_row is between row_min and row_max."""
-        # Extract base letter and decimal
-        def parse_row(r):
-            r = str(r).upper()
-            if '.' in r:
-                base = r[0]
-                decimal = float(r[1:])
-            else:
-                base = r[0]
-                decimal = 0
-            return (base, decimal)
-
-        min_parsed = parse_row(row_min)
-        max_parsed = parse_row(row_max)
-        target_parsed = parse_row(target_row)
-
-        return min_parsed <= target_parsed <= max_parsed
-
     # Filter by grid containment
     results = []
     for _, row in candidates.iterrows():
         try:
-            if (row_in_range(row['grid_row_min'], row['grid_row_max'], grid_row) and
+            if (_row_in_range(row['grid_row_min'], row['grid_row_max'], grid_row) and
                 row['grid_col_min'] <= grid_col <= row['grid_col_max']):
                 results.append({
                     'location_id': row['location_id'],
@@ -206,6 +222,122 @@ def get_location_by_code(location_code: str) -> Optional[Dict]:
         'grid_col_min': row['grid_col_min'],
         'grid_col_max': row['grid_col_max'],
     }
+
+
+def get_affected_rooms(
+    building: str,
+    level: str,
+    grid_row_min: Optional[str] = None,
+    grid_row_max: Optional[str] = None,
+    grid_col_min: Optional[float] = None,
+    grid_col_max: Optional[float] = None,
+) -> List[Dict]:
+    """
+    Find all rooms/locations whose grid bounds overlap with the given grid range.
+
+    Returns a list of affected rooms with a PARTIAL flag when grid info is incomplete.
+
+    Args:
+        building: Building code (FAB, SUE, SUW)
+        level: Level code (1F, 2F, B1, etc.)
+        grid_row_min: Starting row letter (A-N, may include decimal like "E.5")
+        grid_row_max: Ending row letter (defaults to row_min if not provided)
+        grid_col_min: Starting column number (1-34)
+        grid_col_max: Ending column number (defaults to col_min if not provided)
+
+    Returns:
+        List of dicts with:
+        - location_code: Standardized room code
+        - room_name: Room description
+        - match_type: FULL (both row+col match) or PARTIAL (only row or col)
+
+        Returns empty list if no grid information provided.
+    """
+    if not building or not level:
+        return []
+
+    # Determine what grid info we have
+    has_row = grid_row_min is not None and pd.notna(grid_row_min)
+    has_col = grid_col_min is not None and pd.notna(grid_col_min)
+
+    # Need at least some grid info
+    if not has_row and not has_col:
+        return []
+
+    _load_dimensions()
+
+    building = str(building).upper().strip()
+    level = str(level).upper().strip()
+
+    # Normalize inputs
+    if has_row:
+        row_min = str(grid_row_min).upper().strip()
+        row_max = str(grid_row_max).upper().strip() if grid_row_max and pd.notna(grid_row_max) else row_min
+    else:
+        row_min = row_max = None
+
+    if has_col:
+        col_min = float(grid_col_min)
+        col_max = float(grid_col_max) if grid_col_max and pd.notna(grid_col_max) else col_min
+    else:
+        col_min = col_max = None
+
+    # Filter locations by building and level, excluding non-room types
+    # Include ROOM, ELEVATOR, STAIR (exclude LEVEL, BUILDING, AREA, GRIDLINE)
+    candidates = _dim_location[
+        (_dim_location['building'] == building) &
+        (_dim_location['level'] == level) &
+        (_dim_location['location_type'].isin(['ROOM', 'ELEVATOR', 'STAIR'])) &
+        (_dim_location['grid_row_min'].notna()) &
+        (_dim_location['grid_col_min'].notna())
+    ]
+
+    if candidates.empty:
+        return []
+
+    results = []
+    for _, loc in candidates.iterrows():
+        try:
+            loc_row_min = str(loc['grid_row_min']).upper()
+            loc_row_max = str(loc['grid_row_max']).upper()
+            loc_col_min = float(loc['grid_col_min'])
+            loc_col_max = float(loc['grid_col_max'])
+
+            # Check overlap based on available grid info
+            if has_row and has_col:
+                # Full grid - check both row and column overlap
+                rows_match = _rows_overlap(row_min, row_max, loc_row_min, loc_row_max)
+                cols_match = _cols_overlap(col_min, col_max, loc_col_min, loc_col_max)
+
+                if rows_match and cols_match:
+                    results.append({
+                        'location_code': loc['location_code'],
+                        'room_name': loc['room_name'],
+                        'match_type': 'FULL',
+                    })
+
+            elif has_row:
+                # Row only - check row overlap (PARTIAL match)
+                if _rows_overlap(row_min, row_max, loc_row_min, loc_row_max):
+                    results.append({
+                        'location_code': loc['location_code'],
+                        'room_name': loc['room_name'],
+                        'match_type': 'PARTIAL',
+                    })
+
+            elif has_col:
+                # Column only - check column overlap (PARTIAL match)
+                if _cols_overlap(col_min, col_max, loc_col_min, loc_col_max):
+                    results.append({
+                        'location_code': loc['location_code'],
+                        'room_name': loc['room_name'],
+                        'match_type': 'PARTIAL',
+                    })
+
+        except (TypeError, ValueError):
+            continue
+
+    return results
 
 
 def _normalize_company_name(name: str) -> str:

@@ -85,6 +85,9 @@ UNIFIED_COLUMNS = [
     'dim_trade_id',              # Trade dimension ID
     'dim_trade_code',            # Trade code
 
+    # Room matching (JSON array of rooms whose grid bounds overlap)
+    'affected_rooms',            # JSON: [{"location_code": "FAB1xxx", "room_name": "...", "match_type": "FULL|PARTIAL"}, ...]
+
     # Validation
     '_validation_issues',        # Pipe-delimited validation issues
 ]

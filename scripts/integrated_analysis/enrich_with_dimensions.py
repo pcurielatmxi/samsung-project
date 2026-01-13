@@ -29,8 +29,10 @@ from scripts.shared.dimension_lookup import (
     get_company_id,
     get_trade_id,
     get_trade_code,
+    get_affected_rooms,
     reset_cache,
 )
+import json
 
 
 def normalize_level_value(level: str) -> Optional[str]:
@@ -745,15 +747,56 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     df['grid_raw'] = grid_parsed['grid_raw']
     df['grid_type'] = grid_parsed['grid_type']
 
+    # Compute affected_rooms for records with grid coordinates
+    print("  Computing affected rooms...")
+
+    def compute_affected_rooms(row):
+        """Find rooms that overlap with the record's grid bounds."""
+        # Need at least building, level, and some grid info
+        building = row.get('building_normalized')
+        level = row.get('level_normalized')
+        if pd.isna(building) or pd.isna(level):
+            return None
+
+        # Get grid bounds (may be partial)
+        row_min = row.get('grid_row_min')
+        row_max = row.get('grid_row_max')
+        col_min = row.get('grid_col_min')
+        col_max = row.get('grid_col_max')
+
+        # Need at least some grid info
+        has_row = pd.notna(row_min)
+        has_col = pd.notna(col_min)
+        if not has_row and not has_col:
+            return None
+
+        rooms = get_affected_rooms(
+            building, level,
+            row_min if has_row else None,
+            row_max if has_row else None,
+            col_min if has_col else None,
+            col_max if has_col else None,
+        )
+
+        if not rooms:
+            return None
+
+        # Return as JSON string for CSV storage
+        return json.dumps(rooms)
+
+    df['affected_rooms'] = df.apply(compute_affected_rooms, axis=1)
+
     # Calculate coverage
     has_grid_row = df['grid_row_min'].notna()
     has_grid_col = df['grid_col_min'].notna()
+    has_affected_rooms = df['affected_rooms'].notna()
     coverage = {
         'location': df['dim_location_id'].notna().mean() * 100,
         'company': df['dim_company_id'].notna().mean() * 100,
         'trade': df['dim_trade_id'].notna().mean() * 100,
         'grid_row': has_grid_row.mean() * 100,
         'grid_col': has_grid_col.mean() * 100,
+        'affected_rooms': has_affected_rooms.mean() * 100,
     }
 
     # Grid type distribution for reporting

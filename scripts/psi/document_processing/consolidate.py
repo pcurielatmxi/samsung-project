@@ -38,6 +38,7 @@ from scripts.shared.dimension_lookup import (
     get_company_id,
     get_trade_id,
     get_trade_code,
+    get_affected_rooms,
     parse_grid_field,
     normalize_grid,
 )
@@ -209,6 +210,22 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     grid_normalized = normalize_grid(grid_raw)
     grid_parsed = parse_grid_field(grid_raw)
 
+    # Compute affected_rooms based on grid overlap
+    affected_rooms = None
+    if building and level_std:
+        has_row = grid_parsed['grid_row_min'] is not None
+        has_col = grid_parsed['grid_col_min'] is not None
+        if has_row or has_col:
+            rooms = get_affected_rooms(
+                building, level_std,
+                grid_parsed['grid_row_min'] if has_row else None,
+                grid_parsed['grid_row_max'] if has_row else None,
+                grid_parsed['grid_col_min'] if has_col else None,
+                grid_parsed['grid_col_max'] if has_col else None,
+            )
+            if rooms:
+                affected_rooms = json.dumps(rooms)
+
     # Build flat record using UNIFIED column names
     return {
         # Identification
@@ -279,6 +296,9 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'dim_company_id': dim_company_id,
         'dim_trade_id': dim_trade_id,
         'dim_trade_code': dim_trade_code,
+
+        # Affected rooms (JSON array of rooms whose grid bounds overlap)
+        'affected_rooms': affected_rooms,
     }
 
 
