@@ -150,6 +150,37 @@ Analyzes schedule slippage between P6 snapshots to identify which tasks contribu
 | `own_delay_adj_days` | Adjusted own delay (considers predecessor constraints for fast-tracked) |
 | `inherited_delay_adj_days` | Adjusted inherited (non-zero for fast-tracked tasks) |
 
+**Gap-Based Metrics (v2.4):**
+
+For ACTIVE tasks, `early_start` moves with `data_date` (P6 scheduling artifact). The gap-based metrics provide proper attribution by measuring the gap between early_start and data_date.
+
+| Metric | Formula | Meaning |
+|--------|---------|---------|
+| `gap_prev_days` | `early_start_prev - data_date_prev` | How far remaining work was pushed out (prev) |
+| `gap_curr_days` | `early_start_curr - data_date_curr` | How far remaining work is pushed out (curr) |
+| `constraint_growth_days` | `gap_curr - gap_prev` | Inherited delay for active tasks |
+
+**Duration Overrun Metrics (v2.4):**
+
+Backward-looking performance metrics for active and completed tasks.
+
+| Metric | Formula | Meaning |
+|--------|---------|---------|
+| `elapsed_curr_days` | `data_date - actual_start` (active) or `actual_end - actual_start` (complete) | Time spent on task |
+| `target_duration_curr_days` | `target_drtn_hr_cnt / 8` | Planned duration |
+| `duration_overrun_curr_days` | `elapsed - target` | Current performance (positive = behind schedule) |
+| `duration_overrun_change_days` | `overrun_curr - overrun_prev` | Performance change THIS PERIOD |
+
+**Delay Attribution by Task Status:**
+
+| Task Status | own_delay | inherited_delay |
+|-------------|-----------|-----------------|
+| Not Started | `finish_slip - start_slip` | `start_slip` |
+| Active | `≈ duration_overrun_change` | `≈ constraint_growth` |
+| Reopened | All slip (caused by reopening) | 0 |
+
+**Note:** The `--categories` report includes a comprehensive "METRICS LEGEND & ANALYSIS GUIDE" that explains all metrics in detail.
+
 ### Task Categories
 
 | Category | Condition | Meaning |
@@ -273,8 +304,11 @@ python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --m
 # With full attribution report (recommended for documentation)
 python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --attribution
 
+# With category-based reports (not-started, active/completed, reopened)
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --categories
+
 # Full analysis (all reports)
-python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence --attribution
+python -m scripts.integrated_analysis.schedule_slippage_analysis --year 2025 --month 9 --whatif --sequence --attribution --categories
 
 # List available schedules
 python -m scripts.integrated_analysis.schedule_slippage_analysis --list-schedules
@@ -308,6 +342,13 @@ attribution = analyzer.generate_attribution_report(result, top_n=10)
 print(attribution['report'])  # Formatted report with investigation checklist
 print(attribution['accounting'])  # Dict with slippage breakdown
 print(attribution['drivers'])  # DataFrame of top delay drivers
+
+# Get category-based reports (separates by task status)
+categories = analyzer.generate_category_reports(result, top_n=10)
+print(categories['report'])  # Formatted report
+print(categories['not_started'])  # DataFrame of top not-started tasks
+print(categories['active_completed'])  # DataFrame of top active/completed tasks
+print(categories['reopened'])  # DataFrame of reopened tasks
 ```
 
 ### Key Methods
@@ -316,11 +357,12 @@ print(attribution['drivers'])  # DataFrame of top delay drivers
 |--------|---------|
 | `analyze_month(year, month)` | Compare snapshots for a calendar month |
 | `compare_schedules(prev_id, curr_id)` | Compare two specific snapshots |
-| `trace_root_causes(result, file_id)` | **NEW:** Identify root cause tasks in delay chains |
+| `trace_root_causes(result, file_id)` | Identify root cause tasks in delay chains |
 | `generate_whatif_table(result)` | Calculate recovery potential per task |
 | `analyze_parallel_constraints(result)` | Detect parallel path bottlenecks |
 | `analyze_recovery_sequence(result)` | Full bottleneck cascade analysis |
 | `generate_attribution_report(result)` | Full slippage accounting with investigation checklist |
+| `generate_category_reports(result)` | **NEW (v2.4):** Category-based analysis (not-started, active/completed, reopened) |
 | `generate_slippage_report(result)` | Basic formatted text report |
 
 ### Output Structure
@@ -351,6 +393,19 @@ attribution = analyzer.generate_attribution_report(result)
 #   - driving_early_finish: sum of negative own_delay (tasks helping)
 #   - inherited_at_start: inherited delay at first driving path task
 #   - first_driving_task: task code where inherited delay enters
+
+categories = analyzer.generate_category_reports(result)
+# categories['report'] - Formatted text report
+# categories['not_started'] - DataFrame: task_code, task_name, finish_slip, float_curr, float_change, driving_path, critical
+# categories['active_completed'] - DataFrame: task_code, task_name, duration_overrun_change, finish_slip, float_curr, float_change, driving_path, critical
+# categories['reopened'] - DataFrame: task_code, task_name, remain_duration_curr, finish_slip, float_curr, float_change, driving_path, critical
+# categories['summary'] - Dict with counts by category
+
+# NEW result['tasks'] columns (v2.4):
+#   - gap_prev_days, gap_curr_days, constraint_growth_days: Gap-based metrics
+#   - elapsed_curr_days, target_duration_curr_days: Duration calculation inputs
+#   - duration_overrun_curr_days, duration_overrun_change_days: Duration overrun metrics
+#   - remain_duration_curr_days: Remaining duration (useful for active tasks)
 ```
 
 ### Limitations

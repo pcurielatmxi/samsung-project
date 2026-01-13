@@ -273,6 +273,20 @@ class ScheduleSlippageAnalyzer:
         # Load schedule snapshot metadata (file_id -> date mapping)
         self.files_df = pd.read_csv(self.primavera_dir / 'xer_files.csv')
 
+        # Load project data to get data_date (last_recalc_date) for each file_id
+        # This is needed for gap-based metrics for active tasks
+        project_path = self.primavera_dir / 'project.csv'
+        if project_path.exists():
+            project_df = pd.read_csv(project_path, low_memory=False)
+            # Parse last_recalc_date as data_date
+            project_df['data_date'] = pd.to_datetime(project_df['last_recalc_date'], errors='coerce')
+            # Create file_id -> data_date mapping
+            self.data_date_by_file = dict(zip(project_df['file_id'], project_df['data_date']))
+            print(f"  Loaded data_date for {len(self.data_date_by_file)} schedules")
+        else:
+            self.data_date_by_file = {}
+            print("  Warning: project.csv not found, data_date lookup not available")
+
         # Define columns needed for analysis
         # NOTE: We load all date fields even though we primarily use early_start/end
         # because target dates may be useful for baseline comparison in future
@@ -281,7 +295,7 @@ class ScheduleSlippageAnalyzer:
             'file_id', 'task_id', 'task_code', 'task_name', 'status_code',
             'early_start_date', 'early_end_date', 'late_start_date', 'late_end_date',
             'target_start_date', 'target_end_date', 'act_start_date', 'act_end_date',
-            'total_float_hr_cnt', 'remain_drtn_hr_cnt', 'driving_path_flag',
+            'total_float_hr_cnt', 'remain_drtn_hr_cnt', 'target_drtn_hr_cnt', 'driving_path_flag',
             'cstr_type', 'cstr_date'  # Constraint type and date for enhanced attribution
         ]
 
@@ -737,6 +751,23 @@ class ScheduleSlippageAnalyzer:
         print(f"  Current schedule (file_id={file_id_curr}): {len(tasks_curr):,} tasks")
 
         # =========================================================================
+        # STEP 1.2: Get data_date for each snapshot (needed for gap-based metrics)
+        # =========================================================================
+        # data_date is P6's "data date" - the date when the schedule was statused.
+        # For active tasks, early_start moves with data_date, so we need this to
+        # calculate the "gap" between early_start and data_date for proper attribution.
+        data_date_prev = self.data_date_by_file.get(file_id_prev)
+        data_date_curr = self.data_date_by_file.get(file_id_curr)
+
+        if data_date_prev is not None and data_date_curr is not None:
+            print(f"\n  DATA DATES:")
+            print(f"    Previous: {data_date_prev.strftime('%Y-%m-%d') if pd.notna(data_date_prev) else 'N/A'}")
+            print(f"    Current: {data_date_curr.strftime('%Y-%m-%d') if pd.notna(data_date_curr) else 'N/A'}")
+            calendar_days = (data_date_curr - data_date_prev).days if pd.notna(data_date_prev) and pd.notna(data_date_curr) else None
+            if calendar_days:
+                print(f"    Calendar days between: {calendar_days}")
+
+        # =========================================================================
         # STEP 1.5: ENHANCED - Compare predecessor relationships
         # =========================================================================
         # Detect logic changes (new/removed predecessor relationships)
@@ -784,6 +815,8 @@ class ScheduleSlippageAnalyzer:
             'date_curr': date_curr,
             'file_id_prev': file_id_prev,
             'file_id_curr': file_id_curr,
+            'data_date_prev': data_date_prev,
+            'data_date_curr': data_date_curr,
         }
 
         print(f"\n  PROJECT-LEVEL SLIPPAGE:")
@@ -849,6 +882,46 @@ class ScheduleSlippageAnalyzer:
         common['start_slip_days'] = (
             common['early_start_date_curr'] - common['early_start_date_prev']
         ).dt.days
+
+        # -------------------------------------------------------------------------
+        # 4a.2. GAP-BASED METRICS for active tasks
+        # -------------------------------------------------------------------------
+        # For ACTIVE tasks, early_start moves with data_date (P6 scheduling artifact).
+        # The start_slip for active tasks includes calendar time between snapshots,
+        # which is NOT meaningful for delay attribution.
+        #
+        # GAP = early_start - data_date = how far the remaining work is pushed out
+        #
+        # If gap_curr > gap_prev, it means remaining work is pushed further from
+        # data_date than before - this is CONSTRAINT GROWTH (inherited delay).
+        #
+        # Example:
+        #   prev: data_date=Feb 9, early_start=Feb 9, gap=0
+        #   curr: data_date=Apr 8, early_start=Apr 25, gap=17
+        #   constraint_growth = 17 - 0 = 17 days of inherited delay
+        if data_date_prev is not None and data_date_curr is not None:
+            # Calculate gap: how far is early_start from data_date?
+            common['gap_prev_days'] = (
+                common['early_start_date_prev'] - data_date_prev
+            ).dt.days
+            common['gap_curr_days'] = (
+                common['early_start_date_curr'] - data_date_curr
+            ).dt.days
+
+            # Constraint growth: how much did the gap increase?
+            # Positive = remaining work pushed further out (inherited delay)
+            common['constraint_growth_days'] = (
+                common['gap_curr_days'].fillna(0) - common['gap_prev_days'].fillna(0)
+            )
+
+            # For completed tasks in prev, gap has different meaning - set to 0
+            common.loc[common['status_code_prev'] == 'TK_Complete', 'gap_prev_days'] = 0
+            common.loc[common['status_code_prev'] == 'TK_Complete', 'constraint_growth_days'] = 0
+        else:
+            # No data_date available - use NaN
+            common['gap_prev_days'] = np.nan
+            common['gap_curr_days'] = np.nan
+            common['constraint_growth_days'] = np.nan
 
         # -------------------------------------------------------------------------
         # 4b. Decompose into OWN vs INHERITED delay
@@ -994,6 +1067,76 @@ class ScheduleSlippageAnalyzer:
             common['remain_drtn_hr_cnt_prev'].fillna(0)
         )
         common['duration_change_days'] = common['duration_change_hrs'] / HOURS_PER_WORKDAY
+
+        # -------------------------------------------------------------------------
+        # 4c.2. DURATION OVERRUN calculation (for active/completed tasks)
+        # -------------------------------------------------------------------------
+        # Duration overrun = elapsed_days - target_days
+        # This is a backward-looking performance metric:
+        # - For active tasks: elapsed = data_date - actual_start_date
+        # - For completed tasks: elapsed = actual_end_date - actual_start_date
+        #
+        # duration_overrun_change = overrun_curr - overrun_prev
+        # This tells us how much performance deteriorated/improved between snapshots.
+
+        # Calculate target duration in days (from target_drtn_hr_cnt)
+        common['target_duration_prev_days'] = common['target_drtn_hr_cnt_prev'].fillna(0) / HOURS_PER_WORKDAY
+        common['target_duration_curr_days'] = common['target_drtn_hr_cnt_curr'].fillna(0) / HOURS_PER_WORKDAY
+
+        # Calculate elapsed duration for previous snapshot
+        # For active tasks in prev: elapsed = data_date_prev - actual_start_prev
+        # For completed tasks in prev: elapsed = actual_end_prev - actual_start_prev
+        # For not started: elapsed = 0
+        if data_date_prev is not None:
+            common['elapsed_prev_days'] = np.where(
+                common['status_code_prev'] == 'TK_Active',
+                (data_date_prev - common['act_start_date_prev']).dt.days,
+                np.where(
+                    common['status_code_prev'] == 'TK_Complete',
+                    (common['act_end_date_prev'] - common['act_start_date_prev']).dt.days,
+                    0
+                )
+            )
+        else:
+            common['elapsed_prev_days'] = np.where(
+                common['status_code_prev'] == 'TK_Complete',
+                (common['act_end_date_prev'] - common['act_start_date_prev']).dt.days,
+                0
+            )
+
+        # Calculate elapsed duration for current snapshot
+        if data_date_curr is not None:
+            common['elapsed_curr_days'] = np.where(
+                common['status_code_curr'] == 'TK_Active',
+                (data_date_curr - common['act_start_date_curr']).dt.days,
+                np.where(
+                    common['status_code_curr'] == 'TK_Complete',
+                    (common['act_end_date_curr'] - common['act_start_date_curr']).dt.days,
+                    0
+                )
+            )
+        else:
+            common['elapsed_curr_days'] = np.where(
+                common['status_code_curr'] == 'TK_Complete',
+                (common['act_end_date_curr'] - common['act_start_date_curr']).dt.days,
+                0
+            )
+
+        # Duration overrun = elapsed - target (positive = behind schedule)
+        common['duration_overrun_prev_days'] = (
+            common['elapsed_prev_days'] - common['target_duration_prev_days']
+        )
+        common['duration_overrun_curr_days'] = (
+            common['elapsed_curr_days'] - common['target_duration_curr_days']
+        )
+
+        # Duration overrun change: how much did overrun grow/shrink?
+        # Positive = performance deteriorated, Negative = caught up
+        common['duration_overrun_change_days'] = np.where(
+            (common['status_code_curr'].isin(['TK_Active', 'TK_Complete'])),
+            common['duration_overrun_curr_days'].fillna(0) - common['duration_overrun_prev_days'].fillna(0),
+            0  # Not meaningful for not-started tasks
+        )
 
         # Float change: Did the task's schedule buffer increase or decrease?
         # Negative float_change = task became MORE critical (lost buffer)
@@ -1307,6 +1450,20 @@ class ScheduleSlippageAnalyzer:
             # Supporting metrics
             'duration_change_days': common['duration_change_days'],  # Scope/estimate change
             'float_change_days': common['float_change_days'],        # Buffer erosion
+
+            # Gap-based metrics (for active tasks)
+            'gap_prev_days': common['gap_prev_days'],                # early_start - data_date (prev)
+            'gap_curr_days': common['gap_curr_days'],                # early_start - data_date (curr)
+            'constraint_growth_days': common['constraint_growth_days'],  # gap_curr - gap_prev (inherited delay for active)
+
+            # Duration overrun metrics (backward-looking performance)
+            'elapsed_curr_days': common['elapsed_curr_days'],                    # Actual elapsed time
+            'target_duration_curr_days': common['target_duration_curr_days'],    # Target duration
+            'duration_overrun_curr_days': common['duration_overrun_curr_days'],  # Current overrun
+            'duration_overrun_change_days': common['duration_overrun_change_days'],  # Change in overrun (THIS PERIOD)
+
+            # Remaining duration (useful for active task tracking)
+            'remain_duration_curr_days': common['remain_drtn_hr_cnt_curr'] / HOURS_PER_WORKDAY,
 
             # ENHANCED: Backward pass metrics - late date changes
             'late_end_prev': common['late_end_date_prev'],
@@ -2135,6 +2292,323 @@ class ScheduleSlippageAnalyzer:
             }
         }
 
+    def generate_category_reports(self, comparison_result, top_n=10):
+        """
+        Generate three separate reports by task category with simplified columns.
+
+        This method produces three distinct analysis views:
+        1. NOT STARTED: Tasks that haven't begun - track which could have started but didn't
+        2. ACTIVE/COMPLETED (excluding reopened): Measure duration using first snapshot as baseline
+        3. REOPENED: Tasks that were completed then reopened
+
+        Each category uses the most relevant columns for that task type and is sorted
+        by impact on schedule end date: driving_path DESC, critical DESC, finish_slip DESC.
+
+        Args:
+            comparison_result: Output from compare_schedules() or analyze_month()
+            top_n: Number of tasks to show per category (default: 10)
+
+        Returns:
+            dict with:
+                'not_started': DataFrame of top not-started tasks
+                'active_completed': DataFrame of top active/completed tasks (excl. reopened)
+                'reopened': DataFrame of top reopened tasks
+                'report': Formatted text report
+                'summary': Summary statistics
+        """
+        if comparison_result is None:
+            return None
+
+        tasks = comparison_result['tasks']
+        project_metrics = comparison_result['project_metrics']
+
+        if tasks is None or len(tasks) == 0:
+            return None
+
+        # Sort function for all categories: driving_path DESC, critical DESC, finish_slip DESC
+        def sort_by_impact(df, sort_col='finish_slip_days'):
+            """Sort by driving path first, then critical, then the specified column."""
+            if len(df) == 0:
+                return df
+            df = df.copy()
+            return df.sort_values(
+                by=['on_driving_path', 'is_critical', sort_col],
+                ascending=[False, False, False]
+            )
+
+        # =========================================================================
+        # CATEGORY 1: NOT STARTED TASKS
+        # =========================================================================
+        # These tasks haven't begun - track which could have started but didn't
+        not_started = tasks[tasks['status'] == 'TK_NotStart'].copy()
+        not_started_sorted = sort_by_impact(not_started, 'finish_slip_days')
+
+        # Simplified columns for not-started tasks
+        not_started_cols = [
+            'task_code', 'task_name',
+            'finish_slip_days',       # Schedule impact
+            'float_curr_days',        # Current buffer
+            'float_change_days',      # Float loss
+            'on_driving_path',        # Impact indicator
+            'is_critical',            # Impact indicator
+        ]
+        not_started_report = not_started_sorted.head(top_n)[
+            [c for c in not_started_cols if c in not_started_sorted.columns]
+        ]
+
+        # =========================================================================
+        # CATEGORY 2: ACTIVE/COMPLETED (excluding reopened)
+        # =========================================================================
+        # Measure performance - duration overrun is the key metric
+        active_completed = tasks[
+            (tasks['status'].isin(['TK_Active', 'TK_Complete'])) &
+            (~tasks['was_reopened'].fillna(False))
+        ].copy()
+        active_completed_sorted = sort_by_impact(active_completed, 'duration_overrun_change_days')
+
+        # Simplified columns for active/completed tasks
+        active_completed_cols = [
+            'task_code', 'task_name',
+            'duration_overrun_change_days',  # Performance this period
+            'finish_slip_days',              # Schedule impact
+            'float_curr_days',               # Current buffer
+            'float_change_days',             # Float loss
+            'on_driving_path',               # Impact indicator
+            'is_critical',                   # Impact indicator
+        ]
+        active_completed_report = active_completed_sorted.head(top_n)[
+            [c for c in active_completed_cols if c in active_completed_sorted.columns]
+        ]
+
+        # =========================================================================
+        # CATEGORY 3: REOPENED TASKS
+        # =========================================================================
+        # Tasks that were completed then reopened - remaining duration is key
+        reopened = tasks[tasks['was_reopened'].fillna(False)].copy()
+        reopened_sorted = sort_by_impact(reopened, 'remain_duration_curr_days')
+
+        # Simplified columns for reopened tasks
+        reopened_cols = [
+            'task_code', 'task_name',
+            'remain_duration_curr_days',  # New work to complete
+            'finish_slip_days',           # Schedule impact
+            'float_curr_days',            # Current buffer
+            'float_change_days',          # Float loss
+            'on_driving_path',            # Impact indicator
+            'is_critical',                # Impact indicator
+        ]
+        reopened_report = reopened_sorted.head(top_n)[
+            [c for c in reopened_cols if c in reopened_sorted.columns]
+        ]
+
+        # =========================================================================
+        # GENERATE TEXT REPORT
+        # =========================================================================
+        project_slip = project_metrics.get('project_slippage_days', 0)
+
+        lines = [
+            "=" * 100,
+            "CATEGORY-BASED DELAY ANALYSIS",
+            "=" * 100,
+            "",
+            f"Project Slippage: {project_slip:+d} days",
+            f"Period: {project_metrics.get('date_prev', 'N/A')} → {project_metrics.get('date_curr', 'N/A')}",
+            "",
+        ]
+
+        # NOT STARTED section
+        lines.extend([
+            "-" * 100,
+            f"1. NOT STARTED TASKS (Top {min(top_n, len(not_started))} of {len(not_started):,})",
+            "-" * 100,
+            "   Tasks that haven't begun - which could have started but didn't?",
+            "",
+            f"   {'Task Code':<25} {'Finish':>8} {'Float':>8} {'Δ Float':>8} {'Drv':>5} {'Crit':>5}",
+            f"   {'':25} {'Slip':>8} {'Curr':>8} {'':>8} {'':>5} {'':>5}",
+            "-" * 100,
+        ])
+        for _, row in not_started_report.iterrows():
+            dp = "Y" if row.get('on_driving_path', False) else ""
+            crit = "Y" if row.get('is_critical', False) else ""
+            lines.append(
+                f"   {row['task_code'][:24]:<25} "
+                f"{row.get('finish_slip_days', 0):>8.0f} "
+                f"{row.get('float_curr_days', 0):>8.0f} "
+                f"{row.get('float_change_days', 0):>8.0f} "
+                f"{dp:>5} {crit:>5}"
+            )
+            lines.append(f"   └─ {row['task_name'][:90]}")
+
+        if len(not_started_report) == 0:
+            lines.append("   (No not-started tasks with significant slip)")
+
+        # ACTIVE/COMPLETED section
+        lines.extend([
+            "",
+            "-" * 100,
+            f"2. ACTIVE/COMPLETED TASKS (Top {min(top_n, len(active_completed))} of {len(active_completed):,})",
+            "-" * 100,
+            "   Tasks in progress or finished - sorted by duration overrun change",
+            "",
+            f"   {'Task Code':<25} {'Overrun':>8} {'Finish':>8} {'Float':>8} {'Δ Float':>8} {'Drv':>5} {'Crit':>5}",
+            f"   {'':25} {'Change':>8} {'Slip':>8} {'Curr':>8} {'':>8} {'':>5} {'':>5}",
+            "-" * 100,
+        ])
+        for _, row in active_completed_report.iterrows():
+            dp = "Y" if row.get('on_driving_path', False) else ""
+            crit = "Y" if row.get('is_critical', False) else ""
+            lines.append(
+                f"   {row['task_code'][:24]:<25} "
+                f"{row.get('duration_overrun_change_days', 0):>8.0f} "
+                f"{row.get('finish_slip_days', 0):>8.0f} "
+                f"{row.get('float_curr_days', 0):>8.0f} "
+                f"{row.get('float_change_days', 0):>8.0f} "
+                f"{dp:>5} {crit:>5}"
+            )
+            lines.append(f"   └─ {row['task_name'][:90]}")
+
+        if len(active_completed_report) == 0:
+            lines.append("   (No active/completed tasks with significant slip)")
+
+        # REOPENED section
+        lines.extend([
+            "",
+            "-" * 100,
+            f"3. REOPENED TASKS (Top {min(top_n, len(reopened))} of {len(reopened):,})",
+            "-" * 100,
+            "   Tasks that were completed then reopened - sorted by remaining duration",
+            "",
+            f"   {'Task Code':<25} {'Remain':>8} {'Finish':>8} {'Float':>8} {'Δ Float':>8} {'Drv':>5} {'Crit':>5}",
+            f"   {'':25} {'Dur':>8} {'Slip':>8} {'Curr':>8} {'':>8} {'':>5} {'':>5}",
+            "-" * 100,
+        ])
+        for _, row in reopened_report.iterrows():
+            dp = "Y" if row.get('on_driving_path', False) else ""
+            crit = "Y" if row.get('is_critical', False) else ""
+            lines.append(
+                f"   {row['task_code'][:24]:<25} "
+                f"{row.get('remain_duration_curr_days', 0):>8.0f} "
+                f"{row.get('finish_slip_days', 0):>8.0f} "
+                f"{row.get('float_curr_days', 0):>8.0f} "
+                f"{row.get('float_change_days', 0):>8.0f} "
+                f"{dp:>5} {crit:>5}"
+            )
+            lines.append(f"   └─ {row['task_name'][:90]}")
+
+        if len(reopened_report) == 0:
+            lines.append("   (No reopened tasks)")
+
+        # Comprehensive Legend
+        lines.extend([
+            "",
+            "=" * 100,
+            "METRICS LEGEND & ANALYSIS GUIDE",
+            "=" * 100,
+            "",
+            "SCHEDULE IMPACT METRICS (Forward-Looking)",
+            "-" * 50,
+            "",
+            "  Finish Slip (finish_slip_days)",
+            "    Formula: early_end[curr] - early_end[prev]",
+            "    Meaning: How many days later the task is now forecasted to finish",
+            "    Usage:   Primary measure of schedule impact. Positive = slipped, Negative = recovered",
+            "",
+            "  Float Curr (float_curr_days)",
+            "    Formula: (late_end - early_end) in current snapshot",
+            "    Meaning: Schedule buffer before this task impacts project end date",
+            "    Usage:   ≤0 means task is CRITICAL (on critical path)",
+            "",
+            "  Δ Float (float_change_days)",
+            "    Formula: float[curr] - float[prev]",
+            "    Meaning: How much schedule buffer was consumed or gained",
+            "    Usage:   Negative = lost buffer (becoming more critical)",
+            "",
+            "PERFORMANCE METRICS (Backward-Looking) - For Active/Completed Tasks",
+            "-" * 50,
+            "",
+            "  Duration Overrun Change (duration_overrun_change_days)",
+            "    Formula: (elapsed - target)[curr] - (elapsed - target)[prev]",
+            "    Where:   elapsed = data_date - actual_start (time spent so far)",
+            "             target = original planned duration",
+            "    Meaning: How much further behind (or ahead) the task fell THIS PERIOD",
+            "    Usage:   Best measure of task execution performance",
+            "             +17 means task fell 17 days further behind its plan",
+            "",
+            "  Remain Dur (remain_duration_curr_days)",
+            "    Formula: remain_drtn_hr_cnt / 8",
+            "    Meaning: Work remaining to complete the task",
+            "    Usage:   For reopened tasks, shows new work added back",
+            "",
+            "GAP-BASED METRICS - For Active Tasks",
+            "-" * 50,
+            "",
+            "  The Problem: For ACTIVE tasks, early_start moves with data_date (P6 artifact).",
+            "  Raw start_slip includes calendar time between snapshots, which is NOT delay.",
+            "",
+            "  Gap (gap_prev_days / gap_curr_days)",
+            "    Formula: early_start - data_date",
+            "    Meaning: How far out remaining work is scheduled from 'today'",
+            "    Example: gap=31 means 'can't start remaining work for 31 days'",
+            "",
+            "  Constraint Growth (constraint_growth_days)",
+            "    Formula: gap[curr] - gap[prev]",
+            "    Meaning: TRUE INHERITED DELAY for active tasks",
+            "    Usage:   Shows how much predecessors pushed remaining work out",
+            "    Example: gap went from 3 to 31 = 28 days of inherited delay",
+            "",
+            "DELAY ATTRIBUTION",
+            "-" * 50,
+            "",
+            "  For NOT STARTED tasks:",
+            "    own_delay = finish_slip - start_slip (task's duration grew)",
+            "    inherited = start_slip (pushed by predecessors)",
+            "",
+            "  For ACTIVE tasks:",
+            "    own_delay ≈ duration_overrun_change (execution performance)",
+            "    inherited ≈ constraint_growth (predecessor constraints)",
+            "    Verify: own_delay + inherited ≈ finish_slip",
+            "",
+            "  For REOPENED tasks (Complete → Active):",
+            "    All slip is 'own delay' - caused by reopening with new work",
+            "",
+            "CRITICALITY INDICATORS",
+            "-" * 50,
+            "",
+            "  Drv (on_driving_path)",
+            "    Meaning: Task is on the DRIVING PATH to project completion",
+            "    Impact:  Any delay here DIRECTLY extends project end date",
+            "",
+            "  Crit (is_critical)",
+            "    Meaning: Task has zero or negative float",
+            "    Impact:  No buffer - any delay likely impacts downstream",
+            "",
+            "SORT PRIORITY (for all categories)",
+            "-" * 50,
+            "  1. Driving path tasks first (highest project impact)",
+            "  2. Critical path tasks second",
+            "  3. Then by key metric (finish_slip, overrun_change, or remain_dur)",
+            "",
+            "=" * 100,
+        ])
+
+        # Summary statistics
+        summary = {
+            'not_started_count': len(not_started),
+            'active_completed_count': len(active_completed),
+            'reopened_count': len(reopened),
+            'not_started_driving': len(not_started[not_started['on_driving_path']]) if 'on_driving_path' in not_started.columns else 0,
+            'active_completed_driving': len(active_completed[active_completed['on_driving_path']]) if 'on_driving_path' in active_completed.columns else 0,
+            'reopened_driving': len(reopened[reopened['on_driving_path']]) if 'on_driving_path' in reopened.columns else 0,
+        }
+
+        return {
+            'not_started': not_started_report,
+            'active_completed': active_completed_report,
+            'reopened': reopened_report,
+            'report': "\n".join(lines),
+            'summary': summary,
+        }
+
     def generate_whatif_table(self, comparison_result, include_non_driving=True, analyze_parallel=True):
         """
         Generate a what-if impact table showing potential schedule recovery.
@@ -2798,6 +3272,7 @@ def main():
     parser.add_argument('--whatif', action='store_true', help='Generate what-if impact analysis table')
     parser.add_argument('--sequence', action='store_true', help='Generate recovery sequence analysis (bottleneck cascade)')
     parser.add_argument('--attribution', action='store_true', help='Generate full slippage attribution report with investigation checklist')
+    parser.add_argument('--categories', action='store_true', help='Generate category-based reports (not-started, active/completed, reopened)')
 
     args = parser.parse_args()
 
@@ -2863,6 +3338,12 @@ def main():
                 attribution_result = analyzer.generate_attribution_report(comparison, top_n=args.top_n)
                 if attribution_result:
                     print("\n" + attribution_result['report'])
+
+            # Generate category-based reports if requested
+            if args.categories:
+                category_result = analyzer.generate_category_reports(comparison, top_n=args.top_n)
+                if category_result:
+                    print("\n" + category_result['report'])
 
             # Also show top contributors with category
             print("\nTOP SLIPPAGE CONTRIBUTORS (detailed):")
