@@ -33,6 +33,59 @@ from scripts.shared.dimension_lookup import (
 )
 
 
+def normalize_level_value(level: str) -> Optional[str]:
+    """
+    Normalize level values across all sources for consistent spatial filtering.
+
+    Standardizes to format: B2, B1, 1F, 2F, 3F, 4F, 5F, 6F, 7F, ROOF, OUTSIDE
+
+    Args:
+        level: Raw level value from any source
+
+    Returns:
+        Normalized level string or None if invalid
+    """
+    if pd.isna(level):
+        return None
+
+    level = str(level).upper().strip()
+
+    # Remove common prefixes/suffixes
+    level = level.replace('LEVEL ', '').replace('LVL ', '').replace('L-', '')
+
+    # Handle basement variations
+    if level in ('B1', 'B1F', 'BASEMENT', 'BASEMENT 1', '1B'):
+        return 'B1'
+    if level in ('B2', 'B2F', 'BASEMENT 2', '2B'):
+        return 'B2'
+    if level in ('UG', 'UNDERGROUND'):
+        return 'B1'  # Map underground to B1
+
+    # Handle roof variations
+    if level in ('ROOF', 'RF', 'ROOFTOP', 'R', 'RTF'):
+        return 'ROOF'
+
+    # Handle outside/ground variations
+    if any(x in level for x in ['OUTSIDE', 'EXTERIOR', 'GROUND']):
+        return 'OUTSIDE'
+
+    # Handle floor number variations (1F, 01F, 1ST, FIRST, etc.)
+    m = re.match(r'^0?(\d+)[F]?$', level)
+    if m:
+        return f"{int(m.group(1))}F"
+
+    # Handle ordinal formats (1ST, 2ND, 3RD, etc.)
+    m = re.match(r'^(\d+)(ST|ND|RD|TH)?\s*(FLOOR)?$', level)
+    if m:
+        return f"{int(m.group(1))}F"
+
+    # Return as-is if no pattern matched (with F suffix if numeric)
+    if level.isdigit():
+        return f"{level}F"
+
+    return level
+
+
 def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
     """
     Parse TBM location_row field into normalized grid components.
@@ -599,15 +652,7 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     )
 
     # Normalize level codes (e.g., "1F" -> "1F", "RF" -> "ROOF")
-    def normalize_level(level):
-        if pd.isna(level):
-            return None
-        level = str(level).upper().strip()
-        if level == 'RF':
-            return 'ROOF'
-        return level
-
-    df['level_normalized'] = df['location_level'].apply(normalize_level)
+    df['level_normalized'] = df['location_level'].apply(normalize_level_value)
 
     # Add dimension IDs
     df['dim_location_id'] = df.apply(

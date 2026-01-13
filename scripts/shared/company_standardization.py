@@ -1123,9 +1123,9 @@ LEVEL_ALIASES: Dict[str, list] = {
     "8F": ["8f", "8", "level 8", "08f"],
     "9F": ["9f", "9", "level 9", "09f"],
     "ROOF": ["roof", "rooftop", "rf", "penthouse", "ph"],
-    "B1": ["b1", "basement", "basement 1", "below grade 1", "-1"],
-    "B2": ["b2", "basement 2", "below grade 2", "-2"],
-    "UG": ["ug", "underground", "below grade", "subgrade"],
+    "B1": ["b1", "basement", "basement 1", "below grade 1", "-1", "ug", "underground", "below grade", "subgrade", "b1f"],
+    "B2": ["b2", "basement 2", "below grade 2", "-2", "b2f"],
+    "OUTSIDE": ["outside", "exterior", "ground level", "at grade", "site"],
     "FOUNDATION": ["foundation", "ftg", "footing", "mat foundation"],
 }
 
