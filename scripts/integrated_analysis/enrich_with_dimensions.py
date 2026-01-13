@@ -856,11 +856,43 @@ def enrich_projectsight(dry_run: bool = False) -> Dict[str, Any]:
     df['dim_trade_id'] = df['trade_name'].map(trade_lookup)
     df['dim_trade_code'] = df['trade_name'].map(trade_code_lookup)
 
+    # Track initial trade coverage before fallback
+    trade_from_name = df['dim_trade_id'].notna().sum()
+
+    # Fallback: use company's primary_trade_id if trade_name lookup failed
+    print("  Applying company-to-trade fallback...")
+    dim_company = pd.read_csv(Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv')
+    company_trade_map = dict(zip(dim_company['company_id'], dim_company['primary_trade_id']))
+
+    def get_trade_from_company(row):
+        """Get trade from company's primary_trade_id if dim_trade_id is missing."""
+        if pd.notna(row['dim_trade_id']):
+            return row['dim_trade_id']
+        company_id = row['dim_company_id']
+        if pd.notna(company_id):
+            trade_id = company_trade_map.get(company_id)
+            if pd.notna(trade_id):
+                return int(trade_id)
+        return None
+
+    df['dim_trade_id'] = df.apply(get_trade_from_company, axis=1)
+    df['dim_trade_code'] = df['dim_trade_id'].apply(get_trade_code)
+
+    # Track source of trade inference
+    df['trade_source'] = df.apply(
+        lambda row: 'trade_name' if pd.notna(trade_lookup.get(row.get('trade_name'))) else ('company' if pd.notna(row['dim_trade_id']) else None),
+        axis=1
+    )
+
+    trade_from_company = df[df['trade_source'] == 'company']['dim_trade_id'].notna().sum()
+
     # Calculate coverage
     coverage = {
         'location': 0.0,  # No location in ProjectSight
         'company': df['dim_company_id'].notna().mean() * 100,
         'trade': df['dim_trade_id'].notna().mean() * 100,
+        'trade_from_name': trade_from_name,
+        'trade_from_company': trade_from_company,
     }
 
     if not dry_run:
