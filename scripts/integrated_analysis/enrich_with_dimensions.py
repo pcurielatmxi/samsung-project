@@ -661,7 +661,21 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         lambda row: get_location_id(row['building_normalized'], row['level_normalized']),
         axis=1
     )
-    df['dim_company_id'] = df['tier2_sc'].apply(get_company_id)
+    # Company lookup - try tier2_sc first, then tier1_gc, then subcontractor_file
+    def get_company_from_row(row):
+        # Try tier2_sc (subcontractor) first
+        company_id = get_company_id(row.get('tier2_sc'))
+        if company_id:
+            return company_id
+        # Fall back to tier1_gc (some files put company name here)
+        company_id = get_company_id(row.get('tier1_gc'))
+        if company_id:
+            return company_id
+        # Final fallback to subcontractor_file (parsed from filename)
+        company_id = get_company_id(row.get('subcontractor_file'))
+        return company_id
+
+    df['dim_company_id'] = df.apply(get_company_from_row, axis=1)
 
     # Infer trade from work activities (enhanced mapping)
     def infer_trade_from_activity(activity):

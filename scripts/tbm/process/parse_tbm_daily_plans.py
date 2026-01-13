@@ -15,9 +15,14 @@ Output: data/tbm/tables/*.csv
 
 import pandas as pd
 import re
+import sys
 import warnings
 from pathlib import Path
 from datetime import datetime
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from src.config.settings import Settings
 
 # Suppress openpyxl warnings about data validation
 warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
@@ -78,6 +83,12 @@ def extract_date_from_filename(filename: str) -> str:
         month, day, year = match.groups()
         return f'{year}-{month}-{day}'
 
+    # Pattern: (YYMMDD) in parentheses - new consolidated format
+    match = re.search(r'\((\d{2})(\d{2})(\d{2})\)', name)
+    if match:
+        year, month, day = match.groups()
+        return f'20{year}-{month}-{day}'
+
     return None
 
 
@@ -116,6 +127,9 @@ def extract_subcontractor_from_filename(filename: str) -> str:
         'MK Marlow Daily Work Plan': 'MK Marlow',
         'Patriot Erectors TBM': 'Patriot Erectors',
         'Yates - SECAI Daily Work Plan': 'Yates',
+        # New consolidated format - contains multiple subcontractors
+        'SECAI Daily Work Plan + TBM 담당 현황': 'SECAI Consolidated',
+        'TBM 담당 현황': 'SECAI Consolidated',
     }
 
     name = name.strip('_ -')
@@ -128,6 +142,24 @@ def extract_subcontractor_from_filename(filename: str) -> str:
     return name if name else 'Unknown'
 
 
+def extract_date_from_sheet_name(sheet_name: str) -> str:
+    """Extract date from sheet names like 'SECAI Daily Work Plan 02.07.25'."""
+    # Pattern: MM.DD.YY at end of sheet name
+    match = re.search(r'(\d{2})[.](\d{2})[.](\d{2})$', sheet_name)
+    if match:
+        month, day, year = match.groups()
+        return f'20{year}-{month}-{day}'
+    return None
+
+
+def find_work_plan_sheet(excel_file: pd.ExcelFile) -> str:
+    """Find the SECAI Daily Work Plan sheet (handles dynamic names)."""
+    for sheet in excel_file.sheet_names:
+        if sheet.startswith('SECAI Daily Work Plan'):
+            return sheet
+    return None
+
+
 def parse_tbm_file(filepath: Path) -> tuple:
     """
     Parse a single TBM Excel file.
@@ -136,14 +168,24 @@ def parse_tbm_file(filepath: Path) -> tuple:
         tuple: (file_info_dict, list of work_entry_dicts)
     """
     try:
-        df = pd.read_excel(filepath, sheet_name='SECAI Daily Work Plan', header=None)
+        excel_file = pd.ExcelFile(filepath)
+        sheet_name = find_work_plan_sheet(excel_file)
+        if not sheet_name:
+            print(f"  No SECAI Daily Work Plan sheet in {filepath.name}")
+            return None, []
+        df = pd.read_excel(excel_file, sheet_name=sheet_name, header=None)
     except Exception as e:
         print(f"  Error reading {filepath.name}: {e}")
         return None, []
 
-    # Extract date from cell (0,0) contains title, (1,0) contains date
+    # Extract date - try multiple sources in order of preference
+    # 1. From cell (1,0) - old format has "□ Date : MM/DD/YY"
     date_cell = df.iloc[1, 0] if len(df) > 1 else None
     report_date = extract_date_from_cell(date_cell)
+    # 2. From sheet name - new format has "SECAI Daily Work Plan MM.DD.YY"
+    if not report_date:
+        report_date = extract_date_from_sheet_name(sheet_name)
+    # 3. From filename as last resort
     if not report_date:
         report_date = extract_date_from_filename(filepath.name)
 
@@ -223,12 +265,9 @@ def parse_tbm_file(filepath: Path) -> tuple:
 
 def main():
     """Main processing function."""
-    input_dir = Path('data/raw/tbm')
-    output_dir = Path('data/tbm/tables')
+    input_dir = Settings.TBM_RAW_DIR
+    output_dir = Settings.TBM_PROCESSED_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Also create .gitkeep
-    (output_dir / '.gitkeep').touch()
 
     # Get all Excel files, excluding non-standard ones
     excluded_patterns = ['Manpower TrendReport', 'Structural  Exteriors', 'TaylorFab', 'Labor Day']
