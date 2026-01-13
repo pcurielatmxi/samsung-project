@@ -15,13 +15,18 @@ from .store import (
 
 def cmd_build(args):
     """Build or rebuild the embeddings index."""
-    result = build_index(
-        force=args.force,
-        verbose=True,
-        limit=args.limit
-    )
+    try:
+        result = build_index(
+            source=args.source,
+            force=args.force,
+            verbose=True,
+            limit=args.limit
+        )
 
-    if result.errors:
+        if result.errors:
+            sys.exit(1)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -31,6 +36,7 @@ def cmd_search(args):
 
     results = search_chunks(
         query=query,
+        source_type=args.source,
         document_type=args.type,
         author=args.author,
         subfolder=args.subfolder,
@@ -48,38 +54,47 @@ def cmd_status(args):
     stats = store.get_chunks_stats()
 
     print("=" * 60)
-    print("Narrative Embeddings Index Status")
+    print("Document Embeddings Index Status")
     print("=" * 60)
     print(f"ChromaDB location: {stats['chroma_path']}")
     print()
 
     print("Index contents:")
-    print(f"  Chunks: {stats['chunks_count']}")
-    print(f"  Files: {stats['files_count']}")
+    print(f"  Total chunks: {stats['chunks_count']}")
+    print(f"  Total files: {stats['files_count']}")
     print()
 
-    # Check source directory
-    from .builder import scan_documents
-    try:
-        documents = list(scan_documents(config.NARRATIVES_RAW_DIR))
-        print("Source directory status:")
-        print(f"  Raw narratives path: {config.NARRATIVES_RAW_DIR}")
-        print(f"  Documents found: {len(documents)} files")
+    # Get breakdown by source_type
+    all_meta = store.get_all_chunk_metadata()
+    by_source = {}
+    source_files = {}
+    for chunk_id, meta in all_meta.items():
+        src = meta.get("source_type", "") or "unknown"
+        by_source[src] = by_source.get(src, 0) + 1
+        if src not in source_files:
+            source_files[src] = set()
+        source_files[src].add(meta.get("source_file", ""))
+
+    if by_source:
+        print("  By source:")
+        for src in sorted(by_source.keys()):
+            chunk_count = by_source[src]
+            file_count = len(source_files[src])
+            print(f"    {src}: {chunk_count} chunks ({file_count} files)")
         print()
 
-        # List document types
-        by_ext = {}
-        for doc in documents:
-            ext = doc.suffix.lower()
-            by_ext[ext] = by_ext.get(ext, 0) + 1
-
-        if by_ext:
-            print("  By file type:")
-            for ext, count in sorted(by_ext.items(), key=lambda x: -x[1]):
-                print(f"    {ext}: {count}")
-
-    except Exception as e:
-        print(f"Error scanning source directory: {e}")
+    # Check each source directory
+    from .builder import scan_documents_for_source
+    print("Source directories:")
+    for source_name, source_dir in config.SOURCE_DIRS.items():
+        try:
+            docs = list(scan_documents_for_source(source_name))
+            indexed = len(source_files.get(source_name, set()))
+            status = "✓" if indexed == len(docs) else f"{indexed}/{len(docs)}"
+            print(f"  {source_name}: {len(docs)} files [{status}]")
+            print(f"    Path: {source_dir}")
+        except Exception as e:
+            print(f"  {source_name}: ERROR - {e}")
 
     print()
     print("=" * 60)
@@ -108,6 +123,9 @@ def print_chunk_results(results: List[ChunkResult], query: str, context: int):
 
         # Metadata line
         meta_parts = []
+        source_type = r.metadata.get("source_type", "")
+        if source_type:
+            meta_parts.append(f"Source: {source_type}")
         if r.document_type:
             meta_parts.append(f"Type: {r.document_type}")
         if r.file_date:
@@ -148,28 +166,35 @@ def print_chunk_results(results: List[ChunkResult], query: str, context: int):
 
 def main():
     """Main CLI entry point."""
-    parser = argparse.ArgumentParser(
-        description="Narrative embeddings - semantic search for raw narrative documents",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Build the index
-  python -m scripts.narratives.embeddings build
-  python -m scripts.narratives.embeddings build --limit 10  # Test with 10 files
-  python -m scripts.narratives.embeddings build --force     # Force rebuild all
+    valid_sources = ", ".join(config.SOURCE_DIRS.keys())
 
-  # Search chunks
+    parser = argparse.ArgumentParser(
+        description="Document embeddings - semantic search for raw documents",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f"""
+Examples:
+  # Build the index (requires --source)
+  python -m scripts.narratives.embeddings build --source narratives
+  python -m scripts.narratives.embeddings build --source raba --limit 100
+  python -m scripts.narratives.embeddings build --source narratives --force
+
+  # Search all sources
   python -m scripts.narratives.embeddings search "HVAC delays"
-  python -m scripts.narratives.embeddings search "scope changes" --type schedule_narrative
+
+  # Search specific source
+  python -m scripts.narratives.embeddings search "inspection failed" --source raba
+  python -m scripts.narratives.embeddings search "scope changes" --source narratives
+
+  # Search with filters
   python -m scripts.narratives.embeddings search "delay" --author Yates
   python -m scripts.narratives.embeddings search "meeting" --subfolder meeting_notes
-  python -m scripts.narratives.embeddings search "delay" --context 2  # Show adjacent chunks
-
-  # Search with date filters
   python -m scripts.narratives.embeddings search "delay" --after 2024-01-01 --before 2024-06-30
+  python -m scripts.narratives.embeddings search "delay" --context 2
 
   # Check status
   python -m scripts.narratives.embeddings status
+
+Valid sources: {valid_sources}
 """
     )
 
@@ -177,6 +202,12 @@ Examples:
 
     # Build command
     build_parser = subparsers.add_parser("build", help="Build or rebuild the embeddings index")
+    build_parser.add_argument(
+        "--source", "-s",
+        required=True,
+        choices=list(config.SOURCE_DIRS.keys()),
+        help="Source to build (required): narratives, raba, or psi"
+    )
     build_parser.add_argument(
         "--force", "-f",
         action="store_true",
@@ -198,6 +229,11 @@ Examples:
         help="Search query"
     )
     search_parser.add_argument(
+        "--source", "-s",
+        choices=list(config.SOURCE_DIRS.keys()),
+        help="Filter by source (narratives, raba, psi)"
+    )
+    search_parser.add_argument(
         "--type", "-t",
         help="Filter by document type (schedule_narrative, meeting_notes, etc.)"
     )
@@ -206,7 +242,7 @@ Examples:
         help="Filter by author (Yates, SECAI, BRG, Samsung)"
     )
     search_parser.add_argument(
-        "--subfolder", "-s",
+        "--subfolder",
         help="Filter by subfolder (substring match)"
     )
     search_parser.add_argument(

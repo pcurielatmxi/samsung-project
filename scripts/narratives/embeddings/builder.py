@@ -1,4 +1,4 @@
-"""Build and update the narrative embeddings index from raw documents."""
+"""Build and update the document embeddings index from raw documents."""
 
 import hashlib
 from dataclasses import dataclass, field
@@ -31,6 +31,29 @@ def scan_documents(root_dir: Path) -> Iterator[Path]:
             if any(skip in path_str for skip in SKIP_PATTERNS):
                 continue
             yield filepath
+
+
+def scan_documents_for_source(source_type: str) -> Iterator[Path]:
+    """Scan documents for a specific source type.
+
+    Args:
+        source_type: One of the keys in config.SOURCE_DIRS (e.g., "narratives", "raba", "psi").
+
+    Yields:
+        Path objects for each document file.
+
+    Raises:
+        ValueError: If source_type is not a valid source.
+    """
+    if source_type not in config.SOURCE_DIRS:
+        valid = ", ".join(config.SOURCE_DIRS.keys())
+        raise ValueError(f"Unknown source_type '{source_type}'. Valid sources: {valid}")
+
+    root_dir = config.SOURCE_DIRS[source_type]
+    if not root_dir.exists():
+        raise ValueError(f"Source directory does not exist: {root_dir}")
+
+    yield from scan_documents(root_dir)
 
 
 def deduplicate_files(files: List[Path]) -> Tuple[List[Path], int]:
@@ -69,12 +92,23 @@ def build_chunk_metadata(
     chunk: Chunk,
     filepath: Path,
     file_hash: str,
-    file_meta: Dict[str, Any]
+    file_meta: Dict[str, Any],
+    source_root: Path,
+    source_type: str
 ) -> Dict[str, Any]:
-    """Build metadata dict for a chunk, including file-level metadata."""
-    # Get relative path from narratives dir
+    """Build metadata dict for a chunk, including file-level metadata.
+
+    Args:
+        chunk: The chunk object.
+        filepath: Path to the source file.
+        file_hash: Hash for change detection.
+        file_meta: File-level metadata dict.
+        source_root: Root directory for this source.
+        source_type: Source type identifier (e.g., "narratives", "raba", "psi").
+    """
+    # Get relative path from source root
     try:
-        rel_path = filepath.relative_to(config.NARRATIVES_RAW_DIR)
+        rel_path = filepath.relative_to(source_root)
     except ValueError:
         rel_path = filepath.name
 
@@ -88,6 +122,8 @@ def build_chunk_metadata(
         "page_number": chunk.page_number,
         "chunk_type": chunk.file_type,
         "file_hash": file_hash,
+        # Source identification
+        "source_type": source_type,
         # File-level (for filtering)
         "file_date": file_meta.get("file_date", ""),
         "author": file_meta.get("author", ""),
@@ -147,14 +183,17 @@ def _process_file_batch(
 
 
 def build_index(
+    source: Optional[str] = None,
     force: bool = False,
     verbose: bool = True,
     limit: Optional[int] = None,
     batch_size: int = INCREMENTAL_BATCH_SIZE
 ) -> BuildResult:
-    """Build or update the embeddings index from raw narratives.
+    """Build or update the embeddings index for a specific source.
 
     Args:
+        source: Source type to build (e.g., "narratives", "raba", "psi").
+                Required - must specify which source to build.
         force: If True, rebuild all embeddings ignoring cache.
         verbose: If True, print progress messages.
         limit: If set, only process this many files (for testing).
@@ -162,15 +201,28 @@ def build_index(
 
     Returns:
         BuildResult with counts of operations performed.
+
+    Raises:
+        ValueError: If source is not specified or invalid.
     """
+    if not source:
+        valid = ", ".join(config.SOURCE_DIRS.keys())
+        raise ValueError(f"Must specify --source. Valid sources: {valid}")
+
+    if source not in config.SOURCE_DIRS:
+        valid = ", ".join(config.SOURCE_DIRS.keys())
+        raise ValueError(f"Unknown source '{source}'. Valid sources: {valid}")
+
+    source_root = config.SOURCE_DIRS[source]
+
     result = BuildResult()
     store = get_store()
 
     if verbose:
         print("=" * 60)
-        print("Narrative Embeddings Builder (Raw Documents)")
+        print(f"Document Embeddings Builder - {source}")
         print("=" * 60)
-        print(f"Source: {config.NARRATIVES_RAW_DIR}")
+        print(f"Source: {source_root}")
         print(f"ChromaDB: {config.CHROMA_PATH}")
         print(f"Force rebuild: {force}")
         print(f"Incremental batch size: {batch_size} files")
@@ -178,10 +230,15 @@ def build_index(
             print(f"Limit: {limit} files")
         print()
 
-    # Get existing chunk metadata from ChromaDB
-    existing_chunks = store.get_all_chunk_metadata()
+    # Get existing chunk metadata from ChromaDB (only for this source)
+    all_existing_chunks = store.get_all_chunk_metadata()
+    existing_chunks = {
+        chunk_id: meta
+        for chunk_id, meta in all_existing_chunks.items()
+        if meta.get("source_type", "") == source or meta.get("source_type", "") == ""
+    }
     if verbose:
-        print(f"Existing chunks in index: {len(existing_chunks)}")
+        print(f"Existing chunks for '{source}': {len(existing_chunks)}")
 
     # Build a map of file_hash -> list of chunk_ids for that file
     file_to_chunks: Dict[str, List[str]] = {}
@@ -192,7 +249,7 @@ def build_index(
         file_to_chunks[file_hash].append(chunk_id)
 
     # Scan for documents
-    all_documents = list(scan_documents(config.NARRATIVES_RAW_DIR))
+    all_documents = list(scan_documents_for_source(source))
     if verbose:
         print(f"Found {len(all_documents)} total documents")
 
@@ -242,22 +299,24 @@ def build_index(
                 continue
 
             # Extract file-level metadata
-            file_meta = extract_file_metadata(filepath, config.NARRATIVES_RAW_DIR).to_dict()
+            file_meta = extract_file_metadata(filepath, source_root, source).to_dict()
 
             # Get relative path for unique chunk IDs (handles duplicate filenames in subdirs)
             try:
-                rel_path = filepath.relative_to(config.NARRATIVES_RAW_DIR)
+                rel_path = filepath.relative_to(source_root)
             except ValueError:
                 rel_path = Path(filepath.name)
 
             # Add chunks to batch
             for chunk in chunks:
-                # Generate unique chunk ID using relative path (not just filename)
+                # Generate unique chunk ID: source_type/relative_path__cNNNN
                 safe_path = str(rel_path).replace("/", "_").replace("\\", "_")
-                chunk_id = f"{safe_path}__c{chunk.chunk_index:04d}"
+                chunk_id = f"{source}__{safe_path}__c{chunk.chunk_index:04d}"
                 seen_chunk_ids.add(chunk_id)
                 current_batch_chunks.append((chunk_id, chunk.text))
-                current_batch_metadata.append(build_chunk_metadata(chunk, filepath, file_hash, file_meta))
+                current_batch_metadata.append(
+                    build_chunk_metadata(chunk, filepath, file_hash, file_meta, source_root, source)
+                )
 
             result.files_processed += 1
             files_in_current_batch += 1
@@ -289,17 +348,17 @@ def build_index(
         )
         result.chunks_added += chunks_stored
 
-    # Find stale chunks to delete
+    # Find stale chunks to delete (only for this source)
     stale_chunk_ids = set(existing_chunks.keys()) - seen_chunk_ids
     if stale_chunk_ids:
         if verbose:
-            print(f"\nDeleting {len(stale_chunk_ids)} stale chunks...")
+            print(f"\nDeleting {len(stale_chunk_ids)} stale chunks for '{source}'...")
         store.delete_chunks(list(stale_chunk_ids))
         result.chunks_deleted = len(stale_chunk_ids)
 
     if verbose:
         print("\n" + "=" * 60)
-        print("Build Summary")
+        print(f"Build Summary - {source}")
         print("=" * 60)
         print(f"Files: {result.files_processed} processed, {result.files_unchanged} unchanged, "
               f"{result.files_skipped} skipped, {result.files_duplicates} duplicates, {result.files_errors} errors")

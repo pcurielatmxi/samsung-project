@@ -36,10 +36,19 @@ EMBEDDING_BATCH_SIZE = 100  # Max texts per batch request
 
 # ChromaDB configuration
 DATA_DIR = _get_data_dir()
-CHROMA_PATH = DATA_DIR / "derived/narratives/embeddings"
+CHROMA_PATH = DATA_DIR / "derived" / "embeddings" / "documents"
 
-# Source data paths
-NARRATIVES_RAW_DIR = DATA_DIR / "raw/narratives"
+# Source directories - each key becomes a source_type in metadata
+SOURCE_DIRS = {
+    "narratives": DATA_DIR / "raw" / "narratives",
+    "raba": DATA_DIR / "raw" / "raba" / "individual",
+    "psi": DATA_DIR / "raw" / "psi" / "reports",
+}
+
+# Legacy path for backward compatibility
+NARRATIVES_RAW_DIR = SOURCE_DIRS["narratives"]
+
+# Processed output paths
 NARRATIVES_OUTPUT = DATA_DIR / "processed/narratives"
 DIM_FILE = NARRATIVES_OUTPUT / "dim_narrative_file.csv"
 STMT_FILE = NARRATIVES_OUTPUT / "narrative_statements.csv"
@@ -48,10 +57,11 @@ STMT_FILE = NARRATIVES_OUTPUT / "narrative_statements.csv"
 DEFAULT_LIMIT = 10
 DEFAULT_CONTEXT = 0
 
-# Collection names (new chunk-based architecture)
-CHUNKS_COLLECTION = "narrative_chunks"
+# Collection names (unified document index)
+CHUNKS_COLLECTION = "document_chunks"
 
-# Legacy collection names (for migration)
+# Legacy collection names (for migration from old index)
+LEGACY_CHUNKS_COLLECTION = "narrative_chunks"
 DOCUMENTS_COLLECTION = "narrative_documents"
 STATEMENTS_COLLECTION = "narrative_statements"
 

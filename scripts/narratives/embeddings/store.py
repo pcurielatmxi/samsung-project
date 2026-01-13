@@ -280,6 +280,7 @@ def get_store() -> EmbeddingStore:
 
 def search_chunks(
     query: str,
+    source_type: Optional[str] = None,
     document_type: Optional[str] = None,
     author: Optional[str] = None,
     subfolder: Optional[str] = None,
@@ -291,6 +292,7 @@ def search_chunks(
 
     Args:
         query: Search query text.
+        source_type: Filter by source (narratives, raba, psi).
         document_type: Filter by document type (schedule_narrative, meeting_notes, etc.).
         author: Filter by author (Yates, SECAI, etc.).
         subfolder: Filter by subfolder (weekly_reports, etc.).
@@ -301,11 +303,12 @@ def search_chunks(
     Returns:
         List of ChunkResult objects.
     """
-    where = _build_chunk_filter(document_type, author, subfolder, after, before)
+    where = _build_chunk_filter(source_type, document_type, author, subfolder, after, before)
     return get_store().search_chunks(query, limit=limit, where=where)
 
 
 def _build_chunk_filter(
+    source_type: Optional[str] = None,
     document_type: Optional[str] = None,
     author: Optional[str] = None,
     subfolder: Optional[str] = None,
@@ -314,6 +317,9 @@ def _build_chunk_filter(
 ) -> Optional[Dict[str, Any]]:
     """Build ChromaDB where filter for chunks."""
     conditions = []
+
+    if source_type:
+        conditions.append({"source_type": {"$eq": source_type}})
 
     if document_type:
         conditions.append({"document_type": {"$eq": document_type}})

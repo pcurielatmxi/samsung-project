@@ -22,6 +22,7 @@ class FileMetadata:
     author: Optional[str]
     document_type: Optional[str]
     subfolder: Optional[str]  # e.g., "weekly_reports", "BRG Expert Schedule Report"
+    source_type: Optional[str] = None  # e.g., "narratives", "raba", "psi"
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dict for ChromaDB metadata."""
@@ -33,6 +34,7 @@ class FileMetadata:
             "author": self.author or "",
             "document_type": self.document_type or "",
             "subfolder": self.subfolder or "",
+            "source_type": self.source_type or "",
         }
 
 
@@ -169,14 +171,24 @@ def extract_docx_metadata(filepath: Path) -> Dict[str, Any]:
         return {}
 
 
-def extract_file_metadata(filepath: Path, narratives_root: Path) -> FileMetadata:
-    """Extract all metadata for a file."""
+def extract_file_metadata(
+    filepath: Path,
+    source_root: Path,
+    source_type: Optional[str] = None
+) -> FileMetadata:
+    """Extract all metadata for a file.
+
+    Args:
+        filepath: Path to the file.
+        source_root: Root directory for this source (for relative path calculation).
+        source_type: Source type identifier (e.g., "narratives", "raba", "psi").
+    """
     filename = filepath.name
     stat = filepath.stat()
 
-    # Get subfolder relative to narratives root
+    # Get subfolder relative to source root
     try:
-        rel_path = filepath.relative_to(narratives_root)
+        rel_path = filepath.relative_to(source_root)
         parts = rel_path.parts[:-1]  # Exclude filename
         subfolder = "/".join(parts) if parts else ""
     except ValueError:
@@ -220,4 +232,5 @@ def extract_file_metadata(filepath: Path, narratives_root: Path) -> FileMetadata
         author=author,
         document_type=doc_type,
         subfolder=subfolder,
+        source_type=source_type,
     )
