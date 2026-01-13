@@ -933,6 +933,8 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "honeycomb",
         "honeycomb repair",
         "honeycomb wall",
+        "column patching",
+        "curb repair",
     ],
     "Structural Steel": [
         "structural steel",
@@ -943,13 +945,20 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         # Post-installed anchors and dowels
         "post-installed anchor",
         "post-installed dowel",
+        "post installed anchor",
+        "post installed dowel",
+        "post installed embed",
         "anchor rod",
         "anchor inspection",
         "dowel inspection",
+        "dowel remediation",
         "epoxy dowel",
+        "epoxied dowel",
         "drilled epoxy",
+        "drilled epoxied",
         "coupler",
         "steel beam",
+        "embed",
     ],
     "Welding": [
         "welding",
@@ -977,6 +986,12 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "joint system",
         "fire caulk",
         "fire caulking",
+        # SFRM/IFRM specific
+        "sfrm",
+        "ifrm",
+        "sfrm-substrate",
+        "substrate inspection",
+        "thickness inspection",
     ],
     "Coating/Painting": [
         "coating",
@@ -999,6 +1014,10 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "subgrade",
         "base material",
         "proctor",
+        # Laboratory soil testing
+        "moisture-density",
+        "atterberg",
+        "sieve analysis",
     ],
     "Reinforcing Steel": [
         "reinforcing",
@@ -1050,6 +1069,12 @@ INSPECTION_TYPE_CATEGORIES: Dict[str, list] = {
         "expansion joint",
         "space joint",
         "sqr pipe",
+        # Quality control and testing
+        "quality control",
+        "laboratory testing",
+        "construction inspection",
+        "load bearing",
+        "inspection report",
     ],
 }
 

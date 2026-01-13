@@ -401,6 +401,40 @@ TRADE_NAME_TO_ID: Dict[str, int] = {
     'furnishings': 5,  # CSI Div 12 - Furnishings = Finishes
     'woods, plastics, and composites': 4,  # CSI Div 06 = Drywall/framing
     'specialties': 5,  # CSI Div 10 = Finishes
+
+    # RABA test type patterns (quality inspections)
+    'moisture-density': 9,  # Soil testing = Earthwork
+    'atterberg': 9,  # Soil testing = Earthwork
+    'sieve analysis': 9,  # Soil testing = Earthwork
+    'drilled epoxied dowels': 1,  # Concrete anchorage
+    'post installed embeds': 1,  # Concrete anchorage
+    'post-installed embeds': 1,  # Concrete anchorage
+    'dowel remediation': 1,  # Concrete repair
+    'dowel installation': 1,  # Concrete anchorage
+    'curb repair': 1,  # Concrete repair
+    'column patching': 1,  # Concrete repair
+    'ifrm': 6,  # Intumescent fire resistive material
+    'sfrm-substrate': 6,  # SFRM substrate inspection
+    'substrate condition': 6,  # Often for fireproofing substrate
+    'load bearing': 1,  # Load testing typically concrete/structure
+    'construction quality control': 12,  # General QC
+    'laboratory testing': 12,  # General testing
+    'observation': 4,  # Often drywall screws observation
+
+    # TBM work activity patterns
+    'delamination': 1,  # Concrete patching
+    'patching': 1,  # Concrete repair
+    'chipping': 1,  # Concrete chipping
+    'elevator front clips': 2,  # Steel work
+    'elevator clips': 2,  # Steel work
+    'laydown yard': 12,  # General conditions
+    'laydown': 12,  # General conditions
+
+    # PSI trade patterns
+    'arch / yates': 5,  # Architectural = Finishes
+    'arch / dwl': 4,  # Architectural drywall = Drywall
+    'arch/yates': 5,
+    'arch/dwl': 4,
 }
 
 

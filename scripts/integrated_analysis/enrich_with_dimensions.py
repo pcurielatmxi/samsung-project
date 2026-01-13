@@ -266,11 +266,14 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         if pd.isna(activity):
             return None
         activity_lower = str(activity).lower()
+        # General conditions (check first to skip non-trade activities)
+        if any(x in activity_lower for x in ['laydown', 'yard', 'mobilization', 'demobilization', 'safety', 'cleanup']):
+            return 'General'
         # Concrete (trade_id=1)
-        if any(x in activity_lower for x in ['concrete', 'pour', 'slab', 'form', 'strip', 'rebar', 'topping', 'placement', 'cure', 'finishing']):
+        if any(x in activity_lower for x in ['concrete', 'pour', 'slab', 'form', 'strip', 'rebar', 'topping', 'placement', 'cure', 'finishing', 'delamination', 'patching', 'chipping', 'patch', 'repair']):
             return 'Concrete'
         # Structural Steel (trade_id=2)
-        if any(x in activity_lower for x in ['steel', 'erect', 'deck', 'weld', 'bolt', 'connection', 'joist', 'truss', 'iron']):
+        if any(x in activity_lower for x in ['steel', 'erect', 'deck', 'weld', 'bolt', 'connection', 'joist', 'truss', 'iron', 'elevator front clip', 'elevator clip', 'clip']):
             return 'Structural Steel'
         # Roofing (trade_id=3)
         if any(x in activity_lower for x in ['roof', 'membrane', 'waterproof', 'eifs']):
@@ -297,7 +300,7 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         if any(x in activity_lower for x in ['precast', 'tilt', 'pc panel']):
             return 'Precast'
         # Panels (trade_id=11)
-        if any(x in activity_lower for x in ['panel', 'clad', 'skin', 'enclosure', 'metal wall']):
+        if any(x in activity_lower for x in ['panel', 'clad', 'skin', 'enclosure', 'metal wall', 'zee metal', 'corbel']):
             return 'Panels'
         # Masonry (trade_id=13)
         if any(x in activity_lower for x in ['masonry', 'cmu', 'block', 'brick', 'grout']):
@@ -306,7 +309,31 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
 
     df['trade_inferred'] = df['work_activities'].apply(infer_trade_from_activity)
     df['dim_trade_id'] = df['trade_inferred'].apply(get_trade_id)
+
+    # Fallback: use company's primary_trade_id if activity-based inference failed
+    print("  Applying company-to-trade fallback...")
+    dim_company = pd.read_csv(Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv')
+    company_trade_map = dict(zip(dim_company['company_id'], dim_company['primary_trade_id']))
+
+    def get_trade_from_company(row):
+        """Get trade from company's primary_trade_id if dim_trade_id is missing."""
+        if pd.notna(row['dim_trade_id']):
+            return row['dim_trade_id']
+        company_id = row['dim_company_id']
+        if pd.notna(company_id):
+            trade_id = company_trade_map.get(company_id)
+            if pd.notna(trade_id):
+                return int(trade_id)
+        return None
+
+    df['dim_trade_id'] = df.apply(get_trade_from_company, axis=1)
     df['dim_trade_code'] = df['dim_trade_id'].apply(get_trade_code)
+
+    # Track source of trade inference
+    df['trade_source'] = df.apply(
+        lambda row: 'activity' if pd.notna(row['trade_inferred']) else ('company' if pd.notna(row['dim_trade_id']) else None),
+        axis=1
+    )
 
     # Parse grid from location_row
     print("  Parsing grid coordinates...")
