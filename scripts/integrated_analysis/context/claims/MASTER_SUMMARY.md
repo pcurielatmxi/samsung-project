@@ -304,4 +304,6 @@ python -m scripts.narratives.embeddings search "LT-0793 extension time" --limit 
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
 | 2025-01-13 | 1.0 | MXI | Initial document creation |
+| 2025-01-13 | 1.1 | MXI | Updated with verified SOV amounts from EXHIBIT_40 |
+| 2025-01-13 | 1.2 | MXI | Moved to claims/ subfolder; added MXI analysis markers |
 

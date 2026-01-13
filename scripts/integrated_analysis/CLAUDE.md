@@ -70,9 +70,14 @@ scripts/integrated_analysis/
 ├── PLAN.md              # Detailed specification
 ├── CLAUDE.md            # This file
 ├── context/             # Free-form context documents
-│   ├── README.md        # Organization guidelines
-│   ├── change_orders/   # CO-XX documentation
-│   └── eot_claims/      # EOT-XX documentation
+│   ├── README.md        # Organization and traceability guidelines
+│   ├── claims/          # CO and EOT claims
+│   │   ├── MASTER_SUMMARY.md
+│   │   ├── change_orders/
+│   │   └── eot_claims/
+│   ├── contracts/       # (Future) Contract documents
+│   ├── correspondence/  # (Future) Letters, notices
+│   └── experts/         # (Future) Expert reports
 ├── dimensions/          # Dimension table builders
 ├── mappings/            # Mapping table builders
 └── validate/            # Coverage validation
@@ -80,13 +85,18 @@ scripts/integrated_analysis/
 
 ## Context Documents
 
-The `context/` folder contains free-form documentation about Change Orders (CO) and Extension of Time (EOT) claims. These provide essential contractual and procedural context for interpreting quantitative analysis.
+The `context/` folder contains free-form documentation providing contractual, legal, and procedural context for interpreting quantitative analysis. Documents are organized by category.
 
-See [context/README.md](context/README.md) for organization guidelines and document templates.
+See [context/README.md](context/README.md) for:
+- **Data traceability guidelines** - How to cite sources vs mark MXI analysis
+- **Document quotation guidelines** - How to reference source documents
+- **Templates** - Standard formats for different document types
 
-**Key documents:**
-- `context/change_orders/CO-XX_*.md` - Change order scope and impact
-- `context/eot_claims/EOT-XX_*.md` - Extension of time claims and delay attribution
+**Current categories:**
+- `context/claims/` - Change Orders (CO) and Extension of Time (EOT) claims
+  - [MASTER_SUMMARY.md](context/claims/MASTER_SUMMARY.md) - Consolidated view
+  - `change_orders/CO-XX_*.md` - Individual CO documentation
+  - `eot_claims/EOT-XX_*.md` - Individual EOT documentation
 
 **Finding source materials:**
 ```bash
