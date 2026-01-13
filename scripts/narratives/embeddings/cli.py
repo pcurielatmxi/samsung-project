@@ -2,22 +2,24 @@
 
 import argparse
 import sys
-from typing import List, Optional
+from typing import List
 
 from . import config
-from .builder import build_index, load_documents, load_statements
+from .builder import build_index
 from .store import (
     get_store,
-    search_statements,
-    search_documents,
-    StatementResult,
-    SearchResult
+    search_chunks,
+    ChunkResult
 )
 
 
 def cmd_build(args):
     """Build or rebuild the embeddings index."""
-    result = build_index(force=args.force, verbose=True)
+    result = build_index(
+        force=args.force,
+        verbose=True,
+        limit=args.limit
+    )
 
     if result.errors:
         sys.exit(1)
@@ -27,33 +29,23 @@ def cmd_search(args):
     """Search the embeddings index."""
     query = " ".join(args.query)
 
-    if args.documents:
-        results = search_documents(
-            query=query,
-            doc_type=args.type,
-            after=args.after,
-            before=args.before,
-            limit=args.limit
-        )
-        print_document_results(results, query)
-    else:
-        results = search_statements(
-            query=query,
-            category=args.category,
-            party=args.party,
-            location=args.location,
-            after=args.after,
-            before=args.before,
-            limit=args.limit,
-            context=args.context
-        )
-        print_statement_results(results, query, args.context)
+    results = search_chunks(
+        query=query,
+        document_type=args.type,
+        author=args.author,
+        subfolder=args.subfolder,
+        after=args.after,
+        before=args.before,
+        limit=args.limit
+    )
+
+    print_chunk_results(results, query, args.context)
 
 
 def cmd_status(args):
     """Show index status."""
     store = get_store()
-    stats = store.get_stats()
+    stats = store.get_chunks_stats()
 
     print("=" * 60)
     print("Narrative Embeddings Index Status")
@@ -62,121 +54,94 @@ def cmd_status(args):
     print()
 
     print("Index contents:")
-    print(f"  Documents: {stats['documents_count']}")
-    print(f"  Statements: {stats['statements_count']}")
+    print(f"  Chunks: {stats['chunks_count']}")
+    print(f"  Files: {stats['files_count']}")
     print()
 
-    # Check source data
+    # Check source directory
+    from .builder import scan_documents
     try:
-        documents = load_documents()
-        statements = load_statements()
-        print("Source CSV status:")
-        print(f"  dim_narrative_file.csv: {len(documents)} records")
-        print(f"  narrative_statements.csv: {len(statements)} records")
+        documents = list(scan_documents(config.NARRATIVES_RAW_DIR))
+        print("Source directory status:")
+        print(f"  Raw narratives path: {config.NARRATIVES_RAW_DIR}")
+        print(f"  Documents found: {len(documents)} files")
         print()
 
-        # Sync status
-        docs_synced = stats['documents_count'] == len(documents)
-        stmts_synced = stats['statements_count'] == len(statements)
+        # List document types
+        by_ext = {}
+        for doc in documents:
+            ext = doc.suffix.lower()
+            by_ext[ext] = by_ext.get(ext, 0) + 1
 
-        if docs_synced and stmts_synced:
-            print("Sync status: IN SYNC")
-        else:
-            print("Sync status: OUT OF SYNC")
-            if not docs_synced:
-                print(f"  Documents: index={stats['documents_count']}, csv={len(documents)}")
-            if not stmts_synced:
-                print(f"  Statements: index={stats['statements_count']}, csv={len(statements)}")
-            print("\nRun 'build' to synchronize.")
+        if by_ext:
+            print("  By file type:")
+            for ext, count in sorted(by_ext.items(), key=lambda x: -x[1]):
+                print(f"    {ext}: {count}")
 
-    except FileNotFoundError as e:
-        print(f"Source data not found: {e}")
-        print("Run the narratives document processing pipeline first.")
+    except Exception as e:
+        print(f"Error scanning source directory: {e}")
 
+    print()
     print("=" * 60)
 
 
-def print_statement_results(results: List[StatementResult], query: str, context: int):
-    """Print statement search results."""
+def print_chunk_results(results: List[ChunkResult], query: str, context: int):
+    """Print chunk search results."""
     if not results:
         print(f"No matches found for: {query}")
         return
 
-    print(f"\nFound {len(results)} matches in statements:\n")
+    print(f"\nFound {len(results)} matches:\n")
+
+    store = get_store() if context > 0 else None
 
     for i, r in enumerate(results, 1):
         print(f"[{i}] Score: {r.score}")
-        print(f"    Statement: \"{r.text}\"")
+
+        # Truncate long text
+        text = r.text
+        if len(text) > 500:
+            text = text[:500] + "..."
+        # Clean up whitespace for display
+        text = " ".join(text.split())
+        print(f"    Text: \"{text}\"")
 
         # Metadata line
         meta_parts = []
-        if r.metadata.get("category"):
-            meta_parts.append(f"Category: {r.metadata['category']}")
-        if r.metadata.get("event_date"):
-            meta_parts.append(f"Event: {r.metadata['event_date']}")
-        if r.metadata.get("impact_days") and r.metadata["impact_days"] > 0:
-            meta_parts.append(f"Impact: {r.metadata['impact_days']} days")
+        if r.document_type:
+            meta_parts.append(f"Type: {r.document_type}")
+        if r.file_date:
+            meta_parts.append(f"Date: {r.file_date}")
+        if r.author:
+            meta_parts.append(f"Author: {r.author}")
         if meta_parts:
             print(f"    {' | '.join(meta_parts)}")
-
-        # Parties and locations
-        if r.metadata.get("parties"):
-            print(f"    Parties: {r.metadata['parties'].replace('|', ', ')}")
-        if r.metadata.get("locations"):
-            print(f"    Location: {r.metadata['locations'].replace('|', ', ')}")
 
         # Source info
-        source_page = r.metadata.get("source_page", -1)
-        page_str = f" (page {source_page})" if source_page > 0 else ""
-        print(f"    Source: {r.metadata.get('narrative_file_id', 'unknown')}{page_str}")
+        page_str = f" (page {r.page_number})" if r.page_number > 0 else ""
+        chunk_info = f"chunk {r.metadata.get('chunk_index', 0)+1}/{r.metadata.get('total_chunks', 1)}"
+        print(f"    Source: {r.source_file}{page_str} [{chunk_info}]")
 
-        # Context statements
-        if context > 0:
-            if r.prev_statements or r.next_statements:
+        # Context chunks
+        if context > 0 and store:
+            chunk_index = r.metadata.get("chunk_index", 0)
+            adjacent = store.get_adjacent_chunks(
+                source_file=r.source_file,
+                chunk_index=chunk_index,
+                before=context,
+                after=context
+            )
+
+            if adjacent:
                 print()
                 print("    Context:")
-                for prev in r.prev_statements:
-                    print(f"      [prev] \"{prev.text[:100]}{'...' if len(prev.text) > 100 else ''}\"")
-                for next_ in r.next_statements:
-                    print(f"      [next] \"{next_.text[:100]}{'...' if len(next_.text) > 100 else ''}\"")
-
-        print()
-
-
-def print_document_results(results: List[SearchResult], query: str):
-    """Print document search results."""
-    if not results:
-        print(f"No matching documents for: {query}")
-        return
-
-    print(f"\nFound {len(results)} matching documents:\n")
-
-    for i, r in enumerate(results, 1):
-        print(f"[{i}] Score: {r.score}")
-        print(f"    Document: {r.metadata.get('title', 'Untitled')} ({r.id})")
-
-        # Metadata line
-        meta_parts = []
-        if r.metadata.get("type"):
-            meta_parts.append(f"Type: {r.metadata['type']}")
-        if r.metadata.get("date"):
-            meta_parts.append(f"Date: {r.metadata['date']}")
-        if r.metadata.get("data_date"):
-            meta_parts.append(f"Data Date: {r.metadata['data_date']}")
-        if meta_parts:
-            print(f"    {' | '.join(meta_parts)}")
-
-        if r.metadata.get("author"):
-            print(f"    Author: {r.metadata['author']}")
-
-        print(f"    Path: {r.metadata.get('path', 'unknown')}")
-        print(f"    Statements: {r.metadata.get('statement_count', 0)}")
-
-        # Summary (truncated)
-        if r.text:
-            summary = r.text[:300] + "..." if len(r.text) > 300 else r.text
-            print()
-            print(f"    Summary: {summary}")
+                for adj in adjacent:
+                    adj_idx = adj.metadata.get("chunk_index", 0)
+                    direction = "prev" if adj_idx < chunk_index else "next"
+                    adj_text = " ".join(adj.text.split())[:100]
+                    if len(adj.text) > 100:
+                        adj_text += "..."
+                    print(f"      [{direction}] \"{adj_text}\"")
 
         print()
 
@@ -184,20 +149,24 @@ def print_document_results(results: List[SearchResult], query: str):
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="Narrative embeddings - semantic search for narrative documents",
+        description="Narrative embeddings - semantic search for raw narrative documents",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Build the index
   python -m scripts.narratives.embeddings build
+  python -m scripts.narratives.embeddings build --limit 10  # Test with 10 files
+  python -m scripts.narratives.embeddings build --force     # Force rebuild all
 
-  # Search statements
+  # Search chunks
   python -m scripts.narratives.embeddings search "HVAC delays"
-  python -m scripts.narratives.embeddings search "scope changes" --category scope_change
-  python -m scripts.narratives.embeddings search "delay" --context 2
+  python -m scripts.narratives.embeddings search "scope changes" --type schedule_narrative
+  python -m scripts.narratives.embeddings search "delay" --author Yates
+  python -m scripts.narratives.embeddings search "meeting" --subfolder meeting_notes
+  python -m scripts.narratives.embeddings search "delay" --context 2  # Show adjacent chunks
 
-  # Search documents
-  python -m scripts.narratives.embeddings search "milestone variance" --documents
+  # Search with date filters
+  python -m scripts.narratives.embeddings search "delay" --after 2024-01-01 --before 2024-06-30
 
   # Check status
   python -m scripts.narratives.embeddings status
@@ -213,43 +182,40 @@ Examples:
         action="store_true",
         help="Force rebuild all embeddings (ignore cache)"
     )
+    build_parser.add_argument(
+        "--limit", "-n",
+        type=int,
+        default=None,
+        help="Limit number of files to process (for testing)"
+    )
     build_parser.set_defaults(func=cmd_build)
 
     # Search command
-    search_parser = subparsers.add_parser("search", help="Search the embeddings index")
+    search_parser = subparsers.add_parser("search", help="Search document chunks")
     search_parser.add_argument(
         "query",
         nargs="+",
         help="Search query"
     )
     search_parser.add_argument(
-        "--documents", "-d",
-        action="store_true",
-        help="Search document summaries instead of statements"
-    )
-    search_parser.add_argument(
-        "--category", "-c",
-        help="Filter by statement category (delay, scope_change, quality_issue, etc.)"
-    )
-    search_parser.add_argument(
-        "--party", "-p",
-        help="Filter by party (substring match)"
-    )
-    search_parser.add_argument(
-        "--location", "-l",
-        help="Filter by location (substring match)"
-    )
-    search_parser.add_argument(
         "--type", "-t",
-        help="Filter by document type (for --documents mode)"
+        help="Filter by document type (schedule_narrative, meeting_notes, etc.)"
+    )
+    search_parser.add_argument(
+        "--author", "-a",
+        help="Filter by author (Yates, SECAI, BRG, Samsung)"
+    )
+    search_parser.add_argument(
+        "--subfolder", "-s",
+        help="Filter by subfolder (substring match)"
     )
     search_parser.add_argument(
         "--after",
-        help="Filter events after date (YYYY-MM-DD)"
+        help="Filter files dated after (YYYY-MM-DD)"
     )
     search_parser.add_argument(
         "--before",
-        help="Filter events before date (YYYY-MM-DD)"
+        help="Filter files dated before (YYYY-MM-DD)"
     )
     search_parser.add_argument(
         "--limit", "-n",
@@ -261,7 +227,7 @@ Examples:
         "--context", "-C",
         type=int,
         default=config.DEFAULT_CONTEXT,
-        help="Number of surrounding statements to show"
+        help="Number of adjacent chunks to show for context"
     )
     search_parser.set_defaults(func=cmd_search)
 

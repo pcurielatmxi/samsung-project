@@ -1,191 +1,99 @@
-"""Build and update the narrative embeddings index."""
+"""Build and update the narrative embeddings index from raw documents."""
 
-import csv
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Set
-from datetime import datetime
+from typing import List, Dict, Any, Optional, Iterator
 
 from . import config
 from .client import embed_for_index
-from .store import get_store, EmbeddingStore
+from .store import get_store
+from .chunker import chunk_document, Chunk
+from .metadata import extract_file_metadata
 
 
-@dataclass
-class Document:
-    """Document record from dim_narrative_file.csv."""
-    narrative_file_id: str
-    relative_path: str
-    filename: str
-    document_type: str
-    document_title: str
-    document_date: str
-    data_date: str
-    author: str
-    summary: str
-    statement_count: int
-    locate_rate: float
-    file_extension: str
+# Supported file extensions
+SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".doc", ".txt", ".xlsx", ".xls", ".pptx"}
 
-    @property
-    def content_hash(self) -> str:
-        """MD5 hash of summary for change detection."""
-        return hashlib.md5(self.summary.encode()).hexdigest()
+# Skip patterns (extracted text files, temp files)
+SKIP_PATTERNS = {"extracted", ".tmp", "~$"}
 
 
-@dataclass
-class Statement:
-    """Statement record from narrative_statements.csv."""
-    statement_id: str
-    narrative_file_id: str
-    statement_index: int
-    text: str
-    category: str
-    event_date: str
-    parties: str
-    locations: str
-    impact_days: Optional[int]
-    impact_description: str
-    references: str
-    source_page: Optional[int]
-    source_char_offset: Optional[int]
-    match_confidence: float
-    match_type: str
-    is_located: bool
-
-    @property
-    def content_hash(self) -> str:
-        """MD5 hash of text for change detection."""
-        return hashlib.md5(self.text.encode()).hexdigest()
-
-    @property
-    def embed_text(self) -> str:
-        """Text to embed (with category prefix)."""
-        return f"[{self.category}] {self.text}"
+def scan_documents(root_dir: Path) -> Iterator[Path]:
+    """Scan directory for supported document files."""
+    for ext in SUPPORTED_EXTENSIONS:
+        for filepath in root_dir.rglob(f"*{ext}"):
+            # Skip files in extracted folders or temp files
+            path_str = str(filepath).lower()
+            if any(skip in path_str for skip in SKIP_PATTERNS):
+                continue
+            yield filepath
 
 
-def load_documents(path: Optional[Path] = None) -> List[Document]:
-    """Load documents from dim_narrative_file.csv."""
-    path = path or config.DIM_FILE
-    if not path.exists():
-        raise FileNotFoundError(f"Document file not found: {path}")
-
-    documents = []
-    with open(path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            documents.append(Document(
-                narrative_file_id=row["narrative_file_id"],
-                relative_path=row["relative_path"],
-                filename=row["filename"],
-                document_type=row["document_type"],
-                document_title=row["document_title"],
-                document_date=row["document_date"],
-                data_date=row["data_date"],
-                author=row["author"],
-                summary=row["summary"],
-                statement_count=int(row["statement_count"]) if row["statement_count"] else 0,
-                locate_rate=float(row["locate_rate"]) if row["locate_rate"] else 0.0,
-                file_extension=row["file_extension"]
-            ))
-
-    return documents
+def get_file_hash(filepath: Path) -> str:
+    """Get hash of file for change detection (uses mtime + size for speed)."""
+    stat = filepath.stat()
+    content = f"{filepath.name}:{stat.st_size}:{stat.st_mtime}"
+    return hashlib.md5(content.encode()).hexdigest()
 
 
-def load_statements(path: Optional[Path] = None) -> List[Statement]:
-    """Load statements from narrative_statements.csv."""
-    path = path or config.STMT_FILE
-    if not path.exists():
-        raise FileNotFoundError(f"Statements file not found: {path}")
+def build_chunk_metadata(
+    chunk: Chunk,
+    filepath: Path,
+    file_hash: str,
+    file_meta: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Build metadata dict for a chunk, including file-level metadata."""
+    # Get relative path from narratives dir
+    try:
+        rel_path = filepath.relative_to(config.NARRATIVES_RAW_DIR)
+    except ValueError:
+        rel_path = filepath.name
 
-    statements = []
-    with open(path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            statements.append(Statement(
-                statement_id=row["statement_id"],
-                narrative_file_id=row["narrative_file_id"],
-                statement_index=int(row["statement_index"]) if row["statement_index"] else 0,
-                text=row["text"],
-                category=row["category"],
-                event_date=row["event_date"],
-                parties=row["parties"],
-                locations=row["locations"],
-                impact_days=int(row["impact_days"]) if row["impact_days"] else None,
-                impact_description=row["impact_description"],
-                references=row["references"],
-                source_page=int(row["source_page"]) if row["source_page"] else None,
-                source_char_offset=int(row["source_char_offset"]) if row["source_char_offset"] else None,
-                match_confidence=float(row["match_confidence"]) if row["match_confidence"] else 0.0,
-                match_type=row["match_type"],
-                is_located=row["is_located"].lower() == "true" if row["is_located"] else False
-            ))
-
-    return statements
-
-
-def build_document_metadata(doc: Document) -> Dict[str, Any]:
-    """Build metadata dict for a document."""
+    # Combine chunk-level and file-level metadata
     return {
-        "title": doc.document_title,
-        "type": doc.document_type,
-        "date": doc.document_date,
-        "data_date": doc.data_date,
-        "author": doc.author,
-        "path": doc.relative_path,
-        "statement_count": doc.statement_count,
-        "content_hash": doc.content_hash
-    }
-
-
-def build_statement_metadata(stmt: Statement) -> Dict[str, Any]:
-    """Build metadata dict for a statement."""
-    return {
-        "narrative_file_id": stmt.narrative_file_id,
-        "statement_index": stmt.statement_index,
-        "category": stmt.category,
-        "event_date": stmt.event_date or "",
-        "parties": stmt.parties,
-        "locations": stmt.locations,
-        "impact_days": stmt.impact_days if stmt.impact_days is not None else -1,
-        "source_page": stmt.source_page if stmt.source_page is not None else -1,
-        "content_hash": stmt.content_hash
+        # Chunk-specific (for sequence/context)
+        "source_file": chunk.source_file,
+        "relative_path": str(rel_path),
+        "chunk_index": chunk.chunk_index,
+        "total_chunks": chunk.total_chunks,
+        "page_number": chunk.page_number,
+        "chunk_type": chunk.file_type,
+        "file_hash": file_hash,
+        # File-level (for filtering)
+        "file_date": file_meta.get("file_date", ""),
+        "author": file_meta.get("author", ""),
+        "document_type": file_meta.get("document_type", ""),
+        "subfolder": file_meta.get("subfolder", ""),
+        "file_size_kb": file_meta.get("file_size_kb", 0),
     }
 
 
 @dataclass
 class BuildResult:
     """Result of a build operation."""
-    documents_added: int = 0
-    documents_updated: int = 0
-    documents_deleted: int = 0
-    documents_unchanged: int = 0
-    statements_added: int = 0
-    statements_updated: int = 0
-    statements_deleted: int = 0
-    statements_unchanged: int = 0
-    errors: List[str] = None
-
-    def __post_init__(self):
-        if self.errors is None:
-            self.errors = []
+    files_processed: int = 0
+    files_skipped: int = 0
+    files_unchanged: int = 0
+    files_errors: int = 0
+    chunks_added: int = 0
+    chunks_updated: int = 0
+    chunks_deleted: int = 0
+    chunks_unchanged: int = 0
+    errors: List[str] = field(default_factory=list)
 
     @property
-    def total_documents(self) -> int:
-        return self.documents_added + self.documents_updated + self.documents_unchanged
-
-    @property
-    def total_statements(self) -> int:
-        return self.statements_added + self.statements_updated + self.statements_unchanged
+    def total_chunks(self) -> int:
+        return self.chunks_added + self.chunks_updated + self.chunks_unchanged
 
 
-def build_index(force: bool = False, verbose: bool = True) -> BuildResult:
-    """Build or update the embeddings index.
+def build_index(force: bool = False, verbose: bool = True, limit: Optional[int] = None) -> BuildResult:
+    """Build or update the embeddings index from raw narratives.
 
     Args:
         force: If True, rebuild all embeddings ignoring cache.
         verbose: If True, print progress messages.
+        limit: If set, only process this many files (for testing).
 
     Returns:
         BuildResult with counts of operations performed.
@@ -195,147 +103,138 @@ def build_index(force: bool = False, verbose: bool = True) -> BuildResult:
 
     if verbose:
         print("=" * 60)
-        print("Narrative Embeddings Builder")
+        print("Narrative Embeddings Builder (Raw Documents)")
         print("=" * 60)
+        print(f"Source: {config.NARRATIVES_RAW_DIR}")
+        print(f"ChromaDB: {config.CHROMA_PATH}")
         print(f"Force rebuild: {force}")
-        print(f"ChromaDB path: {config.CHROMA_PATH}")
+        if limit:
+            print(f"Limit: {limit} files")
         print()
 
-    # Load source data
-    try:
-        if verbose:
-            print("Loading source data...")
-        documents = load_documents()
-        statements = load_statements()
-        if verbose:
-            print(f"  Documents: {len(documents)}")
-            print(f"  Statements: {len(statements)}")
-    except FileNotFoundError as e:
-        result.errors.append(str(e))
-        return result
-
-    # Get existing data from ChromaDB
-    existing_doc_hashes = store.get_existing_hashes(config.DOCUMENTS_COLLECTION)
-    existing_stmt_hashes = store.get_existing_hashes(config.STATEMENTS_COLLECTION)
-
+    # Get existing chunk metadata from ChromaDB
+    existing_chunks = store.get_all_chunk_metadata()
     if verbose:
-        print(f"\nExisting in index:")
-        print(f"  Documents: {len(existing_doc_hashes)}")
-        print(f"  Statements: {len(existing_stmt_hashes)}")
+        print(f"Existing chunks in index: {len(existing_chunks)}")
 
-    # Compute what needs updating
-    csv_doc_ids = {d.narrative_file_id for d in documents}
-    csv_stmt_ids = {s.statement_id for s in statements}
+    # Build a map of file_hash -> list of chunk_ids for that file
+    file_to_chunks: Dict[str, List[str]] = {}
+    for chunk_id, meta in existing_chunks.items():
+        file_hash = meta.get("file_hash", "")
+        if file_hash not in file_to_chunks:
+            file_to_chunks[file_hash] = []
+        file_to_chunks[file_hash].append(chunk_id)
 
-    # Find stale entries to delete
-    stale_docs = set(existing_doc_hashes.keys()) - csv_doc_ids
-    stale_stmts = set(existing_stmt_hashes.keys()) - csv_stmt_ids
-
-    if stale_docs:
-        if verbose:
-            print(f"\nDeleting {len(stale_docs)} stale documents...")
-        store.delete_documents(list(stale_docs))
-        result.documents_deleted = len(stale_docs)
-
-    if stale_stmts:
-        if verbose:
-            print(f"Deleting {len(stale_stmts)} stale statements...")
-        store.delete_statements(list(stale_stmts))
-        result.statements_deleted = len(stale_stmts)
-
-    # Process documents
+    # Scan for documents
+    documents = list(scan_documents(config.NARRATIVES_RAW_DIR))
     if verbose:
-        print("\nProcessing documents...")
+        print(f"Found {len(documents)} documents to process")
+        print()
 
-    docs_to_embed = []
-    for doc in documents:
-        existing_hash = existing_doc_hashes.get(doc.narrative_file_id)
+    if limit:
+        documents = documents[:limit]
 
-        if force or existing_hash is None:
-            docs_to_embed.append(doc)
-        elif existing_hash != doc.content_hash:
-            docs_to_embed.append(doc)
-            result.documents_updated += 1
-        else:
-            result.documents_unchanged += 1
+    # Track which chunk IDs we've seen (for deletion detection)
+    seen_chunk_ids = set()
+    chunks_to_embed = []
+    chunk_metadatas = []
 
-    if docs_to_embed:
+    for i, filepath in enumerate(documents, 1):
         if verbose:
-            print(f"  Embedding {len(docs_to_embed)} documents...")
+            print(f"[{i}/{len(documents)}] {filepath.name[:60]}...", end=" ")
 
-        # Generate embeddings
-        texts = [d.summary for d in docs_to_embed]
+        try:
+            file_hash = get_file_hash(filepath)
+
+            # Check if file is unchanged
+            if not force and file_hash in file_to_chunks:
+                # File unchanged, mark chunks as seen
+                for chunk_id in file_to_chunks[file_hash]:
+                    seen_chunk_ids.add(chunk_id)
+                result.files_unchanged += 1
+                result.chunks_unchanged += len(file_to_chunks[file_hash])
+                if verbose:
+                    print("unchanged")
+                continue
+
+            # File is new or changed, chunk it
+            chunks = list(chunk_document(filepath))
+
+            if not chunks:
+                result.files_skipped += 1
+                if verbose:
+                    print("no content")
+                continue
+
+            # Extract file-level metadata
+            file_meta = extract_file_metadata(filepath, config.NARRATIVES_RAW_DIR).to_dict()
+
+            # Queue chunks for embedding
+            for chunk in chunks:
+                chunk_id = chunk.chunk_id
+                seen_chunk_ids.add(chunk_id)
+                chunks_to_embed.append((chunk_id, chunk.text))
+                chunk_metadatas.append(build_chunk_metadata(chunk, filepath, file_hash, file_meta))
+
+            result.files_processed += 1
+            if verbose:
+                print(f"{len(chunks)} chunks")
+
+        except Exception as e:
+            result.files_errors += 1
+            result.errors.append(f"{filepath.name}: {e}")
+            if verbose:
+                print(f"ERROR: {e}")
+
+    # Find stale chunks to delete
+    stale_chunk_ids = set(existing_chunks.keys()) - seen_chunk_ids
+    if stale_chunk_ids:
+        if verbose:
+            print(f"\nDeleting {len(stale_chunk_ids)} stale chunks...")
+        store.delete_chunks(list(stale_chunk_ids))
+        result.chunks_deleted = len(stale_chunk_ids)
+
+    # Embed and store new chunks
+    if chunks_to_embed:
+        if verbose:
+            print(f"\nEmbedding {len(chunks_to_embed)} chunks...")
+
+        # Extract texts for embedding
+        chunk_ids = [c[0] for c in chunks_to_embed]
+        texts = [c[1] for c in chunks_to_embed]
+
+        # Generate embeddings in batches
         embeddings = embed_for_index(texts)
 
         # Upsert to ChromaDB
-        store.upsert_documents(
-            ids=[d.narrative_file_id for d in docs_to_embed],
+        store.upsert_chunks(
+            ids=chunk_ids,
             texts=texts,
             embeddings=embeddings,
-            metadatas=[build_document_metadata(d) for d in docs_to_embed]
+            metadatas=chunk_metadatas
         )
 
-        result.documents_added = len(docs_to_embed) - result.documents_updated
+        result.chunks_added = len(chunks_to_embed)
     else:
         if verbose:
-            print("  No documents to update")
-
-    # Process statements
-    if verbose:
-        print("\nProcessing statements...")
-
-    stmts_to_embed = []
-    for stmt in statements:
-        existing_hash = existing_stmt_hashes.get(stmt.statement_id)
-
-        if force or existing_hash is None:
-            stmts_to_embed.append(stmt)
-        elif existing_hash != stmt.content_hash:
-            stmts_to_embed.append(stmt)
-            result.statements_updated += 1
-        else:
-            result.statements_unchanged += 1
-
-    if stmts_to_embed:
-        if verbose:
-            print(f"  Embedding {len(stmts_to_embed)} statements...")
-
-        # Generate embeddings (with category prefix)
-        texts = [s.embed_text for s in stmts_to_embed]
-        embeddings = embed_for_index(texts)
-
-        # Upsert to ChromaDB (store original text, not embed_text)
-        store.upsert_statements(
-            ids=[s.statement_id for s in stmts_to_embed],
-            texts=[s.text for s in stmts_to_embed],
-            embeddings=embeddings,
-            metadatas=[build_statement_metadata(s) for s in stmts_to_embed]
-        )
-
-        result.statements_added = len(stmts_to_embed) - result.statements_updated
-    else:
-        if verbose:
-            print("  No statements to update")
+            print("\nNo new chunks to embed")
 
     if verbose:
         print("\n" + "=" * 60)
         print("Build Summary")
         print("=" * 60)
-        print(f"Documents: {result.total_documents} total")
-        print(f"  Added: {result.documents_added}")
-        print(f"  Updated: {result.documents_updated}")
-        print(f"  Unchanged: {result.documents_unchanged}")
-        print(f"  Deleted: {result.documents_deleted}")
-        print(f"\nStatements: {result.total_statements} total")
-        print(f"  Added: {result.statements_added}")
-        print(f"  Updated: {result.statements_updated}")
-        print(f"  Unchanged: {result.statements_unchanged}")
-        print(f"  Deleted: {result.statements_deleted}")
+        print(f"Files: {result.files_processed} processed, {result.files_unchanged} unchanged, {result.files_skipped} skipped, {result.files_errors} errors")
+        print(f"Chunks: {result.total_chunks} total")
+        print(f"  Added: {result.chunks_added}")
+        print(f"  Unchanged: {result.chunks_unchanged}")
+        print(f"  Deleted: {result.chunks_deleted}")
 
         if result.errors:
-            print(f"\nErrors: {len(result.errors)}")
-            for err in result.errors:
+            print(f"\nErrors ({len(result.errors)}):")
+            for err in result.errors[:10]:
                 print(f"  - {err}")
+            if len(result.errors) > 10:
+                print(f"  ... and {len(result.errors) - 10} more")
 
         print("=" * 60)
 

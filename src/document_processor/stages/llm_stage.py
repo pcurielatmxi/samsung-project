@@ -2,7 +2,7 @@
 LLM stage implementation using Gemini.
 
 Handles both document extraction (PDF input) and text formatting (JSON input).
-Supports multiple document formats: PDF (native upload), DOCX, XLSX (text extraction).
+Supports multiple document formats: PDF (native upload), DOCX, XLSX, TXT (text extraction).
 """
 
 import json
@@ -21,7 +21,7 @@ from ..clients.gemini_client import (
 
 
 # File extensions that need text extraction before processing
-TEXT_EXTRACTION_EXTENSIONS = {'.docx', '.doc', '.xlsx', '.xls'}
+TEXT_EXTRACTION_EXTENSIONS = {'.docx', '.doc', '.xlsx', '.xls', '.txt'}
 
 
 def extract_docx_text(filepath: Path) -> str:
@@ -61,6 +61,11 @@ def extract_xlsx_text(filepath: Path) -> str:
             parts.append("")
 
     return "\n".join(parts)
+
+
+def extract_txt_text(filepath: Path) -> str:
+    """Read text content from a TXT file."""
+    return filepath.read_text(encoding="utf-8")
 
 
 class LLMStage(BaseStage):
@@ -170,6 +175,8 @@ class LLMStage(BaseStage):
                     text = extract_docx_text(filepath)
                 elif ext in {'.xlsx', '.xls'}:
                     text = extract_xlsx_text(filepath)
+                elif ext == '.txt':
+                    text = extract_txt_text(filepath)
                 else:
                     return GeminiResponse(
                         success=False,

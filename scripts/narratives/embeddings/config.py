@@ -39,6 +39,7 @@ DATA_DIR = _get_data_dir()
 CHROMA_PATH = DATA_DIR / "derived/narratives/embeddings"
 
 # Source data paths
+NARRATIVES_RAW_DIR = DATA_DIR / "raw/narratives"
 NARRATIVES_OUTPUT = DATA_DIR / "processed/narratives"
 DIM_FILE = NARRATIVES_OUTPUT / "dim_narrative_file.csv"
 STMT_FILE = NARRATIVES_OUTPUT / "narrative_statements.csv"
@@ -47,7 +48,10 @@ STMT_FILE = NARRATIVES_OUTPUT / "narrative_statements.csv"
 DEFAULT_LIMIT = 10
 DEFAULT_CONTEXT = 0
 
-# Collection names
+# Collection names (new chunk-based architecture)
+CHUNKS_COLLECTION = "narrative_chunks"
+
+# Legacy collection names (for migration)
 DOCUMENTS_COLLECTION = "narrative_documents"
 STATEMENTS_COLLECTION = "narrative_statements"
 

@@ -1,9 +1,19 @@
 """Gemini embedding client wrapper."""
 
+import time
 from typing import List, Optional
 from google import genai
+from google.genai.errors import ClientError
 
 from . import config
+
+# Rate limiting - Gemini has 1500 RPM limit for embedding
+# With 100 texts per batch, 1500 RPM = 15 batches/minute = 4 seconds per batch
+RATE_LIMIT_DELAY = 5.0  # 5 seconds between batches to stay well under limit
+
+# Gemini embedding has ~10K token input limit per text
+# Rough estimate: 4 chars = 1 token, so limit to 30K chars for safety
+MAX_TEXT_LENGTH = 30000
 
 
 class EmbeddingClient:
@@ -23,11 +33,12 @@ class EmbeddingClient:
         self.model = config.EMBEDDING_MODEL
         self.dimensions = config.EMBEDDING_DIMENSIONS
 
-    def embed_for_index(self, texts: List[str]) -> List[List[float]]:
+    def embed_for_index(self, texts: List[str], verbose: bool = True) -> List[List[float]]:
         """Generate embeddings for indexing documents/statements.
 
         Args:
             texts: List of texts to embed.
+            verbose: If True, print progress.
 
         Returns:
             List of embedding vectors.
@@ -35,19 +46,58 @@ class EmbeddingClient:
         if not texts:
             return []
 
-        # Process in batches
+        # Truncate long texts
+        truncated = 0
+        processed_texts = []
+        for t in texts:
+            if len(t) > MAX_TEXT_LENGTH:
+                processed_texts.append(t[:MAX_TEXT_LENGTH] + "...")
+                truncated += 1
+            else:
+                processed_texts.append(t)
+
+        if truncated > 0 and verbose:
+            print(f"  Truncated {truncated} texts exceeding {MAX_TEXT_LENGTH} chars")
+
+        # Process in batches with rate limiting
         all_embeddings = []
-        for i in range(0, len(texts), config.EMBEDDING_BATCH_SIZE):
-            batch = texts[i:i + config.EMBEDDING_BATCH_SIZE]
-            result = self.client.models.embed_content(
-                model=self.model,
-                contents=batch,
-                config={
-                    "task_type": config.EMBEDDING_TASK_INDEX,
-                    "output_dimensionality": self.dimensions
-                }
-            )
-            all_embeddings.extend([e.values for e in result.embeddings])
+        total_batches = (len(processed_texts) + config.EMBEDDING_BATCH_SIZE - 1) // config.EMBEDDING_BATCH_SIZE
+
+        for batch_num, i in enumerate(range(0, len(processed_texts), config.EMBEDDING_BATCH_SIZE), 1):
+            batch = processed_texts[i:i + config.EMBEDDING_BATCH_SIZE]
+
+            if verbose and batch_num % 10 == 0:
+                print(f"  Embedding batch {batch_num}/{total_batches}...")
+
+            # Retry with exponential backoff for rate limits
+            max_retries = 5
+            for retry in range(max_retries):
+                try:
+                    result = self.client.models.embed_content(
+                        model=self.model,
+                        contents=batch,
+                        config={
+                            "task_type": config.EMBEDDING_TASK_INDEX,
+                            "output_dimensionality": self.dimensions
+                        }
+                    )
+                    all_embeddings.extend([e.values for e in result.embeddings])
+                    break
+                except ClientError as e:
+                    if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                        wait_time = (2 ** retry) * 5  # 5, 10, 20, 40, 80 seconds
+                        if retry < max_retries - 1:
+                            if verbose:
+                                print(f"  Rate limited, waiting {wait_time}s (retry {retry+1}/{max_retries})...")
+                            time.sleep(wait_time)
+                        else:
+                            raise
+                    else:
+                        raise
+
+            # Rate limit between batches
+            if batch_num < total_batches:
+                time.sleep(RATE_LIMIT_DELAY)
 
         return all_embeddings
 

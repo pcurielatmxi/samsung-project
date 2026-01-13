@@ -1,7 +1,7 @@
 {
   "input_dir": "${WINDOWS_DATA_DIR}/raw/narratives",
   "output_dir": "${WINDOWS_DATA_DIR}/processed/narratives",
-  "file_extensions": [".pdf", ".docx", ".doc", ".xlsx", ".xls"],
+  "file_extensions": [".pdf", ".docx", ".doc", ".xlsx", ".xls", ".txt"],
   "concurrency": 3,
 
   "exclude_patterns": [
