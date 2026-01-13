@@ -61,13 +61,18 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
 
     val = str(location_row).strip().upper()
 
-    # Strip level prefixes like "L1- ", "1F-"
-    val = re.sub(r'^L?\d+[F]?[-\s]+', '', val).strip()
+    # Strip level prefixes like "L1- ", "1F-", "L1- SUW" but NOT gridline refs like "L18 (Stair)"
+    # Require dash or comma after number, or F suffix, to distinguish from gridlines
+    val = re.sub(r'^L?\d+[F][-\s]+', '', val).strip()  # "1F- " or "L1F- "
+    val = re.sub(r'^L\d+[-]\s*', '', val).strip()  # "L1- " or "L2- "
+    val = re.sub(r'^\d+[-,]\s*', '', val).strip()  # "1- " or "1, "
+    val = re.sub(r'^LVL\s*\d+\s*', '', val, flags=re.IGNORECASE).strip()  # "Lvl 4 "
 
     # Strip building prefixes like "SUW ", "SUE ", "FAB "
     val = re.sub(r'^(SUW|SUE|FAB)\s+', '', val).strip()
-    # Also strip level in building prefix like "SUW L4 "
-    val = re.sub(r'^L\d+\s+', '', val).strip()
+    # Also strip level in building prefix like "L4 N/17" but NOT "L18 (Stair)" gridline refs
+    # Only strip if followed by a grid letter or digit (not parenthesis)
+    val = re.sub(r'^L\d+\s+(?=[A-N\d])', '', val).strip()
 
     # Multi-level references like "L1,2,3,4" should be AREA
     if re.match(r'^L?\d+[,\d]+$', val):
@@ -75,13 +80,20 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         return result
 
     # Skip descriptive values (whole building/area references)
-    if re.search(r'^(ALL|VARIOUS|WHOLE|WORKING|OUTSIDE|LAYDOWN|QC\b|ACM|FIZZ|SUW\s*$|SUE\s*$|FAB\s|NORTH|SOUTH|EAST|WEST|NW\s|NE\s|SW\s|SE\s|DATA CENTER|PENTHOUSE|THROUGHOUT|AREAS?\s|BUILDING)', val):
+    if re.search(r'^(ALL|VARIOUS|WHOLE|WORKING|OUTSIDE|LAYDOWN|QC\b|ACM|FIZZ|SUW\s*$|SUE\s*$|FAB\s|NORTH|SOUTH|EAST|WEST|NW\s|NE\s|SW\s|SE\s|DATA CENTER|PENTHOUSE|PENDHOUSE|THROUGHOUT|AREAS?\s|BUIDLING|BUILDING|LEVEL\s+\d|NS\s+TROUGH)', val):
         result['grid_type'] = 'AREA'
         return result
 
     # Named locations (stair, elevator, vestibule, room names, equipment)
-    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|L\d+\s*\(|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT)', val):
+    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|L\d+\s*\(|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ$|AWNING)', val):
         result['grid_type'] = 'NAMED'
+        return result
+
+    # Row letter + "columns" description: "K columns"
+    m = re.match(r'^([A-N])\s+COLUMN', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_type'] = 'ROW_ONLY'
         return result
 
     # Pattern like "L17 (Stair)" where L17 is gridline, not level
@@ -89,6 +101,52 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
     if m:
         result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
         result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Pattern: "NW-PH GL 33 K-L-Line" or "NE-PH-GL 33 C-D" → col 33, rows K-L (penthouse reference)
+    m = re.match(r'^[NS][EW][-\s]*(PH|PENTHOUSE)?[-\s]*GL\s*(\d+)\s*([A-N])[-–]([A-N])', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        rows = sorted([m.group(3), m.group(4)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "N/ 5,16,32 LINE" or "A/ 5,16,32" → row N/A with multiple columns (take range)
+    m = re.match(r'^([A-N])[/\s]+(\d+)[,\s]+(\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "A-3/N-3" → two grid points (rows A and N, col 3)
+    m = re.match(r'^([A-N])[-]?(\d+)[/]([A-N])[-]?(\d+)', val)
+    if m:
+        rows = sorted([m.group(1), m.group(3)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "4L" or "33K" → inverted col+row
+    m = re.match(r'^(\d+)([A-N])$', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_row_min'] = result['grid_row_max'] = m.group(2)
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Pattern: "A-19 & N-11" → multiple grid points (take first)
+    m = re.match(r'^([A-N])[-]?(\d+)\s*[&,]\s*([A-N])[-]?(\d+)', val)
+    if m:
+        result['grid_row_min'] = m.group(1)
+        result['grid_row_max'] = m.group(3)
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
         return result
 
     # === ROW RANGE PATTERNS ===
@@ -302,6 +360,22 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         rows = sorted([m.group(2), m.group(3)])
         result['grid_row_min'], result['grid_row_max'] = rows
         result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "GL-N/30-32" → row N, cols 30-32
+    m = re.match(r'^GL[-\s]?([A-N])[/\s]+(\d+)[-–](\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "33 Canopy" or "33 description" → col with description
+    m = re.match(r'^(\d+)\s+[A-Z]', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
         return result
 
     # Pattern: Just "33" → col only
