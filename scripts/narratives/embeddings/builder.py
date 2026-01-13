@@ -1,7 +1,9 @@
 """Build and update the document embeddings index from raw documents."""
 
 import hashlib
+import time
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Iterator, Tuple, Set
 
@@ -20,6 +22,114 @@ SKIP_PATTERNS = {"extracted", ".tmp", "~$"}
 
 # Batch size for incremental embedding/storage (files per batch)
 INCREMENTAL_BATCH_SIZE = 10
+
+# Cost estimation (Gemini embedding: ~$0.00001 per 1K chars, but free tier is generous)
+# Using conservative estimate for paid tier
+COST_PER_1K_CHARS = 0.00001
+
+
+@dataclass
+class ProgressTracker:
+    """Track build progress with timing and cost estimates."""
+
+    total_files: int
+    start_time: float = field(default_factory=time.time)
+
+    # Counters
+    files_processed: int = 0
+    files_skipped: int = 0  # No content
+    files_unchanged: int = 0
+    files_errors: int = 0
+    chunks_embedded: int = 0
+    chars_embedded: int = 0
+
+    # Timing
+    last_status_time: float = field(default_factory=time.time)
+    status_interval: float = 30.0  # Print status every 30 seconds
+
+    def file_done(self, status: str, chunks: int = 0, chars: int = 0):
+        """Record a file completion."""
+        if status == "processed":
+            self.files_processed += 1
+            self.chunks_embedded += chunks
+            self.chars_embedded += chars
+        elif status == "unchanged":
+            self.files_unchanged += 1
+        elif status == "skipped":
+            self.files_skipped += 1
+        elif status == "error":
+            self.files_errors += 1
+
+    @property
+    def files_done(self) -> int:
+        return self.files_processed + self.files_unchanged + self.files_skipped + self.files_errors
+
+    @property
+    def files_remaining(self) -> int:
+        return self.total_files - self.files_done
+
+    @property
+    def elapsed_seconds(self) -> float:
+        return time.time() - self.start_time
+
+    @property
+    def files_per_second(self) -> float:
+        if self.elapsed_seconds < 1:
+            return 0
+        return self.files_done / self.elapsed_seconds
+
+    @property
+    def eta_seconds(self) -> Optional[float]:
+        if self.files_per_second < 0.001:
+            return None
+        return self.files_remaining / self.files_per_second
+
+    @property
+    def estimated_cost(self) -> float:
+        return (self.chars_embedded / 1000) * COST_PER_1K_CHARS
+
+    def format_duration(self, seconds: float) -> str:
+        """Format seconds as human-readable duration."""
+        if seconds < 60:
+            return f"{seconds:.0f}s"
+        elif seconds < 3600:
+            return f"{seconds/60:.1f}m"
+        else:
+            return f"{seconds/3600:.1f}h"
+
+    def should_print_status(self) -> bool:
+        """Check if it's time to print a status update."""
+        now = time.time()
+        if now - self.last_status_time >= self.status_interval:
+            self.last_status_time = now
+            return True
+        return False
+
+    def get_status_line(self) -> str:
+        """Get a formatted status line."""
+        elapsed = self.format_duration(self.elapsed_seconds)
+
+        eta_str = "calculating..."
+        if self.eta_seconds is not None:
+            eta_str = self.format_duration(self.eta_seconds)
+
+        rate = f"{self.files_per_second:.1f}" if self.files_per_second > 0 else "—"
+
+        return (
+            f"Progress: {self.files_done}/{self.total_files} files "
+            f"({self.files_processed} new, {self.files_unchanged} unchanged, "
+            f"{self.files_skipped} skipped, {self.files_errors} errors) | "
+            f"Chunks: {self.chunks_embedded} | "
+            f"Rate: {rate} files/s | "
+            f"Elapsed: {elapsed} | ETA: {eta_str} | "
+            f"Est. cost: ${self.estimated_cost:.4f}"
+        )
+
+    def print_status(self):
+        """Print current status."""
+        print(f"\n{'─' * 80}")
+        print(self.get_status_line())
+        print(f"{'─' * 80}\n")
 
 
 def scan_documents(root_dir: Path) -> Iterator[Path]:
@@ -157,16 +267,21 @@ def _process_file_batch(
     chunk_batch: List[Tuple[str, str]],
     metadata_batch: List[Dict[str, Any]],
     verbose: bool = True
-) -> int:
-    """Embed and store a batch of chunks. Returns count of chunks stored."""
+) -> Tuple[int, int]:
+    """Embed and store a batch of chunks.
+
+    Returns:
+        Tuple of (chunks_stored, total_chars_embedded)
+    """
     if not chunk_batch:
-        return 0
+        return 0, 0
 
     chunk_ids = [c[0] for c in chunk_batch]
     texts = [c[1] for c in chunk_batch]
+    total_chars = sum(len(t) for t in texts)
 
     if verbose:
-        print(f"  Embedding and storing {len(chunk_batch)} chunks...")
+        print(f"  Embedding {len(chunk_batch)} chunks ({total_chars:,} chars)...")
 
     # Generate embeddings
     embeddings = embed_for_index(texts)
@@ -179,7 +294,7 @@ def _process_file_batch(
         metadatas=metadata_batch
     )
 
-    return len(chunk_batch)
+    return len(chunk_batch), total_chars
 
 
 def build_index(
@@ -219,9 +334,9 @@ def build_index(
     store = get_store()
 
     if verbose:
-        print("=" * 60)
+        print("=" * 80)
         print(f"Document Embeddings Builder - {source}")
-        print("=" * 60)
+        print("=" * 80)
         print(f"Source: {source_root}")
         print(f"ChromaDB: {config.CHROMA_PATH}")
         print(f"Force rebuild: {force}")
@@ -263,6 +378,9 @@ def build_index(
     if limit:
         documents = documents[:limit]
 
+    # Initialize progress tracker
+    progress = ProgressTracker(total_files=len(documents))
+
     # Track which chunk IDs we've seen (for deletion detection)
     seen_chunk_ids: Set[str] = set()
 
@@ -270,10 +388,11 @@ def build_index(
     current_batch_chunks: List[Tuple[str, str]] = []
     current_batch_metadata: List[Dict[str, Any]] = []
     files_in_current_batch = 0
+    total_chars_embedded = 0
 
     for i, filepath in enumerate(documents, 1):
         if verbose:
-            print(f"[{i}/{len(documents)}] {filepath.name[:60]}...", end=" ")
+            print(f"[{i}/{len(documents)}] {filepath.name[:55]}...", end=" ", flush=True)
 
         try:
             file_hash = get_file_hash(filepath)
@@ -285,6 +404,7 @@ def build_index(
                     seen_chunk_ids.add(chunk_id)
                 result.files_unchanged += 1
                 result.chunks_unchanged += len(file_to_chunks[file_hash])
+                progress.file_done("unchanged")
                 if verbose:
                     print("unchanged")
                 continue
@@ -294,6 +414,7 @@ def build_index(
 
             if not chunks:
                 result.files_skipped += 1
+                progress.file_done("skipped")
                 if verbose:
                     print("no content")
                 continue
@@ -306,6 +427,9 @@ def build_index(
                 rel_path = filepath.relative_to(source_root)
             except ValueError:
                 rel_path = Path(filepath.name)
+
+            # Calculate chars for this file
+            file_chars = sum(len(c.text) for c in chunks)
 
             # Add chunks to batch
             for chunk in chunks:
@@ -321,32 +445,47 @@ def build_index(
             result.files_processed += 1
             files_in_current_batch += 1
             if verbose:
-                print(f"{len(chunks)} chunks")
+                print(f"{len(chunks)} chunks ({file_chars:,} chars)")
 
             # Process batch if we've accumulated enough files
             if files_in_current_batch >= batch_size:
-                chunks_stored = _process_file_batch(
+                chunks_stored, chars_stored = _process_file_batch(
                     store, current_batch_chunks, current_batch_metadata, verbose
                 )
                 result.chunks_added += chunks_stored
+                total_chars_embedded += chars_stored
+                progress.file_done("processed", chunks_stored, chars_stored)
                 current_batch_chunks = []
                 current_batch_metadata = []
                 files_in_current_batch = 0
 
+                # Print periodic status update
+                if verbose and progress.should_print_status():
+                    progress.print_status()
+            else:
+                # Track progress even before batch is processed
+                progress.file_done("processed", len(chunks), file_chars)
+
         except Exception as e:
             result.files_errors += 1
             result.errors.append(f"{filepath.name}: {e}")
+            progress.file_done("error")
             if verbose:
                 print(f"ERROR: {e}")
+
+        # Print periodic status update (for unchanged files too)
+        if verbose and progress.should_print_status():
+            progress.print_status()
 
     # Process any remaining chunks in the final batch
     if current_batch_chunks:
         if verbose:
             print(f"\nProcessing final batch...")
-        chunks_stored = _process_file_batch(
+        chunks_stored, chars_stored = _process_file_batch(
             store, current_batch_chunks, current_batch_metadata, verbose
         )
         result.chunks_added += chunks_stored
+        total_chars_embedded += chars_stored
 
     # Find stale chunks to delete (only for this source)
     stale_chunk_ids = set(existing_chunks.keys()) - seen_chunk_ids
@@ -356,16 +495,23 @@ def build_index(
         store.delete_chunks(list(stale_chunk_ids))
         result.chunks_deleted = len(stale_chunk_ids)
 
+    # Final summary
     if verbose:
-        print("\n" + "=" * 60)
-        print(f"Build Summary - {source}")
-        print("=" * 60)
+        elapsed = progress.format_duration(progress.elapsed_seconds)
+        cost = (total_chars_embedded / 1000) * COST_PER_1K_CHARS
+
+        print("\n" + "=" * 80)
+        print(f"Build Complete - {source}")
+        print("=" * 80)
         print(f"Files: {result.files_processed} processed, {result.files_unchanged} unchanged, "
               f"{result.files_skipped} skipped, {result.files_duplicates} duplicates, {result.files_errors} errors")
         print(f"Chunks: {result.total_chunks} total")
         print(f"  Added: {result.chunks_added}")
         print(f"  Unchanged: {result.chunks_unchanged}")
         print(f"  Deleted: {result.chunks_deleted}")
+        print(f"Characters embedded: {total_chars_embedded:,}")
+        print(f"Time elapsed: {elapsed}")
+        print(f"Estimated cost: ${cost:.4f}")
 
         if result.errors:
             print(f"\nErrors ({len(result.errors)}):")
@@ -374,6 +520,6 @@ def build_index(
             if len(result.errors) > 10:
                 print(f"  ... and {len(result.errors) - 10} more")
 
-        print("=" * 60)
+        print("=" * 80)
 
     return result
