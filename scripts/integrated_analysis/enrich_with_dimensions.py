@@ -61,12 +61,16 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
 
     val = str(location_row).strip().upper()
 
+    # Strip leading/trailing whitespace and clean up
+    val = ' '.join(val.split())  # Normalize multiple spaces
+
     # Strip level prefixes like "L1- ", "1F-", "L1- SUW" but NOT gridline refs like "L18 (Stair)"
     # Require dash or comma after number, or F suffix, to distinguish from gridlines
     val = re.sub(r'^L?\d+[F][-\s]+', '', val).strip()  # "1F- " or "L1F- "
     val = re.sub(r'^L\d+[-]\s*', '', val).strip()  # "L1- " or "L2- "
     val = re.sub(r'^\d+[-,]\s*', '', val).strip()  # "1- " or "1, "
     val = re.sub(r'^LVL\s*\d+\s*', '', val, flags=re.IGNORECASE).strip()  # "Lvl 4 "
+    val = re.sub(r'^L\d+[E]?\s*[-]\s*', '', val).strip()  # "L4E- " or "L3-" with space
 
     # Strip building prefixes like "SUW ", "SUE ", "FAB "
     val = re.sub(r'^(SUW|SUE|FAB)\s+', '', val).strip()
@@ -85,8 +89,24 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         return result
 
     # Named locations (stair, elevator, vestibule, room names, equipment)
-    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|L\d+\s*\(|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ$|AWNING)', val):
+    # Note: L\d+ patterns handled separately to capture gridline coordinate
+    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ$|AWNING|CLEANING\s*DECK|DS$)', val):
         result['grid_type'] = 'NAMED'
+        return result
+
+    # Pattern like "L17 (Stair)" or "L18 (Elevator 3)" where L## is gridline
+    m = re.match(r'^L(\d+)\s*\(', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Pattern: "GL-J, N & A" → multiple rows (take range)
+    m = re.match(r'^GL[-\s]?([A-N])[,\s]+([A-N])', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'ROW_ONLY'
         return result
 
     # Row letter + "columns" description: "K columns"
@@ -94,13 +114,6 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
     if m:
         result['grid_row_min'] = result['grid_row_max'] = m.group(1)
         result['grid_type'] = 'ROW_ONLY'
-        return result
-
-    # Pattern like "L17 (Stair)" where L17 is gridline, not level
-    m = re.match(r'^L(\d+)\s*\(', val)
-    if m:
-        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
-        result['grid_type'] = 'COL_ONLY'
         return result
 
     # Pattern: "NW-PH GL 33 K-L-Line" or "NE-PH-GL 33 C-D" → col 33, rows K-L (penthouse reference)
@@ -146,6 +159,42 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_row_max'] = m.group(3)
         cols = sorted([float(m.group(2)), float(m.group(4))])
         result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "A/6, A/16" → row A, cols 6 and 16 (take range)
+    m = re.match(r'^([A-N])[/](\d+)[,\s]+([A-N])?[/]?(\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "4E description" or "4E suffix" → col 4, row E (inverted with description)
+    m = re.match(r'^(\d+)([A-N])\s+[A-Z]', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_row_min'] = result['grid_row_max'] = m.group(2)
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Pattern: "N-5/14" → row N, cols 5-14 (row-col/col format)
+    m = re.match(r'^([A-N])[-](\d+)[/](\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Pattern: "A-C/20-25" → rows A-C, cols 20-25 (row-row/col-col format)
+    m = re.match(r'^([A-N])[-]([A-N])[/](\d+)[-–]?(\d+)?', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_col_min'] = float(m.group(3))
+        result['grid_col_max'] = float(m.group(4) or m.group(3))
         result['grid_type'] = 'RANGE'
         return result
 
