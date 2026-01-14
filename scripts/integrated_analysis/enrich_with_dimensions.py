@@ -112,12 +112,79 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
     }
 
     if pd.isna(location_row):
+        result['grid_type'] = 'EMPTY'
         return result
 
     val = str(location_row).strip().upper()
 
+    # Handle empty string after stripping
+    if not val or val == 'NAN':
+        result['grid_type'] = 'EMPTY'
+        return result
+
     # Strip leading/trailing whitespace and clean up
     val = ' '.join(val.split())  # Normalize multiple spaces
+
+    # ==========================================================================
+    # SUW/SUE patterns with grid coordinates (MUST be checked before prefix stripping)
+    # ==========================================================================
+
+    # SUW/SUE col-col/row-row: SUW 5-6/L-N, SUE 5-20/D
+    m = re.match(r'^(SUW|SUE)\s+(\d+)[-–](\d+)[/]([A-N])[-–]?([A-N])?', val)
+    if m:
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_row_min'] = m.group(4)
+        result['grid_row_max'] = m.group(5) or m.group(4)
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # SUW col/row format: SUW 28-24/L
+    m = re.match(r'^(SUW|SUE)\s+(\d+)[-–]?(\d+)?[/]([A-N])\s*$', val)
+    if m:
+        result['grid_col_min'] = float(m.group(2))
+        result['grid_col_max'] = float(m.group(3) or m.group(2))
+        if result['grid_col_min'] > result['grid_col_max']:
+            result['grid_col_min'], result['grid_col_max'] = result['grid_col_max'], result['grid_col_min']
+        result['grid_row_min'] = result['grid_row_max'] = m.group(4)
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # SUW/SUE col/row with trailing text: SUW 28-24/L ...
+    m = re.match(r'^(SUW|SUE)\s+(\d+)[-–]?(\d+)?[/]([A-N])\s+', val)
+    if m:
+        result['grid_col_min'] = float(m.group(2))
+        result['grid_col_max'] = float(m.group(3) or m.group(2))
+        if result['grid_col_min'] > result['grid_col_max']:
+            result['grid_col_min'], result['grid_col_max'] = result['grid_col_max'], result['grid_col_min']
+        result['grid_row_min'] = result['grid_row_max'] = m.group(4)
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # FAB/SUW/SUE whole-building patterns (MUST be checked before prefix stripping)
+    if re.search(r'^(FAB\s+FLOOR|FAB\s+ALL|SUW/SUE)', val):
+        result['grid_type'] = 'AREA'
+        return result
+
+    # SUW/SUE + location description: SUE Elect. Room (MUST be before prefix stripping)
+    if re.match(r'^(SUW|SUE)\s+[A-Z]', val) and not re.match(r'^(SUW|SUE)\s+\d', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # FAB with spaced dash: fab 3 - 25 → cols 3-25 (MUST be before prefix stripping)
+    m = re.match(r'^FAB\s+(\d+)\s*[-–]\s*(\d+)', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # L## + description: L19 CJ, L28 DS (MUST be before prefix stripping)
+    m = re.match(r'^L(\d+)\s+([A-Z]{2,})', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
 
     # Strip level prefixes like "L1- ", "1F-", "L1- SUW" but NOT gridline refs like "L18 (Stair)"
     # Require dash or comma after number, or F suffix, to distinguish from gridlines
@@ -139,13 +206,61 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         return result
 
     # Skip descriptive values (whole building/area references)
-    if re.search(r'^(ALL|VARIOUS|WHOLE|WORKING|OUTSIDE|LAYDOWN|QC\b|ACM|FIZZ|SUW\s*$|SUE\s*$|FAB\s|NORTH|SOUTH|EAST|WEST|NW\s|NE\s|SW\s|SE\s|DATA CENTER|PENTHOUSE|PENDHOUSE|THROUGHOUT|AREAS?\s|BUIDLING|BUILDING|LEVEL\s+\d|NS\s+TROUGH)', val):
+    if re.search(r'^(ALL|VARIOUS|WHOLE|WORKING|OUTSIDE|LAYDOWN|QC\b|ACM|FIZZ|FIZ$|SUW\s*$|SUE\s*$|SUW/SUE|FAB\s|NORTH|SOUTH|EAST|WEST|NW\s|NE\s|SW\s|SE\s|DATA CENTER|PENTHOUSE|PENDHOUSE|THROUGHOUT|AREAS?\s|BUIDLING|BUILDING|LEVEL\s+\d|NS\s+TROUGH|FAB\s+FLOOR)', val):
         result['grid_type'] = 'AREA'
         return result
 
     # Named locations (stair, elevator, vestibule, room names, equipment)
     # Note: L\d+ patterns handled separately to capture gridline coordinate
-    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ\s*\(|AWNING|CLEANING\s*DECK|DS$|RM\s+\d|ROOM|OVER\s*BRIDGE|TRESTLE|NCR)', val):
+    if re.search(r'^(STAIR|ELEVATOR|EELV|VESTIBULE|ELEV\b|ELECTRICAL|TQRLAB|BUNKER|COPING|AIRLOCK|AIR\s*LOCK|PASSAGE|CANOPY|HMDF|HDMF|BUCK\s*HOIST|FIRE\s*CAULK|FIZ\s|ROOF\s*EDGE|ROLL\s*UP|COLUMN|TROUGH|CRICKET|BATTERY|DOGHOUSE|SPRAY|OAC\s*PAD|DUCT\s*SHAFT|PEDESTAL|CATCH-UP|CONTROL\s*JOINT|ELEC$|IFRM|CMP|VEST\s+\d|CJ\s*\(|AWNING|CLEANING\s*DECK|DS$|RM\s+\d|ROOM|OVER\s*BRIDGE|TRESTLE|NCR|\d+(ST|ND|RD|TH)\s+ELEC)', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # Sector codes: S62, S04, S05 (room codes, not grid)
+    if re.match(r'^S\d+$', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # Sector ranges: "Sectors 1-6", "Sectors 21-25"
+    if re.search(r'^SECTORS?\s+\d', val):
+        result['grid_type'] = 'AREA'
+        return result
+
+    # Additional named locations
+    if re.search(r'^(SHOP|YARD|SITE|CONNEX|JMEG|SBTA|BOILER|MEZZ|WAFER|BREEZEWAY|DCC|CRT|SLURRY|PONDS?|TRENCH|FIRE\s*RISER|EXPANSION|FFU|OFFICE\s*\d|CE\d+$|CW\d+$|FW\d+|HCH|LCH|ACID|CRANE|COOLING|PUMP|CHILLER|GEN|GENERATOR|IW\d+|PE\d+)', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # SUW/SUE + location description: SUE Elect. Room
+    if re.match(r'^(SUW|SUE)\s+[A-Z]', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # Row.col + FIZZ: F1.5 FIZZ
+    m = re.match(r'^([A-N])(\d+(?:\.\d+)?)\s+FIZZ', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # Fractional row range: L17.5-M17.5
+    m = re.match(r'^([A-N])(\d+(?:\.\d+)?)\s*[-–]\s*([A-N])(\d+(?:\.\d+)?)$', val)
+    if m:
+        result['grid_row_min'] = m.group(1)
+        result['grid_row_max'] = m.group(3)
+        result['grid_col_min'] = float(m.group(2))
+        result['grid_col_max'] = float(m.group(4))
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # NA, dash-only: not meaningful
+    if val in ['-', 'NA', 'N/A', 'TBD']:
+        result['grid_type'] = 'AREA'  # Treat as area (whole building implied)
+        return result
+
+    # Sector comma-separated: S05,62 or S1-8
+    if re.match(r'^S\d+[,\-]\d+', val):
         result['grid_type'] = 'NAMED'
         return result
 
@@ -631,6 +746,218 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_col_min'] = float(m.group(3))
         result['grid_col_max'] = float(m.group(4) or m.group(3))
         result['grid_type'] = 'RANGE'
+        return result
+
+    # ==========================================================================
+    # Additional patterns (Phase 2)
+    # ==========================================================================
+
+    # Fractional tilde with hyphen cols: G.3~H.8-3~8 → rows G.3-H.8, cols 3-8
+    m = re.match(r'^([A-N])\.(\d+)~([A-N])\.(\d+)[-–](\d+)~(\d+)', val)
+    if m:
+        result['grid_row_min'] = f"{m.group(1)}.{m.group(2)}"
+        result['grid_row_max'] = f"{m.group(3)}.{m.group(4)}"
+        cols = sorted([float(m.group(5)), float(m.group(6))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde col-only range: E/5~E/12 or E/8~9 → row E, cols 5-12 or 8-9
+    m = re.match(r'^([A-N])/(\d+)~(?:[A-N]/)?(\d+)$', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde row-col range: A~C/7~A~C/29 → rows A-C, cols 7-29
+    m = re.match(r'^([A-N])~([A-N])/(\d+)~(?:[A-N]~[A-N]/)?(\d+)$', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(3)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde fractional col range: A54~B55.5 → rows A-B, cols 54-55.5
+    m = re.match(r'^([A-N])(\d+(?:\.\d+)?)~([A-N])(\d+(?:\.\d+)?)$', val)
+    if m:
+        rows = sorted([m.group(1), m.group(3)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde compact range: E3~J18 → rows E-J, cols 3-18
+    m = re.match(r'^([A-N])(\d+)~([A-N])(\d+)$', val)
+    if m:
+        rows = sorted([m.group(1), m.group(3)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde col range: C3~4 → row C, cols 3-4
+    m = re.match(r'^([A-N])(\d+)~(\d+)$', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # GL row tilde: GL K34~44 → row K, cols 34-44
+    m = re.match(r'^GL\s+([A-N])(\d+)~(\d+)$', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde separator: E13~E28 → rows E, cols 13-28
+    m = re.match(r'^([A-N])(\d+)~([A-N])?(\d+)$', val)
+    if m:
+        result['grid_row_min'] = m.group(1)
+        result['grid_row_max'] = m.group(3) or m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde with row~row/col~col: J~G/12~18 or G~E/9~12
+    m = re.match(r'^([A-N])~([A-N])[/](\d+)~(\d+)', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(3)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # CL column range: CL 5-12, CL 20-33
+    m = re.match(r'^CL\s+(\d+)[-–](\d+)', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # CL single column: CL 11
+    m = re.match(r'^CL\s+(\d+)$', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # COL prefix: COL 11
+    m = re.match(r'^COL\s+(\d+)', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Tilde col-only: 3~8, 6~32 → cols 3-8
+    m = re.match(r'^(\d+)~(\d+)$', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # FAB with spaced dash: fab 3 - 25 → cols 3-25
+    m = re.match(r'^FAB\s+(\d+)\s*[-–]\s*(\d+)', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # N/ space col: N/ 10-11
+    m = re.match(r'^([A-N])/\s+(\d+)[-–](\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # GL-A/28, GL-N/19 format
+    m = re.match(r'^GL[-]?([A-N])[/](\d+)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # SUW/SUE col-col/row-row: SUW 5-6/L-N, SUE 5-20/D
+    m = re.match(r'^(SUW|SUE)\s+(\d+)[-–](\d+)[/]([A-N])[-–]?([A-N])?', val)
+    if m:
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_row_min'] = m.group(4)
+        result['grid_row_max'] = m.group(5) or m.group(4)
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # SUW col/row format: SUW 28-24/L
+    m = re.match(r'^(SUW|SUE)\s+(\d+)[-–]?(\d+)?[/]([A-N])', val)
+    if m:
+        result['grid_col_min'] = float(m.group(2))
+        result['grid_col_max'] = float(m.group(3) or m.group(2))
+        if result['grid_col_min'] > result['grid_col_max']:
+            result['grid_col_min'], result['grid_col_max'] = result['grid_col_max'], result['grid_col_min']
+        result['grid_row_min'] = result['grid_row_max'] = m.group(4)
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # G/J-LINE → rows G-J
+    m = re.match(r'^([A-N])/([A-N])[-\s]*LINE', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        result['grid_type'] = 'ROW_ONLY'
+        return result
+
+    # L19 CJ, L28 (Line + description)
+    m = re.match(r'^L(\d+)\s+[A-Z]', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # FAB 3 - 25 → cols 3-25
+    m = re.match(r'^FAB\s+(\d+)\s*[-–]\s*(\d+)', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # B-4 MEZZ → row B, col 4
+    m = re.match(r'^([A-N])[-](\d+)\s+(MEZZ|MEZZANINE)', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(2))
+        result['grid_type'] = 'POINT'
+        return result
+
+    # CE##P patterns: CE8P, CE22P → equipment with column hint
+    m = re.match(r'^CE(\d+)P', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # FE## patterns: FE15
+    m = re.match(r'^FE(\d+)$', val)
+    if m:
+        result['grid_col_min'] = result['grid_col_max'] = float(m.group(1))
+        result['grid_type'] = 'COL_ONLY'
         return result
 
     return result

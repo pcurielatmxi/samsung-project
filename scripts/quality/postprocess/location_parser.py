@@ -134,6 +134,65 @@ GRID_PATTERN_AREA_PREFIX = r'(?:SUBGRADE|PENTHOUSE|MEZZANINE|INTERSTITIAL)\s+([A
 # Pattern for "at/near/by" grid references: "AT G/10", "NEAR N/5", "BY L/22"
 GRID_PATTERN_PREPOSITION = r'(?:AT|NEAR|BY|@)\s+([A-N](?:\.\d)?)[/](\d+)'
 
+# =============================================================================
+# Phase 3 Patterns - Additional coverage improvements
+# =============================================================================
+
+# Pattern for "GL-33", "GL 33", "GL33" (column-only with GL prefix and optional separator)
+GRID_PATTERN_GL_HYPHEN = r'\bGL[-\s]?(\d+)\b'
+
+# Pattern for pure column range without row: "29-30", "17-22" (must be 2 digits each)
+GRID_PATTERN_COL_ONLY_RANGE = r'\b(\d{1,2})[-–](\d{1,2})\b'
+
+# Pattern for "COL." or "COL " prefix: "COL. D24", "COL D-27", "COLS E-17"
+GRID_PATTERN_COL_PREFIX = r'\bCOLS?\.?\s*([A-N])[-]?(\d+)'
+
+# Pattern for row range with THRU/TO: "E-17 THRU J-17", "A THRU C/15", "D TO G"
+GRID_PATTERN_THRU_RANGE = r'\b([A-N])[-/]?(\d+)?\s*(?:THRU|TO|THROUGH)\s*([A-N])[-/]?(\d+)?'
+
+# Pattern for "Zone D17-E17" or "Zone Col D24-D27" (zone/area prefix)
+GRID_PATTERN_ZONE = r'\bZONE\s+(?:COL\.?\s*)?([A-N])(\d+)[-–]([A-N])?(\d+)'
+
+# Pattern for inverted with hyphen: "17-E", "22-G" (column-row format)
+GRID_PATTERN_COL_ROW = r'\b(\d+)[-]([A-N])\b'
+
+# Pattern for "Row G", "Row G-J", "Rows A thru C" (explicit row reference)
+GRID_PATTERN_ROW_EXPLICIT = r'\bROWS?\s+([A-N])(?:[-–\s]+(?:THRU|TO|-)?\s*([A-N]))?'
+
+# Pattern for room-style codes that are actually grids: "L17", "L28", "L31" (L=Line, column only)
+# Only when NOT followed by F (level) and in grid-like context
+GRID_PATTERN_LINE_COL = r'\bL(\d{2})\b(?!\s*F)'
+
+# Pattern for elevator references: "ELEVATOR 22", "ELEV 18", "ELV 3"
+# Capture elevator number for potential lookup via dim_location
+GRID_PATTERN_ELEVATOR = r'\b(?:ELEVATOR|ELEV|ELV)\.?\s*(\d+[AB]?)\b'
+
+# Pattern for stair references: "STAIR 19", "STR 4", "STAIRS A"
+GRID_PATTERN_STAIR = r'\b(?:STAIR|STR|STAIRS?)\.?\s*(\d+|[A-Z])\b'
+
+# Pattern for room code ranges: "A2-A5", "D24-D27" (letter+number range)
+GRID_PATTERN_ROOM_RANGE = r'\b([A-N])(\d+)[-–]([A-N])?(\d+)\b'
+
+# Pattern for "between gridlines (X)-(Y) & (A)-(B)" format
+# Matches: "(C.8)-(F.1) & (0.8)-(3.2)" or "(A)-(C.5) & (5.8)-(9.1)"
+# NOTE: Input is uppercased, so patterns must match uppercase
+GRID_PATTERN_BETWEEN_PAREN = r'\(([A-N](?:\.\d)?)\)[-–]\(([A-N](?:\.\d)?)\)\s*[&,]\s*\((\d+(?:\.\d)?)\)[-–]\((\d+(?:\.\d)?)\)'
+
+# Pattern for "Gridlines X - Y / A - B" format (rows then columns)
+# Matches: "GRIDLINES C.9 - F / 22.1 - 25"
+GRID_PATTERN_GRIDLINES_RANGE = r'GRIDLINES?\s+([A-N](?:\.\d)?)\s*[-–]\s*([A-N](?:\.\d)?)\s*/\s*(\d+(?:\.\d)?)\s*[-–]\s*(\d+(?:\.\d)?)'
+
+# Pattern for "area XX" references: "AREA D2", "AREA E9"
+# Extracts letter+number as grid hint
+GRID_PATTERN_AREA_CODE = r'\bAREA\s+([A-N])(\d+)\b'
+
+# Pattern for "between Gridlines X / A" (single point or simpler range)
+GRID_PATTERN_BETWEEN_SIMPLE = r'BETWEEN\s+GRIDLINES?\s+([A-N](?:\.\d)?)\s*[-–]?\s*([A-N](?:\.\d)?)?\s*/\s*(\d+(?:\.\d)?)\s*[-–]?\s*(\d+(?:\.\d)?)?'
+
+# Building-only fallback: "Building: FAB", "Building = CUB", "Building CUB"
+# Used when no grid found but building is mentioned - returns BLDG/XXX format
+GRID_PATTERN_BUILDING_ONLY = r'BUILDING[:\s=]+\s*(FAB|CUB|GCS|SUE|SUW|OB1|OB2)\b'
+
 
 def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
     """
@@ -344,6 +403,190 @@ def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
                 add_if_new(f"?/{col}", match.span())
         except ValueError:
             continue
+
+    # ==========================================================================
+    # Phase 3 Patterns - Additional coverage
+    # ==========================================================================
+
+    # 14. GL-33 format (GL with hyphen separator): "GL-33", "GL-17"
+    for match in re.finditer(GRID_PATTERN_GL_HYPHEN, loc):
+        col = match.group(1)
+        try:
+            col_num = float(col)
+            if VALID_GRID_COL_MIN <= col_num <= VALID_GRID_COL_MAX:
+                add_if_new(f"?/{col}", match.span())
+        except ValueError:
+            continue
+
+    # 15. COL/COLS prefix: "COL. D24", "COLS E-17"
+    for match in re.finditer(GRID_PATTERN_COL_PREFIX, loc):
+        row, col = match.groups()
+        try:
+            if is_valid_grid(row, float(col)):
+                add_if_new(f"{row}/{col}", match.span())
+        except ValueError:
+            continue
+
+    # 16. THRU/TO range: "E-17 THRU J-17", "D TO G/15"
+    for match in re.finditer(GRID_PATTERN_THRU_RANGE, loc):
+        row1, col1, row2, col2 = match.groups()
+        try:
+            # If we have both cols, it's a full range
+            if col1 and col2:
+                if is_valid_grid(row1, float(col1)) and is_valid_grid(row2, float(col2)):
+                    add_if_new(f"{row1}/{col1}", match.span())
+                    add_if_new(f"{row2}/{col2}", match.span())
+            # If only one col, it's a row range at that column
+            elif col1 or col2:
+                col = col1 or col2
+                if is_valid_grid(row1, float(col)):
+                    add_if_new(f"{row1}-{row2}/{col}", match.span())
+            # If no cols, it's a row-only range
+            else:
+                add_if_new(f"{row1}-{row2}/?", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # 17. Zone prefix: "Zone D17-E17", "Zone Col D24-D27"
+    for match in re.finditer(GRID_PATTERN_ZONE, loc):
+        row1, col1, row2, col2 = match.groups()
+        try:
+            row2 = row2 or row1  # Same row if not specified
+            if is_valid_grid(row1, float(col1)):
+                if col2 and int(col1) != int(col2):
+                    add_if_new(f"{row1}/{col1}-{col2}", match.span())
+                else:
+                    add_if_new(f"{row1}-{row2}/{col1}", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # 18. Inverted with hyphen: "17-E", "22-G"
+    for match in re.finditer(GRID_PATTERN_COL_ROW, loc):
+        col, row = match.groups()
+        try:
+            if is_valid_grid(row, float(col)):
+                add_if_new(f"{row}/{col}", match.span())
+        except ValueError:
+            continue
+
+    # 19. Explicit row reference: "Row G", "Rows A-C"
+    for match in re.finditer(GRID_PATTERN_ROW_EXPLICIT, loc):
+        row1, row2 = match.groups()
+        if row2:
+            add_if_new(f"{row1}-{row2}/?", match.span())
+        else:
+            add_if_new(f"{row1}/?", match.span())
+
+    # 20. Pure column range (only if no other grids found): "29-30"
+    # This is low priority - only use if nothing else matched
+    if not grids_found:
+        for match in re.finditer(GRID_PATTERN_COL_ONLY_RANGE, loc):
+            col1, col2 = match.groups()
+            try:
+                c1, c2 = float(col1), float(col2)
+                # Only accept if both are valid columns and it looks like a range
+                if (VALID_GRID_COL_MIN <= c1 <= VALID_GRID_COL_MAX and
+                    VALID_GRID_COL_MIN <= c2 <= VALID_GRID_COL_MAX and
+                    c1 != c2 and abs(c2 - c1) <= 10):  # Reasonable range
+                    add_if_new(f"?/{col1}-{col2}", match.span())
+            except ValueError:
+                continue
+
+    # ==========================================================================
+    # Phase 4: Named location patterns (for dim_location lookup)
+    # ==========================================================================
+
+    # 21. Elevator references: "ELEVATOR 22" → "ELV/22" (special format for lookup)
+    if not grids_found:
+        for match in re.finditer(GRID_PATTERN_ELEVATOR, loc):
+            elv_num = match.group(1)
+            add_if_new(f"ELV/{elv_num}", match.span())
+
+    # 22. Stair references: "STAIR 19" → "STR/19" (special format for lookup)
+    if not grids_found:
+        for match in re.finditer(GRID_PATTERN_STAIR, loc):
+            stair_id = match.group(1)
+            add_if_new(f"STR/{stair_id}", match.span())
+
+    # 23. Room code ranges: "A2-A5", "D24-D27" → row range
+    for match in re.finditer(GRID_PATTERN_ROOM_RANGE, loc):
+        row1, col1, row2, col2 = match.groups()
+        try:
+            row2 = row2 or row1  # Same row if not specified
+            c1, c2 = float(col1), float(col2)
+            if is_valid_grid(row1, c1) and is_valid_grid(row2, c2):
+                if row1 == row2 and c1 != c2:
+                    # Same row, column range
+                    add_if_new(f"{row1}/{int(c1)}-{int(c2)}", match.span())
+                elif row1 != row2:
+                    # Row range
+                    add_if_new(f"{row1}-{row2}/{int(c1)}", match.span())
+                else:
+                    add_if_new(f"{row1}/{int(c1)}", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # ==========================================================================
+    # Phase 5: Complex gridline patterns from RABA
+    # ==========================================================================
+
+    # 24. Between gridlines with parentheses: "(C.8)-(F.1) & (0.8)-(3.2)"
+    for match in re.finditer(GRID_PATTERN_BETWEEN_PAREN, loc):
+        row1, row2, col1, col2 = match.groups()
+        try:
+            # This format has rows first, then columns
+            c1, c2 = float(col1), float(col2)
+            if c1 > VALID_GRID_COL_MAX or c2 > VALID_GRID_COL_MAX:
+                continue  # Invalid column
+            add_if_new(f"{row1}-{row2}/{col1}-{col2}", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # 25. Gridlines X - Y / A - B format: "Gridlines C.9 - F / 22.1 - 25"
+    for match in re.finditer(GRID_PATTERN_GRIDLINES_RANGE, loc):
+        row1, row2, col1, col2 = match.groups()
+        try:
+            c1, c2 = float(col1), float(col2)
+            if VALID_GRID_COL_MIN <= c1 <= VALID_GRID_COL_MAX:
+                add_if_new(f"{row1}-{row2}/{col1}-{col2}", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # 26. Between Gridlines simpler format: "between Gridlines E.9 - G / 9.1 - 11"
+    for match in re.finditer(GRID_PATTERN_BETWEEN_SIMPLE, loc):
+        row1, row2, col1, col2 = match.groups()
+        try:
+            row2 = row2 or row1
+            col2 = col2 or col1
+            c1 = float(col1)
+            if VALID_GRID_COL_MIN <= c1 <= VALID_GRID_COL_MAX:
+                if row1 != row2 or col1 != col2:
+                    add_if_new(f"{row1}-{row2}/{col1}-{col2}", match.span())
+                else:
+                    add_if_new(f"{row1}/{col1}", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # 27. Area codes: "area D2", "area E9" → treat as grid hint
+    for match in re.finditer(GRID_PATTERN_AREA_CODE, loc):
+        row, col = match.groups()
+        try:
+            c = float(col)
+            if VALID_GRID_COL_MIN <= c <= VALID_GRID_COL_MAX and row in VALID_GRID_ROW_LETTERS:
+                add_if_new(f"{row}/{int(c)}", match.span())
+        except (ValueError, TypeError):
+            continue
+
+    # ==========================================================================
+    # Phase 6: Building-only fallback (lowest priority)
+    # ==========================================================================
+
+    # 28. Building-only fallback: "Building: FAB" → "BLDG/FAB"
+    # Only used if NO other grid was found
+    if not grids_found:
+        for match in re.finditer(GRID_PATTERN_BUILDING_ONLY, loc):
+            bldg = match.group(1)
+            add_if_new(f"BLDG/{bldg}", match.span())
 
     # Combine found grids (deduplicated, up to 3)
     if grids_found:
