@@ -709,6 +709,83 @@ def get_trade_code(trade_id: int) -> Optional[str]:
     return None
 
 
+# ============================================================================
+# CSI Section Lookup
+# ============================================================================
+# Cached CSI section data
+_dim_csi_section: Optional[pd.DataFrame] = None
+
+
+def _load_csi_sections():
+    """Load CSI section dimension table if not already loaded."""
+    global _dim_csi_section
+
+    if _dim_csi_section is None:
+        csi_path = _dimensions_dir / 'dim_csi_section.csv'
+        if csi_path.exists():
+            _dim_csi_section = pd.read_csv(csi_path)
+        else:
+            _dim_csi_section = pd.DataFrame()
+
+
+def get_csi_section_id(csi_section: str) -> Optional[int]:
+    """
+    Get csi_section_id from CSI section code.
+
+    Args:
+        csi_section: CSI section code like "03 30 00" or "07 84 00"
+
+    Returns:
+        csi_section_id integer or None if not found
+    """
+    if not csi_section or pd.isna(csi_section):
+        return None
+
+    _load_csi_sections()
+
+    if _dim_csi_section.empty:
+        return None
+
+    code = str(csi_section).strip()
+
+    match = _dim_csi_section[_dim_csi_section['csi_section'] == code]
+    if len(match) > 0:
+        return int(match.iloc[0]['csi_section_id'])
+    return None
+
+
+def get_csi_section_code(csi_section_id: int) -> Optional[str]:
+    """Get CSI section code from csi_section_id."""
+    if csi_section_id is None or pd.isna(csi_section_id):
+        return None
+
+    _load_csi_sections()
+
+    if _dim_csi_section.empty:
+        return None
+
+    match = _dim_csi_section[_dim_csi_section['csi_section_id'] == int(csi_section_id)]
+    if len(match) > 0:
+        return match.iloc[0]['csi_section']
+    return None
+
+
+def get_csi_section_title(csi_section_id: int) -> Optional[str]:
+    """Get CSI section title from csi_section_id."""
+    if csi_section_id is None or pd.isna(csi_section_id):
+        return None
+
+    _load_csi_sections()
+
+    if _dim_csi_section.empty:
+        return None
+
+    match = _dim_csi_section[_dim_csi_section['csi_section_id'] == int(csi_section_id)]
+    if len(match) > 0:
+        return match.iloc[0]['csi_title']
+    return None
+
+
 def enrich_dataframe(
     df: pd.DataFrame,
     building_col: str = 'building',
@@ -791,12 +868,13 @@ def get_coverage_stats(
 
 def reset_cache():
     """Reset cached dimension data (useful for testing)."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases, _building_level_to_id
+    global _dim_location, _dim_company, _dim_trade, _map_company_aliases, _building_level_to_id, _dim_csi_section
     _dim_location = None
     _dim_company = None
     _dim_trade = None
     _map_company_aliases = None
     _building_level_to_id = None
+    _dim_csi_section = None
 
 
 # =============================================================================
