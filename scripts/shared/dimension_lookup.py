@@ -787,14 +787,14 @@ def reset_cache():
 VALID_GRID_ROWS = set('ABCDEFGHJKLMNOPQRS')  # Expanded based on actual data
 
 # Pattern for single grid coordinate: letter(s), optional decimal, slash, digits
-# Examples: G/10, E.5/17.3, N/5, A26
+# Examples: G/10, E.5/17.3, N/5, A26, O/23, R/28
 GRID_COORD_PATTERN = re.compile(
-    r'([A-N])(?:\.(\d+))?[/\-]?(\d+)(?:\.(\d+))?',
+    r'([A-S])(?:\.(\d+))?[/\-]?(\d+)(?:\.(\d+))?',
     re.IGNORECASE
 )
 
 # Pattern for simple grid like "A26" or "L5" (letter followed by digits, no slash)
-GRID_SIMPLE_PATTERN = re.compile(r'([A-N])(\d+)(?:\.(\d+))?', re.IGNORECASE)
+GRID_SIMPLE_PATTERN = re.compile(r'([A-S])(\d+)(?:\.(\d+))?', re.IGNORECASE)
 
 
 def parse_single_grid(coord: str) -> Optional[Dict[str, any]]:

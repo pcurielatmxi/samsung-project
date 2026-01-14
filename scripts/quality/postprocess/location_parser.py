@@ -25,6 +25,7 @@ BUILDING_PATTERNS = [
 # NOTE: Location string is uppercased, so patterns must match uppercase
 LEVEL_PATTERNS = [
     (r'\bLEVEL\s+(\d+)\b', 'level_num'),    # "LEVEL 4" → 4F
+    (r'\bLV(\d+)\b', 'level_num'),          # "LV4" or "Lv4" → 4F (SECAI format)
     (r'\bL(\d+)\b', 'level_num'),           # "L4" → 4F
     (r'\b(\d+)F\b', 'level_fmt'),           # "4F" → 4F
     (r'\b(ROOF|RF)\b', 'roof'),             # "ROOF" or "RF"
@@ -37,6 +38,49 @@ AREA_KEYWORDS = [
     'NORTH', 'SOUTH', 'EAST', 'WEST'
 ]
 
+# =============================================================================
+# Grid Validation Constants
+# =============================================================================
+# Valid whole row letters (A-S, excluding I per standard grid convention)
+VALID_GRID_ROW_LETTERS = set('ABCDEFGHJKLMNOPQRS')
+
+# Valid fractional rows (from gridline_mapping.py reference)
+VALID_FRACTIONAL_ROWS = {
+    'A.5', 'B.5', 'E.3', 'E.5', 'E.8',
+    'F.2', 'F.4', 'F.6', 'F.8',
+    'G.3', 'G.5', 'G.8',
+    'H.3', 'H.5', 'H.8',
+    'L.5', 'M.5'
+}
+
+# Valid column range
+VALID_GRID_COL_MIN = 1
+VALID_GRID_COL_MAX = 34
+
+
+def is_valid_grid(row: str, col: float) -> bool:
+    """
+    Check if grid coordinate is within the approved gridline system.
+
+    Args:
+        row: Row letter (A-S) or fractional row (e.g., "F.4")
+        col: Column number (1-34)
+
+    Returns:
+        True if valid grid coordinate, False otherwise
+    """
+    row = row.upper()
+    # Check fractional rows
+    if '.' in row:
+        return row in VALID_FRACTIONAL_ROWS
+    # Check whole letter and column range
+    return (
+        row in VALID_GRID_ROW_LETTERS and
+        VALID_GRID_COL_MIN <= col <= VALID_GRID_COL_MAX
+    )
+
+
+# =============================================================================
 # Grid patterns - matches various grid formats
 # NOTE: Location string is uppercased
 # Primary pattern for explicit grid references like "GRID LINES G/10"
@@ -54,6 +98,16 @@ GRID_PATTERN_SIMPLE = r'\b([A-Z]\d+(?:\.\d+)?)\b'
 
 # Pattern for parenthetical grid coordinates like "(A5-A6/-2)" or "(A11-A12/ -3 to -4)"
 GRID_PATTERN_PAREN = r'\(([A-Z]\d+(?:\.\d+)?(?:\s*-\s*[A-Z]?\d+)?(?:\s*/\s*-?\d+(?:\s+to\s+-?\d+)?)?)\)'
+
+# NEW: Pattern for explicit "Gridline N14" or "At Gridline N 22" references
+# Also matches plural "Gridlines"
+GRID_PATTERN_GRIDLINE = r'(?:AT\s+)?GRIDLINES?\s+([A-S])\s*(\d+)'
+
+# NEW: Pattern for hyphen-separated format like "B-19", "E-30"
+GRID_PATTERN_HYPHEN = r'\b([A-S])-(\d+)\b'
+
+# NEW: Pattern for no-separator format like "E39", "N14", "A26" (2+ digits required)
+GRID_PATTERN_NOSEP = r'\b([A-S])(\d{2,})\b'
 
 
 def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
@@ -144,9 +198,48 @@ def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
             if match not in grids_found:
                 grids_found.append(match)
 
+    # 5. NEW: Try explicit "Gridline N14" or "At Gridline N 22" references
+    gridline_matches = re.findall(GRID_PATTERN_GRIDLINE, loc)
+    for letter, num in gridline_matches:
+        try:
+            if is_valid_grid(letter, float(num)):
+                coord = f"{letter}/{num}"
+                if coord not in grids_found:
+                    grids_found.append(coord)
+        except ValueError:
+            continue
+
+    # 6. NEW: Try hyphen-separated format like "B-19", "E-30"
+    hyphen_matches = re.findall(GRID_PATTERN_HYPHEN, loc)
+    for letter, num in hyphen_matches:
+        try:
+            if is_valid_grid(letter, float(num)):
+                coord = f"{letter}/{num}"
+                if coord not in grids_found:
+                    grids_found.append(coord)
+        except ValueError:
+            continue
+
+    # 7. NEW: Try no-separator format like "E39", "N14" (lowest priority)
+    nosep_matches = re.findall(GRID_PATTERN_NOSEP, loc)
+    for letter, num in nosep_matches:
+        try:
+            if is_valid_grid(letter, float(num)):
+                coord = f"{letter}/{num}"
+                if coord not in grids_found:
+                    grids_found.append(coord)
+        except ValueError:
+            continue
+
     # Combine found grids (deduplicated, up to 3)
     if grids_found:
-        unique_grids = list(dict.fromkeys(grids_found))[:3]  # Preserve order, limit to 3
+        # Normalize: convert hyphens to slashes for consistency
+        normalized = []
+        for g in grids_found:
+            norm = g.replace('-', '/')
+            if norm not in normalized:
+                normalized.append(norm)
+        unique_grids = normalized[:3]  # Limit to 3
         grid = ','.join(unique_grids)
 
     # Extract area (simple keyword matching)

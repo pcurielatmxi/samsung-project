@@ -1181,6 +1181,8 @@ def infer_level_from_location(location_raw: Optional[str]) -> Optional[str]:
     patterns = [
         r'\b(\d+)F\b',  # 1F, 2F, etc.
         r'LEVEL\s*(\d+)',  # Level 1, Level 2
+        r'\bLV(\d+)\b',  # Lv4, LV4 (SECAI format)
+        r'\bL(\d+)\b',  # L4, L1
         r'(\d+)(?:ST|ND|RD|TH)\s*FLOOR',  # 1st Floor, 2nd Floor
         r'FLOOR\s*(\d+)',  # Floor 1
     ]
