@@ -42,6 +42,7 @@ from scripts.shared.dimension_lookup import (
     get_affected_rooms,
     parse_grid_field,
     normalize_grid,
+    get_company_primary_trade_id,
 )
 from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
 
@@ -205,6 +206,11 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         dim_company_id = get_company_id(subcontractor_std)
     # For trade, use the inferred/standardized trade name
     dim_trade_id = get_trade_id(trade_std)
+
+    # Fallback: if trade not found from trade field, use company's primary trade
+    if dim_trade_id is None and dim_company_id is not None:
+        dim_trade_id = get_company_primary_trade_id(dim_company_id)
+
     dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
 
     # Parse and normalize grid coordinates

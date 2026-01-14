@@ -457,6 +457,32 @@ def get_company_id(company_name: str) -> Optional[int]:
     return None
 
 
+def get_company_primary_trade_id(company_id: int) -> Optional[int]:
+    """
+    Get the primary trade_id for a company from dim_company.
+
+    This is used as a fallback when trade cannot be inferred from the inspection
+    type or other fields - we use the company's known primary trade.
+
+    Args:
+        company_id: Integer company_id from dim_company
+
+    Returns:
+        Integer trade_id or None if not found or company has no primary_trade_id
+    """
+    if company_id is None or pd.isna(company_id):
+        return None
+
+    _load_dimensions()
+
+    match = _dim_company[_dim_company['company_id'] == int(company_id)]
+    if len(match) > 0:
+        primary_trade_id = match.iloc[0].get('primary_trade_id')
+        if pd.notna(primary_trade_id):
+            return int(primary_trade_id)
+    return None
+
+
 # Trade name to trade_id mapping
 # Maps various names used in quality data to dim_trade trade_id
 TRADE_NAME_TO_ID: Dict[str, int] = {
