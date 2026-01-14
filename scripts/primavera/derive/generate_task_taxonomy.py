@@ -207,6 +207,48 @@ def print_summary(df: pd.DataFrame) -> None:
     print(f"  Tasks with Z-SUB: {has_sub:,} ({has_sub/len(df)*100:.1f}%)")
 
 
+def add_dim_location_id(taxonomy: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add dim_location_id column by looking up building+level in dim_location.
+
+    This enables Power BI relationships between P6 tasks and dim_location.
+
+    Args:
+        taxonomy: DataFrame with 'building' and 'level' columns
+
+    Returns:
+        DataFrame with 'dim_location_id' column added (Int64, nullable)
+    """
+    # Import here to avoid circular imports
+    from scripts.shared.dimension_lookup import get_location_id
+
+    print("\nAdding dim_location_id column...")
+
+    def safe_get_location_id(row):
+        b = row.get('building')
+        l = row.get('level')
+        if pd.isna(b) or pd.isna(l):
+            return None
+        return get_location_id(str(b), str(l))
+
+    taxonomy['dim_location_id'] = taxonomy.apply(safe_get_location_id, axis=1)
+    taxonomy['dim_location_id'] = taxonomy['dim_location_id'].astype('Int64')
+
+    # Report coverage
+    matched = taxonomy['dim_location_id'].notna().sum()
+    total = len(taxonomy)
+    print(f"  dim_location_id coverage: {matched:,}/{total:,} ({100*matched/total:.1f}%)")
+
+    # Report gaps (have building+level but no dim_location_id)
+    has_both = ((taxonomy['building'].notna()) & (taxonomy['level'].notna())).sum()
+    gaps = has_both - matched
+    if gaps > 0:
+        print(f"  Gaps (have building+level but no dim_location_id): {gaps:,}")
+        print("  → Run scripts/integrated_analysis/dimensions/add_missing_building_levels.py to fix")
+
+    return taxonomy
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Generate task taxonomy lookup table for YATES schedules'
@@ -221,6 +263,11 @@ def main():
         type=str,
         default=None,
         help='Output CSV path (default: derived/primavera/task_taxonomy.csv)'
+    )
+    parser.add_argument(
+        '--skip-location-id',
+        action='store_true',
+        help='Skip adding dim_location_id column'
     )
     args = parser.parse_args()
 
@@ -240,6 +287,10 @@ def main():
 
     # Generate taxonomy
     taxonomy = generate_taxonomy(context)
+
+    # Add dim_location_id for Power BI integration
+    if not args.skip_location_id:
+        taxonomy = add_dim_location_id(taxonomy)
 
     # Print summary
     print_summary(taxonomy)
