@@ -45,8 +45,8 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     # Precast
     (["pcst", "precast"], 3),  # 03 41 00 Structural Precast
 
-    # Masonry
-    (["cmu", "masonry", "block"], 5),  # 04 20 00 Unit Masonry
+    # Masonry - avoid "block" alone (matches "blocking", "blocked")
+    (["cmu", "masonry", "concrete block", "cmu block"], 5),  # 04 20 00 Unit Masonry
 
     # Steel
     (["weld", "welding", "wps"], 6),  # 05 12 00 Structural Steel
@@ -67,8 +67,9 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     # Insulation
     (["insul", "insulation"], 13),  # 07 21 16 Blanket Insulation
 
-    # Panels
-    (["panel", "imp", "cladding", "skin"], 15),  # 07 42 43 Composite Wall Panels
+    # Panels - use specific terms to avoid matching "electrical panel", "control panel"
+    # Note: "imp panel", "wall panel" are specific; bare "panel" removed
+    (["imp panel", "wall panel", "metal panel", "cladding", "skin"], 15),  # 07 42 43 Composite Wall Panels
 
     # Openings
     (["door", "hollow metal", "hm"], 21),  # 08 11 13 Hollow Metal Doors
@@ -78,7 +79,8 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     (["drywall", "gyp", "gypsum", "sheetrock"], 26),  # 09 21 16 Gypsum Board
     (["paint", "coating", "primer", "epoxy floor"], 29),  # 09 91 26 Painting
     (["flooring", "tile", "vct"], 28),  # 09 65 00 Resilient Flooring
-    (["ceiling", "act"], 27),  # 09 51 00 Acoustical Ceilings
+    # Ceilings - avoid bare "act" (matches "Actuator", "Manufacturer", "contract")
+    (["ceiling", "acoustical", "act ceiling"], 27),  # 09 51 00 Acoustical Ceilings
 
     # MEP - Fire Suppression
     (["sprinkler", "fire suppression", "sprk"], 34),  # 21 10 00 Fire Suppression
@@ -93,7 +95,7 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     # MEP - Electrical
     (["elec", "electrical", "conduit"], 44),  # 26 05 00 Common Work Results for Electrical
     (["cable", "wire", "conductor"], 45),  # 26 05 19 Conductors and Cables
-    (["panel", "switchboard"], 47),  # 26 24 00 Switchboards
+    (["switchboard", "panelboard", "electrical panel", "elec panel"], 47),  # 26 24 00 Switchboards
     (["light", "lighting"], 49),  # 26 51 00 Interior Lighting
 
     # Earthwork

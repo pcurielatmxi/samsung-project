@@ -73,14 +73,15 @@ ACTIVITY_TO_CSI = [
     (["insulation", "mineral wool", "batt", "blanket insul"], 13),  # 07 21 16 Blanket Insulation
     (["rigid insulation", "foam board", "board insul"], 12),  # 07 21 13 Board Insulation
     (["vapor barrier", "vapor retarder", "vb"], 14),  # 07 26 00 Vapor Retarders
-    (["urethane", "spray foam", "wrap"], 13),  # 07 21 16 - spray insulation
+    # Removed "wrap" - too generic, matches cable wrapping which is electrical work
+    (["urethane", "spray foam"], 13),  # 07 21 16 - spray insulation
 
-    # Panels/Cladding
-    (["imp", "insulated metal panel", "metal panel", "panel install", "wall panel"], 15),  # 07 42 43 Composite Wall Panels
+    # Panels/Cladding - use "imp panel" to avoid matching "IMPROPER", "improvement"
+    (["imp panel", "insulated metal panel", "metal panel", "panel install", "wall panel"], 15),  # 07 42 43 Composite Wall Panels
     (["clad", "cladding", "skin", "enclosure", "facade"], 15),  # 07 42 43 Composite Wall Panels
 
-    # Masonry
-    (["masonry", "cmu", "block", "brick", "mortar"], 5),  # 04 20 00 Unit Masonry
+    # Masonry - avoid bare "block" (matches "blocking", "blocked")
+    (["masonry", "cmu", "cmu block", "concrete block", "brick", "mortar"], 5),  # 04 20 00 Unit Masonry
 
     # Finishes
     (["paint", "painting", "primer", "topcoat", "coating", "touch up"], 29),  # 09 91 26 Painting - Building

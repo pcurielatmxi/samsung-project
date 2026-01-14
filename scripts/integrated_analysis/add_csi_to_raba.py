@@ -131,11 +131,11 @@ KEYWORD_TO_CSI = [
     (["rigid insulation", "board insulation", "foam board"], 12),  # 07 21 13 Board Insulation
     (["vapor barrier", "vapor retarder"], 14),  # 07 26 00 Vapor Retarders
 
-    # Panels
-    (["imp", "insulated metal panel", "metal panel", "composite panel", "wall panel"], 15),  # 07 42 43 Composite Wall Panels
+    # Panels - use "imp panel" to avoid matching "IMPROPER", "improvement"
+    (["imp panel", "insulated metal panel", "metal panel", "composite panel", "wall panel"], 15),  # 07 42 43 Composite Wall Panels
 
-    # Masonry
-    (["masonry", "cmu", "block", "brick", "mortar"], 5),  # 04 20 00 Unit Masonry
+    # Masonry - avoid bare "block" (matches "blocking", "blocked")
+    (["masonry", "cmu", "cmu block", "concrete block", "brick", "mortar"], 5),  # 04 20 00 Unit Masonry
 
     # Finishes
     (["paint", "painting", "primer", "topcoat", "coating"], 29),  # 09 91 26 Painting - Building
@@ -143,8 +143,8 @@ KEYWORD_TO_CSI = [
     (["flooring", "resilient", "vct", "tile floor"], 28),  # 09 65 00 Resilient Flooring
     (["sealant", "caulk", "joint seal"], 20),  # 07 90 00 Joint Protection
 
-    # Openings
-    (["door", "hollow metal", "hm door", "frame"], 21),  # 08 11 13 Hollow Metal Doors
+    # Openings - use "door frame" instead of bare "frame" (matches framing)
+    (["door", "hollow metal", "hm door", "door frame"], 21),  # 08 11 13 Hollow Metal Doors
     (["coiling door", "roll-up", "overhead door"], 22),  # 08 33 23 Overhead Coiling Doors
     (["hardware", "lockset", "hinge", "closer"], 23),  # 08 71 00 Door Hardware
     (["glazing", "glass", "curtain wall", "storefront"], 24),  # 08 80 00 Glazing
@@ -167,7 +167,8 @@ KEYWORD_TO_CSI = [
     # MEP - Electrical
     (["conduit", "raceway", "junction box"], 46),  # 26 05 33 Raceway and Boxes
     (["wire", "cable", "conductor"], 45),  # 26 05 19 Conductors and Cables
-    (["panel", "switchboard", "panelboard"], 47),  # 26 24 00 Switchboards
+    # Use specific panel terms to avoid matching "wall panel", "metal panel"
+    (["switchboard", "panelboard", "electrical panel", "elec panel"], 47),  # 26 24 00 Switchboards
     (["receptacle", "outlet", "switch", "wiring device"], 48),  # 26 27 26 Wiring Devices
     (["lighting", "light fixture", "luminaire"], 49),  # 26 51 00 Interior Lighting
     (["electrical"], 44),  # 26 05 00 Common Work Results for Electrical

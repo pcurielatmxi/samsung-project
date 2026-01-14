@@ -99,10 +99,11 @@ ACTIVITY_TO_CSI = [
     (["vapor barrier", "vapor retard"], 14),  # 07 26 00 Vapor Retarders
 
     # Panels/Cladding
-    (["imp", "metal panel", "wall panel", "cladding"], 15),  # 07 42 43 Composite Wall Panels
+    # Panels - use "imp panel" to avoid matching "IMPROPER", "improvement"
+    (["imp panel", "metal panel", "wall panel", "cladding"], 15),  # 07 42 43 Composite Wall Panels
 
-    # Masonry
-    (["masonry", "cmu", "block", "brick"], 5),  # 04 20 00 Unit Masonry
+    # Masonry - avoid bare "block" (matches "blocking", "blocked")
+    (["masonry", "cmu", "cmu block", "concrete block", "brick"], 5),  # 04 20 00 Unit Masonry
 
     # Finishes
     (["paint", "primer", "coating"], 29),  # 09 91 26 Painting - Building
@@ -134,7 +135,8 @@ ACTIVITY_TO_CSI = [
     # MEP - Electrical
     (["conduit", "raceway", "junction box"], 46),  # 26 05 33 Raceway and Boxes
     (["wire", "cable", "conductor"], 45),  # 26 05 19 Conductors and Cables
-    (["panel", "switchboard", "panelboard"], 47),  # 26 24 00 Switchboards
+    # Use specific panel terms to avoid matching "wall panel", "metal panel"
+    (["switchboard", "panelboard", "electrical panel"], 47),  # 26 24 00 Switchboards
     (["receptacle", "outlet", "switch"], 48),  # 26 27 26 Wiring Devices
     (["lighting", "light fixture"], 49),  # 26 51 00 Interior Lighting
     (["electrical"], 44),  # 26 05 00 Common Work Results for Electrical

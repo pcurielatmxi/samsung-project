@@ -36,11 +36,14 @@ from src.config.settings import settings
 from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
 
 # Keyword patterns for Yates inspection descriptions
+# Order matters - more specific patterns should come first
 YATES_KEYWORD_TO_CSI = [
-    # Drywall/Framing
+    # Drywall/Framing - "door frame" must come BEFORE "frame" to avoid misclassification
     (["drywall", "1st layer", "2nd layer", "3rd layer", "gypsum", "sheetrock"], 26),  # 09 21 16 Gypsum Board
-    (["framing", "frame", "stud", "track"], 8),  # 05 40 00 Cold-Formed Metal Framing
-    (["ceiling grid", "ceiling tile", "act", "acoustical"], 27),  # 09 51 00 Acoustical Ceilings
+    (["door frame"], 21),  # 08 11 13 Hollow Metal Doors - specific pattern before generic "frame"
+    (["framing", "stud", "track"], 8),  # 05 40 00 Cold-Formed Metal Framing (removed bare "frame")
+    # Ceilings - avoid bare "act" (matches "Actuator", "action", etc.)
+    (["ceiling grid", "ceiling tile", "acoustical", "act ceiling"], 27),  # 09 51 00 Acoustical Ceilings
 
     # Fire protection
     (["sfrm", "ifrm", "fireproofing", "fire spray", "intumescent"], 18),  # 07 81 00 Applied Fireproofing
@@ -66,8 +69,8 @@ YATES_KEYWORD_TO_CSI = [
     # Insulation
     (["insulation", "insul"], 13),  # 07 21 16 Blanket Insulation
 
-    # Panels
-    (["imp", "metal panel", "wall panel"], 15),  # 07 42 43 Composite Wall Panels
+    # Panels - use "imp panel" to avoid matching "IMPROPER", "improvement"
+    (["imp panel", "metal panel", "wall panel"], 15),  # 07 42 43 Composite Wall Panels
 
     # Finishes
     (["paint", "coating", "primer"], 29),  # 09 91 26 Painting
