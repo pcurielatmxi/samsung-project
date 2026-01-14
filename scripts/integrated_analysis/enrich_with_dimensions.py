@@ -227,7 +227,32 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         return result
 
     # Additional named locations
-    if re.search(r'^(SHOP|YARD|SITE|CONNEX|JMEG|SBTA|BOILER|MEZZ|WAFER|BREEZEWAY|DCC|CRT|SLURRY|PONDS?|TRENCH|FIRE\s*RISER|EXPANSION|FFU|OFFICE\s*\d|CE\d+$|CW\d+$|FW\d+|HCH|LCH|ACID|CRANE|COOLING|PUMP|CHILLER|GEN|GENERATOR|IW\d+|PE\d+)', val):
+    if re.search(r'^(SHOP|YARD|SITE|CONNEX|JMEG|SBTA|BOILER|MEZZ|WAFER|BREEZEWAY|DCC|CRT|SLURRY|PONDS?|TRENCH|FIRE\s*RISER|EXPANSION|FFU|OFFICE\s*\d|CE\d+$|CW\d+$|FW\d+|HCH|LCH|ACID|CRANE|COOLING|PUMP|CHILLER|GEN|GENERATOR|IW\d+|PE\d+|BAKER|WALK\s*WAY|PLENUM|LIFT\s+STATION)', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # Room codes: OA###, Apollo, Mechanical, Janitor, Reticle, CDA, MCC, Purifier
+    if re.match(r'^(OA\d+|APOLLO|MECHANICAL|JANITOR|RETICLE|WATER\s+ROOM|CDA\s|MCC\s|PURIFIER|AHU|SPEC\s*GAS|DUMBWAITER|DUMB\s*WAITER|PIPE\s+RACK|ROOF\s+TEAR)', val):
+        result['grid_type'] = 'NAMED'
+        return result
+
+    # GCS building references: GCS A, GCS B, GCSB, GCS A/B
+    if re.match(r'^GCS\s*[AB]?(?:[/\s-]|$)', val):
+        result['grid_type'] = 'AREA'
+        return result
+
+    # AD (access door) area references
+    if re.match(r'^AD\s', val):
+        result['grid_type'] = 'AREA'
+        return result
+
+    # Roof reference
+    if val == 'ROOF':
+        result['grid_type'] = 'AREA'
+        return result
+
+    # Sec.## patterns (sector)
+    if re.match(r'^SEC\.?\s*\d', val):
         result['grid_type'] = 'NAMED'
         return result
 
@@ -653,6 +678,23 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
         result['grid_type'] = 'COL_ONLY'
         return result
 
+    # Parenthesized col range: (3-33), (20-40)
+    m = re.match(r'^\((\d+)[-–](\d+)\)$', val)
+    if m:
+        cols = sorted([float(m.group(1)), float(m.group(2))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'COL_ONLY'
+        return result
+
+    # Decimal row-col range: E-14.0 - 17.0, J-22.0 - 24.0
+    m = re.match(r'^([A-N])[-–](\d+\.?\d*)\s*[-–]\s*(\d+\.?\d*)$', val)
+    if m:
+        result['grid_row_min'] = result['grid_row_max'] = m.group(1)
+        cols = sorted([float(m.group(2)), float(m.group(3))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
     # === SIMPLE PATTERNS ===
 
     # Single letter: G, D, B
@@ -831,6 +873,46 @@ def parse_tbm_grid(location_row: str) -> Dict[str, Any]:
 
     # Tilde with row~row/col~col: J~G/12~18 or G~E/9~12
     m = re.match(r'^([A-N])~([A-N])[/](\d+)~(\d+)', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(3)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde with fractional row: G~G.3/8~32 → rows G-G.3, cols 8-32
+    m = re.match(r'^([A-N])~([A-N])\.(\d+)/(\d+)~(\d+)$', val)
+    if m:
+        result['grid_row_min'] = m.group(1)
+        result['grid_row_max'] = f"{m.group(2)}.{m.group(3)}"
+        cols = sorted([float(m.group(4)), float(m.group(5))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Tilde with comma separator: J~K,8~15 → rows J-K, cols 8-15
+    m = re.match(r'^([A-N])~([A-N]),(\d+)~(\d+)$', val)
+    if m:
+        rows = sorted([m.group(1), m.group(2)])
+        result['grid_row_min'], result['grid_row_max'] = rows
+        cols = sorted([float(m.group(3)), float(m.group(4))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Fractional tilde with comma: H.8~K,6-3 → rows H.8-K, cols 3-6
+    m = re.match(r'^([A-N])\.(\d+)~([A-N]),(\d+)[-–](\d+)$', val)
+    if m:
+        result['grid_row_min'] = f"{m.group(1)}.{m.group(2)}"
+        result['grid_row_max'] = m.group(3)
+        cols = sorted([float(m.group(4)), float(m.group(5))])
+        result['grid_col_min'], result['grid_col_max'] = cols
+        result['grid_type'] = 'RANGE'
+        return result
+
+    # Two-letter row + cols: LM 6,4 → rows L-M, cols 4,6
+    m = re.match(r'^([A-N])([A-N])\s+(\d+),(\d+)$', val)
     if m:
         rows = sorted([m.group(1), m.group(2)])
         result['grid_row_min'], result['grid_row_max'] = rows
