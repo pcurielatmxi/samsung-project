@@ -56,9 +56,11 @@ ACTIVITY_TO_CSI = [
     (["clip", "elevator clip", "elevator front clip", "angle", "corbel"], 9),  # 05 50 00 Metal Fabrications
     (["anchor", "bolt", "dowel", "embed"], 6),  # 05 12 00 Structural Steel
 
-    # Drywall/Gypsum
+    # Drywall/Gypsum - "densglass" must come BEFORE "glass" patterns in Openings
+    (["densglass", "dens glass"], 26),  # 09 21 16 Gypsum Board (exterior sheathing)
     (["drywall", "gypsum", "gyp board", "sheetrock", "layer", "hanging"], 26),  # 09 21 16 Gypsum Board
     (["shaft wall", "shaft liner", "shaftliner", "shaft"], 26),  # 09 21 16 Gypsum Board
+    (["tape", "taping", "float", "finish drywall", "mud", "joint compound"], 26),  # 09 21 16 Gypsum finishing
     (["screw", "fastener"], 26),  # 09 21 16 - drywall screws
     (["ceiling grid", "ceiling tile", "acoustical ceiling", "act ceiling"], 27),  # 09 51 00 Acoustical Ceilings
     (["track", "sliptrack", "slip track", "bottom track", "top track"], 8),  # 05 40 00 Cold-Formed Metal Framing
@@ -111,7 +113,7 @@ ACTIVITY_TO_CSI = [
     (["hvac", "mechanical"], 40),  # 23 05 00 Common Work Results for HVAC
 
     # MEP - Electrical
-    (["conduit", "raceway", "junction box", "j-box"], 46),  # 26 05 33 Raceway and Boxes
+    (["conduit", "raceway", "junction box", "j-box", "cable tray"], 46),  # 26 05 33 Raceway and Boxes
     (["wire", "cable", "conductor", "pull wire"], 45),  # 26 05 19 Conductors and Cables
     (["panel", "switchboard", "panelboard", "electrical panel"], 47),  # 26 24 00 Switchboards
     (["receptacle", "outlet", "switch", "device"], 48),  # 26 27 26 Wiring Devices

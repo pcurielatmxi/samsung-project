@@ -54,6 +54,7 @@ SUB_TRADE_TO_CSI = {
     'FRM': 8,       # 05 40 00 Cold-Formed Metal Framing
     'MSC': 9,       # 05 50 00 Metal Fabrications
     'STA': 9,       # 05 50 00 Metal Fabrications (stairs)
+    'STR': 9,       # 05 50 00 Metal Fabrications (stairs - alternate code)
 
     # Thermal/moisture protection
     'DMP': 10,      # 07 11 00 Dampproofing

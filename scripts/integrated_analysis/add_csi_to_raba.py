@@ -102,6 +102,8 @@ KEYWORD_TO_CSI = [
     # Concrete specifics
     (["precast", "waffle", "double t", "double-t", "spandrel", "precast column"], 3),  # 03 41 00 Structural Precast
     (["grout", "grouting", "non-shrink"], 4),  # 03 60 00 Grouting
+    (["voidform", "void form", "cardboard form"], 2),  # 03 30 00 Cast-in-Place Concrete (forms)
+    (["chloride", "concrete test", "cylinder"], 2),  # 03 30 00 Cast-in-Place Concrete (testing)
     (["concrete", "pour", "placement", "slab", "topping", "mat foundation", "sog"], 2),  # 03 30 00 Cast-in-Place
 
     # Steel specifics
@@ -114,7 +116,7 @@ KEYWORD_TO_CSI = [
 
     # Drywall/Framing
     (["drywall", "gypsum", "gyp board", "sheetrock", "layer inspection", "1st layer", "2nd layer", "3rd layer"], 26),  # 09 21 16 Gypsum Board
-    (["framing", "frame inspection", "bottom plate", "top plate", "sliptrack"], 8),  # 05 40 00 Cold-Formed Metal Framing
+    (["framing", "frame inspection", "bottom plate", "top plate", "sliptrack", "t-bar", "tee bar"], 8),  # 05 40 00 Cold-Formed Metal Framing
     (["shaft wall", "shaft liner", "shaftliner"], 26),  # 09 21 16 Gypsum Board
     (["control joint", "cj inspection"], 26),  # 09 21 16 - control joints in drywall
     (["ceiling", "acoustical ceiling", "ceiling grid", "ceiling tile"], 27),  # 09 51 00 Acoustical Ceilings
@@ -165,7 +167,7 @@ KEYWORD_TO_CSI = [
     (["hvac", "mechanical"], 40),  # 23 05 00 Common Work Results for HVAC
 
     # MEP - Electrical
-    (["conduit", "raceway", "junction box"], 46),  # 26 05 33 Raceway and Boxes
+    (["conduit", "raceway", "junction box", "cable tray"], 46),  # 26 05 33 Raceway and Boxes
     (["wire", "cable", "conductor"], 45),  # 26 05 19 Conductors and Cables
     # Use specific panel terms to avoid matching "wall panel", "metal panel"
     (["switchboard", "panelboard", "electrical panel", "elec panel"], 47),  # 26 24 00 Switchboards

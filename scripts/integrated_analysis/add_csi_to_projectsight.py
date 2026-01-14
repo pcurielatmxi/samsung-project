@@ -73,6 +73,7 @@ ACTIVITY_TO_CSI = [
     # Concrete specifics
     (["precast", "waffle", "double t", "spandrel", "tilt"], 3),  # 03 41 00 Structural Precast
     (["grout", "grouting"], 4),  # 03 60 00 Grouting
+    (["voidform", "void form"], 2),  # 03 30 00 Cast-in-Place Concrete (forms)
     (["pour", "placement", "slab", "topping", "sog", "mat found", "concrete"], 2),  # 03 30 00 Cast-in-Place
 
     # Steel specifics
@@ -82,9 +83,11 @@ ACTIVITY_TO_CSI = [
     (["misc steel", "stair", "railing", "handrail", "grating"], 9),  # 05 50 00 Metal Fabrications
     (["weld"], 6),  # 05 12 00 Structural Steel
 
-    # Drywall/Gypsum
+    # Drywall/Gypsum - "densglass" must come BEFORE "glass" patterns
+    (["densglass", "dens glass"], 26),  # 09 21 16 Gypsum Board (exterior sheathing)
     (["drywall", "gypsum", "gyp board", "sheetrock"], 26),  # 09 21 16 Gypsum Board
     (["shaft wall", "shaft liner"], 26),  # 09 21 16 Gypsum Board
+    (["tape", "taping", "float", "mud", "finish drywall"], 26),  # 09 21 16 Gypsum finishing
     (["ceiling grid", "ceiling tile", "acoustical"], 27),  # 09 51 00 Acoustical Ceilings
 
     # Waterproofing/Roofing
@@ -133,7 +136,7 @@ ACTIVITY_TO_CSI = [
     (["hvac", "mechanical"], 40),  # 23 05 00 Common Work Results for HVAC
 
     # MEP - Electrical
-    (["conduit", "raceway", "junction box"], 46),  # 26 05 33 Raceway and Boxes
+    (["conduit", "raceway", "junction box", "cable tray"], 46),  # 26 05 33 Raceway and Boxes
     (["wire", "cable", "conductor"], 45),  # 26 05 19 Conductors and Cables
     # Use specific panel terms to avoid matching "wall panel", "metal panel"
     (["switchboard", "panelboard", "electrical panel"], 47),  # 26 24 00 Switchboards

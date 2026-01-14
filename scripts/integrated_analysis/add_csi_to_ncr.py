@@ -71,8 +71,8 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     # Note: "imp panel", "wall panel" are specific; bare "panel" removed
     (["imp panel", "wall panel", "metal panel", "cladding", "skin"], 15),  # 07 42 43 Composite Wall Panels
 
-    # Openings
-    (["door", "hollow metal", "hm"], 21),  # 08 11 13 Hollow Metal Doors
+    # Openings - use specific patterns to avoid "hm" matching "SCHMIDT"
+    (["door", "hollow metal", "hm door", "hm frame"], 21),  # 08 11 13 Hollow Metal Doors
     (["glazing", "glass", "curtain wall", "window"], 24),  # 08 80 00 Glazing
 
     # Finishes

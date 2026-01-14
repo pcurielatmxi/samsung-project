@@ -38,16 +38,16 @@ from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
 # Keyword patterns for Yates inspection descriptions
 # Order matters - more specific patterns should come first
 YATES_KEYWORD_TO_CSI = [
+    # Fire protection - MUST come before drywall to catch "fire caulk" inspections
+    (["sfrm", "ifrm", "fireproofing", "fire spray", "intumescent"], 18),  # 07 81 00 Applied Fireproofing
+    (["firestop", "fire stop", "fire caulk", "fire caulking", "penetration seal"], 19),  # 07 84 00 Firestopping
+
     # Drywall/Framing - "door frame" must come BEFORE "frame" to avoid misclassification
     (["drywall", "1st layer", "2nd layer", "3rd layer", "gypsum", "sheetrock"], 26),  # 09 21 16 Gypsum Board
     (["door frame"], 21),  # 08 11 13 Hollow Metal Doors - specific pattern before generic "frame"
     (["framing", "stud", "track"], 8),  # 05 40 00 Cold-Formed Metal Framing (removed bare "frame")
     # Ceilings - avoid bare "act" (matches "Actuator", "action", etc.)
     (["ceiling grid", "ceiling tile", "acoustical", "act ceiling"], 27),  # 09 51 00 Acoustical Ceilings
-
-    # Fire protection
-    (["sfrm", "ifrm", "fireproofing", "fire spray", "intumescent"], 18),  # 07 81 00 Applied Fireproofing
-    (["firestop", "fire stop", "fire caulk", "penetration seal"], 19),  # 07 84 00 Firestopping
 
     # Concrete
     (["rebar", "reinforcing", "reinforcement"], 2),  # 03 30 00 Cast-in-Place Concrete
@@ -87,6 +87,7 @@ YATES_KEYWORD_TO_CSI = [
     (["sprinkler", "fire suppression"], 34),  # 21 10 00 Fire Suppression
     (["plumbing", "pipe"], 36),  # 22 05 00 Common Work Results for Plumbing
     (["hvac", "duct", "mechanical"], 40),  # 23 05 00 Common Work Results for HVAC
+    (["cable tray"], 46),  # 26 05 33 Raceway and Boxes (cable tray is raceway, not cables)
     (["electrical", "conduit", "wire"], 44),  # 26 05 00 Common Work Results for Electrical
 
     # Elevator
