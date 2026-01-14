@@ -81,33 +81,55 @@ def _load_dimensions():
         _map_company_aliases = pd.read_csv(_mappings_dir / 'map_company_aliases.csv')
 
 
-def get_location_id(building: str, level: str) -> Optional[int]:
+def get_location_id(building: str, level: str, allow_fallback: bool = True) -> Optional[int]:
     """
     Get location_id (integer FK) from building and level.
 
     Returns the location_id from dim_location for the given building-level.
     Prefers LEVEL type entries over ROOM/STAIR/etc for building-level aggregation.
 
+    Fallback behavior (when allow_fallback=True):
+    1. Try building + level first (e.g., "FAB-1F")
+    2. If level is missing, try building + ALL (e.g., "FAB-ALL")
+    3. If building is also missing, try "SITE"
+
     Args:
         building: Building code (FAB, SUE, SUW, FIZ, OB1, GCS)
         level: Level code (1F, 2F, B1, ROOF, etc.)
+        allow_fallback: If True, fall back to building-wide or site-wide entries
 
     Returns:
         Integer location_id or None if not found in dim_location
     """
-    if not building or not level:
-        return None
-
     _load_dimensions()
 
-    building = str(building).upper().strip()
-    level = _normalize_level(str(level).upper().strip())
+    has_building = building and pd.notna(building) and str(building).strip()
+    has_level = level and pd.notna(level) and str(level).strip()
 
-    # Construct the building_level
-    building_level = f"{building}-{level}"
+    # Case 1: Have both building and level - try exact match
+    if has_building and has_level:
+        building = str(building).upper().strip()
+        level = _normalize_level(str(level).upper().strip())
+        building_level = f"{building}-{level}"
+        loc_id = _building_level_to_id.get(building_level)
+        if loc_id is not None:
+            return loc_id
 
-    # Look up location_id
-    return _building_level_to_id.get(building_level)
+    # Case 2: Have building but no level - try building-wide
+    if allow_fallback and has_building and not has_level:
+        building = str(building).upper().strip()
+        building_wide = f"{building}-ALL"
+        loc_id = _building_level_to_id.get(building_wide)
+        if loc_id is not None:
+            return loc_id
+
+    # Case 3: No building - try site-wide
+    if allow_fallback and not has_building:
+        loc_id = _building_level_to_id.get('SITE')
+        if loc_id is not None:
+            return loc_id
+
+    return None
 
 
 def get_building_level(building: str, level: str) -> Optional[str]:

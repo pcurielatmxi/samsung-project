@@ -212,6 +212,10 @@ def add_dim_location_id(taxonomy: pd.DataFrame) -> pd.DataFrame:
     Add dim_location_id column by looking up building+level in dim_location.
 
     This enables Power BI relationships between P6 tasks and dim_location.
+    Uses fallback logic:
+    1. Try building + level first (e.g., "FAB-1F")
+    2. If level is missing, try building-wide (e.g., "FAB-ALL")
+    3. If building is also missing, try site-wide ("SITE")
 
     Args:
         taxonomy: DataFrame with 'building' and 'level' columns
@@ -220,16 +224,18 @@ def add_dim_location_id(taxonomy: pd.DataFrame) -> pd.DataFrame:
         DataFrame with 'dim_location_id' column added (Int64, nullable)
     """
     # Import here to avoid circular imports
-    from scripts.shared.dimension_lookup import get_location_id
+    from scripts.shared.dimension_lookup import get_location_id, reset_cache
+
+    # Reset cache to ensure we pick up latest dim_location
+    reset_cache()
 
     print("\nAdding dim_location_id column...")
 
     def safe_get_location_id(row):
         b = row.get('building')
         l = row.get('level')
-        if pd.isna(b) or pd.isna(l):
-            return None
-        return get_location_id(str(b), str(l))
+        # Pass values to get_location_id - it handles None/NaN with fallback logic
+        return get_location_id(b, l, allow_fallback=True)
 
     taxonomy['dim_location_id'] = taxonomy.apply(safe_get_location_id, axis=1)
     taxonomy['dim_location_id'] = taxonomy['dim_location_id'].astype('Int64')
@@ -239,12 +245,13 @@ def add_dim_location_id(taxonomy: pd.DataFrame) -> pd.DataFrame:
     total = len(taxonomy)
     print(f"  dim_location_id coverage: {matched:,}/{total:,} ({100*matched/total:.1f}%)")
 
-    # Report gaps (have building+level but no dim_location_id)
+    # Report breakdown by fallback type
     has_both = ((taxonomy['building'].notna()) & (taxonomy['level'].notna())).sum()
-    gaps = has_both - matched
-    if gaps > 0:
-        print(f"  Gaps (have building+level but no dim_location_id): {gaps:,}")
-        print("  → Run scripts/integrated_analysis/dimensions/add_missing_building_levels.py to fix")
+    has_building_only = ((taxonomy['building'].notna()) & (taxonomy['level'].isna())).sum()
+    has_neither = ((taxonomy['building'].isna()) & (taxonomy['level'].isna())).sum()
+    print(f"    - building+level: {has_both:,}")
+    print(f"    - building-only (→ ALL): {has_building_only:,}")
+    print(f"    - neither (→ SITE): {has_neither:,}")
 
     return taxonomy
 
