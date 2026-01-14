@@ -109,6 +109,31 @@ GRID_PATTERN_HYPHEN = r'\b([A-S])-(\d+)\b'
 # NEW: Pattern for no-separator format like "E39", "N14", "A26" (2+ digits required)
 GRID_PATTERN_NOSEP = r'\b([A-S])(\d{2,})\b'
 
+# =============================================================================
+# NEW PATTERNS - Phase 2 Improvements
+# =============================================================================
+
+# Pattern for "GL 22", "GL22", "LINE 15", "GRIDLINE 22" (column-only references)
+GRID_PATTERN_GL_COL = r'(?:GL|GRIDLINE|LINE)\s*#?\s*(\d+)\b'
+
+# Pattern for fractional row with space separator: "L.5 23", "M.5 30", "F.6 18"
+GRID_PATTERN_FRAC_SPACE = r'\b([A-N])\.(\d)\s+(\d+)\b'
+
+# Pattern for grid range - same row, column range: "G/10-12", "F.5/18-22"
+GRID_PATTERN_COL_RANGE = r'\b([A-N](?:\.\d)?)[/](\d+)[-–](\d+)\b'
+
+# Pattern for grid range - row range, same column: "A-C/15", "G-J/22"
+GRID_PATTERN_ROW_RANGE = r'\b([A-N])[-–]([A-N])[/](\d+)\b'
+
+# Pattern for inverted notation (column/row): "22/G", "15/N"
+GRID_PATTERN_INVERTED = r'\b(\d+)[/]([A-N])\b'
+
+# Pattern for area prefix followed by grid: "SUBGRADE G/12", "PENTHOUSE N/5"
+GRID_PATTERN_AREA_PREFIX = r'(?:SUBGRADE|PENTHOUSE|MEZZANINE|INTERSTITIAL)\s+([A-N](?:\.\d)?)[/](\d+)'
+
+# Pattern for "at/near/by" grid references: "AT G/10", "NEAR N/5", "BY L/22"
+GRID_PATTERN_PREPOSITION = r'(?:AT|NEAR|BY|@)\s+([A-N](?:\.\d)?)[/](\d+)'
+
 
 def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
     """
@@ -165,78 +190,170 @@ def parse_location(location_str: Optional[str]) -> Dict[str, Optional[str]]:
             break
 
     # Extract grid - try multiple patterns in order of specificity
+    # IMPORTANT: Range patterns must run FIRST to prevent partial matches
     grid = None
     grids_found = []
+    matched_spans = []  # Track matched positions to avoid overlap
 
-    # 1. Try explicit "GRID LINES" pattern first (most specific)
-    grid_matches = re.findall(GRID_PATTERN_EXPLICIT, loc)
-    if grid_matches:
-        grids_found.extend(grid_matches)
+    def add_if_new(coord, span=None):
+        """Add coordinate if not already found and doesn't overlap matched spans."""
+        if coord not in grids_found:
+            # Check for overlap with existing spans
+            if span:
+                for existing_start, existing_end in matched_spans:
+                    if not (span[1] <= existing_start or span[0] >= existing_end):
+                        return  # Overlaps, skip
+                matched_spans.append(span)
+            grids_found.append(coord)
 
-    # 2. Try column references
-    col_matches = re.findall(GRID_PATTERN_COLUMN, loc)
-    if col_matches:
-        grids_found.extend(col_matches)
+    # ==========================================================================
+    # Phase 1: RANGE PATTERNS (must run first to capture full ranges)
+    # ==========================================================================
 
-    # 3. Try parenthetical grid coordinates (e.g., "(A5-A6/-2)")
-    paren_matches = re.findall(GRID_PATTERN_PAREN, loc)
-    if paren_matches:
-        for match in paren_matches:
-            if match not in grids_found:
-                grids_found.append(match)
+    # 1a. Column range on same row: "G/10-12", "F.5/18-22"
+    for match in re.finditer(GRID_PATTERN_COL_RANGE, loc):
+        row, col_start, col_end = match.groups()
+        try:
+            start = int(col_start)
+            end = int(col_end)
+            if start <= end and is_valid_grid(row, float(start)):
+                coord = f"{row}/{col_start}-{col_end}"
+                add_if_new(coord, match.span())
+        except ValueError:
+            continue
 
-    # 4. Try standalone grid coordinates (e.g., "F.6/18", "N/5")
-    # Always try this to capture additional grids not caught by explicit pattern
-    standalone_matches = re.findall(GRID_PATTERN_STANDALONE, loc)
-    if standalone_matches:
-        # Filter out false positives (building codes, level codes) and duplicates
-        for match in standalone_matches:
-            # Skip if it looks like a building or level code
-            if match in ['B1', 'B2', '1F', '2F', '3F', '4F', '5F', '6F', '7F', '8F']:
+    # 1b. Row range on same column: "A-C/15", "G-J/22"
+    for match in re.finditer(GRID_PATTERN_ROW_RANGE, loc):
+        row_start, row_end, col = match.groups()
+        try:
+            col_num = float(col)
+            if is_valid_grid(row_start, col_num) and is_valid_grid(row_end, col_num):
+                coord = f"{row_start}-{row_end}/{col}"
+                add_if_new(coord, match.span())
+        except ValueError:
+            continue
+
+    # ==========================================================================
+    # Phase 2: EXPLICIT/SPECIFIC PATTERNS
+    # ==========================================================================
+
+    # 2. Try explicit "GRID LINES" pattern (most specific)
+    for match in re.finditer(GRID_PATTERN_EXPLICIT, loc):
+        add_if_new(match.group(1), match.span())
+
+    # 3. Try column references like "COLUMN L5"
+    for match in re.finditer(GRID_PATTERN_COLUMN, loc):
+        add_if_new(match.group(1), match.span())
+
+    # 4. Try parenthetical grid coordinates (e.g., "(A5-A6/-2)")
+    for match in re.finditer(GRID_PATTERN_PAREN, loc):
+        add_if_new(match.group(1), match.span())
+
+    # 5. Try explicit "Gridline N14" or "At Gridline N 22" references
+    for match in re.finditer(GRID_PATTERN_GRIDLINE, loc):
+        letter, num = match.groups()
+        try:
+            if is_valid_grid(letter, float(num)):
+                add_if_new(f"{letter}/{num}", match.span())
+        except ValueError:
+            continue
+
+    # 6. Area prefix followed by grid: "SUBGRADE G/12", "PENTHOUSE N/5"
+    for match in re.finditer(GRID_PATTERN_AREA_PREFIX, loc):
+        row, col = match.groups()
+        try:
+            if is_valid_grid(row, float(col)):
+                add_if_new(f"{row}/{col}", match.span())
+        except ValueError:
+            continue
+
+    # 7. Preposition grid references: "AT G/10", "NEAR N/5"
+    for match in re.finditer(GRID_PATTERN_PREPOSITION, loc):
+        row, col = match.groups()
+        try:
+            if is_valid_grid(row, float(col)):
+                add_if_new(f"{row}/{col}", match.span())
+        except ValueError:
+            continue
+
+    # 8. Fractional row with space: "L.5 23", "M.5 30"
+    for match in re.finditer(GRID_PATTERN_FRAC_SPACE, loc):
+        letter, frac_digit, col = match.groups()
+        try:
+            row = f"{letter}.{frac_digit}"
+            if is_valid_grid(row, float(col)):
+                add_if_new(f"{row}/{col}", match.span())
+        except ValueError:
+            continue
+
+    # ==========================================================================
+    # Phase 3: GENERAL PATTERNS (may match substrings - run after specific)
+    # ==========================================================================
+
+    # 9. Try standalone grid coordinates (e.g., "F.6/18", "N/5")
+    for match in re.finditer(GRID_PATTERN_STANDALONE, loc):
+        m = match.group(1)
+        # Skip building/level codes
+        if m in ['B1', 'B2', '1F', '2F', '3F', '4F', '5F', '6F', '7F', '8F']:
+            continue
+        # Validate the coordinate - extract row and column
+        parts = re.match(r'([A-Z](?:\.\d+)?)[/\-](\d+(?:\.\d+)?)', m)
+        if parts:
+            row, col = parts.groups()
+            try:
+                if is_valid_grid(row, float(col)):
+                    add_if_new(m, match.span())
+            except ValueError:
                 continue
-            # Skip if already found via explicit pattern
-            if match not in grids_found:
-                grids_found.append(match)
+        else:
+            add_if_new(m, match.span())
 
-    # 5. NEW: Try explicit "Gridline N14" or "At Gridline N 22" references
-    gridline_matches = re.findall(GRID_PATTERN_GRIDLINE, loc)
-    for letter, num in gridline_matches:
+    # 10. Try hyphen-separated format like "B-19", "E-30"
+    for match in re.finditer(GRID_PATTERN_HYPHEN, loc):
+        letter, num = match.groups()
         try:
             if is_valid_grid(letter, float(num)):
-                coord = f"{letter}/{num}"
-                if coord not in grids_found:
-                    grids_found.append(coord)
+                add_if_new(f"{letter}/{num}", match.span())
         except ValueError:
             continue
 
-    # 6. NEW: Try hyphen-separated format like "B-19", "E-30"
-    hyphen_matches = re.findall(GRID_PATTERN_HYPHEN, loc)
-    for letter, num in hyphen_matches:
+    # 11. Try no-separator format like "E39", "N14" (lowest priority)
+    for match in re.finditer(GRID_PATTERN_NOSEP, loc):
+        letter, num = match.groups()
         try:
             if is_valid_grid(letter, float(num)):
-                coord = f"{letter}/{num}"
-                if coord not in grids_found:
-                    grids_found.append(coord)
+                add_if_new(f"{letter}/{num}", match.span())
         except ValueError:
             continue
 
-    # 7. NEW: Try no-separator format like "E39", "N14" (lowest priority)
-    nosep_matches = re.findall(GRID_PATTERN_NOSEP, loc)
-    for letter, num in nosep_matches:
+    # 12. Inverted notation: "22/G" → "G/22"
+    for match in re.finditer(GRID_PATTERN_INVERTED, loc):
+        col, row = match.groups()
         try:
-            if is_valid_grid(letter, float(num)):
-                coord = f"{letter}/{num}"
-                if coord not in grids_found:
-                    grids_found.append(coord)
+            if is_valid_grid(row, float(col)):
+                add_if_new(f"{row}/{col}", match.span())
+        except ValueError:
+            continue
+
+    # 13. GL/LINE column-only references: "GL 22", "LINE 15" (column only, row unknown)
+    for match in re.finditer(GRID_PATTERN_GL_COL, loc):
+        col = match.group(1)
+        try:
+            col_num = float(col)
+            if VALID_GRID_COL_MIN <= col_num <= VALID_GRID_COL_MAX:
+                add_if_new(f"?/{col}", match.span())
         except ValueError:
             continue
 
     # Combine found grids (deduplicated, up to 3)
     if grids_found:
-        # Normalize: convert hyphens to slashes for consistency
+        # Normalize: convert ONLY row-col separator hyphens to slashes
+        # Keep range hyphens (e.g., "G/10-12" should stay as-is, not become "G/10/12")
         normalized = []
         for g in grids_found:
-            norm = g.replace('-', '/')
+            # Only normalize letter-hyphen-number patterns (row-col separators)
+            # e.g., "G-12" → "G/12", but "G/10-12" stays unchanged
+            norm = re.sub(r'^([A-N](?:\.\d)?)-(\d)', r'\1/\2', g)
             if norm not in normalized:
                 normalized.append(norm)
         unique_grids = normalized[:3]  # Limit to 3
