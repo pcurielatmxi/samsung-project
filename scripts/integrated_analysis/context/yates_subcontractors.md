@@ -82,6 +82,24 @@ These companies appear in quality inspection records but not in ProjectSight lab
 | 12 | GENERAL | General Conditions | 01 10 00 Summary |
 | 13 | MASONRY | Masonry | 04 20 00 Unit Masonry |
 
+### Multi-Trade Companies
+
+Some subcontractors perform work across multiple trades. The `other_trade_ids` column in `dim_company.csv` captures these secondary trades for inference logic.
+
+| Company | Primary Trade | Other Trades | Scope Notes |
+|---------|---------------|--------------|-------------|
+| **Apache Industrial** | FINISHES (5) | FIREPROOF (6), INSULATION (8) | Coatings, fireproofing, scaffolding |
+| **Rolling Plains** | EARTHWORK (9) | CONCRETE (1), FIREPROOF (6) | Civil, concrete, fireproofing |
+| **FD Thomas** | EARTHWORK (9) | CONCRETE (1) | Civil and concrete work |
+| **Cherry Coatings** | FINISHES (5) | FIREPROOF (6) | Intumescent paint on columns |
+| **Brazos Urethane** | INSULATION (8) | FINISHES (5) | Waffle coating (coating trade) |
+| **Performance Contracting** | INSULATION (8) | FIREPROOF (6) | Insulation and fireproofing |
+| **Kovach** | PANELS (11) | STEEL (2) | IMP with steel support |
+
+**Note:** Berg Drywall is classified as DRYWALL only. Metal stud framing is considered part of drywall scope (not a separate steel trade).
+
+**Usage:** Scripts can check both `primary_trade_id` and `other_trade_ids` when inferring trade from company.
+
 ---
 
 ## Subcontractor Scope Details

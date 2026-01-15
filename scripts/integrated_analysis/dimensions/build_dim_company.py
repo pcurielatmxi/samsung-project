@@ -13,6 +13,7 @@ Columns:
 - company_type: Classification (yates_self, yates_sub, major_contractor, precast_supplier)
 - is_yates_sub: Boolean flag for Yates subcontractors
 - primary_trade_id: FK to dim_trade for main work type
+- other_trade_ids: Comma-separated list of secondary trade IDs (for multi-trade companies)
 - default_csi_section_id: FK to dim_csi_section for default CSI classification
 - notes: Additional information
 - parent_company_id: FK to parent company (GC for subs)
@@ -46,12 +47,15 @@ OUTPUT_FILE = OUTPUT_DIR / "dim_company.csv"
 # COMPANY DEFINITIONS
 # ============================================================================
 # Format: (company_id, canonical_name, short_code, tier, company_type, is_yates_sub,
-#          primary_trade_id, default_csi_section_id, notes, parent_company_id,
-#          parent_confidence, full_name)
+#          primary_trade_id, other_trade_ids, default_csi_section_id, notes,
+#          parent_company_id, parent_confidence, full_name)
 #
 # Trade IDs (from dim_trade):
 #   1=CONCRETE, 2=STEEL, 3=ROOFING, 4=DRYWALL, 5=FINISHES, 6=FIREPROOF,
 #   7=MEP, 8=INSULATION, 9=EARTHWORK, 10=PRECAST, 11=PANELS, 12=GENERAL, 13=MASONRY
+#
+# other_trade_ids: Comma-separated string of secondary trades (e.g., "6,8")
+#   Used for inference logic when company works in multiple trades
 #
 # CSI Section IDs (from dim_csi_section):
 #   1=01 10 00 Summary, 2=03 30 00 Cast-in-Place, 3=03 41 00 Precast,
@@ -66,154 +70,162 @@ COMPANIES = [
     # =========================================================================
     # SPECIAL ENTRIES
     # =========================================================================
-    (0, "Unknown/Activity Code", "UNKNOWN", "OTHER", "other", False, None, None,
+    (0, "Unknown/Activity Code", "UNKNOWN", "OTHER", "other", False, None, None, None,
      "Placeholder for unmapped or activity description codes", None, None, None),
 
     # =========================================================================
     # OWNER
     # =========================================================================
-    (1, "Samsung Electronics Co America", "SECAI", "OWNER", "major_contractor", False, 12, 1,
+    (1, "Samsung Electronics Co America", "SECAI", "OWNER", "major_contractor", False, 12, None, 1,
      "Project owner", None, None, "Samsung E&C America, Inc. (SECAI)"),
 
     # =========================================================================
     # GENERAL CONTRACTORS
     # =========================================================================
-    (2, "W.G. Yates & Sons Construction", "YATES", "GC", "yates_self", True, 12, 1,
+    (2, "W.G. Yates & Sons Construction", "YATES", "GC", "yates_self", True, 12, None, 1,
      "General contractor", None, None, "W. G. YATES & SONS CONSTRUCTION COMPANY"),
-    (34, "Hensel Phelps Construction", "HP", "GC", "major_contractor", False, 12, 1,
+    (34, "Hensel Phelps Construction", "HP", "GC", "major_contractor", False, 12, None, 1,
      "General contractor", None, None, "Hensel Phelps Construction Co."),
-    (44, "PCL Construction", "PCL", "GC", "major_contractor", False, 12, 1,
+    (44, "PCL Construction", "PCL", "GC", "major_contractor", False, 12, None, 1,
      "General contractor", None, None, "PCL Construction"),
-    (45, "McCarthy Building Companies", "MCCARTHY", "GC", "major_contractor", False, 12, 1,
+    (45, "McCarthy Building Companies", "MCCARTHY", "GC", "major_contractor", False, 12, None, 1,
      "Cleanroom contractor", None, None, "McCarthy Building Companies"),
-    (46, "Austin Bridge & Road", "ABR", "GC", "major_contractor", False, 9, 51,
+    (46, "Austin Bridge & Road", "ABR", "GC", "major_contractor", False, 9, None, 51,
      "Sitework contractor", None, None, "Austin Bridge & Road / Austin Global Construction"),
 
     # =========================================================================
     # YATES T1 SUBCONTRACTORS - CONFIRMED FROM PROJECTSIGHT LABOR
     # =========================================================================
     # Concrete (trade=1, CSI=2 for cast-in-place, 4 for grouting)
-    (3, "Baker Concrete Construction", "BAKER", "T1_SUB", "yates_sub", True, 1, 2,
+    (3, "Baker Concrete Construction", "BAKER", "T1_SUB", "yates_sub", True, 1, None, 2,
      "Concrete - topping slabs, SOMD, elevated slabs (824K hrs)", 2, "HIGH", "BAKER CONCRETE CONSTRUCTION INC"),
-    (15, "Infinity Concrete", "INFINITY", "T1_SUB", "yates_sub", True, 1, 2,
+    (15, "Infinity Concrete", "INFINITY", "T1_SUB", "yates_sub", True, 1, None, 2,
      "Concrete placement, slabs (412K hrs)", 2, "HIGH", "INFINITY CONCRETE CONSTRUCTION LLC"),
-    (16, "LATCON", "LATCON", "T1_SUB", "yates_sub", True, 1, 2,
+    (16, "LATCON", "LATCON", "T1_SUB", "yates_sub", True, 1, None, 2,
      "Concrete work (37K hrs)", 2, "HIGH", "LATCON CORP"),
-    (18, "Grout Tech", "GROUT_TECH", "T1_SUB", "yates_sub", True, 1, 4,
+    (18, "Grout Tech", "GROUT_TECH", "T1_SUB", "yates_sub", True, 1, None, 4,
      "Grouting, precast grout, concrete repair (118K hrs)", 2, "HIGH", "GROUT TECH INC"),
 
     # Earthwork/Civil (trade=9, CSI=51 for excavation, 52 for piles)
-    (10, "Rolling Plains Construction", "ROLLING_PLAINS", "T1_SUB", "yates_sub", True, 9, 51,
-     "Civil/concrete, site work (135K hrs)", 2, "HIGH", "ROLLING PLAINS CONSTRUCTION INC"),
-    (12, "FD Thomas", "FD_THOMAS", "T1_SUB", "yates_sub", True, 9, 51,
-     "Civil work, excavation, backfill (221K hrs)", 2, "HIGH", "F D THOMAS INC"),
-    (19, "AH Beck Foundation", "AH_BECK", "T1_SUB", "yates_sub", True, 9, 52,
+    # Rolling Plains: primary=EARTHWORK, also does FIREPROOF and CONCRETE
+    (10, "Rolling Plains Construction", "ROLLING_PLAINS", "T1_SUB", "yates_sub", True, 9, "1,6", 51,
+     "Civil/concrete, fireproofing, site work (135K hrs)", 2, "HIGH", "ROLLING PLAINS CONSTRUCTION INC"),
+    # FD Thomas: primary=EARTHWORK, also does CONCRETE
+    (12, "FD Thomas", "FD_THOMAS", "T1_SUB", "yates_sub", True, 9, "1", 51,
+     "Civil work, excavation, backfill, concrete (221K hrs)", 2, "HIGH", "F D THOMAS INC"),
+    (19, "AH Beck Foundation", "AH_BECK", "T1_SUB", "yates_sub", True, 9, None, 52,
      "Deep foundations, drilled piers (6K hrs)", 2, "HIGH", "A H BECK FOUNDATION CO INC"),
-    (58, "Lehne", "LEHNE", "T1_SUB", "yates_sub", True, 9, 51,
+    (58, "Lehne", "LEHNE", "T1_SUB", "yates_sub", True, 9, None, 51,
      "Earthwork (RABA quality only)", 2, "HIGH", "Lehne"),
-    (59, "ABAR", "ABAR", "T1_SUB", "yates_sub", True, 9, 51,
+    (59, "ABAR", "ABAR", "T1_SUB", "yates_sub", True, 9, None, 51,
      "Earthwork (RABA quality only)", 2, "HIGH", "ABAR"),
 
     # Steel (trade=2, CSI=6 for framing, 7 for decking)
-    (7, "Patriot Erectors", "PATRIOT", "T1_SUB", "yates_sub", True, 2, 6,
-     "Steel erection, truss installation (351K hrs)", 2, "HIGH", "PATRIOT ERECTORS LLC"),
-    (47, "SNS Erectors", "SNS", "T1_SUB", "yates_sub", True, 2, 6,
+    (7, "Patriot Erectors", "PATRIOT", "T1_SUB", "yates_sub", True, 2, None, 6,
+     "Steel erection, misc steel, stairs/railings (351K hrs)", 2, "HIGH", "PATRIOT ERECTORS LLC"),
+    (47, "SNS Erectors", "SNS", "T1_SUB", "yates_sub", True, 2, None, 6,
      "Steel erection (83K hrs)", 2, "HIGH", "SNS Erectors, Inc"),
-    (11, "W&W Steel", "WW_STEEL", "T1_SUB", "yates_sub", True, 2, 6,
+    (11, "W&W Steel", "WW_STEEL", "T1_SUB", "yates_sub", True, 2, None, 6,
      "Structural steel erection, trusses, decking (515K hrs)", 2, "HIGH", "W & W STEEL LLC / W & W-AFCO STEEL, LLC"),
-    (57, "Greenberry Industrial", "GREENBERRY", "T1_SUB", "yates_sub", True, 2, 6,
+    (57, "Greenberry Industrial", "GREENBERRY", "T1_SUB", "yates_sub", True, 2, None, 6,
      "Welding, structural steel (RABA quality only)", 2, "HIGH", "Greenberry"),
-    (24, "Gateway Fabrication", "GATEWAY", "T1_SUB", "yates_sub", True, 2, 9,
+    (24, "Gateway Fabrication", "GATEWAY", "T1_SUB", "yates_sub", True, 2, None, 9,
      "Miscellaneous steel fabrication", 2, "HIGH", None),
-    (25, "Star Building Systems", "STAR", "T1_SUB", "yates_sub", True, 2, 6,
+    (25, "Star Building Systems", "STAR", "T1_SUB", "yates_sub", True, 2, None, 6,
      "Pre-engineered metal buildings", 2, "HIGH", None),
 
-    # Drywall/Framing (trade=4, CSI=26 for gypsum board, 8 for metal framing)
-    (4, "Berg Drywall", "BERG", "T1_SUB", "yates_sub", True, 4, 26,
+    # Drywall/Framing (trade=4, CSI=26 for gypsum board)
+    # Berg: DRYWALL only - metal stud framing is part of drywall scope (not separate steel trade)
+    (4, "Berg Drywall", "BERG", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Metal stud framing, drywall, tape & finish (780K hrs)", 2, "HIGH", "BERG DRYWALL LLC / BERG GROUP LLC"),
-    (9, "MK Marlow", "MK_MARLOW", "T1_SUB", "yates_sub", True, 4, 26,
+    (9, "MK Marlow", "MK_MARLOW", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall, framing (93K hrs)", 2, "HIGH", "MK MARLOW CO. VICTORIA LLC"),
-    (48, "Baker Triangle", "BAKER_TRI", "T1_SUB", "yates_sub", True, 4, 26,
+    (48, "Baker Triangle", "BAKER_TRI", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall (PSI quality: 203 inspections)", 2, "HIGH", "Baker Triangle / Baker Drywall"),
-    (49, "JP Hi-Tech", "JPHITECH", "T1_SUB", "yates_sub", True, 4, 26,
+    (49, "JP Hi-Tech", "JPHITECH", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall engineering (PSI quality: 55 inspections)", 2, "HIGH", "JP Hi-Tech"),
-    (53, "AMTS", "AMTS", "T1_SUB", "yates_sub", True, 4, 26,
+    (53, "AMTS", "AMTS", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall/framing (PSI quality: 410 inspections)", 2, "HIGH", "AMTS Inc."),
-    (54, "Axios Industrial", "AXIOS", "T1_SUB", "yates_sub", True, 4, 26,
+    (54, "Axios Industrial", "AXIOS", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall/framing (PSI: 439, RABA: 30 inspections)", 2, "HIGH", "Axios Industrial Group"),
-    (27, "Marek Brothers", "MAREK", "T1_SUB", "yates_sub", True, 4, 26,
+    (27, "Marek Brothers", "MAREK", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall and acoustical contractor", 2, "HIGH", None),
-    (63, "Chaparral", "CHAPARRAL", "T1_SUB", "yates_sub", True, 4, 26,
+    (63, "Chaparral", "CHAPARRAL", "T1_SUB", "yates_sub", True, 4, None, 26,
      "Drywall/framing (PSI quality only)", 2, "HIGH", "Chaparral"),
 
     # Painting/Coatings (trade=5, CSI=29 for painting)
-    (14, "Apache Industrial Services", "APACHE", "T1_SUB", "yates_sub", True, 5, 29,
-     "Industrial coatings, surface prep (805K hrs)", 2, "HIGH", "APACHE INDUSTRIAL SERVICES INC"),
-    (6, "Cherry Coatings", "CHERRY", "T1_SUB", "yates_sub", True, 5, 29,
-     "Painting, EUV waffle coating (267K hrs)", 2, "HIGH", "CHERRY PAINTING COMPANY INC DBA CHERRY COATINGS"),
-    (13, "Alpha Painting", "ALPHA", "T1_SUB", "yates_sub", True, 5, 29,
+    # Apache: primary=FINISHES, also does FIREPROOF, INSULATION (scaffolding too but no trade code)
+    (14, "Apache Industrial Services", "APACHE", "T1_SUB", "yates_sub", True, 5, "6,8", 29,
+     "Industrial coatings, fireproofing, insulation, scaffolding (805K hrs)", 2, "HIGH", "APACHE INDUSTRIAL SERVICES INC"),
+    # Cherry: primary=FINISHES, also does FIREPROOF (intumescent paint)
+    (6, "Cherry Coatings", "CHERRY", "T1_SUB", "yates_sub", True, 5, "6", 29,
+     "Painting, intumescent fireproofing, waffle coating (267K hrs)", 2, "HIGH", "CHERRY PAINTING COMPANY INC DBA CHERRY COATINGS"),
+    (13, "Alpha Painting", "ALPHA", "T1_SUB", "yates_sub", True, 5, None, 29,
      "Painting, decorating (203K hrs)", 2, "HIGH", "ALPHA PAINTING & DECORATING COMPANY INC"),
 
     # Insulation (trade=8, CSI=13 for blanket insulation)
-    (5, "Brazos Urethane", "BRAZOS", "T1_SUB", "yates_sub", True, 8, 13,
+    # Brazos: primary=INSULATION, also does FINISHES (waffle coating)
+    (5, "Brazos Urethane", "BRAZOS", "T1_SUB", "yates_sub", True, 8, "5", 13,
      "Urethane insulation, spray foam, waffle coating (203K hrs)", 2, "HIGH", "BRAZOS URETHANE INC"),
-    (28, "Performance Contracting", "PCI", "T1_SUB", "yates_sub", True, 8, 13,
+    # Performance Contracting: primary=INSULATION, also does FIREPROOF
+    (28, "Performance Contracting", "PCI", "T1_SUB", "yates_sub", True, 8, "6", 13,
      "Insulation and fireproofing", 2, "HIGH", None),
 
     # Panels/Enclosure (trade=11, CSI=15 for IMP)
-    (8, "Kovach Building Enclosures", "KOVACH", "T1_SUB", "yates_sub", True, 11, 15,
-     "Metal panel systems, IMP, building enclosure (115K hrs)", 2, "HIGH", "KOVACH ENCLOSURE SYSTEMS LLC"),
+    # Kovach: primary=PANELS, also does STEEL (support steel for IMP)
+    (8, "Kovach Building Enclosures", "KOVACH", "T1_SUB", "yates_sub", True, 11, "2", 15,
+     "Metal panel systems, IMP, steel support (115K hrs)", 2, "HIGH", "KOVACH ENCLOSURE SYSTEMS LLC"),
 
     # Fire Protection (trade=6, CSI=18 for fireproofing, 19 for firestop)
-    (55, "North Star", "NORTHSTAR", "T1_SUB", "yates_sub", True, 6, 19,
+    (55, "North Star", "NORTHSTAR", "T1_SUB", "yates_sub", True, 6, None, 19,
      "Firestopping (RABA quality: 24 inspections)", 2, "HIGH", "North Star"),
-    (56, "JMEG", "JMEG", "T1_SUB", "yates_sub", True, 6, 19,
+    (56, "JMEG", "JMEG", "T1_SUB", "yates_sub", True, 6, None, 19,
      "Firestopping, fire protection (RABA: 14 inspections)", 2, "HIGH", "JMEG"),
 
     # MEP (trade=7, CSI=40 for HVAC)
-    (20, "Cobb Mechanical", "COBB", "T1_SUB", "yates_sub", True, 7, 40,
+    (20, "Cobb Mechanical", "COBB", "T1_SUB", "yates_sub", True, 7, None, 40,
      "Mechanical contractor (8K hrs)", 2, "HIGH", "COBB MECHANICAL CONTRACTORS"),
 
     # Doors/Hardware/Specialties (trade=5, CSI=21/23 for doors/hardware)
-    (50, "Cook & Boardman", "COOK", "T1_SUB", "yates_sub", True, 5, 21,
+    (50, "Cook & Boardman", "COOK", "T1_SUB", "yates_sub", True, 5, None, 21,
      "Doors and hardware (24K hrs)", 2, "HIGH", "COOK & BOARDMAN LLC"),
-    (21, "Perry & Perry Specialties", "PERRY", "T1_SUB", "yates_sub", True, 5, 23,
+    (21, "Perry & Perry Specialties", "PERRY", "T1_SUB", "yates_sub", True, 5, None, 23,
      "Architectural specialties, door hardware (13K hrs)", 2, "HIGH", "PERRY & PERRY BUILDERS INC"),
-    (22, "Alert Lock & Key", "ALERT", "T1_SUB", "yates_sub", True, 5, 23,
+    (22, "Alert Lock & Key", "ALERT", "T1_SUB", "yates_sub", True, 5, None, 23,
      "Door hardware installation", 2, "HIGH", None),
 
     # Finishes (trade=5)
-    (23, "Spectra Contract Flooring", "SPECTRA", "T1_SUB", "yates_sub", True, 5, 28,
+    (23, "Spectra Contract Flooring", "SPECTRA", "T1_SUB", "yates_sub", True, 5, None, 28,
      "Flooring contractor (CSI 09 65 00)", 2, "HIGH", None),
-    (26, "Texas Scenic", "TEXAS_SCENIC", "T1_SUB", "yates_sub", True, 5, 29,
+    (26, "Texas Scenic", "TEXAS_SCENIC", "T1_SUB", "yates_sub", True, 5, None, 29,
      "Specialty finishes", 2, "HIGH", None),
 
     # Staffing/General (trade=12, CSI=1 Summary)
-    (51, "FinishLine Staffing", "FINISHLINE", "T1_SUB", "yates_sub", True, 12, 1,
+    (51, "FinishLine Staffing", "FINISHLINE", "T1_SUB", "yates_sub", True, 12, None, 1,
      "Labor staffing (28K hrs)", 2, "HIGH", "FINISH LINE STAFFING LLC"),
-    (17, "GDA Construction", "GDA", "T1_SUB", "yates_sub", True, 12, 1,
+    (17, "GDA Construction", "GDA", "T1_SUB", "yates_sub", True, 12, None, 1,
      "General construction (176 hrs)", 2, "HIGH", "GDA CONTRACTORS"),
-    (52, "Preferred Dallas", "PREFERRED", "T1_SUB", "yates_sub", True, 12, 1,
+    (52, "Preferred Dallas", "PREFERRED", "T1_SUB", "yates_sub", True, 12, None, 1,
      "General contractor (9K hrs)", 2, "HIGH", "PREFERRED DALLAS, LLC"),
 
     # =========================================================================
     # PRECAST SUPPLIERS (material suppliers, not direct subs)
     # =========================================================================
-    (60, "Gate Precast", "GATE", "T2_SUB", "precast_supplier", False, 10, 3,
+    (60, "Gate Precast", "GATE", "T2_SUB", "precast_supplier", False, 10, None, 3,
      "Precast concrete supplier", None, None, "Gate Precast"),
-    (61, "Coreslab", "CORESLAB", "T2_SUB", "precast_supplier", False, 10, 3,
+    (61, "Coreslab", "CORESLAB", "T2_SUB", "precast_supplier", False, 10, None, 3,
      "Precast concrete supplier", None, None, "Coreslab"),
-    (62, "Heldenfels", "HELDENFELS", "T2_SUB", "precast_supplier", False, 10, 3,
+    (62, "Heldenfels", "HELDENFELS", "T2_SUB", "precast_supplier", False, 10, None, 3,
      "Precast concrete supplier", None, None, "Heldenfels"),
 
     # =========================================================================
     # TESTING/INSPECTION COMPANIES (not Yates subs)
     # =========================================================================
-    (70, "Intertek PSI", "PSI", "OTHER", "testing", False, 12, 1,
+    (70, "Intertek PSI", "PSI", "OTHER", "testing", False, 12, None, 1,
      "Third-party quality inspections", None, None, "Professional Services Industries, Inc."),
-    (71, "Raba Kistner", "RKCI", "OTHER", "testing", False, 12, 1,
+    (71, "Raba Kistner", "RKCI", "OTHER", "testing", False, 12, None, 1,
      "Third-party quality testing", None, None, "Raba Kistner, Inc. (RKCI)"),
-    (72, "Alvarez Testing", "ATI", "OTHER", "testing", False, 12, 1,
+    (72, "Alvarez Testing", "ATI", "OTHER", "testing", False, 12, None, 1,
      "Third-party testing", None, None, "Alvarez Testing & Inspections"),
 ]
 
@@ -228,8 +240,8 @@ def build_dim_company():
     companies = []
     for row in COMPANIES:
         (company_id, canonical_name, short_code, tier, company_type, is_yates_sub,
-         primary_trade_id, default_csi_section_id, notes, parent_company_id,
-         parent_confidence, full_name) = row
+         primary_trade_id, other_trade_ids, default_csi_section_id, notes,
+         parent_company_id, parent_confidence, full_name) = row
         companies.append({
             "company_id": company_id,
             "canonical_name": canonical_name,
@@ -238,6 +250,7 @@ def build_dim_company():
             "company_type": company_type,
             "is_yates_sub": is_yates_sub,
             "primary_trade_id": primary_trade_id,
+            "other_trade_ids": other_trade_ids,
             "default_csi_section_id": default_csi_section_id,
             "notes": notes,
             "parent_company_id": parent_company_id,
@@ -247,8 +260,8 @@ def build_dim_company():
 
     # Write CSV - column order for Power BI compatibility
     fieldnames = ["company_id", "canonical_name", "short_code", "tier",
-                  "primary_trade_id", "default_csi_section_id", "notes",
-                  "parent_company_id", "parent_confidence",
+                  "primary_trade_id", "other_trade_ids", "default_csi_section_id",
+                  "notes", "parent_company_id", "parent_confidence",
                   "company_type", "is_yates_sub", "full_name"]
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
@@ -281,6 +294,13 @@ def build_dim_company():
     yates_subs = sum(1 for c in companies if c["is_yates_sub"])
     print(f"\nYates Subs (is_yates_sub=True): {yates_subs}")
     print(f"Non-Yates: {len(companies) - yates_subs}")
+
+    # Print multi-trade companies
+    multi_trade = [c for c in companies if c["other_trade_ids"]]
+    if multi_trade:
+        print(f"\nMulti-Trade Companies ({len(multi_trade)}):")
+        for c in multi_trade:
+            print(f"  {c['canonical_name']:30} primary={c['primary_trade_id']:2}  other={c['other_trade_ids']}")
 
     return companies
 
