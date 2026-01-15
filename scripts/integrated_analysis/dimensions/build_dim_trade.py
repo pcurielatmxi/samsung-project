@@ -41,21 +41,22 @@ OUTPUT_FILE = OUTPUT_DIR / "dim_trade.csv"
 
 # Trade definitions - aligned with dimension_lookup.py:TRADE_NAME_TO_ID
 # trade_id values must match the existing mappings
+# Phase codes: STR=Structural, ENC=Enclosure, INT=Interior, ADM=Administrative
 TRADES = [
-    # trade_id, trade_code, trade_name, description, csi_divisions
-    (1, "CONCRETE", "Concrete", "Cast-in-place concrete, topping slabs, SOG", "03"),
-    (2, "STEEL", "Structural Steel", "Steel erection, misc steel, decking, welding", "05"),
-    (3, "ROOFING", "Roofing", "Roofing, waterproofing, membrane systems", "07"),
-    (4, "DRYWALL", "Drywall", "Metal framing, gypsum board, ceiling grid", "09"),
-    (5, "FINISHES", "Finishes", "Painting, flooring, tile, doors, hardware", "09"),
-    (6, "FIRE_PROTECTION", "Fire Protection", "Fireproofing (SFRM/IFRM), firestopping, fire caulk", "07"),
-    (7, "MEP", "MEP", "Mechanical, electrical, plumbing, HVAC", "21,22,23,26"),
-    (8, "INSULATION", "Insulation", "Thermal insulation, pipe insulation, vapor barriers", "07"),
-    (9, "EARTHWORK", "Earthwork", "Excavation, backfill, grading, deep foundations", "31"),
-    (10, "PRECAST", "Precast", "Precast concrete panels, waffle slabs, double-tees", "03"),
-    (11, "PANELS", "Panels", "Metal panels, cladding, IMP, building skin", "07"),
-    (12, "GENERAL", "General", "General conditions, cleanup, temporary facilities", "01"),
-    (13, "MASONRY", "Masonry", "CMU, brick masonry, grout", "04"),
+    # trade_id, trade_code, trade_name, phase, csi_division, description
+    (1, "CONCRETE", "Concrete", "STR", "03", "Cast-in-place concrete foundations slabs walls topping"),
+    (2, "STEEL", "Structural Steel", "STR", "05", "Steel erection decking misc steel trusses"),
+    (3, "ROOFING", "Roofing & Waterproofing", "ENC", "07", "Roofing membrane waterproofing EIFS"),
+    (4, "DRYWALL", "Drywall & Framing", "INT", "09", "Metal stud framing gypsum board drywall"),
+    (5, "FINISHES", "Architectural Finishes", "INT", "09", "Paint flooring tile ceilings specialties doors"),
+    (6, "FIREPROOF", "Fire Protection", "INT", "07", "Fireproofing firestop fire caulk SFRM"),
+    (7, "MEP", "MEP Systems", "INT", "22-26", "Mechanical electrical plumbing HVAC"),
+    (8, "INSULATION", "Insulation", "INT", "07", "Thermal insulation pipe insulation"),
+    (9, "EARTHWORK", "Earthwork & Foundations", "STR", "31", "Excavation backfill grading deep foundations"),
+    (10, "PRECAST", "Precast Concrete", "STR", "03", "Precast panels precast erection"),
+    (11, "PANELS", "Metal Panels & Cladding", "ENC", "07", "Metal wall panels IMP cladding skin"),
+    (12, "GENERAL", "General Conditions", "ADM", "01", "General requirements temporary facilities"),
+    (13, "MASONRY", "Masonry", "STR", "04", "CMU brick masonry grout"),
 ]
 
 
@@ -67,17 +68,18 @@ def build_dim_trade():
 
     # Build trade records
     trades = []
-    for trade_id, trade_code, trade_name, description, csi_divisions in TRADES:
+    for trade_id, trade_code, trade_name, phase, csi_division, description in TRADES:
         trades.append({
             "trade_id": trade_id,
             "trade_code": trade_code,
             "trade_name": trade_name,
+            "phase": phase,
+            "csi_division": csi_division,
             "description": description,
-            "csi_divisions": csi_divisions,
         })
 
     # Write CSV
-    fieldnames = ["trade_id", "trade_code", "trade_name", "description", "csi_divisions"]
+    fieldnames = ["trade_id", "trade_code", "trade_name", "phase", "csi_division", "description"]
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)

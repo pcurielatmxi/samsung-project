@@ -49,12 +49,66 @@ from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_s
 PROJECT_START_DATE = "2022-05-01"
 PROJECT_END_DATE = "2025-12-31"
 
-VALID_OUTCOMES = {"PASS", "FAIL", "PARTIAL", "CANCELLED"}
+VALID_OUTCOMES = {"PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT"}
 
 VALID_ROLES = {
     "inspector", "contractor", "subcontractor", "trade", "client",
     "testing_company", "engineer", "other", "supplier", "testing_personnel"
 }
+
+# Patterns in summary text indicating no pass/fail criteria (measurement-only)
+MEASUREMENT_SUMMARY_PATTERNS = [
+    "does not specify pass/fail",
+    "does not list pass/fail",
+    "no pass/fail criteria",
+    "does not state pass/fail",
+    "does not explicitly state pass/fail",
+    "no outcome was specified",
+    "provides data but does not",
+    "no explicit pass/fail",
+]
+
+# Inspection types that are inherently measurement-only (no pass/fail outcome)
+MEASUREMENT_INSPECTION_TYPES = [
+    "length change",  # Shrinkage testing - just measurements over time
+]
+
+
+def is_measurement_only(inspection_type: str, summary: str, outcome: str) -> bool:
+    """
+    Detect if a record is a measurement-only report without pass/fail criteria.
+
+    These records were forced into PARTIAL by the LLM because the schema didn't
+    allow null outcomes. We detect them based on:
+    1. Summary text indicating no pass/fail criteria
+    2. Inspection type that is inherently measurement-only
+
+    Args:
+        inspection_type: The test/inspection type
+        summary: The LLM-generated summary
+        outcome: The current outcome value
+
+    Returns:
+        True if this appears to be a measurement-only record
+    """
+    # Only reclassify PARTIAL outcomes (LLM's "least wrong" choice for no-outcome)
+    if outcome != "PARTIAL":
+        return False
+
+    inspection_type_lower = (inspection_type or "").lower()
+    summary_lower = (summary or "").lower()
+
+    # Check if inspection type is inherently measurement-only
+    for pattern in MEASUREMENT_INSPECTION_TYPES:
+        if pattern in inspection_type_lower:
+            return True
+
+    # Check if summary indicates no pass/fail criteria
+    for pattern in MEASUREMENT_SUMMARY_PATTERNS:
+        if pattern in summary_lower:
+            return True
+
+    return False
 
 
 def load_clean_records(clean_dir: Path) -> List[Dict[str, Any]]:
@@ -228,6 +282,13 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
             if rooms:
                 affected_rooms = json.dumps(rooms)
 
+    # Detect and reclassify measurement-only records
+    # These were forced into PARTIAL by LLM because schema didn't allow null
+    outcome = content.get('outcome')
+    summary = content.get('summary')
+    if is_measurement_only(test_type, summary, outcome):
+        outcome = "MEASUREMENT"
+
     # Build flat record using UNIFIED column names
     return {
         # Identification
@@ -257,7 +318,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'location_id': content.get('location_id'),
 
         # Results
-        'outcome': content.get('outcome'),
+        'outcome': outcome,
         'failure_reason': failure_reason,
         'failure_category': failure_category,
         'summary': content.get('summary'),
@@ -354,6 +415,11 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
         df = apply_unified_schema(flat_records, source='RABA')
         df.to_csv(csv_path, index=False)
         print(f"Wrote {len(flat_records)} records to: {csv_path}")
+
+        # Also write to root location (expected by downstream scripts)
+        root_csv_path = output_dir / "raba_consolidated.csv"
+        df.to_csv(root_csv_path, index=False)
+        print(f"Wrote {len(flat_records)} records to: {root_csv_path}")
 
     # Write validation report
     report_path = output_dir / "raba_validation_report.json"

@@ -43,7 +43,7 @@ UNIFIED_COLUMNS = [
     'location_id',               # Location reference
 
     # Results
-    'outcome',                   # PASS, FAIL, PARTIAL, CANCELLED
+    'outcome',                   # PASS, FAIL, PARTIAL, CANCELLED, MEASUREMENT
     'failure_reason',            # Quoted reason from document
     'failure_category',          # Categorized failure reason
     'summary',                   # Report summary text

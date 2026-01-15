@@ -713,6 +713,26 @@ def get_trade_code(trade_id: int) -> Optional[str]:
 # Company Classification Functions
 # ============================================================================
 
+def _match_company_row(name_lower: str, row: pd.Series) -> bool:
+    """Check if company name matches a dim_company row."""
+    # Check canonical_name
+    canonical = str(row['canonical_name']).lower()
+    if canonical == name_lower or canonical in name_lower or name_lower in canonical:
+        return True
+
+    # Check short_code
+    short_code = str(row.get('short_code', '')).lower()
+    if short_code and short_code != 'nan' and (short_code == name_lower or name_lower == short_code):
+        return True
+
+    # Check full_name
+    full = str(row.get('full_name', '')).lower()
+    if full and full != 'nan' and (full == name_lower or name_lower in full or full in name_lower):
+        return True
+
+    return False
+
+
 def is_yates_sub(company_name: str) -> Optional[bool]:
     """
     Check if a company is a Yates subcontractor.
@@ -735,16 +755,8 @@ def is_yates_sub(company_name: str) -> Optional[bool]:
 
     name_lower = str(company_name).lower().strip()
 
-    # Check canonical_name
     for _, row in _dim_company.iterrows():
-        canonical = str(row['canonical_name']).lower()
-        if canonical == name_lower or canonical in name_lower or name_lower in canonical:
-            return bool(row['is_yates_sub'])
-
-    # Check full_name
-    for _, row in _dim_company.iterrows():
-        full = str(row.get('full_name', '')).lower()
-        if full and (full == name_lower or name_lower in full or full in name_lower):
+        if _match_company_row(name_lower, row):
             return bool(row['is_yates_sub'])
 
     return None
@@ -777,16 +789,8 @@ def get_company_type(company_name: str) -> Optional[str]:
 
     name_lower = str(company_name).lower().strip()
 
-    # Check canonical_name
     for _, row in _dim_company.iterrows():
-        canonical = str(row['canonical_name']).lower()
-        if canonical == name_lower or canonical in name_lower or name_lower in canonical:
-            return row['company_type']
-
-    # Check full_name
-    for _, row in _dim_company.iterrows():
-        full = str(row.get('full_name', '')).lower()
-        if full and (full == name_lower or name_lower in full or full in name_lower):
+        if _match_company_row(name_lower, row):
             return row['company_type']
 
     return None
@@ -800,8 +804,9 @@ def get_company_info(company_name: str) -> Optional[Dict]:
         company_name: Company name (standardized or raw)
 
     Returns:
-        Dict with company_id, canonical_name, full_name, company_type,
-        is_yates_sub, primary_trade_id, notes - or None if not found
+        Dict with company_id, canonical_name, short_code, tier, full_name,
+        company_type, is_yates_sub, primary_trade_id, parent_company_id,
+        parent_confidence, notes - or None if not found
     """
     if not company_name or pd.isna(company_name):
         return None
@@ -813,31 +818,19 @@ def get_company_info(company_name: str) -> Optional[Dict]:
 
     name_lower = str(company_name).lower().strip()
 
-    # Check canonical_name
     for _, row in _dim_company.iterrows():
-        canonical = str(row['canonical_name']).lower()
-        if canonical == name_lower or canonical in name_lower or name_lower in canonical:
+        if _match_company_row(name_lower, row):
             return {
                 'company_id': int(row['company_id']),
                 'canonical_name': row['canonical_name'],
+                'short_code': row.get('short_code'),
+                'tier': row.get('tier'),
                 'full_name': row.get('full_name'),
                 'company_type': row['company_type'],
                 'is_yates_sub': bool(row['is_yates_sub']),
                 'primary_trade_id': int(row['primary_trade_id']) if pd.notna(row.get('primary_trade_id')) else None,
-                'notes': row.get('notes'),
-            }
-
-    # Check full_name
-    for _, row in _dim_company.iterrows():
-        full = str(row.get('full_name', '')).lower()
-        if full and (full == name_lower or name_lower in full or full in name_lower):
-            return {
-                'company_id': int(row['company_id']),
-                'canonical_name': row['canonical_name'],
-                'full_name': row.get('full_name'),
-                'company_type': row['company_type'],
-                'is_yates_sub': bool(row['is_yates_sub']),
-                'primary_trade_id': int(row['primary_trade_id']) if pd.notna(row.get('primary_trade_id')) else None,
+                'parent_company_id': int(row['parent_company_id']) if pd.notna(row.get('parent_company_id')) else None,
+                'parent_confidence': row.get('parent_confidence'),
                 'notes': row.get('notes'),
             }
 
