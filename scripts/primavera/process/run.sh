@@ -7,7 +7,7 @@
 # Pipeline stages:
 #   1. parse    - Parse XER files -> processed/primavera/
 #   2. taxonomy - Generate task taxonomy -> derived/primavera/task_taxonomy.csv
-#   3. csi      - Add CSI section IDs -> derived/primavera/task_taxonomy_with_csi.csv
+#   3. csi      - Add CSI section IDs (appends to task_taxonomy.csv)
 #   4. copy     - Copy final file to processed/primavera/p6_task_taxonomy.csv
 #
 # The 'all' command runs stages 1-4 in sequence.
@@ -26,14 +26,13 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
-# Load environment and activate virtual environment
-source "$PROJECT_ROOT/.env" 2>/dev/null || true
+# Activate virtual environment
 source "$PROJECT_ROOT/.venv/bin/activate"
 
-# Determine data directories
-DATA_DIR="${WINDOWS_DATA_DIR:-$PROJECT_ROOT/data}"
-PROCESSED_DIR="$DATA_DIR/processed/primavera"
-DERIVED_DIR="$DATA_DIR/derived/primavera"
+# Get data directories from Python settings (handles .env parsing properly)
+DATA_DIRS=$(python -c "from src.config.settings import Settings; print(Settings.PROCESSED_DATA_DIR); print(Settings.DERIVED_DATA_DIR)")
+PROCESSED_DIR=$(echo "$DATA_DIRS" | head -1)/primavera
+DERIVED_DIR=$(echo "$DATA_DIRS" | tail -1)/primavera
 
 case "${1:-help}" in
     parse)
@@ -59,14 +58,14 @@ case "${1:-help}" in
         shift
         echo "=== Stage 4: Copying to Processed Directory ==="
 
-        # Source file is task_taxonomy_with_csi.csv in derived
-        SRC_FILE="$DERIVED_DIR/task_taxonomy_with_csi.csv"
+        # Source file is task_taxonomy.csv in derived (CSI columns appended in-place)
+        SRC_FILE="$DERIVED_DIR/task_taxonomy.csv"
         DST_FILE="$PROCESSED_DIR/p6_task_taxonomy.csv"
 
         if [ -f "$SRC_FILE" ]; then
             cp "$SRC_FILE" "$DST_FILE"
             rows=$(wc -l < "$DST_FILE")
-            echo "  Copied: task_taxonomy_with_csi.csv -> p6_task_taxonomy.csv"
+            echo "  Copied: task_taxonomy.csv -> p6_task_taxonomy.csv"
             echo "  Records: $((rows-1))"
         else
             echo "ERROR: Source file not found: $SRC_FILE"
@@ -107,13 +106,13 @@ case "${1:-help}" in
         echo ""
 
         echo "=== Stage 4: Copying to Processed Directory ==="
-        SRC_FILE="$DERIVED_DIR/task_taxonomy_with_csi.csv"
+        SRC_FILE="$DERIVED_DIR/task_taxonomy.csv"
         DST_FILE="$PROCESSED_DIR/p6_task_taxonomy.csv"
 
         if [ -f "$SRC_FILE" ]; then
             cp "$SRC_FILE" "$DST_FILE"
             rows=$(wc -l < "$DST_FILE")
-            echo "  Copied: task_taxonomy_with_csi.csv -> p6_task_taxonomy.csv"
+            echo "  Copied: task_taxonomy.csv -> p6_task_taxonomy.csv"
             echo "  Records: $((rows-1))"
         else
             echo "ERROR: Source file not found after CSI stage"
@@ -145,7 +144,7 @@ case "${1:-help}" in
         done
         echo ""
         echo "Derived files ($DERIVED_DIR):"
-        for f in task_taxonomy.csv task_taxonomy_with_csi.csv wbs_taxonomy.csv; do
+        for f in task_taxonomy.csv wbs_taxonomy.csv; do
             path="$DERIVED_DIR/$f"
             if [ -f "$path" ]; then
                 rows=$(wc -l < "$path")
