@@ -11,10 +11,12 @@ Yates' fourth and most comprehensive Extension of Time submission, submitted Aug
 | **Date Submitted** | 2025-08-13 |
 | **Date Executed** | Pending |
 | **Associated PCCO** | PCCO #04 |
-| **Amount** | TBD |
-| **Days Requested** | TBD (see BRG Report) |
+| **Open/Pending CO Amount** | $106,329,616 |
+| **Days Requested** | 739 days (728 SECAI, 0 Yates, 11 excusable) |
 | **Days Granted** | Pending |
 | **Status** | Submitted |
+
+> **Source for CO amounts:** `raw/narratives/CO#4 - Extension of Time - BRG Expert Report - combined w Exhibits - Aug 2025.pdf`, **Page 1015**
 
 ## Background
 Following three prior EOT submissions (EOT-01 through EOT-03), Yates submitted the most detailed extension of time claim with supporting expert analysis from BRG. This submission responds to SECAI's ongoing review of prior EOT claims and includes comprehensive critical path analysis.

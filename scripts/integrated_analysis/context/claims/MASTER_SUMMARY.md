@@ -43,6 +43,10 @@ Samsung (Owner)
 | To Be Submitted | $6,133,522.63 | Pending |
 | **Total Change Orders** | **$275,617,931.53** | Cumulative |
 
+**Open/Pending Amount:** $106,329,616 (lines 3+4+5)
+
+> **Source:** `raw/narratives/CO#4 - Extension of Time - BRG Expert Report - combined w Exhibits - Aug 2025.pdf`, **Page 1015** (Yates Cost Simulation / Change Order List)
+
 ### Contract Growth Summary
 | Milestone | Contract Value | Growth |
 |-----------|---------------|--------|

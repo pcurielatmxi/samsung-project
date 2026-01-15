@@ -37,6 +37,10 @@ Following three executed change orders and three prior EOT submissions, Yates su
 | To Be Submitted | $6,133,522.63 |
 | **Total** | **$275,617,931.53** |
 
+**Open/Pending Amount:** $106,329,616 (sum of lines 3+4+5)
+
+> **Source:** `raw/narratives/CO#4 - Extension of Time - BRG Expert Report - combined w Exhibits - Aug 2025.pdf`, **Page 1015** (Yates Cost Simulation / Change Order List)
+
 ### Scope Categories (Cumulative through CO-04)
 
 *Note: MXI analysis - categorized from individual IOCCs, not a sourced breakdown table*
