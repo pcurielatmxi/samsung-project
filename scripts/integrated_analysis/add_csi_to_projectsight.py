@@ -19,6 +19,7 @@ Usage:
 """
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from typing import Optional, Tuple
@@ -184,12 +185,42 @@ def extract_division(trade_full: str) -> Optional[str]:
     return None
 
 
+# Patterns that indicate generic shift/crew names (not actual work activities)
+# These should skip activity keyword matching to avoid false positives
+# e.g., "Paint 1 - Day Shift" contains "paint" but is a shift name, not painting work
+SHIFT_CREW_PATTERNS = [
+    re.compile(r'\b(day|night)\s*shift\b', re.IGNORECASE),  # "Day Shift", "Night Shift"
+    re.compile(r'^[A-Za-z0-9\s]+ - (day|night)\s*shift$', re.IGNORECASE),  # "Paint 1 - Day Shift"
+    re.compile(r'\bcrew\s*$', re.IGNORECASE),  # "Richards Crew", "Taylor Fab Crew"
+    re.compile(r'^(day|night)\s*shift$', re.IGNORECASE),  # Just "Day Shift"
+]
+
+
+def is_shift_or_crew_name(activity: str) -> bool:
+    """
+    Check if activity is a generic shift/crew designation rather than actual work.
+
+    Examples of shift/crew names (should return True):
+    - "Day Shift"
+    - "Paint 1 - Day Shift"
+    - "Richards Crew"
+    - "Taylor Fab Crew"
+
+    These contain keywords like "paint" but are not actual painting activities.
+    For these, we should use the company's trade instead of activity keywords.
+    """
+    if pd.isna(activity):
+        return False
+    activity = str(activity).strip()
+    return any(pattern.search(activity) for pattern in SHIFT_CREW_PATTERNS)
+
+
 def infer_csi_from_projectsight(activity: str, trade_full: str, trade_id: int = None) -> Tuple[Optional[int], Optional[str], str]:
     """
     Infer CSI section from ProjectSight activity, trade_full, and trade_id fields.
 
     Priority order:
-    1. Activity keywords (most specific)
+    1. Activity keywords (most specific) - UNLESS activity is a shift/crew name
     2. Company's primary trade (from dim_trade_id, more specific than division)
     3. Division from trade_full (last resort - generic defaults)
 
@@ -202,7 +233,9 @@ def infer_csi_from_projectsight(activity: str, trade_full: str, trade_id: int = 
         Tuple of (csi_section_id, csi_section_code, inference_source)
     """
     # Try activity keyword matching first (most specific)
-    if pd.notna(activity):
+    # BUT skip if activity is a shift/crew name (e.g., "Paint 1 - Day Shift")
+    # These contain keywords but are not actual work descriptions
+    if pd.notna(activity) and not is_shift_or_crew_name(activity):
         activity_lower = str(activity).lower()
 
         for keywords, csi_id in ACTIVITY_TO_CSI:
