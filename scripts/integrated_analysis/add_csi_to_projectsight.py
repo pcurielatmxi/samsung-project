@@ -61,7 +61,39 @@ DIVISION_TO_DEFAULT_CSI = {
     "31": 51,  # 31 23 00 Excavation and Fill
     "32": 51,  # 31 23 00 Excavation (Exterior Improvements)
     "33": 51,  # 31 23 00 Excavation (Utilities)
+    "18": 6,   # 05 12 00 Structural Steel (Iron erection)
+    "34": 1,   # 01 10 00 Summary (Transportation/specialized)
 }
+
+# Company name patterns for CSI inference when trade_full is NULL
+# Maps company name keywords to CSI section ID
+COMPANY_TO_CSI = [
+    # Concrete companies
+    (["concrete", "baker concrete", "infinity concrete"], 2),  # 03 30 00 Cast-in-Place Concrete
+    (["grout tech", "grouting"], 4),  # 03 60 00 Grouting
+
+    # Steel companies
+    (["steel", "erector", "patriot erector", "sns erector", "w & w steel", "w&w steel"], 6),  # 05 12 00 Structural Steel
+
+    # Drywall companies
+    (["drywall", "berg drywall", "interior system"], 26),  # 09 21 16 Gypsum Board
+
+    # Insulation companies
+    (["urethane", "brazos urethane", "insulation"], 13),  # 07 21 16 Blanket Insulation
+
+    # Panel/enclosure companies
+    (["enclosure", "kovach enclosure", "panel"], 15),  # 07 42 43 Composite Wall Panels
+
+    # Painting/coatings companies
+    (["paint", "coating", "industrial service", "apache industrial"], 29),  # 09 91 26 Painting
+
+    # Roofing companies
+    (["roofing", "waterproof"], 16),  # 07 52 00 Membrane Roofing
+
+    # General/other
+    (["yates", "w. g. yates"], 1),  # 01 10 00 Summary (GC)
+    (["rolling plains", "f d thomas", "fd thomas"], 2),  # 03 30 00 Default to concrete (civil contractors)
+]
 
 # Activity keyword patterns for more specific CSI inference
 # Similar to TBM but tailored for ProjectSight activity descriptions
@@ -164,13 +196,14 @@ def extract_division(trade_full: str) -> Optional[str]:
     return None
 
 
-def infer_csi_from_projectsight(activity: str, trade_full: str) -> Tuple[Optional[int], Optional[str], str]:
+def infer_csi_from_projectsight(activity: str, trade_full: str, company: str = None) -> Tuple[Optional[int], Optional[str], str]:
     """
-    Infer CSI section from ProjectSight activity and trade_full fields.
+    Infer CSI section from ProjectSight activity, trade_full, and company fields.
 
     Args:
         activity: Activity description
         trade_full: CSI division string like '03 - Concrete'
+        company: Company name (used as fallback when trade_full is NULL)
 
     Returns:
         Tuple of (csi_section_id, csi_section_code, inference_source)
@@ -192,6 +225,15 @@ def infer_csi_from_projectsight(activity: str, trade_full: str) -> Tuple[Optiona
         csi_code, _ = CSI_SECTIONS[csi_id]
         return csi_id, csi_code, "division"
 
+    # Fall back to company name inference when trade_full is NULL
+    if pd.notna(company):
+        company_lower = str(company).lower()
+        for keywords, csi_id in COMPANY_TO_CSI:
+            for keyword in keywords:
+                if keyword in company_lower:
+                    csi_code, _ = CSI_SECTIONS[csi_id]
+                    return csi_id, csi_code, "company"
+
     return None, None, "none"
 
 
@@ -212,7 +254,11 @@ def add_csi_to_projectsight(dry_run: bool = False):
     # Apply CSI inference
     print("Inferring CSI sections...")
     results = df.apply(
-        lambda row: infer_csi_from_projectsight(row.get('activity'), row.get('trade_full')),
+        lambda row: infer_csi_from_projectsight(
+            row.get('activity'),
+            row.get('trade_full'),
+            row.get('company')
+        ),
         axis=1
     )
 
@@ -229,11 +275,13 @@ def add_csi_to_projectsight(dry_run: bool = False):
     coverage = df['dim_csi_section_id'].notna().mean() * 100
     activity_count = (df['csi_inference_source'] == 'activity').sum()
     division_count = (df['csi_inference_source'] == 'division').sum()
+    company_count = (df['csi_inference_source'] == 'company').sum()
 
     print(f"\nCSI Section Coverage: {coverage:.1f}%")
     print(f"  From activity: {activity_count:,} ({activity_count/len(df)*100:.1f}%)")
     print(f"  From division: {division_count:,} ({division_count/len(df)*100:.1f}%)")
-    print(f"  No match: {len(df) - activity_count - division_count:,}")
+    print(f"  From company: {company_count:,} ({company_count/len(df)*100:.1f}%)")
+    print(f"  No match: {len(df) - activity_count - division_count - company_count:,}")
 
     # Show distribution by CSI section
     print("\nTop 15 CSI Sections:")

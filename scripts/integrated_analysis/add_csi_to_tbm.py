@@ -75,6 +75,7 @@ ACTIVITY_TO_CSI = [
     (["insulation", "mineral wool", "batt", "blanket insul"], 13),  # 07 21 16 Blanket Insulation
     (["rigid insulation", "foam board", "board insul"], 12),  # 07 21 13 Board Insulation
     (["vapor barrier", "vapor retarder", "vb"], 14),  # 07 26 00 Vapor Retarders
+    (["air barrier", "sheet applied"], 14),  # 07 26 00 Air Barriers → Vapor Retarders
     # Removed "wrap" - too generic, matches cable wrapping which is electrical work
     (["urethane", "spray foam"], 13),  # 07 21 16 - spray insulation
 
@@ -89,7 +90,8 @@ ACTIVITY_TO_CSI = [
     (["paint", "painting", "primer", "topcoat", "coating", "touch up"], 29),  # 09 91 26 Painting - Building
     (["epoxy", "chemical resistant", "floor coating"], 25),  # 09 06 65 Chemical-Resistant Coatings
     (["flooring", "resilient", "vct", "tile"], 28),  # 09 65 00 Resilient Flooring
-    (["sealant", "caulk", "joint seal"], 20),  # 07 90 00 Joint Protection
+    (["sealant", "caulk", "joint seal", "control joint", "control joints", "cj", "expansion joint"], 20),  # 07 90 00 Joint Protection
+    (["t/f wall", "t/f walls", "tenant finish", "penthouse wall"], 26),  # 09 21 16 T/F Walls → Gypsum Board
 
     # Openings
     (["door frame", "hollow metal", "hm frame", "hm door"], 21),  # 08 11 13 Hollow Metal Doors
@@ -129,6 +131,17 @@ ACTIVITY_TO_CSI = [
     (["elevator", "escalator", "conveyor", "lift"], 33),  # 14 21 00 Elevators
     (["vibration", "acoustic", "sound control"], 32),  # 13 48 00 Sound and Vibration Control
     (["dock", "loading dock", "dock leveler"], 31),  # 11 13 19 Loading Dock Equipment
+    (["scaffold", "trestle", "trest"], 1),  # 01 10 00 Scaffolding → General Requirements
+    (["labor work", "cleaning", "clean up", "sweeping", "punch list"], 1),  # 01 10 00 General labor
+    (["rough in", "busway", "termination"], 44),  # 26 05 00 Electrical rough-in
+    (["supervising", "supervisor", "foreman", "superintendent", "managers", "pes"], 1),  # 01 10 00 Supervision → General
+    (["qc", "qa-qc", "qaqc", "quality control", "logistics"], 1),  # 01 10 00 QC → General
+    (["ej", "expansion joint plate", "interior expansion"], 20),  # 07 90 00 Expansion Joints → Joint Protection
+    (["pulling branch", "secondary elec", "elec room"], 44),  # 26 05 00 Electrical
+    (["imp setting", "awning"], 15),  # 07 42 43 IMP/Awnings → Composite Panels
+    (["plywood", "blocking", "backing"], 8),  # 05 40 00 Backing/blocking → Framing
+    (["support", "install support"], 6),  # 05 12 00 Supports → Structural Steel
+    (["ncr", "change request", "catch up"], 1),  # 01 10 00 NCR/Change work → General
 ]
 
 # Fallback: trade_inferred to CSI section

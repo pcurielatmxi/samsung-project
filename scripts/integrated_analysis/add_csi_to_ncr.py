@@ -51,9 +51,10 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     # Steel
     (["weld", "welding", "wps"], 6),  # 05 12 00 Structural Steel
     (["cols", "column", "beam", "steel erect"], 6),  # 05 12 00 Structural Steel
+    (["anchor", "bolt", "fastener"], 6),  # 05 12 00 Anchors → Structural Steel
     (["deck", "decking"], 7),  # 05 31 00 Steel Decking
     (["framing", "stud", "cfmf", "metal frame"], 8),  # 05 40 00 Cold-Formed Metal Framing
-    (["misc steel", "stair", "handrail", "railing"], 9),  # 05 50 00 Metal Fabrications
+    (["misc steel", "stair", "handrail", "railing", "ladder", "safety"], 9),  # 05 50 00 Metal Fabrications
 
     # Waterproofing/Roofing
     (["waterproof", "wprf", "membrane"], 11),  # 07 13 00 Sheet Waterproofing
@@ -62,7 +63,7 @@ DESCRIPTION_KEYWORD_TO_CSI = [
 
     # Fire protection
     (["sfrm", "ifrm", "fireproof", "intumescent"], 18),  # 07 81 00 Applied Fireproofing
-    (["fstn", "firestop", "fire stop", "penetration seal"], 19),  # 07 84 00 Firestopping
+    (["fstn", "firestop", "fire stop", "penetration seal", "cementitious"], 19),  # 07 84 00 Firestopping
 
     # Insulation
     (["insul", "insulation"], 13),  # 07 21 16 Blanket Insulation
@@ -84,10 +85,13 @@ DESCRIPTION_KEYWORD_TO_CSI = [
 
     # MEP - Fire Suppression
     (["sprinkler", "fire suppression", "sprk"], 34),  # 21 10 00 Fire Suppression
+    (["fire alarm", "vesda", "smoke detect"], 34),  # 21 10 00 Fire Alarm → Fire Suppression
 
     # MEP - Plumbing
     (["plumb", "pipe", "piping"], 36),  # 22 05 00 Common Work Results for Plumbing
     (["drain", "sanitary", "sewer"], 38),  # 22 13 00 Sanitary Sewerage
+    (["wtr", "watr", "water", "pump", "tank"], 36),  # 22 05 00 Water systems → Plumbing
+    (["upw", "di water", "diw"], 36),  # 22 05 00 Ultra-pure water → Plumbing
 
     # MEP - HVAC
     (["hvac", "duct", "ahu", "mechanical"], 40),  # 23 05 00 Common Work Results for HVAC
@@ -95,8 +99,10 @@ DESCRIPTION_KEYWORD_TO_CSI = [
     # MEP - Electrical
     (["elec", "electrical", "conduit"], 44),  # 26 05 00 Common Work Results for Electrical
     (["cable", "wire", "conductor"], 45),  # 26 05 19 Conductors and Cables
+    (["cabl-tray", "cable tray"], 46),  # 26 05 33 Cable Tray → Raceway
     (["switchboard", "panelboard", "electrical panel", "elec panel"], 47),  # 26 24 00 Switchboards
     (["light", "lighting"], 49),  # 26 51 00 Interior Lighting
+    (["i&c", "instrument", "instrumentation"], 44),  # 26 05 00 I&C → Electrical
 
     # Earthwork
     (["excav", "excavat", "backfill", "site"], 51),  # 31 23 00 Excavation and Fill
@@ -130,6 +136,20 @@ DISCIPLINE_TO_CSI = {
     'flooring': 28,        # 09 65 00 Resilient Flooring
     'doors': 21,           # 08 11 13 Hollow Metal Doors
     'glazing': 24,         # 08 80 00 Glazing
+    # Additional abbreviations found in audit
+    'fa': 34,              # 21 10 00 Fire Alarm → Fire Suppression
+    't': 46,               # 26 05 33 Cable Tray → Raceway
+    'd': 44,               # 26 05 00 Data → Electrical
+    'f': 34,               # 21 10 00 Fire → Fire Suppression
+    'fp': 34,              # 21 10 00 Fire Protection → Fire Suppression
+    'mech': 40,            # 23 05 00 Mechanical → HVAC
+    'arch': 29,            # 09 91 26 Arch → Painting/Finishes
+    'fiber': 45,           # 26 05 19 Fiber Optic → Conductors/Cables
+    'i&c': 44,             # 26 05 00 Instrumentation & Control → Electrical
+    'ic': 44,              # 26 05 00 Instrumentation Control → Electrical
+    'terminations': 44,    # 26 05 00 Terminations → Electrical
+    'office': 29,          # 09 91 26 Office → Finishes
+    'e': 44,               # 26 05 00 E → Electrical
 }
 
 
