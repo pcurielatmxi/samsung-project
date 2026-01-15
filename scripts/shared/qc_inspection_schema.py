@@ -86,6 +86,12 @@ UNIFIED_COLUMNS = [
     'dim_trade_id',              # Trade dimension ID
     'dim_trade_code',            # Trade code
 
+    # CSI Section (52-category classification)
+    'dim_csi_section_id',        # CSI section dimension ID
+    'csi_section',               # CSI code (e.g., "03 30 00")
+    'csi_inference_source',      # How CSI was inferred (keyword, category)
+    'csi_title',                 # CSI section title
+
     # Room matching (JSON array of rooms whose grid bounds overlap)
     'affected_rooms',            # JSON: [{"location_code": "FAB1xxx", "room_name": "...", "match_type": "FULL|PARTIAL"}, ...]
 
