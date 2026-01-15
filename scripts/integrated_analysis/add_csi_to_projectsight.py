@@ -74,7 +74,7 @@ TRADE_ID_TO_CSI = {
     3: 16,   # ROOFING → 07 52 00 Membrane Roofing
     4: 26,   # DRYWALL → 09 21 16 Gypsum Board Assemblies
     5: 29,   # FINISHES → 09 91 26 Painting - Building
-    6: 19,   # FIREPROOF → 07 84 00 Firestopping (most common)
+    6: 18,   # FIREPROOF → 07 81 00 Applied Fireproofing (SFRM/IFRM)
     7: 44,   # MEP → 26 05 00 Common Work Results for Electrical
     8: 13,   # INSULATION → 07 21 16 Blanket Insulation
     9: 51,   # EARTHWORK → 31 23 00 Excavation and Fill

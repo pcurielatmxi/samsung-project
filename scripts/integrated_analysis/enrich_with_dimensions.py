@@ -1317,13 +1317,18 @@ def enrich_projectsight(dry_run: bool = False) -> Dict[str, Any]:
 
     trade_from_company = df[df['trade_source'] == 'company']['dim_trade_id'].notna().sum()
 
-    # Infer CSI section from activity, trade_full (division), and company's trade
+    # Get company's primary_trade_id for CSI inference (more reliable than ProjectSight trade_name)
+    # This is used even when dim_trade_id comes from trade_name, because company's known trade
+    # is more reliable for CSI mapping than ProjectSight's billing category
+    df['company_primary_trade_id'] = df['dim_company_id'].map(company_trade_map)
+
+    # Infer CSI section from activity, trade_full (division), and company's primary trade
     print("  Inferring CSI sections...")
     csi_results = df.apply(
         lambda row: infer_csi_from_projectsight(
             row.get('activity'),
             row.get('trade_full'),
-            row.get('dim_trade_id')  # Uses company's primary_trade_id
+            row.get('company_primary_trade_id')  # Uses company's actual primary trade
         ),
         axis=1
     )
