@@ -710,6 +710,141 @@ def get_trade_code(trade_id: int) -> Optional[str]:
 
 
 # ============================================================================
+# Company Classification Functions
+# ============================================================================
+
+def is_yates_sub(company_name: str) -> Optional[bool]:
+    """
+    Check if a company is a Yates subcontractor.
+
+    Uses the is_yates_sub flag from dim_company.csv to determine classification.
+
+    Args:
+        company_name: Company name (standardized or raw)
+
+    Returns:
+        True if Yates sub, False if not, None if company not found
+    """
+    if not company_name or pd.isna(company_name):
+        return None
+
+    _load_dimensions()
+
+    if _dim_company is None or _dim_company.empty:
+        return None
+
+    name_lower = str(company_name).lower().strip()
+
+    # Check canonical_name
+    for _, row in _dim_company.iterrows():
+        canonical = str(row['canonical_name']).lower()
+        if canonical == name_lower or canonical in name_lower or name_lower in canonical:
+            return bool(row['is_yates_sub'])
+
+    # Check full_name
+    for _, row in _dim_company.iterrows():
+        full = str(row.get('full_name', '')).lower()
+        if full and (full == name_lower or name_lower in full or full in name_lower):
+            return bool(row['is_yates_sub'])
+
+    return None
+
+
+def get_company_type(company_name: str) -> Optional[str]:
+    """
+    Get the company type classification.
+
+    Company types:
+    - yates_self: W.G. Yates & Sons (the GC)
+    - yates_sub: Subcontractors working under Yates contract
+    - major_contractor: GC/major contractors with direct Samsung contracts
+    - precast_supplier: Material suppliers (precast concrete)
+    - other: Unclassified
+
+    Args:
+        company_name: Company name (standardized or raw)
+
+    Returns:
+        Company type string or None if not found
+    """
+    if not company_name or pd.isna(company_name):
+        return None
+
+    _load_dimensions()
+
+    if _dim_company is None or _dim_company.empty:
+        return None
+
+    name_lower = str(company_name).lower().strip()
+
+    # Check canonical_name
+    for _, row in _dim_company.iterrows():
+        canonical = str(row['canonical_name']).lower()
+        if canonical == name_lower or canonical in name_lower or name_lower in canonical:
+            return row['company_type']
+
+    # Check full_name
+    for _, row in _dim_company.iterrows():
+        full = str(row.get('full_name', '')).lower()
+        if full and (full == name_lower or name_lower in full or full in name_lower):
+            return row['company_type']
+
+    return None
+
+
+def get_company_info(company_name: str) -> Optional[Dict]:
+    """
+    Get full company information from dim_company.
+
+    Args:
+        company_name: Company name (standardized or raw)
+
+    Returns:
+        Dict with company_id, canonical_name, full_name, company_type,
+        is_yates_sub, primary_trade_id, notes - or None if not found
+    """
+    if not company_name or pd.isna(company_name):
+        return None
+
+    _load_dimensions()
+
+    if _dim_company is None or _dim_company.empty:
+        return None
+
+    name_lower = str(company_name).lower().strip()
+
+    # Check canonical_name
+    for _, row in _dim_company.iterrows():
+        canonical = str(row['canonical_name']).lower()
+        if canonical == name_lower or canonical in name_lower or name_lower in canonical:
+            return {
+                'company_id': int(row['company_id']),
+                'canonical_name': row['canonical_name'],
+                'full_name': row.get('full_name'),
+                'company_type': row['company_type'],
+                'is_yates_sub': bool(row['is_yates_sub']),
+                'primary_trade_id': int(row['primary_trade_id']) if pd.notna(row.get('primary_trade_id')) else None,
+                'notes': row.get('notes'),
+            }
+
+    # Check full_name
+    for _, row in _dim_company.iterrows():
+        full = str(row.get('full_name', '')).lower()
+        if full and (full == name_lower or name_lower in full or full in name_lower):
+            return {
+                'company_id': int(row['company_id']),
+                'canonical_name': row['canonical_name'],
+                'full_name': row.get('full_name'),
+                'company_type': row['company_type'],
+                'is_yates_sub': bool(row['is_yates_sub']),
+                'primary_trade_id': int(row['primary_trade_id']) if pd.notna(row.get('primary_trade_id')) else None,
+                'notes': row.get('notes'),
+            }
+
+    return None
+
+
+# ============================================================================
 # CSI Section Lookup
 # ============================================================================
 # Cached CSI section data
