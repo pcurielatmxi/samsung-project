@@ -7,11 +7,11 @@ This script infers more specific CSI sections (6-digit) by:
 1. Parsing activity field for specific keywords
 2. Falling back to division-to-section mapping
 
-Input:
-    {WINDOWS_DATA_DIR}/processed/projectsight/labor_entries_enriched.csv
+Appends CSI columns to the original enriched file (does not create separate file).
+New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
 
-Output:
-    {WINDOWS_DATA_DIR}/processed/projectsight/projectsight_with_csi.csv
+Input/Output:
+    {WINDOWS_DATA_DIR}/processed/projectsight/labor_entries_enriched.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_projectsight
@@ -238,10 +238,11 @@ def infer_csi_from_projectsight(activity: str, trade_full: str, company: str = N
 
 
 def add_csi_to_projectsight(dry_run: bool = False):
-    """Add CSI section IDs to ProjectSight labor entries."""
+    """Add CSI section IDs to ProjectSight labor entries (appends to original file)."""
 
     input_path = settings.PROCESSED_DATA_DIR / "projectsight" / "labor_entries_enriched.csv"
-    output_path = settings.PROCESSED_DATA_DIR / "projectsight" / "projectsight_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
@@ -291,9 +292,9 @@ def add_csi_to_projectsight(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"\nOutput written to: {output_path}")
+        print(f"\nCSI columns appended to: {output_path}")
     else:
-        print("\nDRY RUN - no output written")
+        print("\nDRY RUN - no changes written")
 
     return df
 

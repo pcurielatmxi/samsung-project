@@ -6,11 +6,11 @@ Maps NCR records to CSI MasterFormat sections using:
 1. Keyword parsing of the description field
 2. Discipline field as fallback
 
-Input:
-    {WINDOWS_DATA_DIR}/processed/projectsight/ncr_consolidated.csv
+Appends CSI columns to the original consolidated file (does not create separate file).
+New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
 
-Output:
-    {WINDOWS_DATA_DIR}/processed/projectsight/ncr_with_csi.csv
+Input/Output:
+    {WINDOWS_DATA_DIR}/processed/projectsight/ncr_consolidated.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_ncr
@@ -194,10 +194,11 @@ def infer_csi_from_ncr(description: str, discipline: str) -> Tuple[Optional[int]
 
 
 def add_csi_to_ncr(dry_run: bool = False):
-    """Add CSI section IDs to NCR data."""
+    """Add CSI section IDs to NCR data (appends to original file)."""
 
     input_path = settings.PROJECTSIGHT_PROCESSED_DIR / "ncr_consolidated.csv"
-    output_path = settings.PROJECTSIGHT_PROCESSED_DIR / "ncr_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
@@ -242,9 +243,9 @@ def add_csi_to_ncr(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"\nOutput written to: {output_path}")
+        print(f"\nCSI columns appended to: {output_path}")
     else:
-        print("\nDRY RUN - no output written")
+        print("\nDRY RUN - no changes written")
 
     return df
 

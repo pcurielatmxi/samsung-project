@@ -32,6 +32,14 @@ from scripts.shared.dimension_lookup import (
     get_affected_rooms,
     reset_cache,
 )
+from scripts.integrated_analysis.add_csi_to_tbm import (
+    infer_csi_from_activity,
+    CSI_SECTIONS as TBM_CSI_SECTIONS,
+)
+from scripts.integrated_analysis.add_csi_to_projectsight import (
+    infer_csi_from_projectsight,
+    CSI_SECTIONS as PS_CSI_SECTIONS,
+)
 import json
 
 
@@ -1160,6 +1168,19 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         axis=1
     )
 
+    # Infer CSI section from work activities and trade
+    print("  Inferring CSI sections...")
+    csi_results = df.apply(
+        lambda row: infer_csi_from_activity(row.get('work_activities'), row.get('trade_inferred')),
+        axis=1
+    )
+    df['dim_csi_section_id'] = csi_results.apply(lambda x: x[0])
+    df['csi_section'] = csi_results.apply(lambda x: x[1])
+    df['csi_inference_source'] = csi_results.apply(lambda x: x[2])
+    df['csi_title'] = df['dim_csi_section_id'].apply(
+        lambda x: TBM_CSI_SECTIONS[x][1] if pd.notna(x) and x in TBM_CSI_SECTIONS else None
+    )
+
     # Parse grid from location_row
     print("  Parsing grid coordinates...")
     grid_parsed = df['location_row'].apply(parse_tbm_grid).apply(pd.Series)
@@ -1217,6 +1238,7 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         'location': df['dim_location_id'].notna().mean() * 100,
         'company': df['dim_company_id'].notna().mean() * 100,
         'trade': df['dim_trade_id'].notna().mean() * 100,
+        'csi_section': df['dim_csi_section_id'].notna().mean() * 100,
         'grid_row': has_grid_row.mean() * 100,
         'grid_col': has_grid_col.mean() * 100,
         'affected_rooms': has_affected_rooms.mean() * 100,
@@ -1295,11 +1317,29 @@ def enrich_projectsight(dry_run: bool = False) -> Dict[str, Any]:
 
     trade_from_company = df[df['trade_source'] == 'company']['dim_trade_id'].notna().sum()
 
+    # Infer CSI section from activity, trade_full (division), and company
+    print("  Inferring CSI sections...")
+    csi_results = df.apply(
+        lambda row: infer_csi_from_projectsight(
+            row.get('activity'),
+            row.get('trade_full'),
+            row.get('company')
+        ),
+        axis=1
+    )
+    df['dim_csi_section_id'] = csi_results.apply(lambda x: x[0])
+    df['csi_section'] = csi_results.apply(lambda x: x[1])
+    df['csi_inference_source'] = csi_results.apply(lambda x: x[2])
+    df['csi_title'] = df['dim_csi_section_id'].apply(
+        lambda x: PS_CSI_SECTIONS[x][1] if pd.notna(x) and x in PS_CSI_SECTIONS else None
+    )
+
     # Calculate coverage
     coverage = {
         'location': 0.0,  # No location in ProjectSight
         'company': df['dim_company_id'].notna().mean() * 100,
         'trade': df['dim_trade_id'].notna().mean() * 100,
+        'csi_section': df['dim_csi_section_id'].notna().mean() * 100,
         'trade_from_name': trade_from_name,
         'trade_from_company': trade_from_company,
     }

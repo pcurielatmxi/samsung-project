@@ -43,6 +43,10 @@ from scripts.shared.dimension_lookup import (
     get_company_primary_trade_id,
 )
 from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
+from scripts.integrated_analysis.add_csi_to_raba import (
+    infer_csi_section,
+    CSI_SECTIONS,
+)
 
 
 # Validation rules
@@ -289,6 +293,10 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     if is_measurement_only(test_type, summary, outcome):
         outcome = "MEASUREMENT"
 
+    # Infer CSI section from inspection type and category
+    csi_section_id, csi_section_code, csi_source = infer_csi_section(test_type, test_category)
+    csi_title = CSI_SECTIONS[csi_section_id][1] if csi_section_id and csi_section_id in CSI_SECTIONS else None
+
     # Build flat record using UNIFIED column names
     return {
         # Identification
@@ -360,6 +368,12 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'dim_company_id': dim_company_id,
         'dim_trade_id': dim_trade_id,
         'dim_trade_code': dim_trade_code,
+
+        # CSI Section (52-category classification)
+        'dim_csi_section_id': csi_section_id,
+        'csi_section': csi_section_code,
+        'csi_inference_source': csi_source,
+        'csi_title': csi_title,
 
         # Affected rooms (JSON array of rooms whose grid bounds overlap)
         'affected_rooms': affected_rooms,
@@ -455,6 +469,11 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
             'mapped': df['dim_trade_id'].notna().sum(),
             'total': len(df),
             'pct': df['dim_trade_id'].notna().mean() * 100
+        },
+        'csi_section': {
+            'mapped': df['dim_csi_section_id'].notna().sum(),
+            'total': len(df),
+            'pct': df['dim_csi_section_id'].notna().mean() * 100
         }
     }
     report['dimension_coverage'] = dim_coverage

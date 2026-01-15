@@ -10,11 +10,11 @@ Inference Logic:
 - Match to most specific CSI section based on keyword patterns
 - Fall back to inspection_category → CSI section mapping if no specific match
 
-Input:
-    {WINDOWS_DATA_DIR}/processed/raba/4.consolidate/raba_qc_inspections.csv
+Appends CSI columns to the original consolidated file (does not create separate file).
+New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
 
-Output:
-    {WINDOWS_DATA_DIR}/processed/raba/raba_with_csi.csv
+Input/Output:
+    {WINDOWS_DATA_DIR}/processed/raba/4.consolidate/raba_qc_inspections.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_raba
@@ -243,10 +243,11 @@ def infer_csi_section(inspection_type: str, inspection_category: str) -> Tuple[O
 
 
 def add_csi_to_raba(dry_run: bool = False):
-    """Add CSI section IDs to RABA consolidated data."""
+    """Add CSI section IDs to RABA consolidated data (appends to original file)."""
 
     input_path = settings.PROCESSED_DATA_DIR / "raba" / "4.consolidate" / "raba_qc_inspections.csv"
-    output_path = settings.PROCESSED_DATA_DIR / "raba" / "raba_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
@@ -290,9 +291,9 @@ def add_csi_to_raba(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"\nOutput written to: {output_path}")
+        print(f"\nCSI columns appended to: {output_path}")
     else:
-        print("\nDRY RUN - no output written")
+        print("\nDRY RUN - no changes written")
 
     return df
 

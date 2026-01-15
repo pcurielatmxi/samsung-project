@@ -6,13 +6,12 @@ Processes both Yates WIR and SECAI inspection logs to add CSI section mapping.
 - Yates: Uses 'Inspection Description' field for keyword matching
 - SECAI: Uses 'Template' field which contains inspection type
 
-Input:
+Appends CSI columns to the original files (does not create separate files).
+New columns added: dim_csi_section_id, csi_section, csi_title
+
+Input/Output:
     {WINDOWS_DATA_DIR}/processed/quality/yates_all_inspections.csv
     {WINDOWS_DATA_DIR}/processed/quality/secai_inspection_log.csv
-
-Output:
-    {WINDOWS_DATA_DIR}/processed/quality/yates_with_csi.csv
-    {WINDOWS_DATA_DIR}/processed/quality/secai_with_csi.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_quality_workbook
@@ -162,9 +161,10 @@ def infer_csi_from_keywords(text: str, keyword_map: list) -> Tuple[Optional[int]
 
 
 def process_yates(dry_run: bool = False):
-    """Process Yates inspection data."""
+    """Process Yates inspection data (appends to original file)."""
     input_path = settings.PROCESSED_DATA_DIR / "quality" / "yates_all_inspections.csv"
-    output_path = settings.PROCESSED_DATA_DIR / "quality" / "yates_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"Yates file not found: {input_path}")
@@ -201,15 +201,16 @@ def process_yates(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"Output written to: {output_path}")
+        print(f"CSI columns appended to: {output_path}")
 
     return df
 
 
 def process_secai(dry_run: bool = False):
-    """Process SECAI inspection data."""
+    """Process SECAI inspection data (appends to original file)."""
     input_path = settings.PROCESSED_DATA_DIR / "quality" / "secai_inspection_log.csv"
-    output_path = settings.PROCESSED_DATA_DIR / "quality" / "secai_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"SECAI file not found: {input_path}")
@@ -246,13 +247,13 @@ def process_secai(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"Output written to: {output_path}")
+        print(f"CSI columns appended to: {output_path}")
 
     return df
 
 
 def add_csi_to_quality_workbook(dry_run: bool = False):
-    """Process both Yates and SECAI quality files."""
+    """Process both Yates and SECAI quality files (appends to original files)."""
     yates_df = process_yates(dry_run)
     secai_df = process_secai(dry_run)
 

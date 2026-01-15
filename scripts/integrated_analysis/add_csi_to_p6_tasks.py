@@ -5,11 +5,11 @@ Add CSI Section IDs to P6 Task Taxonomy.
 Maps task taxonomy sub_trade/scope codes to specific CSI MasterFormat sections.
 Uses hierarchical inference: sub_trade → scope → trade_id fallback.
 
-Input:
-    {WINDOWS_DATA_DIR}/derived/primavera/task_taxonomy.csv
+Appends CSI columns to the original taxonomy file (does not create separate file).
+New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
 
-Output:
-    {WINDOWS_DATA_DIR}/derived/primavera/task_taxonomy_with_csi.csv
+Input/Output:
+    {WINDOWS_DATA_DIR}/derived/primavera/task_taxonomy.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_p6_tasks
@@ -200,10 +200,11 @@ def infer_csi_from_taxonomy(sub_trade: str, scope: str, trade_id) -> Tuple[Optio
 
 
 def add_csi_to_p6_tasks(dry_run: bool = False):
-    """Add CSI section IDs to P6 task taxonomy."""
+    """Add CSI section IDs to P6 task taxonomy (appends to original file)."""
 
     input_path = settings.PRIMAVERA_DERIVED_DIR / "task_taxonomy.csv"
-    output_path = settings.PRIMAVERA_DERIVED_DIR / "task_taxonomy_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
@@ -254,9 +255,9 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"\nOutput written to: {output_path}")
+        print(f"\nCSI columns appended to: {output_path}")
     else:
-        print("\nDRY RUN - no output written")
+        print("\nDRY RUN - no changes written")
 
     return df
 

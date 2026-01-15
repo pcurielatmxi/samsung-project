@@ -52,6 +52,14 @@ from scripts.shared.dimension_lookup import (
 )
 from scripts.quality.postprocess.location_parser import parse_location
 
+# Import CSI inference from quality workbook script
+from scripts.integrated_analysis.add_csi_to_quality_workbook import (
+    infer_csi_from_keywords,
+    YATES_KEYWORD_TO_CSI,
+    SECAI_KEYWORD_TO_CSI,
+)
+from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
+
 
 # =============================================================================
 # Column Definitions
@@ -84,6 +92,10 @@ COMMON_COLUMNS = [
     'dim_company_id',
     'dim_trade_id',
     'dim_trade_code',
+    # CSI Section IDs
+    'dim_csi_section_id',
+    'csi_section',
+    'csi_title',
 ]
 
 # Yates-only columns (prefixed)
@@ -170,6 +182,10 @@ def enrich_yates(df: pd.DataFrame) -> pd.DataFrame:
 
         dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
 
+        # CSI Section inference from inspection description
+        csi_section_id, csi_section_code = infer_csi_from_keywords(inspection_desc, YATES_KEYWORD_TO_CSI)
+        csi_title = CSI_SECTIONS[csi_section_id][1] if csi_section_id and csi_section_id in CSI_SECTIONS else None
+
         # Get failure reason only on failure
         status_norm = _safe_str(row.get('Status_Normalized', ''))
         failure_reason = _safe_val(row.get('Remarks')) if 'FAIL' in status_norm.upper() else None
@@ -201,6 +217,9 @@ def enrich_yates(df: pd.DataFrame) -> pd.DataFrame:
             'dim_company_id': dim_company_id,
             'dim_trade_id': dim_trade_id,
             'dim_trade_code': dim_trade_code,
+            'dim_csi_section_id': csi_section_id,
+            'csi_section': csi_section_code,
+            'csi_title': csi_title,
 
             # Yates-specific columns
             'yates_time': _safe_val(row.get('Time')),
@@ -269,6 +288,10 @@ def enrich_secai(df: pd.DataFrame) -> pd.DataFrame:
 
         dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
 
+        # CSI Section inference from template
+        csi_section_id, csi_section_code = infer_csi_from_keywords(template, SECAI_KEYWORD_TO_CSI)
+        csi_title = CSI_SECTIONS[csi_section_id][1] if csi_section_id and csi_section_id in CSI_SECTIONS else None
+
         # Get failure reason only on failure
         status_norm = _safe_str(row.get('Status_Normalized', ''))
         failure_reason = _safe_val(row.get('Reasons for failure')) if 'FAIL' in status_norm.upper() else None
@@ -300,6 +323,9 @@ def enrich_secai(df: pd.DataFrame) -> pd.DataFrame:
             'dim_company_id': dim_company_id,
             'dim_trade_id': dim_trade_id,
             'dim_trade_code': dim_trade_code,
+            'dim_csi_section_id': csi_section_id,
+            'csi_section': csi_section_code,
+            'csi_title': csi_title,
 
             # Yates columns (null for SECAI)
             'yates_time': None,
@@ -343,6 +369,11 @@ def calculate_coverage(df: pd.DataFrame, source: str) -> Dict[str, Dict]:
             'total': len(df),
             'pct': round(df['dim_trade_id'].notna().mean() * 100, 1)
         },
+        'csi_section': {
+            'mapped': int(df['dim_csi_section_id'].notna().sum()),
+            'total': len(df),
+            'pct': round(df['dim_csi_section_id'].notna().mean() * 100, 1)
+        },
         'building': {
             'mapped': int(df['building'].notna().sum()),
             'total': len(df),
@@ -354,10 +385,11 @@ def calculate_coverage(df: pd.DataFrame, source: str) -> Dict[str, Dict]:
 def print_coverage(coverage: Dict):
     """Print coverage statistics."""
     print(f"\n{coverage['source']} Coverage ({coverage['total_records']} records):")
-    print(f"  Building:  {coverage['building']['mapped']}/{coverage['building']['total']} ({coverage['building']['pct']}%)")
-    print(f"  Location:  {coverage['location']['mapped']}/{coverage['location']['total']} ({coverage['location']['pct']}%)")
-    print(f"  Company:   {coverage['company']['mapped']}/{coverage['company']['total']} ({coverage['company']['pct']}%)")
-    print(f"  Trade:     {coverage['trade']['mapped']}/{coverage['trade']['total']} ({coverage['trade']['pct']}%)")
+    print(f"  Building:     {coverage['building']['mapped']}/{coverage['building']['total']} ({coverage['building']['pct']}%)")
+    print(f"  Location:     {coverage['location']['mapped']}/{coverage['location']['total']} ({coverage['location']['pct']}%)")
+    print(f"  Company:      {coverage['company']['mapped']}/{coverage['company']['total']} ({coverage['company']['pct']}%)")
+    print(f"  Trade:        {coverage['trade']['mapped']}/{coverage['trade']['total']} ({coverage['trade']['pct']}%)")
+    print(f"  CSI Section:  {coverage['csi_section']['mapped']}/{coverage['csi_section']['total']} ({coverage['csi_section']['pct']}%)")
 
 
 def consolidate():

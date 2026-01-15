@@ -24,6 +24,10 @@ from scripts.shared.dimension_lookup import (
     get_trade_id,
     get_trade_code,
 )
+from scripts.integrated_analysis.add_csi_to_ncr import (
+    infer_csi_from_ncr,
+    CSI_SECTIONS,
+)
 
 
 # NCR discipline to trade_id mapping
@@ -211,9 +215,23 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
         lambda x: get_trade_code(x) if pd.notna(x) else None
     )
 
+    # Infer CSI section from description and discipline
+    print("  Inferring CSI sections...")
+    csi_results = df.apply(
+        lambda row: infer_csi_from_ncr(row.get('description'), row.get('discipline')),
+        axis=1
+    )
+    df['dim_csi_section_id'] = csi_results.apply(lambda x: x[0])
+    df['csi_section'] = csi_results.apply(lambda x: x[1])
+    df['csi_inference_source'] = csi_results.apply(lambda x: x[2])
+    df['csi_title'] = df['dim_csi_section_id'].apply(
+        lambda x: CSI_SECTIONS[x][1] if pd.notna(x) and x in CSI_SECTIONS else None
+    )
+
     # Calculate coverage
     company_mapped = df['dim_company_id'].notna().sum()
     trade_mapped = df['dim_trade_id'].notna().sum()
+    csi_mapped = df['dim_csi_section_id'].notna().sum()
     total = len(df)
 
     coverage = {
@@ -226,6 +244,11 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
             'mapped': trade_mapped,
             'total': total,
             'pct': trade_mapped / total * 100 if total > 0 else 0
+        },
+        'csi_section': {
+            'mapped': csi_mapped,
+            'total': total,
+            'pct': csi_mapped / total * 100 if total > 0 else 0
         }
     }
 
@@ -240,8 +263,9 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
     print("=" * 60)
     print(f"Total records: {total}")
     print(f"\nDimension Coverage:")
-    print(f"  company: {company_mapped}/{total} ({coverage['company']['pct']:.1f}%)")
-    print(f"  trade:   {trade_mapped}/{total} ({coverage['trade']['pct']:.1f}%)")
+    print(f"  company:     {company_mapped}/{total} ({coverage['company']['pct']:.1f}%)")
+    print(f"  trade:       {trade_mapped}/{total} ({coverage['trade']['pct']:.1f}%)")
+    print(f"  csi_section: {csi_mapped}/{total} ({coverage['csi_section']['pct']:.1f}%)")
 
     # Show unmapped companies
     unmapped_companies = df[df['dim_company_id'].isna()]['company'].dropna().value_counts()

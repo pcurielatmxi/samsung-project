@@ -5,11 +5,11 @@ Add CSI Section IDs to TBM Daily Work Entries.
 Parses work_activities field to determine the most specific CSI section code.
 TBM data has free-text activity descriptions that need keyword parsing.
 
-Input:
-    {WINDOWS_DATA_DIR}/processed/tbm/work_entries_enriched.csv
+Appends CSI columns to the original enriched file (does not create separate file).
+New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
 
-Output:
-    {WINDOWS_DATA_DIR}/processed/tbm/tbm_with_csi.csv
+Input/Output:
+    {WINDOWS_DATA_DIR}/processed/tbm/work_entries_enriched.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_tbm
@@ -199,10 +199,11 @@ def infer_csi_from_activity(work_activities: str, trade_inferred: str) -> Tuple[
 
 
 def add_csi_to_tbm(dry_run: bool = False):
-    """Add CSI section IDs to TBM work entries."""
+    """Add CSI section IDs to TBM work entries (appends to original file)."""
 
     input_path = settings.PROCESSED_DATA_DIR / "tbm" / "work_entries_enriched.csv"
-    output_path = settings.PROCESSED_DATA_DIR / "tbm" / "tbm_with_csi.csv"
+    # Write back to the same file (append columns to original)
+    output_path = input_path
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
@@ -246,9 +247,9 @@ def add_csi_to_tbm(dry_run: bool = False):
 
     if not dry_run:
         df.to_csv(output_path, index=False)
-        print(f"\nOutput written to: {output_path}")
+        print(f"\nCSI columns appended to: {output_path}")
     else:
-        print("\nDRY RUN - no output written")
+        print("\nDRY RUN - no changes written")
 
     return df
 
