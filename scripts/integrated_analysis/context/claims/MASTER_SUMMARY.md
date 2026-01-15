@@ -19,6 +19,8 @@ Samsung (Owner)
                     └── Trade Subcontractors (50+)
 ```
 
+**Contract Type:** Cost Plus Fee with GMP (AIA A102/A201-2017). Yates GC costs are reimbursable; subcontractor work is generally lump sum pass-through. See [Contract Structure Details](../contracts/yates_secai_contract_structure.md).
+
 ---
 
 ## Contract Value Evolution

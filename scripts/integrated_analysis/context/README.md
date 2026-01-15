@@ -15,7 +15,8 @@ context/
 │   │   └── CO-XX_*.md
 │   └── eot_claims/               # Individual EOT documentation
 │       └── EOT-XX_*.md
-├── contracts/                    # (Future) Contract documents, amendments
+├── contracts/                    # Contract documents, structure, amendments
+│   └── yates_secai_contract_structure.md
 ├── correspondence/               # (Future) Letters, notices between parties
 ├── experts/                      # (Future) Expert reports, methodologies
 └── schedule/                     # (Future) Schedule basis, milestones

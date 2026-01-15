@@ -43,22 +43,29 @@ W.G. Yates & Sons Construction (Yates) is the General Contractor for the Samsung
 | **AH Beck Foundation** | A H BECK FOUNDATION CO INC | 6,407 | EARTHWORK | 31 63 00 | Deep foundations, drilled piers |
 | **GDA** | GDA CONTRACTORS | 176 | GENERAL | 01 10 00 | General construction |
 
-### Additional Subs from Quality Records (RABA/PSI)
+---
 
-These companies appear in quality inspection records but not in ProjectSight labor:
+## Non-Yates Contractors (Quality Records Only)
 
-| Company | Source | Trade | Primary CSI | Scope Description |
-|---------|--------|-------|-------------|-------------------|
-| **AMTS** | PSI (410 inspections) | DRYWALL | 09 21 16 | Drywall, framing inspections |
-| **Axios** | PSI (439 inspections), RABA (30) | DRYWALL | 09 21 16 | Drywall, framing |
-| **Baker Triangle** | PSI (203 inspections) | DRYWALL | 09 21 16 | Drywall contractor |
-| **JP Hi-Tech** | PSI (55 inspections) | DRYWALL | 09 21 16 | Drywall engineering |
-| **North Star** | RABA (24 inspections) | FIREPROOF | 07 84 00 | Firestopping |
-| **JMEG** | RABA (14 inspections) | FIREPROOF | 07 84 00 | Firestopping, fire protection |
-| **Greenberry** | RABA (11 inspections) | STEEL | 05 12 00 | Welding, structural steel |
-| **Lehne** | RABA (23 inspections) | EARTHWORK | 31 23 00 | Earthwork |
-| **ABAR** | RABA (18 inspections) | EARTHWORK | 31 23 00 | Earthwork |
-| **Chaparral** | PSI (3 inspections) | DRYWALL | 09 21 16 | Drywall/framing |
+These companies appear in RABA/PSI quality inspection records but **NOT** in ProjectSight labor. They are confirmed to work for Samsung (SECAI) or other GCs, not Yates.
+
+**Evidence:**
+- PSI records show "Samsung E&C" as contractor for AMTS, Axios, JP Hi-Tech
+- Schedule narratives reference "SECAI/Axios scope of sheeting"
+- Yates drywall scope is Berg, not these companies
+
+| Company | Source | Trade | GC Affiliation | Notes |
+|---------|--------|-------|----------------|-------|
+| **AMTS** | PSI (410 inspections) | DRYWALL | Samsung (SECAI) | PSI contractor field = "Samsung E&C" |
+| **Axios** | PSI (439), RABA (30) | DRYWALL | Samsung (SECAI) | "SECAI/Axios scope" per Yates narratives |
+| **Baker Triangle** | PSI (203 inspections) | DRYWALL | Unknown | Not in ProjectSight labor |
+| **JP Hi-Tech** | PSI (55 inspections) | DRYWALL | Samsung (SECAI) | PSI contractor field = "Samsung E&C" |
+| **North Star** | RABA (24 inspections) | FIREPROOF | Unknown | Not in ProjectSight labor |
+| **JMEG** | RABA (14 inspections) | FIREPROOF | Unknown | Not in ProjectSight labor |
+| **Greenberry** | RABA (11 inspections) | STEEL | Unknown | Not in ProjectSight labor |
+| **Lehne** | RABA (23 inspections) | EARTHWORK | Unknown | Not in ProjectSight labor |
+| **ABAR** | RABA (18 inspections) | EARTHWORK | Unknown | Not in ProjectSight labor |
+| **Chaparral** | PSI (3 inspections) | DRYWALL | Unknown | Not in ProjectSight labor |
 
 ---
 
