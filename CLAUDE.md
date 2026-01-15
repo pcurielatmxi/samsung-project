@@ -283,6 +283,19 @@ All analysis must maintain traceability to source documents:
 
 See [.claude/skills/mxi-powerpoint/SKILL.md](.claude/skills/mxi-powerpoint/SKILL.md) for presentation data traceability requirements.
 
+## Data Artifact Schema Stability
+
+**IMPORTANT:** Generated data artifacts (CSV files in `processed/` and `derived/`) are production outputs consumed by Power BI dashboards and downstream analysis.
+
+**Schema Rules:**
+- ❌ **FORBIDDEN:** Removing existing columns or changing column names without approval
+- ❌ **FORBIDDEN:** Changing column data types (e.g., string → int) without approval
+- ✅ **ALLOWED:** Adding new columns
+- ✅ **ALLOWED:** Updating data values within existing columns
+- ✅ **ALLOWED:** Adding new rows
+
+Breaking schema changes require explicit user approval as they may break Power BI data models and existing reports.
+
 ## Quality Data Architecture
 
 Quality inspection data is central to the project's rework and delay analysis. Three complementary data sources provide different views of the same inspection events:
