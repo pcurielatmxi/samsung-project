@@ -213,10 +213,12 @@ def build_dim_company():
             "full_name": full_name,
         })
 
-    # Write CSV
-    fieldnames = ["company_id", "canonical_name", "short_code", "tier", "company_type",
-                  "is_yates_sub", "primary_trade_id", "notes", "parent_company_id",
-                  "parent_confidence", "full_name"]
+    # Write CSV - column order must match Power BI expectations
+    # Original columns first (in exact order), then new columns at end
+    fieldnames = ["company_id", "canonical_name", "short_code", "tier",
+                  "primary_trade_id", "notes", "parent_company_id", "parent_confidence",
+                  # New columns added at end
+                  "company_type", "is_yates_sub", "full_name"]
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
