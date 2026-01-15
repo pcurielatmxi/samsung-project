@@ -1290,37 +1290,69 @@ def enrich_projectsight(dry_run: bool = False) -> Dict[str, Any]:
     # Track initial trade coverage before fallback
     trade_from_name = df['dim_trade_id'].notna().sum()
 
-    # Fallback: use company's primary_trade_id if trade_name lookup failed
-    print("  Applying company-to-trade fallback...")
+    # Use company's primary_trade_id, with validation against allowed trades
+    print("  Applying company-based trade assignment...")
     dim_company = pd.read_csv(Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv')
-    company_trade_map = dict(zip(dim_company['company_id'], dim_company['primary_trade_id']))
+    company_primary_trade = dict(zip(dim_company['company_id'], dim_company['primary_trade_id']))
 
-    def get_trade_from_company(row):
-        """Get trade from company's primary_trade_id if dim_trade_id is missing."""
-        if pd.notna(row['dim_trade_id']):
-            return row['dim_trade_id']
+    # Build mapping of company_id -> set of allowed trade_ids (primary + other_trade_ids)
+    def get_allowed_trades(row):
+        allowed = set()
+        if pd.notna(row['primary_trade_id']):
+            allowed.add(int(row['primary_trade_id']))
+        if pd.notna(row.get('other_trade_ids')):
+            try:
+                ids = [int(x.strip()) for x in str(row['other_trade_ids']).split(',')]
+                allowed.update(ids)
+            except:
+                pass
+        return allowed
+
+    company_allowed_trades = {row['company_id']: get_allowed_trades(row) for _, row in dim_company.iterrows()}
+
+    def get_validated_trade(row):
+        """
+        Get trade_id using company's allowed trades.
+
+        Logic:
+        1. If ProjectSight trade_name maps to a trade in company's allowed list, keep it
+        2. Otherwise, use company's primary_trade_id
+        """
         company_id = row['dim_company_id']
-        if pd.notna(company_id):
-            trade_id = company_trade_map.get(company_id)
-            if pd.notna(trade_id):
-                return int(trade_id)
-        return None
+        ps_trade_id = row['dim_trade_id']  # From ProjectSight trade_name
 
-    df['dim_trade_id'] = df.apply(get_trade_from_company, axis=1)
+        if pd.isna(company_id):
+            return ps_trade_id  # No company match, keep ProjectSight trade
+
+        allowed = company_allowed_trades.get(company_id, set())
+        primary = company_primary_trade.get(company_id)
+
+        # If ProjectSight trade is in company's allowed trades, keep it
+        if pd.notna(ps_trade_id) and int(ps_trade_id) in allowed:
+            return ps_trade_id
+
+        # Otherwise use company's primary trade
+        return int(primary) if pd.notna(primary) else ps_trade_id
+
+    # Store original for tracking
+    df['trade_id_from_ps'] = df['dim_trade_id'].copy()
+    df['dim_trade_id'] = df.apply(get_validated_trade, axis=1)
     df['dim_trade_code'] = df['dim_trade_id'].apply(get_trade_code)
 
     # Track source of trade inference
     df['trade_source'] = df.apply(
-        lambda row: 'trade_name' if pd.notna(trade_lookup.get(row.get('trade_name'))) else ('company' if pd.notna(row['dim_trade_id']) else None),
+        lambda row: 'ps_validated' if pd.notna(row['trade_id_from_ps']) and row['trade_id_from_ps'] == row['dim_trade_id']
+                    else ('company_primary' if pd.notna(row['dim_trade_id']) else None),
         axis=1
     )
 
-    trade_from_company = df[df['trade_source'] == 'company']['dim_trade_id'].notna().sum()
+    trade_from_ps_validated = (df['trade_source'] == 'ps_validated').sum()
+    trade_from_company = (df['trade_source'] == 'company_primary').sum()
 
     # Get company's primary_trade_id for CSI inference (more reliable than ProjectSight trade_name)
     # This is used even when dim_trade_id comes from trade_name, because company's known trade
     # is more reliable for CSI mapping than ProjectSight's billing category
-    df['company_primary_trade_id'] = df['dim_company_id'].map(company_trade_map)
+    df['company_primary_trade_id'] = df['dim_company_id'].map(company_primary_trade)
 
     # Infer CSI section from activity, trade_full (division), and company's primary trade
     print("  Inferring CSI sections...")
@@ -1345,8 +1377,8 @@ def enrich_projectsight(dry_run: bool = False) -> Dict[str, Any]:
         'company': df['dim_company_id'].notna().mean() * 100,
         'trade': df['dim_trade_id'].notna().mean() * 100,
         'csi_section': df['dim_csi_section_id'].notna().mean() * 100,
-        'trade_from_name': trade_from_name,
-        'trade_from_company': trade_from_company,
+        'trade_from_ps_validated': trade_from_ps_validated,  # PS trade was in company's allowed list
+        'trade_from_company_primary': trade_from_company,  # Used company's primary_trade_id
     }
 
     if not dry_run:
