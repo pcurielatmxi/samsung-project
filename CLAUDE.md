@@ -247,6 +247,26 @@ samsung-project/
 └── data/                        # Git-tracked analysis outputs
 ```
 
+## Subfolder Documentation
+
+Each `scripts/{source}/` folder has a `CLAUDE.md` file documenting that data source's pipeline.
+
+**Requirements:**
+- **Keep updated:** Update `CLAUDE.md` when modifying scripts in that folder
+- **Keep concise:** Maximum 150 lines per file
+- **Standard sections:** Purpose, Data Flow, Structure, Usage, Key Data
+
+**Current documentation:**
+- `scripts/shared/CLAUDE.md` - Cross-source utilities
+- `scripts/primavera/CLAUDE.md` - P6 schedule processing
+- `scripts/weekly_reports/CLAUDE.md` - PDF report parsing
+- `scripts/tbm/CLAUDE.md` - TBM Excel parsing
+- `scripts/projectsight/CLAUDE.md` - Labor and NCR processing
+- `scripts/quality/CLAUDE.md` - Quality record processing
+- `scripts/raba/CLAUDE.md` - RABA inspection pipeline
+- `scripts/psi/CLAUDE.md` - PSI inspection pipeline
+- `scripts/narratives/CLAUDE.md` - Document processing and embeddings
+
 ## Data Directory Structure
 
 External data (not in repo) follows traceability classification:
