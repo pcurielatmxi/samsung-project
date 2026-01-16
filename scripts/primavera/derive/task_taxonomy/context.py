@@ -17,7 +17,7 @@ import pandas as pd
 project_root = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.classifiers.task_classifier import TaskClassifier
+from scripts.primavera.task_classifier import TaskClassifier
 
 
 def build_activity_code_lookup(

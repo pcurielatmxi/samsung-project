@@ -69,9 +69,9 @@ sys.path.insert(0, str(project_root))
 derive_dir = Path(__file__).parent.parent / 'derive'
 sys.path.insert(0, str(derive_dir))
 
-from src.utils.xer_parser import XERParser
+from scripts.primavera.xer_parser import XERParser
 from src.config.settings import Settings
-from src.classifiers.task_classifier import TaskClassifier
+from scripts.primavera.task_classifier import TaskClassifier
 from task_taxonomy import build_task_context, infer_all_fields, get_default_mapping
 from scripts.primavera.process.add_task_versions import add_task_code_versions
 

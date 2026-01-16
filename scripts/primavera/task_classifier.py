@@ -5,7 +5,7 @@ Classifies tasks into Phase, Scope Category, Location Type, and Location ID
 based on task names and WBS hierarchy.
 
 Usage:
-    from src.classifiers import TaskClassifier
+    from scripts.primavera.task_classifier import TaskClassifier
 
     classifier = TaskClassifier()
     result = classifier.classify_task(task_name, wbs_name)

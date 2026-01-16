@@ -30,7 +30,7 @@ import pandas as pd
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.utils.xer_parser import XERParser
+from scripts.primavera.xer_parser import XERParser
 
 
 def process_xer_file(input_path: str, output_path: str = None, verbose: bool = True) -> str:
