@@ -3,7 +3,7 @@
 Dimension tables are stored in the external data folder (not in this repo):
 
 ```
-{WINDOWS_DATA_DIR}/derived/integrated_analysis/dimensions/
+{WINDOWS_DATA_DIR}/processed/integrated_analysis/dimensions/
 ```
 
 ## Files
@@ -33,7 +33,7 @@ trade_id = get_trade_id('Drywall')  # -> 4
 
 ## Why External?
 
-Dimension tables contain derived data that:
+Dimension tables are stored externally because:
 1. May be updated more frequently than code
-2. Include assumptions that need documentation
-3. Should be versioned separately from analysis code
+2. Should be versioned separately from analysis code
+3. Used by downstream tools (Power BI dashboards, reports)

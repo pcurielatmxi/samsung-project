@@ -150,7 +150,7 @@ def update_dim_company(hierarchy: dict, dry_run: bool = True) -> pd.DataFrame:
     Returns:
         Updated DataFrame
     """
-    dim_path = Settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv'
+    dim_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv'
 
     df = pd.read_csv(dim_path)
 

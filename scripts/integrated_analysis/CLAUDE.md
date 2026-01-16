@@ -107,7 +107,7 @@ python -m scripts.narratives.embeddings search "change order" --author Yates
 ## Output Location
 
 ```
-data/derived/integrated_analysis/
+data/processed/integrated_analysis/
 ├── dimensions/          # dim_*.csv files
 ├── mappings/            # map_*.csv files
 └── validation/          # Coverage reports

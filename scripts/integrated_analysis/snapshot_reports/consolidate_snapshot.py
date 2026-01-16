@@ -36,7 +36,7 @@ from scripts.integrated_analysis.snapshot_reports.data_loaders.dimensions import
 
 def _load_company_trade_reference() -> pd.DataFrame:
     """Load company-trade reference from dimension tables."""
-    dim_dir = Settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+    dim_dir = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions'
 
     company_path = dim_dir / 'dim_company.csv'
     trade_path = dim_dir / 'dim_trade.csv'
@@ -101,7 +101,7 @@ def _get_gc_sub_hierarchy() -> Dict[str, Dict]:
         return {'gc_lookup': {}, 'gc_subs': {}, 'gc_info': {}}
 
     # Load full company data for tier info
-    dim_dir = Settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+    dim_dir = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions'
     company_path = dim_dir / 'dim_company.csv'
     if not company_path.exists():
         return {'gc_lookup': {}, 'gc_subs': {}, 'gc_info': {}}

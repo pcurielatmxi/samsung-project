@@ -371,7 +371,7 @@ scripts/integrated_analysis/
     └── unmapped_entities.csv  ✅ Implemented (0 remaining)
 ```
 
-Note: These are **derived** data files (include assumptions/curation). Per project data traceability guidelines, outputs to external data directory would go to `data/derived/integrated_analysis/`.
+Note: These files are outputs of the integration layer scripts. Per project data traceability guidelines, outputs go to `data/processed/integrated_analysis/`.
 
 ---
 

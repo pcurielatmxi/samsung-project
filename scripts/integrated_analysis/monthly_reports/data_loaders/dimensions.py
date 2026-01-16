@@ -23,7 +23,7 @@ _location_lookup: Optional[Dict[str, str]] = None
 
 def _get_dimensions_dir() -> Path:
     """Get path to dimension tables."""
-    return Settings.DERIVED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+    return Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions'
 
 
 def _load_company_df() -> pd.DataFrame:
