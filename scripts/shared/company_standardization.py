@@ -4,422 +4,88 @@ Company name standardization for Samsung Taylor FAB1 project.
 
 Normalizes company names across PSI, RABA, QC Logs, and other sources
 to enable cross-source analysis.
+
+Company aliases are loaded from the generated dimension files:
+- dim_company.csv: Canonical company names
+- map_company_aliases.csv: Alias → company_id mapping
+
+To update company aliases, edit:
+  scripts/integrated_analysis/dimensions/build_company_dimension.py
+
+Then rebuild with:
+  python -m scripts.integrated_analysis.dimensions.build_company_dimension
 """
 
 import re
-from typing import Optional, Dict, Tuple
+import sys
+from pathlib import Path
+from typing import Optional, Dict, Tuple, List
 
-# Canonical company names mapped to their aliases/variants
-# Format: canonical_name -> [list of aliases]
-COMPANY_ALIASES: Dict[str, list] = {
-    # ===================
-    # MAJOR CONTRACTORS
-    # ===================
-    "Yates": [
-        "yates",
-        "yates construction",
-        "yates constructions",
-        "w.g. yates",
-        "wg yates",
-        "w.g. yates & sons",
-        "w.g. yates & sons construction",
-        "w.g. yates construction",
-        "yates & sons",
-        "yates & sons construction company",
-        "yates & cons construction company",
-        "yates construction team",
-        "yates qc",
-        "yates field personnel",
-        "yates subcon",
-        # Person names associated with Yates
-        "mark hammond with yates",
-        "mark hammond with yates construction",
-        "mark hammond",
-        "sam w/ yates",
-        "arturo carreon with yates construction",
-        "arturo carreon with yates",
-        "chris plassmann with yates",
-        "mohammed a (with yates)",
-    ],
-    "Samsung E&C": [
-        "samsung",
-        "samsung e&c",
-        "samsung e&c america",
-        "samsung e&c america, inc.",
-        "samsung e&c america, inc",
-        "secai",
-        "seca",
-        "secal",
-        "secei",
-        "samsung e&c america, inc. (secai)",
-        "samsung e&c america, inc. (to)",
-        "secai construction",
-        "secai construction team",
-    ],
-    "Hensel Phelps": [
-        "hensel phelps",
-        "hensel phelps construction",
-        "hensel phelps construction co",
-        "hensel phepls construction",  # Typo
-        "hansel phelps",  # Typo
-        "hp",
-        "jose flores with hensel phelps construction",
-    ],
-    "Austin Bridge": [
-        "austin bridge",
-        "austin bridge & road",
-        "austin bridge and road",
-        "abr",
-        "ag",
-        "austin global",
-        "austin global construction",
-        "austin g",
-        "austin globale",
-        "ag; austin global",
-        "ag / austin global",
-        "austin commercial",
-    ],
+import pandas as pd
 
-    # ===================
-    # SUBCONTRACTORS
-    # ===================
-    "Berg": [
-        "berg",
-        "berg steel",
-        "berg drywall",
-        "berg contractors",
-        "berg group",
-        # Typos
-        "ber g",
-        "ber",
-        "bergo",
-        "bergs",
-        "bergg",
-        "berr",
-        "berr; yates",
-        "bergc",
-        "berga",
-        "berg / berg",
-    ],
-    "AMTS": [
-        "amts",
-        "amts inc",
-        # Typos
-        "amys",
-        "ams",
-        "amt s",
-        "amtis",
-        "amst",
-        "astm",
-        "mats",
-    ],
-    "Axios": [
-        "axios",
-        "axios industrial",
-        "axios industrial group",
-        "axios-",
-        # Typos
-        "axious",
-        "azios",
-        "axos",
-        "axiox",
-    ],
-    "MK Marlow": [
-        "mk marlow",
-        "mkm",
-        "m.k. marlow",
-        "m k marlow",
-        "marlow",
-        "mk",
-        "mkmarlow",
-        "mk m",
-        "mk marlow and berg",
-    ],
-    "Baker Triangle": [
-        "baker triangle",
-        "baker drywall",
-        "baker t",
-        "baker t / baker drywall",
-        "bakertriangle",
-        "baker t / baker drywall / bakertriangle",
-        "baker / baker drywall",
-        "baker triangle / baker drywall",
-        "baker (baker drywall)",
-        "baker drywall / bakertriangle",
-        "baker drywall / brandon torres",
-        "bker triangle / baker drywall",
-        "baker triangle / baker drywall",
-        # Typos
-        "backer",
-        "backer t",
-        "backer t / baker drywall",
-        "backer (baker drywall)",
-        "backer triangle (also listed as baker drywall)",
-        "banker triangle",
-        "bakery / baker drywall",
-        # Note: plain "baker" could be Baker Triangle or Baker Concrete - handle separately
-    ],
-    "Baker Concrete": [
-        "baker concrete",
-        "baker concrete construction",
-        "baker construction",
-        "baker and yates",
-        "baker/yates",
-        "yates/baker",
-        "yates-baker",
-        "yates/ baker",
-        "beker / baker",
-        "baker / baker concrete construction",
-    ],
-    "Apache": [
-        "apache",
-        "apache industrial",
-    ],
-    "Cherry Coatings": [
-        "cherry coatings",
-        "cherry",
-        "cherry / cherry coatings",
-        "cherry/yates",
-    ],
-    "JP Hi-Tech": [
-        "jp hi-tech",
-        "jp hi-tech eng",
-        "jp hitech",
-        "jphi-tech eng inc.",
-        "jphi-tech eng inc",
-        "jphi-tech eng",
-        "jp hi-tech eng",
-        "hi-tech eng inc.",
-        "hi-tech eng inc",
-        "hitech jp",
-        "jp hi teck",
-        "jp",
-        "jph",
-        "jphi",
-        "jhp",
-        "jp (jp hi-tech eng)",
-        "jp / jp hi-tech eng",
-        "jphi (jp hi-tech eng)",
-        '"jp"',
-    ],
-    "Alpha": [
-        "alpha",
-        "alpha insulation",
-        "alpha insulation and waterproofing",
-        "alpha painting",
-        "alpha/yates",
-        "yates/alpha",
-    ],
-    "Chaparral": [
-        "chaparral",
-        "chaparral (sam rodriguez)",
-    ],
-    "McDean": [
-        "mcdean",
-        "mc dean",
-        "dean-cec",
-    ],
-    "Rolling Plains": [
-        "rolling plains",
-        "rolling planes",  # Typo
-        "rolling plaines",  # Typo
-    ],
-    "North Star": [
-        "north star",
-        "northstar",
-        "north star/axios",
-    ],
-    "Greenberry": [
-        "greenberry",
-        "gbi/greenberry",
-    ],
-    "JMEG": [
-        "jmeg",
-        "j-meg",
-        "jmeg electrical",
-        "secai - jmeg",
-    ],
-    "Gate Precast": [
-        "gate precast",
-        "gate",
-    ],
-    "Infinity": [
-        "infinity",
-    ],
-    "Patriot": [
-        "patriot",
-        "patriot/yates",
-    ],
-    "STI": [
-        "sti",
-    ],
-    "BRYCON": [
-        "brycon",
-    ],
-    "Lehne": [
-        "lehne",
-        "lehen",  # Typo
-        "lehne carlos",
-    ],
-    "ABAR": [
-        "abar",
-        "arab",  # Typo
-        "abra",  # Typo
-    ],
-    "McCarthy": [
-        "mccarthy",
-        "mccarthy building",
-    ],
-    "PCL": [
-        "pcl",
-        "pcl construction",
-    ],
-    "FD Thomas": [
-        "fd thomas",
-        "f.d. thomas",
-    ],
-    "Beck": [
-        "beck",
-        "beck foundation",
-        "beck foundation co",
-        "ah beck",
-    ],
-    "Veltri Steel": [
-        "veltri steel",
-        "veltri",
-        "valtri",  # Typo
-    ],
-    "Latcon": [
-        "latcon",
-        "latcon/veltri",
-    ],
-    "SBTA": [
-        "sbta",
-        "sbta, inc.",
-        "sbta (masonry contractor)",
-    ],
-    "Coreslab": [
-        "coreslab",
-        "coreslab structures",
-    ],
-    "Steely Farms": [
-        "steely farms",
-    ],
-    "Jacobs": [
-        "jacobs",
-    ],
-    "BrandSafway": [
-        "brandsafway",
-    ],
-    "Shinsung": [
-        "shinsung",
-    ],
-    "DootaIT": [
-        "dootait",
-    ],
-    "K-ENSOL": [
-        "k-ensol",
-    ],
-    "Central Texas Industrial": [
-        "central texas industrial",
-    ],
-    "GDA": [
-        "gda",
-    ],
-    "Smart IT": [
-        "smart it",
-    ],
-    "Prime Controls": [
-        "prime controls",
-        "prime",
-    ],
-    "Heldenfels": [
-        "heldenfels",
-    ],
-    "Grout Tech": [
-        "grout tech",
-    ],
-    "DSI": [
-        "dsi",
-    ],
-    "Southern Industrial": [
-        "southern industrial",
-    ],
-    "Porter": [
-        "porter",
-    ],
-    "B&K": [
-        "b&k",
-    ],
-    "J-Kaulk": [
-        "j-kaulk",
-    ],
-    "Trinity Steel": [
-        "trinity steel",
-        "trinity steel fabricators",
-    ],
-    "CSA Drywall": [
-        "csa drywall",
-    ],
-    "Polk Mechanical": [
-        "polk",
-        "polk mechanical",
-    ],
-    "Alliance": [
-        "alliance",
-    ],
-    "Performance": [
-        "performance",
-    ],
-    "PSS": [
-        "pss",
-    ],
-    "MSR-FSR": [
-        "msr-fsr",
-    ],
-    "Minyard Sons Services": [
-        "minyard son's services",
-        "minyard sons services",
-    ],
+# Add project root to path for settings
+_project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(_project_root))
 
-    # ===================
-    # TESTING/INSPECTION COMPANIES
-    # ===================
-    "Intertek PSI": [
-        "intertek psi",
-        "intertek",
-        "professional services industries",
-        "professional services industries, inc.",
-        "professional services industries, inc. (intertek psi)",
-        "professional services industries, inc. (psi) / intertek",
-        "professional services industries, inc. (psi)",
-    ],
-    "Raba Kistner": [
-        "raba kistner",
-        "raba kistner, inc.",
-        "raba kistner, inc",
-        "raba kistner inc",
-        "rkci",
-        "raba",
-        "raba kistner, inc. (a kiwa company)",
-        "raba kistner, inc. (rkci)",
-    ],
-    "Alvarez Testing": [
-        "alvarez testing",
-        "alvarez testing & inspections",
-        "alvarez testing and inspections",
-        "alvarez testing & inspections - ati",
-        "ati",
-        "alvarez",
-    ],
-}
+from src.config.settings import settings
 
-# Build reverse lookup: lowercase alias -> canonical name
-_ALIAS_LOOKUP: Dict[str, str] = {}
-for canonical, aliases in COMPANY_ALIASES.items():
-    _ALIAS_LOOKUP[canonical.lower()] = canonical
-    for alias in aliases:
-        _ALIAS_LOOKUP[alias.lower()] = canonical
+
+# =============================================================================
+# COMPANY ALIAS LOADING (from generated CSV files)
+# =============================================================================
+
+# Lazy-loaded company alias lookup
+_ALIAS_LOOKUP: Optional[Dict[str, str]] = None
+_COMPANY_ALIASES: Optional[Dict[str, List[str]]] = None
+
+
+def _load_company_aliases():
+    """
+    Load company aliases from generated CSV files.
+
+    Populates:
+    - _ALIAS_LOOKUP: alias (lowercase) -> canonical_name
+    - _COMPANY_ALIASES: canonical_name -> [list of aliases]
+    """
+    global _ALIAS_LOOKUP, _COMPANY_ALIASES
+
+    if _ALIAS_LOOKUP is not None:
+        return
+
+    _ALIAS_LOOKUP = {}
+    _COMPANY_ALIASES = {}
+
+    # Paths to generated files
+    dim_company_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv'
+    map_aliases_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings' / 'map_company_aliases.csv'
+
+    # Check if files exist
+    if not dim_company_path.exists() or not map_aliases_path.exists():
+        # Fallback: return empty lookup (will use original name)
+        print(f"Warning: Company dimension files not found. Run build_company_dimension.py first.")
+        return
+
+    # Load dim_company for company_id -> canonical_name mapping
+    dim_company = pd.read_csv(dim_company_path)
+    id_to_canonical = dict(zip(dim_company['company_id'], dim_company['canonical_name']))
+
+    # Load map_company_aliases
+    map_aliases = pd.read_csv(map_aliases_path)
+
+    # Build lookups
+    for _, row in map_aliases.iterrows():
+        company_id = row['company_id']
+        alias = str(row['alias']).lower().strip()
+        canonical = id_to_canonical.get(company_id)
+
+        if canonical:
+            # Build reverse lookup: alias -> canonical
+            _ALIAS_LOOKUP[alias] = canonical
+
+            # Build forward lookup: canonical -> [aliases]
+            if canonical not in _COMPANY_ALIASES:
+                _COMPANY_ALIASES[canonical] = []
+            _COMPANY_ALIASES[canonical].append(alias)
 
 
 def _clean_company_name(name: str) -> str:
@@ -470,6 +136,9 @@ def standardize_company(name: Optional[str]) -> Optional[str]:
     if not name:
         return None
 
+    # Ensure aliases are loaded
+    _load_company_aliases()
+
     # Clean for lookup
     cleaned = _clean_company_name(name)
 
@@ -481,8 +150,9 @@ def standardize_company(name: Optional[str]) -> Optional[str]:
         return _ALIAS_LOOKUP[cleaned]
 
     # Try without cleaning (in case alias includes suffixes)
-    if name.lower().strip() in _ALIAS_LOOKUP:
-        return _ALIAS_LOOKUP[name.lower().strip()]
+    name_lower = name.lower().strip()
+    if name_lower in _ALIAS_LOOKUP:
+        return _ALIAS_LOOKUP[name_lower]
 
     # No match - return original with title case normalization
     return name.strip()
@@ -505,7 +175,30 @@ def standardize_company_with_original(name: Optional[str]) -> Tuple[Optional[str
     return (canonical, name.strip())
 
 
-# Inspector name standardization
+def get_all_canonical_companies() -> List[str]:
+    """Return list of all canonical company names."""
+    _load_company_aliases()
+    return sorted(_COMPANY_ALIASES.keys()) if _COMPANY_ALIASES else []
+
+
+def get_company_aliases(canonical: str) -> List[str]:
+    """Return all aliases for a canonical company name."""
+    _load_company_aliases()
+    return _COMPANY_ALIASES.get(canonical, []) if _COMPANY_ALIASES else []
+
+
+def reload_company_aliases():
+    """Force reload of company aliases from CSV files."""
+    global _ALIAS_LOOKUP, _COMPANY_ALIASES
+    _ALIAS_LOOKUP = None
+    _COMPANY_ALIASES = None
+    _load_company_aliases()
+
+
+# =============================================================================
+# INSPECTOR NAME STANDARDIZATION
+# =============================================================================
+
 INSPECTOR_ALIASES: Dict[str, list] = {
     "Hamidullah Sadra": [
         "hamid sadra",
@@ -552,8 +245,11 @@ def standardize_inspector(name: Optional[str]) -> Optional[str]:
     return name.strip()
 
 
-# Trade/inspection type standardization
+# =============================================================================
+# TRADE/INSPECTION TYPE STANDARDIZATION
+# =============================================================================
 # Note: Most trades are variations of Architectural/Drywall/Framing
+
 TRADE_ALIASES: Dict[str, list] = {
     "Architectural": [
         # Simple forms
@@ -835,16 +531,6 @@ def infer_trade_from_inspection_type(inspection_type: Optional[str]) -> Optional
                 return trade
 
     return None
-
-
-def get_all_canonical_companies() -> list:
-    """Return list of all canonical company names."""
-    return sorted(COMPANY_ALIASES.keys())
-
-
-def get_company_aliases(canonical: str) -> list:
-    """Return all aliases for a canonical company name."""
-    return COMPANY_ALIASES.get(canonical, [])
 
 
 # =============================================================================
@@ -1314,7 +1000,10 @@ def categorize_failure_reason(reason: Optional[str]) -> Optional[str]:
     return "Other"
 
 
-# CLI for testing
+# =============================================================================
+# CLI FOR TESTING
+# =============================================================================
+
 if __name__ == "__main__":
     import sys
 
@@ -1326,6 +1015,11 @@ if __name__ == "__main__":
     else:
         print("Company Standardization Test")
         print("=" * 60)
+
+        # Load and show stats
+        _load_company_aliases()
+        print(f"\nLoaded {len(_ALIAS_LOOKUP)} company aliases")
+        print(f"Covering {len(_COMPANY_ALIASES)} canonical companies")
 
         test_companies = [
             "Yates",
