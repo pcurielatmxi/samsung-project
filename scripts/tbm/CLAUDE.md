@@ -1,38 +1,60 @@
 # TBM Scripts
 
-**Last Updated:** 2025-12-12
+**Last Updated:** 2026-01-16
 
 ## Purpose
 
-Parse Toolbox Meeting (TBM) daily work plans from subcontractors (Excel files).
+Parse and enrich Toolbox Meeting (TBM) daily work plans from subcontractors (Excel files).
+
+## Data Flow
+
+```
+raw/tbm/*.xlsx (421 files)
+    ↓ [Stage 1: Parse]
+work_entries.csv + tbm_files.csv
+    ↓ [Stage 2: Enrich]
+work_entries_enriched.csv (with dim_location_id, dim_company_id, dim_trade_id)
+    ↓ [Stage 3: CSI]
+work_entries_enriched.csv (with csi_section)
+```
 
 ## Structure
 
 ```
 tbm/
-├── process/    # Excel parsing -> processed/tbm/
-└── derive/     # (future analysis)
+└── process/
+    ├── run.sh                     # Pipeline orchestrator
+    └── parse_tbm_daily_plans.py   # Excel parser
 ```
 
-## Key Scripts
-
-| Script | Output | Description |
-|--------|--------|-------------|
-| `process/parse_tbm_daily_plans.py` | work_entries.csv, tbm_files.csv | Parse SECAI Daily Work Plan Excel files |
-
-## Commands
+## Usage
 
 ```bash
-python scripts/tbm/process/parse_tbm_daily_plans.py
+cd scripts/tbm/process
+./run.sh parse      # Stage 1: Extract Excel data
+./run.sh enrich     # Stage 2: Add dimension IDs
+./run.sh csi        # Stage 3: Add CSI codes
+./run.sh all        # Run all stages
+./run.sh status     # Show file counts
 ```
 
 ## Key Data
 
-- **13,539 daily work activities**
-- Crew deployment (foreman, headcount)
-- Location (building, level, row)
-- Work descriptions
+- **13,539 daily work activities** across 421 files
+- Crew info: foreman, headcount, contact
+- Location: building, level, row codes
+- Date range: Mar 2025 - Dec 2025
 
-## Documentation
+## Dimension Coverage
 
-See [docs/SOURCES.md](../../docs/SOURCES.md) for TBM field mapping.
+| Dimension | Coverage | Notes |
+|-----------|----------|-------|
+| Location | 91.5% | Building + level |
+| Company | 98.2% | After subcontractor name standardization |
+| Trade | 37.7% | Inferred from activity descriptions |
+| Grid | 0% | Not available in TBM |
+
+## Output Location
+
+- `processed/tbm/work_entries.csv` (raw)
+- `processed/tbm/work_entries_enriched.csv` (with dimensions + CSI)

@@ -1,38 +1,48 @@
 # Weekly Reports Scripts
 
-**Last Updated:** 2025-12-12
+**Last Updated:** 2026-01-16
 
 ## Purpose
 
-Parse weekly progress reports (PDF) containing documented issues, labor details, and project status.
+Parse weekly progress reports (PDF) to extract narratives, issues, RFI/submittal logs, and labor details.
+
+## Data Flow
+
+| Stage | Script | Output |
+|-------|--------|--------|
+| 1 | `parse_weekly_reports.py` | weekly_reports.csv, key_issues.csv, work_progressing.csv |
+| 2 | `parse_weekly_report_addendums_fast.py` | addendum_rfi_log.csv, addendum_submittal_log.csv, addendum_manpower.csv |
+| 3 | `parse_labor_detail.py` | labor_detail.csv, labor_detail_by_company.csv |
+| 4 | `run.sh enrich` | labor_detail_by_company_enriched.csv (with dim_company_id) |
 
 ## Structure
 
 ```
 weekly_reports/
-├── process/    # PDF parsing -> processed/weekly_reports/
-└── derive/     # Issue correlation -> derived/weekly_reports/
+└── process/
+    ├── run.sh                              # Pipeline orchestrator
+    ├── process_weekly_reports.py           # Master entry point
+    ├── parse_weekly_reports.py             # Stage 1: Narratives
+    ├── parse_weekly_report_addendums_fast.py  # Stage 2: Addendums
+    └── parse_labor_detail.py               # Stage 3: Labor tables
 ```
 
-## Key Scripts
-
-| Script | Output | Description |
-|--------|--------|-------------|
-| `process/parse_weekly_reports.py` | key_issues.csv | Extract issues from 37 weekly PDFs |
-| `process/parse_labor_detail.py` | labor_detail.csv | Extract labor hours by trade |
-
-## Commands
+## Usage
 
 ```bash
-# Parse weekly report PDFs
-python scripts/weekly_reports/process/parse_weekly_reports.py
+cd scripts/weekly_reports/process
+./run.sh all           # Full pipeline: parse + enrich
+./run.sh status        # Check outputs
 ```
 
 ## Key Data
 
-- **1,108 documented issues** covering safety, quality, coordination
-- **Coverage:** Aug 2022 - Jun 2023
+- **37 weekly reports** (Aug 2022 - Jun 2023)
+- **1,108 documented issues** (Key Issues section)
+- **13K+ labor entries** from detailed labor tables
+- Labor data has **company only** (no location/building/level)
 
-## Documentation
+## Output Location
 
-See [data/analysis/weekly_reports/](../../data/analysis/weekly_reports/) for analysis findings.
+- **Raw extracts:** `processed/weekly_reports/` (CSV files)
+- **Enriched labor:** `processed/weekly_reports/labor_detail_by_company_enriched.csv`

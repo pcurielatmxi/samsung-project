@@ -1,93 +1,75 @@
 # ProjectSight Scripts
 
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-16
 
 ## Purpose
 
-Process daily reports and library structure from Trimble ProjectSight.
+Scrape and process data from Trimble ProjectSight (daily reports, NCR records, library files).
+
+## Data Pipelines
+
+### 1. Labor Pipeline (daily reports → labor hours)
+
+```
+[Scrape] scrape_projectsight_daily_reports.py → raw/projectsight/*.json
+    ↓
+[Parse] parse_labor_from_json.py → labor_entries.csv
+    ↓
+[Enrich] enrich_with_dimensions → labor_entries_enriched.csv
+```
+
+**Output:** 857K+ labor records with dim_company_id, dim_trade_id
+
+### 2. NCR Pipeline (quality records)
+
+```
+[Parse] process_ncr_export.py → ncr.csv
+    ↓
+[Consolidate] consolidate_ncr.py → ncr_consolidated.csv
+```
+
+**Output:** 1,985 NCR/QOR/SOR/SWN/VR records with dimensions
+
+### 3. Library Structure
+
+```
+[Scrape] scrape_projectsight_library.py → library_structure_{project}.json
+    ↓
+[Process] process_library_files.py → library_files.csv
+```
 
 ## Structure
 
 ```
 projectsight/
-├── process/    # Web scraping -> raw/projectsight/, processed/projectsight/
-├── utils/      # Shared session management
-└── derive/     # (future analysis)
+├── process/
+│   ├── run.sh                              # Pipeline orchestrator
+│   ├── scrape_projectsight_daily_reports.py  # Playwright scraper
+│   ├── scrape_projectsight_library.py      # Library scraper
+│   ├── parse_labor_from_json.py            # Labor extraction
+│   ├── process_ncr_export.py               # NCR parsing
+│   ├── consolidate_ncr.py                  # NCR enrichment
+│   └── process_library_files.py            # Library CSV
+└── utils/
+    └── projectsight_session.py             # Shared session management
 ```
 
-## Key Scripts
-
-| Script | Output | Description |
-|--------|--------|-------------|
-| `process/scrape_projectsight_daily_reports.py` | daily_reports.json | Scrape daily reports via Playwright |
-| `process/scrape_projectsight_library.py` | library_structure_{project}.json | Scrape library folder/file structure |
-| `process/daily_reports_to_csv.py` | daily_reports.csv | Convert JSON to CSV |
-
-## Commands
-
-### Daily Reports
-```bash
-# Idempotent extraction - resumes from where it left off
-DISPLAY=:0 python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 50
-```
-
-### Library Scraper
-```bash
-# Recursive extraction with idempotency (skip folders scanned in last 7 days)
-DISPLAY=:0 python scripts/projectsight/process/scrape_projectsight_library.py \
-  --headless --recursive --project taylor_fab1 --skip-scanned-days 7
-
-# Verbose mode (DEBUG on console)
-DISPLAY=:0 python scripts/projectsight/process/scrape_projectsight_library.py \
-  --headless --recursive -v --project tpjt_fab1
-
-# Available projects: taylor_fab1, tpjt_fab1
-```
-
-## Configuration
-
-Requires `.env` with:
-- `PROJECTSIGHT_USERNAME`
-- `PROJECTSIGHT_PASSWORD`
-- `PROJECTSIGHT_HEADLESS` (false recommended)
-
-## Troubleshooting Library Scraper
-
-Log file: `data/projectsight/extracted/library_scraper_{project}.log`
+## Usage
 
 ```bash
-# View full log
-cat data/projectsight/extracted/library_scraper_taylor_fab1.log
-
-# Find navigation failures
-grep "Navigation failed" data/projectsight/extracted/library_scraper_*.log
-
-# Find extraction errors
-grep "ERROR" data/projectsight/extracted/library_scraper_*.log
-
-# Check summary section
-tail -30 data/projectsight/extracted/library_scraper_taylor_fab1.log
+cd scripts/projectsight/process
+./run.sh labor          # Run labor pipeline
+./run.sh ncr            # Run NCR pipeline
+./run.sh all            # Run both pipelines
+./run.sh status         # Show file counts
 ```
 
-**Common issues:**
-- `navigationFailed: True` in JSON = folder couldn't be opened, will retry on next run
-- Many navigation failures = virtualized grid not scrolling properly
-- Extraction failures = iframe didn't load, check login session
+## Environment
 
-**Output JSON includes `scrapeStats`:**
-```json
-"scrapeStats": {
-  "duration_seconds": 123.4,
-  "folders_processed": 50,
-  "navigation_failures": [...]
-}
-```
+Requires `.env` with `PROJECTSIGHT_USERNAME`, `PROJECTSIGHT_PASSWORD`
 
-## Lessons Learned
+## Notes
 
-- **dotenv override**: Use `load_dotenv(override=True)` - shell env vars override .env by default
-- **Session persistence**: Cookies saved to `~/.projectsight_sessions/`. Delete to force re-login
-- **Trimble SSO**: Two-step login (username → Next → password). Must wait for buttons to be enabled
-- **Iframe structure**: List in `fraMenuContent`, detail view in `fraDef`. Library uses nested Trimble Connect iframe
-- **Virtualized grid**: Only renders visible rows - must scroll to find folder links
-- **Login detection**: Can appear via redirect OR embedded iframe - must check both
+- Session cookies saved to `~/.projectsight_sessions/`
+- Scrapers are idempotent (skip existing data)
+- Trimble SSO requires two-step login handling

@@ -50,7 +50,7 @@ from scripts.shared.dimension_lookup import (
     get_trade_code,
     get_company_primary_trade_id,
 )
-from scripts.quality.postprocess.location_parser import parse_location
+from scripts.shared.location_parser import parse_location
 
 # Import CSI inference from quality workbook script
 from scripts.integrated_analysis.add_csi_to_quality_workbook import (

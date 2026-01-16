@@ -1,166 +1,48 @@
 # Shared Utilities
 
-Cross-source utility modules used by multiple data pipelines.
+**Last Updated:** 2026-01-16
 
 ## Purpose
 
-Centralize reusable logic that applies across data sources:
-- Entity standardization (companies, trades, inspectors)
-- Location model (grid lookups, room/elevator/stair mapping)
-- Common transformations (dates, levels, categories)
+Cross-source utility modules for entity standardization, location mapping, and dimension lookups.
 
 ## Modules
 
-### `company_standardization.py`
+| Module | Purpose | Used By |
+|--------|---------|---------|
+| `company_standardization.py` | Canonical names for companies, trades, inspectors, levels | All sources |
+| `dimension_lookup.py` | Map raw values → dimension IDs (location, company, trade) | RABA, PSI |
+| `location_model.py` | High-level location API: room ↔ grid conversions | P6, Quality |
+| `gridline_mapping.py` | Low-level grid coordinate lookup from Excel mapping | location_model |
+| `qc_inspection_schema.py` | Unified column schema for RABA + PSI Power BI output | RABA, PSI |
+| `location_parser.py` | Extract building/level/grid from location strings | RABA, PSI |
+| `company_matcher.py` | Fuzzy match company names to canonical names | RABA, PSI |
+| `shared_normalization.py` | Date, role, inspection type normalization | RABA, PSI |
 
-Entity normalization for consistent cross-source analysis.
+## Key Functions
 
-**Functions:**
-| Function | Purpose |
-|----------|---------|
-| `standardize_company(name)` | Canonical company name |
-| `standardize_inspector(name)` | Inspector name normalization |
-| `standardize_trade(name)` | Trade name standardization |
-| `standardize_level(level)` | Level format (1F, 2F, B1, ROOF) |
-| `categorize_inspection_type(type)` | Map to ~15 categories |
-| `categorize_failure_reason(reason)` | Failure categorization |
-| `infer_trade_from_inspection_type(type)` | Trade from inspection context |
-| `infer_level_from_location(location)` | Extract level from location text |
-
-**Used by:** PSI consolidation, RABA postprocess, Quality records
-
-### `gridline_mapping.py`
-
-Low-level gridline coordinate lookup from FAB code mapping file.
-
-**Key Classes:**
-- `GridlineMapping` - Loads and caches mapping from Excel file
-
-**Key Functions:**
-| Function | Purpose |
-|----------|---------|
-| `get_gridline_bounds(type, code)` | Get grid bounds for location |
-| `get_default_mapping()` | Get cached mapping instance |
-| `normalize_room_code(code)` | FAB1XXXXX normalization |
-| `normalize_elevator_code(code)` | ELV-XX → FAB1-ELXX |
-| `normalize_stair_code(code)` | STR-XX → FAB1-STXX |
-
-**Data Source:** `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx`
-
-**Used by:** P6 task taxonomy, location_model.py
-
-### `dimension_lookup.py`
-
-Dimension ID lookups for cross-source integration. Maps raw values to dimension table IDs.
-
-**Data Location:** Dimension tables are in the external data folder:
-```
-{WINDOWS_DATA_DIR}/processed/integrated_analysis/dimensions/
-{WINDOWS_DATA_DIR}/processed/integrated_analysis/mappings/
-```
-
-**Functions:**
-| Function | Purpose |
-|----------|---------|
-| `get_location_id(building, level)` | Building+Level → dim_location_id (e.g., "SUE-1F") |
-| `get_locations_at_grid(bldg, level, row, col)` | Find rooms containing grid point |
-| `get_company_id(name)` | Company name → dim_company_id (fuzzy matching) |
-| `get_trade_id(name)` | Trade/category → dim_trade_id |
-| `get_trade_code(trade_id)` | Trade ID → trade code |
-| `parse_grid_field(grid_str)` | Parse grid coords → row/col bounds |
-| `normalize_grid(grid_str)` | Normalize grid string format |
-| `enrich_dataframe(df, ...)` | Add all dimension IDs to dataframe |
-
-**Usage:**
 ```python
-from dimension_lookup import get_location_id, get_company_id, get_trade_id
-
-# Location lookup
+# Dimension lookups
+from scripts.shared.dimension_lookup import get_location_id, get_company_id, get_trade_id
 loc_id = get_location_id('SUE', '1F')  # → 'SUE-1F'
+company_id = get_company_id('Berg')    # → 4 (fuzzy match)
 
-# Company lookup (fuzzy matching)
-company_id = get_company_id('Berg')  # → 4
-company_id = get_company_id('Samsung E&C')  # → 1
+# Location model
+from scripts.shared.location_model import get_grid_bounds, get_locations_at_grid
+bounds = get_grid_bounds('FAB112345')  # → row/col min/max
+rooms = get_locations_at_grid('G', 10) # → ['FAB112345', ...]
 
-# Trade lookup
-trade_id = get_trade_id('Drywall')  # → 4
-trade_id = get_trade_id('Firestop')  # → 6
+# Location parsing
+from scripts.shared.location_parser import parse_location
+loc = parse_location('FAB 1F Grid G/10')  # → {building, level, grid, ...}
 
-# Grid parsing
-parsed = parse_grid_field('G/10,H/11')
-# {'grid_row_min': 'G', 'grid_row_max': 'H', 'grid_col_min': 10.0, 'grid_col_max': 11.0, ...}
+# Company matching
+from scripts.shared.company_matcher import CompanyMatcher
+matcher = CompanyMatcher(threshold=0.85)
+canonical, score = matcher.match('Berg Electric')  # → ('Berg', 0.95)
 ```
 
-**Used by:** RABA consolidation, PSI consolidation
+## Data Dependencies
 
-### `location_model.py`
-
-High-level location API for cross-source integration.
-
-**Key Functions:**
-| Function | Purpose |
-|----------|---------|
-| `get_grid_bounds(location_code)` | Forward lookup: location → grid bounds |
-| `get_locations_at_grid(row, col)` | Reverse lookup: grid → locations |
-| `location_contains_grid(code, row, col)` | Check containment |
-| `parse_grid_string(grid_str)` | Parse "G/10" → ('G', 10.0) |
-| `get_location_info(code)` | Full info with metadata |
-
-**Usage:**
-```python
-from location_model import get_grid_bounds, get_locations_at_grid, parse_grid_string
-
-# Forward lookup: Room → Grid bounds
-bounds = get_grid_bounds('FAB112345')
-# {'row_min': 'B', 'row_max': 'E', 'col_min': 5, 'col_max': 12}
-
-# Reverse lookup: Grid → Rooms
-row, col = parse_grid_string('G/10')
-locations = get_locations_at_grid(row, col)
-# ['FAB112345', 'FAB112346', ...]
-
-# Check if quality inspection at G/10 is within FAB112345
-if location_contains_grid('FAB112345', 'G', 10):
-    print("Match!")
-```
-
-## Architecture
-
-```
-Quality Data (RABA/PSI)          P6 Tasks
-       │                              │
-       │ grid: "G/10"                 │ location_code: FAB112345
-       │                              │
-       ▼                              ▼
-┌─────────────────────────────────────────────────────┐
-│              scripts/shared/                         │
-│                                                      │
-│  location_model.py ─────► gridline_mapping.py       │
-│       │                          │                   │
-│       │                          ▼                   │
-│       │               FAB_Codes_by_Gridline.xlsx    │
-│       │                                              │
-│       ▼                                              │
-│  get_locations_at_grid('G', 10)                     │
-│  get_grid_bounds('FAB112345')                       │
-│                                                      │
-└─────────────────────────────────────────────────────┘
-                      │
-                      ▼
-              Spatial Join
-        (Quality ↔ Room via grid bounds)
-```
-
-## Grid System Reference
-
-- **Rows:** A through N (plus fractional: A.5, B.5, E.3, etc.)
-- **Columns:** 1 through 34 (plus 32.5)
-- **Buildings:** SUE spans east rows, SUW spans west rows, FAB varies by location
-
-## Adding New Modules
-
-When adding shared utilities:
-1. Place in `scripts/shared/`
-2. Add imports to consuming scripts
-3. Document in this file
-4. Keep modules focused (one responsibility)
+- `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Grid coordinate source
+- `processed/integrated_analysis/dimensions/` - Dimension tables (dim_location, dim_company, dim_trade)

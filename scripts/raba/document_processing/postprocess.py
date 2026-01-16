@@ -13,12 +13,12 @@ from typing import Dict, Any
 _project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
-from scripts.quality.postprocess.shared_normalization import (
+from scripts.shared.shared_normalization import (
     normalize_date,
     normalize_role,
     normalize_inspection_type,
 )
-from scripts.quality.postprocess.location_parser import parse_location
+from scripts.shared.location_parser import parse_location
 
 
 def process_record(input_data: Dict[str, Any], source_path: Path) -> Dict[str, Any]:
