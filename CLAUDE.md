@@ -296,6 +296,64 @@ See [.claude/skills/mxi-powerpoint/SKILL.md](.claude/skills/mxi-powerpoint/SKILL
 
 Breaking schema changes require explicit user approval as they may break Power BI data models and existing reports.
 
+### Schema Validation System
+
+**Location:** [`schemas/`](schemas/)
+
+Pydantic-based schema definitions and validation tests ensure output files maintain stable schemas.
+
+**Structure:**
+```
+schemas/
+├── __init__.py          # Package exports
+├── validator.py         # Core validation logic
+├── registry.py          # File-to-schema mapping
+├── dimensions.py        # DimLocation, DimCompany, DimTrade, DimCSISection
+├── mappings.py          # MapCompanyAliases, MapCompanyLocation
+├── quality.py           # QCInspectionConsolidated (RABA/PSI)
+├── tbm.py               # TbmFiles, TbmWorkEntries, TbmWorkEntriesEnriched
+├── ncr.py               # NcrConsolidated
+└── weekly_reports.py    # WeeklyReports, KeyIssues, LaborDetail, etc.
+```
+
+**Registered Output Files:**
+| Source | Files | Schema |
+|--------|-------|--------|
+| Dimensions | `dim_location.csv`, `dim_company.csv`, `dim_trade.csv`, `dim_csi_section.csv` | `DimLocation`, `DimCompany`, `DimTrade`, `DimCSISection` |
+| Mappings | `map_company_aliases.csv`, `map_company_location.csv` | `MapCompanyAliases`, `MapCompanyLocation` |
+| RABA | `raba_consolidated.csv` | `RabaConsolidated` |
+| PSI | `psi_consolidated.csv` | `PsiConsolidated` |
+| TBM | `work_entries.csv`, `work_entries_enriched.csv`, `tbm_files.csv` | `TbmWorkEntries`, `TbmWorkEntriesEnriched`, `TbmFiles` |
+| NCR | `ncr_consolidated.csv` | `NcrConsolidated` |
+| Weekly Reports | `weekly_reports.csv`, `key_issues.csv`, `labor_detail.csv`, etc. | Various |
+
+**Usage:**
+```python
+from schemas import validate_output_file, get_schema_for_file
+
+# Validate a file
+schema = get_schema_for_file('dim_location.csv')
+errors = validate_output_file('/path/to/dim_location.csv', schema)
+if errors:
+    print(f"Validation failed: {errors}")
+```
+
+**Running Tests:**
+```bash
+# Unit tests (schema definitions)
+pytest tests/unit/test_schemas.py -v
+
+# Integration tests (validate actual output files)
+pytest tests/integration/test_output_schemas.py -v
+
+# All schema tests
+pytest tests/unit/test_schemas.py tests/integration/test_output_schemas.py -v
+```
+
+**Test Coverage:**
+- 38 unit tests: Schema definitions, registry, type mapping, compatibility checking
+- 28 integration tests: Validate actual output files against schemas
+
 ## Quality Data Architecture
 
 Quality inspection data is central to the project's rework and delay analysis. Three complementary data sources provide different views of the same inspection events:
