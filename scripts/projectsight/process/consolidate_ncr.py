@@ -19,6 +19,7 @@ _project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
+from schemas.validator import validated_df_to_csv
 from scripts.shared.dimension_lookup import (
     get_company_id,
     get_trade_id,
@@ -252,10 +253,10 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
         }
     }
 
-    # Write output
+    # Write output (with schema validation)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(output_path, index=False)
-    print(f"\nWrote {len(df)} records to: {output_path}")
+    validated_df_to_csv(df, output_path, index=False)
+    print(f"\nWrote {len(df)} records to: {output_path} (validated)")
 
     # Print summary
     print("\n" + "=" * 60)

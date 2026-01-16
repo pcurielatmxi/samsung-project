@@ -23,6 +23,7 @@ from datetime import datetime
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from src.config.settings import Settings
+from schemas.validator import validated_df_to_csv
 
 # Suppress openpyxl warnings about data validation
 warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
@@ -314,8 +315,8 @@ def main():
         # Reorder columns to put file_id first
         cols = ['file_id'] + [c for c in entries_df.columns if c != 'file_id']
         entries_df = entries_df[cols]
-        entries_df.to_csv(output_dir / 'work_entries.csv', index=False)
-        print(f"work_entries.csv: {len(entries_df)} records")
+        validated_df_to_csv(entries_df, output_dir / 'work_entries.csv', index=False)
+        print(f"work_entries.csv: {len(entries_df)} records (validated)")
 
     # File info table
     if file_infos:
@@ -323,8 +324,8 @@ def main():
         # Reorder columns to put file_id first
         cols = ['file_id'] + [c for c in files_df.columns if c != 'file_id']
         files_df = files_df[cols]
-        files_df.to_csv(output_dir / 'tbm_files.csv', index=False)
-        print(f"tbm_files.csv: {len(files_df)} files")
+        validated_df_to_csv(files_df, output_dir / 'tbm_files.csv', index=False)
+        print(f"tbm_files.csv: {len(files_df)} files (validated)")
 
     print("\nDone!")
 

@@ -237,6 +237,78 @@ def validate_output_file(
     return validate_dataframe(df, schema, strict=strict)
 
 
+def validated_df_to_csv(
+    df: pd.DataFrame,
+    file_path: Path,
+    strict: bool = False,
+    skip_validation: bool = False,
+    **to_csv_kwargs,
+) -> None:
+    """
+    Validate a DataFrame against its schema and write to CSV.
+
+    This function should be used by all scripts that write final output files
+    to the processed/ directory. It ensures schema compliance before writing.
+
+    Args:
+        df: DataFrame to write
+        file_path: Output path (filename determines schema via registry)
+        strict: If True, fail on extra columns not in schema
+        skip_validation: If True, skip validation (for intermediate files)
+        **to_csv_kwargs: Additional arguments passed to df.to_csv()
+
+    Raises:
+        SchemaValidationError: If validation fails
+        KeyError: If no schema registered for this file
+
+    Example:
+        from schemas.validator import validated_df_to_csv
+
+        df = pd.DataFrame(records)
+        validated_df_to_csv(df, output_dir / 'raba_consolidated.csv', index=False)
+    """
+    from .registry import get_schema_for_file
+
+    file_path = Path(file_path)
+    filename = file_path.name
+
+    if skip_validation:
+        # Directly write without validation (for intermediate pipeline files)
+        df.to_csv(file_path, **to_csv_kwargs)
+        return
+
+    # Look up schema from registry
+    schema = get_schema_for_file(filename)
+    if schema is None:
+        # No schema registered - warn but allow write
+        import warnings
+        warnings.warn(
+            f"No schema registered for '{filename}'. "
+            f"Consider adding a schema to schemas/registry.py for validation.",
+            UserWarning
+        )
+        df.to_csv(file_path, **to_csv_kwargs)
+        return
+
+    # Validate DataFrame against schema
+    errors = validate_dataframe(df, schema, strict=strict)
+
+    if errors:
+        error_msg = (
+            f"Schema validation failed for '{filename}':\n"
+            + "\n".join(f"  - {e}" for e in errors)
+        )
+        raise SchemaValidationError(
+            error_msg,
+            missing_columns=[],  # Could parse from errors if needed
+            type_mismatches={},
+            extra_columns=[],
+        )
+
+    # Validation passed - write the file
+    df.to_csv(file_path, **to_csv_kwargs)
+
+
 def validate_schema_compatibility(
     old_schema: Type[BaseModel],
     new_schema: Type[BaseModel],

@@ -12,9 +12,14 @@ Output: data/weekly_reports/tables/*.csv
 import pdfplumber
 import pandas as pd
 import re
+import sys
 import warnings
 from pathlib import Path
 from datetime import datetime
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from schemas.validator import validated_df_to_csv
 
 warnings.filterwarnings('ignore')
 
@@ -286,28 +291,28 @@ def main():
                     'content': item['content'],
                 })
 
-    # Save outputs
+    # Save outputs (with schema validation)
     print("\n=== Saving outputs ===")
 
     if all_reports:
         df = pd.DataFrame(all_reports)
-        df.to_csv(output_dir / 'weekly_reports.csv', index=False)
-        print(f"weekly_reports.csv: {len(df)} reports")
+        validated_df_to_csv(df, output_dir / 'weekly_reports.csv', index=False)
+        print(f"weekly_reports.csv: {len(df)} reports (validated)")
 
     if all_work_items:
         df = pd.DataFrame(all_work_items)
-        df.to_csv(output_dir / 'work_progressing.csv', index=False)
-        print(f"work_progressing.csv: {len(df)} items")
+        validated_df_to_csv(df, output_dir / 'work_progressing.csv', index=False)
+        print(f"work_progressing.csv: {len(df)} items (validated)")
 
     if all_issues:
         df = pd.DataFrame(all_issues)
-        df.to_csv(output_dir / 'key_issues.csv', index=False)
-        print(f"key_issues.csv: {len(df)} issues")
+        validated_df_to_csv(df, output_dir / 'key_issues.csv', index=False)
+        print(f"key_issues.csv: {len(df)} issues (validated)")
 
     if all_procurement:
         df = pd.DataFrame(all_procurement)
-        df.to_csv(output_dir / 'procurement.csv', index=False)
-        print(f"procurement.csv: {len(df)} items")
+        validated_df_to_csv(df, output_dir / 'procurement.csv', index=False)
+        print(f"procurement.csv: {len(df)} items (validated)")
 
     print("\nDone!")
 

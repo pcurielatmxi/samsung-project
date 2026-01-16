@@ -15,9 +15,14 @@ manpower_count). Run parse_weekly_reports.py first to create the base file.
 """
 
 import re
+import sys
 from pathlib import Path
 from datetime import datetime
 import pandas as pd
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from schemas.validator import validated_df_to_csv
 
 try:
     import fitz  # PyMuPDF
@@ -229,7 +234,7 @@ def main():
     total_elapsed = time.time() - total_start
     print(f"\nTotal processing time: {total_elapsed:.1f}s")
 
-    # Save outputs
+    # Save outputs (with schema validation)
     print("\n=== Saving outputs ===")
 
     # Update weekly_reports.csv with addendum counts
@@ -238,25 +243,25 @@ def main():
         weekly_df['rfi_count'] = weekly_df['file_id'].map(lambda x: addendum_counts.get(x, {}).get('rfi_count', 0))
         weekly_df['submittal_count'] = weekly_df['file_id'].map(lambda x: addendum_counts.get(x, {}).get('submittal_count', 0))
         weekly_df['manpower_count'] = weekly_df['file_id'].map(lambda x: addendum_counts.get(x, {}).get('manpower_count', 0))
-        weekly_df.to_csv(weekly_reports_path, index=False)
-        print(f"Updated weekly_reports.csv with addendum counts ({len(weekly_df)} files)")
+        validated_df_to_csv(weekly_df, weekly_reports_path, index=False)
+        print(f"Updated weekly_reports.csv with addendum counts ({len(weekly_df)} files, validated)")
     else:
         print("Warning: weekly_reports.csv not found - run parse_weekly_reports.py first")
 
     if all_rfi:
         df = pd.DataFrame(all_rfi)
-        df.to_csv(output_dir / 'addendum_rfi_log.csv', index=False)
-        print(f"addendum_rfi_log.csv: {len(df)} entries")
+        validated_df_to_csv(df, output_dir / 'addendum_rfi_log.csv', index=False)
+        print(f"addendum_rfi_log.csv: {len(df)} entries (validated)")
 
     if all_submittal:
         df = pd.DataFrame(all_submittal)
-        df.to_csv(output_dir / 'addendum_submittal_log.csv', index=False)
-        print(f"addendum_submittal_log.csv: {len(df)} entries")
+        validated_df_to_csv(df, output_dir / 'addendum_submittal_log.csv', index=False)
+        print(f"addendum_submittal_log.csv: {len(df)} entries (validated)")
 
     if all_manpower:
         df = pd.DataFrame(all_manpower)
-        df.to_csv(output_dir / 'addendum_manpower.csv', index=False)
-        print(f"addendum_manpower.csv: {len(df)} entries")
+        validated_df_to_csv(df, output_dir / 'addendum_manpower.csv', index=False)
+        print(f"addendum_manpower.csv: {len(df)} entries (validated)")
 
     print("\nDone!")
 

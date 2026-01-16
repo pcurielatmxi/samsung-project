@@ -43,6 +43,7 @@ from scripts.shared.dimension_lookup import (
     get_company_primary_trade_id,
 )
 from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
+from schemas.validator import validated_df_to_csv
 from scripts.integrated_analysis.add_csi_to_raba import (
     infer_csi_section,
     CSI_SECTIONS,
@@ -427,13 +428,15 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
     if flat_records:
         # Apply unified schema to ensure consistent column order with PSI
         df = apply_unified_schema(flat_records, source='RABA')
+
+        # Write to intermediate 4.consolidate folder (skip validation for intermediate)
         df.to_csv(csv_path, index=False)
         print(f"Wrote {len(flat_records)} records to: {csv_path}")
 
-        # Also write to root location (expected by downstream scripts)
+        # Write to root location with schema validation (final output)
         root_csv_path = output_dir / "raba_consolidated.csv"
-        df.to_csv(root_csv_path, index=False)
-        print(f"Wrote {len(flat_records)} records to: {root_csv_path}")
+        validated_df_to_csv(df, root_csv_path, index=False)
+        print(f"Wrote {len(flat_records)} records to: {root_csv_path} (validated)")
 
     # Write validation report
     report_path = output_dir / "raba_validation_report.json"

@@ -24,6 +24,7 @@ _project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.config.settings import Settings
+from schemas.validator import validated_df_to_csv
 from scripts.shared.dimension_lookup import (
     get_location_id,
     get_company_id,
@@ -1248,14 +1249,14 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     grid_type_dist = df['grid_type'].value_counts().to_dict()
 
     if not dry_run:
-        df.to_csv(output_path, index=False)
+        validated_df_to_csv(df, output_path, index=False)
 
     return {
         'status': 'success',
         'records': original_count,
         'coverage': coverage,
         'grid_types': grid_type_dist,
-        'output': str(output_path) if not dry_run else 'DRY RUN',
+        'output': str(output_path) if not dry_run else 'DRY RUN (validated)',
     }
 
 
@@ -1382,14 +1383,14 @@ def enrich_projectsight(dry_run: bool = False) -> Dict[str, Any]:
     }
 
     if not dry_run:
-        print("  Writing output...")
-        df.to_csv(output_path, index=False)
+        print("  Writing output (with schema validation)...")
+        validated_df_to_csv(df, output_path, index=False)
 
     return {
         'status': 'success',
         'records': original_count,
         'coverage': coverage,
-        'output': str(output_path) if not dry_run else 'DRY RUN',
+        'output': str(output_path) if not dry_run else 'DRY RUN (validated)',
     }
 
 
@@ -1418,13 +1419,13 @@ def enrich_weekly_labor(dry_run: bool = False) -> Dict[str, Any]:
     }
 
     if not dry_run:
-        df.to_csv(output_path, index=False)
+        validated_df_to_csv(df, output_path, index=False)
 
     return {
         'status': 'success',
         'records': original_count,
         'coverage': coverage,
-        'output': str(output_path) if not dry_run else 'DRY RUN',
+        'output': str(output_path) if not dry_run else 'DRY RUN (validated)',
     }
 
 

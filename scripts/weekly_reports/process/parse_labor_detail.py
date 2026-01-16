@@ -7,9 +7,14 @@ to reconstruct table structure.
 """
 
 import re
+import sys
 from pathlib import Path
 from collections import defaultdict
 import pandas as pd
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from schemas.validator import validated_df_to_csv
 
 try:
     import fitz
@@ -265,29 +270,29 @@ def main():
     total_elapsed = time.time() - total_start
     print(f"\nTotal processing time: {total_elapsed:.1f}s")
 
-    # Save output
+    # Save output (with schema validation)
     print("\n=== Saving outputs ===")
 
     if all_entries:
         df = pd.DataFrame(all_entries)
-        df.to_csv(output_dir / 'labor_detail.csv', index=False)
-        print(f"labor_detail.csv: {len(df)} entries")
+        validated_df_to_csv(df, output_dir / 'labor_detail.csv', index=False)
+        print(f"labor_detail.csv: {len(df)} entries (validated)")
 
         # Summary by company
         summary = df.groupby('company').agg({
             'hours': 'sum',
             'name': 'nunique'
         }).rename(columns={'name': 'unique_workers'}).sort_values('hours', ascending=False)
-        summary.to_csv(output_dir / 'labor_detail_by_company.csv')
-        print(f"labor_detail_by_company.csv: {len(summary)} companies")
+        validated_df_to_csv(summary, output_dir / 'labor_detail_by_company.csv')
+        print(f"labor_detail_by_company.csv: {len(summary)} companies (validated)")
 
         # Summary by classification
         class_summary = df.groupby('classification').agg({
             'hours': 'sum',
             'name': 'nunique'
         }).rename(columns={'name': 'unique_workers'}).sort_values('hours', ascending=False)
-        class_summary.to_csv(output_dir / 'labor_detail_by_classification.csv')
-        print(f"labor_detail_by_classification.csv: {len(class_summary)} classifications")
+        validated_df_to_csv(class_summary, output_dir / 'labor_detail_by_classification.csv')
+        print(f"labor_detail_by_classification.csv: {len(class_summary)} classifications (validated)")
 
     print("\nDone!")
 

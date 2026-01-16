@@ -17,12 +17,18 @@ Usage:
     schema = SCHEMA_REGISTRY['dim_location']
 """
 
-from .validator import validate_output_file, validate_dataframe, SchemaValidationError
+from .validator import (
+    validate_output_file,
+    validate_dataframe,
+    validated_df_to_csv,
+    SchemaValidationError,
+)
 from .registry import SCHEMA_REGISTRY, get_schema_for_file
 
 __all__ = [
     'validate_output_file',
     'validate_dataframe',
+    'validated_df_to_csv',
     'SchemaValidationError',
     'SCHEMA_REGISTRY',
     'get_schema_for_file',
