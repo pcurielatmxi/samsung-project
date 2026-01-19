@@ -20,12 +20,13 @@ usage() {
     echo "Usage: $0 [command]"
     echo ""
     echo "Commands:"
-    echo "  parse    - Stage 1: Parse Fieldwire CSV dump"
-    echo "  enrich   - Stage 2: Add dimension IDs"
-    echo "  lpi      - Stage 3: Calculate LPI metrics"
-    echo "  all      - Run all stages"
-    echo "  status   - Show processing status"
-    echo "  report   - Generate TBM metrics report"
+    echo "  parse          - Stage 1: Parse Fieldwire CSV dump"
+    echo "  enrich         - Stage 2: Add dimension IDs"
+    echo "  lpi            - Stage 3: Calculate LPI metrics"
+    echo "  all            - Run all stages"
+    echo "  status         - Show processing status"
+    echo "  report         - Generate TBM metrics report"
+    echo "  transform-secai - Transform SECAI data to main format"
     echo ""
 }
 
@@ -53,7 +54,7 @@ status() {
     OUTPUT_DIR="$WINDOWS_DATA_DIR/processed/fieldwire"
     echo "Output files:"
 
-    for f in tbm_audits.csv manpower_counts.csv tbm_audits_enriched.csv lpi_summary.csv lpi_weekly.csv idle_analysis.csv; do
+    for f in tbm_audits.csv manpower_counts.csv tbm_audits_enriched.csv lpi_summary.csv lpi_weekly.csv idle_analysis.csv secai_transformed.csv secai_manpower_counts.csv; do
         if [ -f "$OUTPUT_DIR/$f" ]; then
             ROWS=$(wc -l < "$OUTPUT_DIR/$f")
             echo -e "  $f: ${GREEN}$ROWS rows${NC}"
@@ -83,6 +84,11 @@ report() {
     python -m scripts.fieldwire.process.tbm_metrics_report "$@"
 }
 
+transform_secai() {
+    echo -e "${GREEN}=== Transform SECAI Data ===${NC}"
+    python -m scripts.fieldwire.process.transform_secai "$@"
+}
+
 all() {
     echo -e "${GREEN}=== Running Full Pipeline ===${NC}"
     parse "$@"
@@ -108,6 +114,10 @@ case "${1:-}" in
     report)
         shift
         report "$@"
+        ;;
+    transform-secai)
+        shift
+        transform_secai "$@"
         ;;
     all)
         shift

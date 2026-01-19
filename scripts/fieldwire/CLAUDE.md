@@ -58,6 +58,27 @@ TBM (Toolbox Meeting) plans specify where workers will be deployed each day:
 └─────────────────────┘
 ```
 
+## SECAI Historical Data
+
+The SECAI Fieldwire project contains historical data (2025-10-31 to 2025-12-12) with a different structure:
+
+| SECAI Column | Main Column | Notes |
+|--------------|-------------|-------|
+| Direct Workers | Direct Manpower | Name mapping |
+| Indirect Workers | Indirect Manpower | Name mapping |
+| Category | Company | Category contains company name |
+| N/A | Building, Level | Missing in SECAI |
+
+**Status Mapping:**
+| SECAI Status | Main Status | Notes |
+|--------------|-------------|-------|
+| Manpower (During) | TBM | Work location observations |
+| Manpower (Start) | Manpower Count | START headcount |
+| Manpower (End) | Manpower Count | END headcount |
+| Obstruction | TBM | With is_obstructed flag |
+
+**ID Prefixing:** SECAI records are prefixed with "SECAI-" to avoid ID collision.
+
 ## Record Types (Status Field)
 
 | Status | Count | Purpose |
@@ -164,7 +185,8 @@ fieldwire/
     ├── parse_fieldwire.py       # CSV parser (UTF-16 → normalized)
     ├── enrich_tbm.py            # Add dimension IDs
     ├── calculate_lpi.py         # LPI and idle metrics
-    └── tbm_metrics_report.py    # Self-documented metrics report
+    ├── tbm_metrics_report.py    # Self-documented metrics report
+    └── transform_secai.py       # Transform SECAI data to main format
 ```
 
 ## Usage
@@ -176,7 +198,8 @@ cd scripts/fieldwire/process
 ./run.sh lpi        # Stage 3: Calculate LPI metrics
 ./run.sh all        # Run all stages
 ./run.sh status     # Show processing status
-./run.sh report     # Generate TBM metrics report
+./run.sh report          # Generate TBM metrics report
+./run.sh transform-secai # Transform SECAI historical data
 
 # Report options
 ./run.sh report --by-company    # Metrics by contractor
@@ -194,6 +217,8 @@ cd scripts/fieldwire/process
 | `lpi_summary.csv` | Daily LPI by contractor |
 | `idle_analysis.csv` | Idle time breakdown by category |
 | `manpower_counts.csv` | Daily START/END totals |
+| `secai_transformed.csv` | SECAI data transformed to main format |
+| `secai_manpower_counts.csv` | SECAI manpower count records |
 
 ## Metrics Calculated
 
