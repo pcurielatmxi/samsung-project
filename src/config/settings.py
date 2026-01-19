@@ -122,6 +122,10 @@ class Settings:
     TBM_DERIVED_DIR = DERIVED_DATA_DIR / 'tbm'
     TBM_ANALYSIS_DIR = ANALYSIS_DIR / 'tbm'
 
+    # Field team's TBM folder (OneDrive - synced by field team)
+    _FIELD_TBM_FILES = os.getenv('FIELD_TBM_FILES', '')
+    FIELD_TBM_DIR = windows_to_wsl_path(_FIELD_TBM_FILES) if _FIELD_TBM_FILES else None
+
     # ============================================================================
     # Source-specific paths: Fieldwire (CSV dumps)
     # ============================================================================

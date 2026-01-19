@@ -16,6 +16,12 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$PROJECT_ROOT/.venv/bin/activate"
 
 case "${1:-help}" in
+    sync)
+        # Sync files from field team's folder
+        shift
+        echo "=== Syncing Field TBM Files ==="
+        python -m scripts.tbm.process.sync_field_tbm "$@"
+        ;;
     parse)
         # Stage 1: Parse TBM Excel files
         shift
@@ -106,6 +112,7 @@ case "${1:-help}" in
         echo "Usage: ./run.sh <command> [options]"
         echo ""
         echo "Commands:"
+        echo "  sync      Sync files from field team's OneDrive folder"
         echo "  parse     Stage 1: Parse TBM Excel files -> work_entries.csv"
         echo "  enrich    Stage 2: Add dimension IDs (location, company, trade)"
         echo "  csi       Stage 3: Add CSI section inference from activities"
@@ -117,9 +124,10 @@ case "${1:-help}" in
         echo "  processed/tbm/work_entries_enriched.csv - With dims + CSI"
         echo ""
         echo "Examples:"
+        echo "  ./run.sh sync --dry-run   # Preview sync from field folder"
+        echo "  ./run.sh sync             # Sync new files from field"
         echo "  ./run.sh status           # Check current state"
         echo "  ./run.sh all              # Run full pipeline"
         echo "  ./run.sh parse            # Re-parse Excel files only"
-        echo "  ./run.sh enrich --dry-run # Preview enrichment changes"
         ;;
 esac

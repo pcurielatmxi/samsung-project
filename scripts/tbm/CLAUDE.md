@@ -1,6 +1,6 @@
 # TBM Scripts
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-19
 
 ## Purpose
 
@@ -9,13 +9,13 @@ Parse and enrich Toolbox Meeting (TBM) daily work plans from subcontractors (Exc
 ## Data Flow
 
 ```
-raw/tbm/*.xlsx (421 files)
-    ↓ [Stage 1: Parse]
-work_entries.csv + tbm_files.csv
-    ↓ [Stage 2: Enrich]
-work_entries_enriched.csv (with dim_location_id, dim_company_id, dim_trade_id)
-    ↓ [Stage 3: CSI]
-work_entries_enriched.csv (with csi_section)
+Field TBM (OneDrive)     raw/tbm/*.xlsx (512+ files)
+        ↓ [sync]                ↓ [Stage 1: Parse]
+        └──────────────► work_entries.csv + tbm_files.csv
+                                ↓ [Stage 2: Enrich]
+                        work_entries_enriched.csv (with dim_location_id, dim_company_id, dim_trade_id)
+                                ↓ [Stage 3: CSI]
+                        work_entries_enriched.csv (with csi_section)
 ```
 
 ## Structure
@@ -24,6 +24,7 @@ work_entries_enriched.csv (with csi_section)
 tbm/
 └── process/
     ├── run.sh                     # Pipeline orchestrator
+    ├── sync_field_tbm.py          # Sync from field team's OneDrive
     └── parse_tbm_daily_plans.py   # Excel parser
 ```
 
@@ -31,12 +32,25 @@ tbm/
 
 ```bash
 cd scripts/tbm/process
-./run.sh parse      # Stage 1: Extract Excel data
-./run.sh enrich     # Stage 2: Add dimension IDs
-./run.sh csi        # Stage 3: Add CSI codes
-./run.sh all        # Run all stages
-./run.sh status     # Show file counts
+./run.sh sync --dry-run  # Preview sync from field folder
+./run.sh sync            # Sync new files from field team
+./run.sh parse           # Stage 1: Extract Excel data
+./run.sh enrich          # Stage 2: Add dimension IDs
+./run.sh csi             # Stage 3: Add CSI codes
+./run.sh all             # Run all stages
+./run.sh status          # Show file counts
 ```
+
+## Field Sync
+
+The field team maintains TBM files in OneDrive (FIELD_TBM_FILES env var):
+- `Axios/` - Daily Work Plans by date
+- `Berg & MK Marlow/` - Daily Work Plans by date
+
+The sync script:
+1. Recursively finds "Daily Work Plan" files
+2. Copies new files to raw/tbm/ (flattens folder structure)
+3. Tracks synced files in manifest to avoid duplicates
 
 ## Key Data
 
