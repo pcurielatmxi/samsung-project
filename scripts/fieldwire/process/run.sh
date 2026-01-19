@@ -25,6 +25,7 @@ usage() {
     echo "  lpi      - Stage 3: Calculate LPI metrics"
     echo "  all      - Run all stages"
     echo "  status   - Show processing status"
+    echo "  report   - Generate TBM metrics report"
     echo ""
 }
 
@@ -77,6 +78,11 @@ lpi() {
     python -m scripts.fieldwire.process.calculate_lpi "$@"
 }
 
+report() {
+    echo -e "${GREEN}=== TBM Metrics Report ===${NC}"
+    python -m scripts.fieldwire.process.tbm_metrics_report "$@"
+}
+
 all() {
     echo -e "${GREEN}=== Running Full Pipeline ===${NC}"
     parse "$@"
@@ -98,6 +104,10 @@ case "${1:-}" in
     lpi)
         shift
         lpi "$@"
+        ;;
+    report)
+        shift
+        report "$@"
         ;;
     all)
         shift

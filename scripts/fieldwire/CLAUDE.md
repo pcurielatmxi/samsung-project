@@ -157,12 +157,14 @@ processed/fieldwire/lpi_summary.csv (daily LPI by contractor)
 
 ```
 fieldwire/
-├── CLAUDE.md                # This file
+├── CLAUDE.md                    # This file
+├── POWER_BI_IMPLEMENTATION.md   # Power BI setup guide
 └── process/
-    ├── run.sh               # Pipeline orchestrator
-    ├── parse_fieldwire.py   # CSV parser (UTF-16 → normalized)
-    ├── enrich_tbm.py        # Add dimension IDs
-    └── calculate_lpi.py     # LPI and idle metrics
+    ├── run.sh                   # Pipeline orchestrator
+    ├── parse_fieldwire.py       # CSV parser (UTF-16 → normalized)
+    ├── enrich_tbm.py            # Add dimension IDs
+    ├── calculate_lpi.py         # LPI and idle metrics
+    └── tbm_metrics_report.py    # Self-documented metrics report
 ```
 
 ## Usage
@@ -174,6 +176,13 @@ cd scripts/fieldwire/process
 ./run.sh lpi        # Stage 3: Calculate LPI metrics
 ./run.sh all        # Run all stages
 ./run.sh status     # Show processing status
+./run.sh report     # Generate TBM metrics report
+
+# Report options
+./run.sh report --by-company    # Metrics by contractor
+./run.sh report --by-date       # Metrics by date
+./run.sh report --company Axios # Filter to specific company
+./run.sh report -o report.csv   # Export to CSV
 ```
 
 ## Output Files
@@ -188,24 +197,33 @@ cd scripts/fieldwire/process
 
 ## Metrics Calculated
 
-### LPI (Labor Planning Index)
+### Core TBM Metrics (Corrected Definitions)
+
+| Metric | Definition |
+|--------|------------|
+| **TBM Actual** | SUM(TBM Manpower) WHERE Category = "Manpower Count" — morning headcount |
+| **TBM Planned** | SUM(TBM Manpower) WHERE Status = "TBM" AND Category ≠ "Manpower Count" |
+| **Verified** | SUM(Direct + Indirect) WHERE TBM Manpower > 0 — at planned locations |
+| **Unverified** | SUM(Direct + Indirect) WHERE TBM Manpower = 0/NULL — at unplanned locations |
+| **Not Found** | TBM Actual - (Verified + Unverified) — missing workers |
+| **LPI %** | Verified / TBM Planned × 100 — Target: 80% |
+
+### Worker Flow
 ```
-LPI = Verified / TBM Manpower
-Target: 80%
+Morning TBM (TBM Actual)
+    ├─► Found (Verified + Unverified)
+    │     ├─► At PLANNED locations (Verified)
+    │     └─► At UNPLANNED locations (Unverified)
+    └─► NOT found at any location (Not Found)
 ```
 
 ### Idle Categories (from Checklists)
+- Active (working)
 - Passive (slow activity)
 - Obstructed (blocked)
 - Meeting
 - No Manpower
 - Work Has Not Started
-
-### Cost Impact
-```
-Idle Cost = Idle Workers × Idle Hours × $50/hr
-(Default: 2.09 hrs/worker)
-```
 
 ## Data Quality Notes
 
@@ -218,29 +236,27 @@ Idle Cost = Idle Workers × Idle Hours × $50/hr
 ## Pipeline Results (2026-01-19)
 
 **Data Coverage:**
-- TBM Location Records: 2,761
+- TBM Location Records: 2,922
 - Manpower Count Records: 112
-- Date Range: 2025-12-15 to 2026-01-16
+- Date Range: 2025-12-15 to 2026-01-18
 
-**Dimension Coverage:**
-- Location: 66.2% (FAB building fully mapped, SUP partial)
-- Company: 98.5% (Axios, Berg, MK Marlow)
-- Trade: 99.8%
+**TBM Metrics (Corrected):**
+| Metric | Value |
+|--------|-------|
+| TBM Actual (morning) | 13,081 |
+| TBM Planned | 6,077 |
+| Verified | 1,770 |
+| Unverified | 4,295 |
+| Total Found | 6,065 (46.4%) |
+| Not Found | 7,016 (53.6%) |
+| **LPI %** | **29.1%** |
 
-**LPI Summary (Overall):**
-- Total Planned: 10,747
-- Total Verified: 1,233 (based on Active checklist observations)
-- LPI: 11.5%
-
-**Idle Time Breakdown:**
-| Category | Count | % |
-|----------|-------|---|
-| Active | 1,252 | 41.2% |
-| No Manpower | 1,195 | 39.3% |
-| Passive | 340 | 11.2% |
-| Not Started | 216 | 7.1% |
-| Obstructed | 19 | 0.6% |
-| Meeting | 15 | 0.5% |
+**By Company:**
+| Company | TBM Actual | Planned | Verified | Unverified | LPI % |
+|---------|------------|---------|----------|------------|-------|
+| Axios | 7,003 | 4,043 | 1,240 | 2,927 | 30.7% |
+| Berg | 3,184 | 993 | 172 | 754 | 17.3% |
+| MK Marlow | 2,894 | 1,015 | 354 | 427 | 34.9% |
 
 ## Integration with Other Sources
 
