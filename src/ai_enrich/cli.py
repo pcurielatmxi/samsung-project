@@ -94,7 +94,6 @@ def run_enrich(
     row_columns: list[str] | None = None,
     batch_size: int = 20,
     model: str = "gemini-3-flash-preview",
-    concurrency: int = 5,
     force: bool = False,
     retry_errors: bool = False,
     limit: int | None = None,
@@ -113,7 +112,6 @@ def run_enrich(
         row_columns: Columns to include in prompt (default: all non-PK columns)
         batch_size: Rows per batch
         model: Gemini model name
-        concurrency: Max concurrent batches
         force: Reprocess cached rows
         retry_errors: Retry previously failed rows
         limit: Max rows to process
@@ -187,7 +185,6 @@ def run_enrich(
     config = EnrichConfig(
         batch_size=batch_size,
         model=model,
-        concurrency=concurrency,
         force=force,
         retry_errors=retry_errors,
     )
@@ -217,6 +214,8 @@ def run_enrich(
     print(f"Processed:      {result.processed_rows}")
     print(f"Errors:         {result.error_rows}")
     print(f"Skipped (no PK):{result.skipped_rows}")
+    print(f"Tokens used:    {result.total_tokens:,}")
+    print(f"Est. cost:      ${result.total_cost:.4f}")
     print(f"Output:         {output_csv}")
 
     if result.errors:
@@ -341,12 +340,6 @@ Examples:
         help="Gemini model name (default: gemini-3-flash-preview)",
     )
     parser.add_argument(
-        "--concurrency",
-        type=int,
-        default=5,
-        help="Max concurrent batches (default: 5)",
-    )
-    parser.add_argument(
         "--force",
         action="store_true",
         help="Reprocess cached rows",
@@ -415,7 +408,6 @@ Examples:
             row_columns=row_columns,
             batch_size=args.batch_size,
             model=args.model,
-            concurrency=args.concurrency,
             force=args.force,
             retry_errors=args.retry_errors,
             limit=args.limit,

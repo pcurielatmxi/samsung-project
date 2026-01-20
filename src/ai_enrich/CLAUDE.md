@@ -204,6 +204,35 @@ Standard JSON Schema for each row's output:
 |--------|---------|-------------|
 | `batch_size` | 20 | Rows per LLM call |
 | `model` | gemini-3-flash-preview | Gemini model |
-| `concurrency` | 5 | Max parallel batches (not yet implemented) |
 | `force` | false | Reprocess cached rows |
 | `retry_errors` | false | Retry previously failed rows |
+
+## Cost Tracking
+
+The enrichment tracks token usage and estimates cost based on model pricing:
+
+| Model | Input ($/1M tokens) | Output ($/1M tokens) |
+|-------|---------------------|----------------------|
+| gemini-3-flash-preview | $0.50 | $3.00 |
+| gemini-2.5-flash-lite | $0.10 | $0.40 |
+| gemini-2.0-flash | $0.10 | $0.40 |
+| gemini-1.5-flash | $0.075 | $0.30 |
+
+After enrichment, the summary shows:
+```
+Tokens used:    125,432
+Est. cost:      $0.4521
+```
+
+## Cache Format
+
+Results are cached as JSON with metadata for round-trip fidelity:
+```json
+{
+  "_cache_key": "FAB|1F",
+  "_cached_at": "2026-01-20T16:44:54",
+  "result": {"category": "schedule", "tags": [...]}
+}
+```
+
+This preserves the original cache key even when the filename is sanitized.

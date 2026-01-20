@@ -5,7 +5,6 @@ Processes DataFrame rows in batches, caches results per primary key,
 and merges AI output back into the DataFrame.
 """
 
-import asyncio
 import json
 import logging
 import hashlib
@@ -19,10 +18,17 @@ import pandas as pd
 from src.document_processor.clients.gemini_client import (
     process_document_text,
     GeminiResponse,
-    _convert_schema_to_gemini,
 )
 
 logger = logging.getLogger(__name__)
+
+# Token pricing per 1M tokens (input, output) - as of Jan 2026
+MODEL_PRICING = {
+    "gemini-3-flash-preview": (0.50, 3.00),
+    "gemini-2.5-flash-lite": (0.10, 0.40),
+    "gemini-2.0-flash": (0.10, 0.40),
+    "gemini-1.5-flash": (0.075, 0.30),
+}
 
 
 @dataclass
@@ -30,7 +36,6 @@ class EnrichConfig:
     """Configuration for AI enrichment."""
     batch_size: int = 20
     model: str = "gemini-3-flash-preview"
-    concurrency: int = 5
     retry_errors: bool = False
     force: bool = False
 
@@ -91,7 +96,11 @@ def _load_cached_result(cache_dir: Path, cache_key: str) -> Optional[dict]:
     if cache_file.exists():
         try:
             with open(cache_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+            # Handle both old format (direct result) and new format (wrapped)
+            if "_cache_key" in data and "result" in data:
+                return data["result"]
+            return data  # Old format: direct result
         except (json.JSONDecodeError, IOError) as e:
             logger.warning(f"Failed to load cache file {cache_file}: {e}")
 
@@ -107,14 +116,21 @@ def _has_error(cache_dir: Path, cache_key: str) -> bool:
 
 
 def _save_cached_result(cache_dir: Path, cache_key: str, result: dict) -> None:
-    """Save result to cache file."""
+    """Save result to cache file with original key preserved."""
     filename = _sanitize_filename(cache_key)
     cache_file = cache_dir / f"{filename}.json"
 
     cache_dir.mkdir(parents=True, exist_ok=True)
 
+    # Store original key alongside result for round-trip fidelity
+    cache_data = {
+        "_cache_key": cache_key,
+        "_cached_at": datetime.now().isoformat(),
+        "result": result,
+    }
+
     with open(cache_file, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
+        json.dump(cache_data, f, indent=2, ensure_ascii=False)
 
 
 def _save_error(cache_dir: Path, cache_key: str, error: str, row: dict) -> None:
@@ -190,6 +206,15 @@ def _build_batch_schema(row_schema: dict, batch_keys: list[str]) -> dict:
     }
 
 
+@dataclass
+class BatchResult:
+    """Result from processing a single batch."""
+    results: dict[str, dict]  # key -> AI output
+    errors: dict[str, str]    # key -> error message
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
 def _process_batch(
     batch_rows: list[dict],
     batch_keys: list[str],
@@ -197,7 +222,7 @@ def _process_batch(
     prompt_fn: Callable[[list[dict], list[str]], str],
     row_schema: dict,
     model: str,
-) -> tuple[dict[str, dict], dict[str, str]]:
+) -> BatchResult:
     """
     Process a batch of rows through the LLM.
 
@@ -210,7 +235,7 @@ def _process_batch(
         model: Gemini model to use
 
     Returns:
-        Tuple of (results dict, errors dict) mapping keys to outputs/errors
+        BatchResult with results, errors, and token counts
     """
     results = {}
     errors = {}
@@ -229,11 +254,18 @@ def _process_batch(
         model=model,
     )
 
+    # Extract token usage
+    input_tokens = 0
+    output_tokens = 0
+    if response.usage:
+        input_tokens = response.usage.get("prompt_tokens", 0) or 0
+        output_tokens = response.usage.get("output_tokens", 0) or 0
+
     if not response.success:
         # Batch failed - mark all rows as errors
         for key, row in zip(batch_keys, batch_rows):
             errors[key] = response.error or "Unknown error"
-        return results, errors
+        return BatchResult(results, errors, input_tokens, output_tokens)
 
     # Parse response - should be a dict mapping sanitized keys to outputs
     if isinstance(response.result, dict):
@@ -252,7 +284,15 @@ def _process_batch(
         for key in batch_keys:
             errors[key] = f"Unexpected response format: {type(response.result)}"
 
-    return results, errors
+    return BatchResult(results, errors, input_tokens, output_tokens)
+
+
+def _calculate_cost(input_tokens: int, output_tokens: int, model: str) -> float:
+    """Calculate cost based on token usage and model pricing."""
+    pricing = MODEL_PRICING.get(model, (0.10, 0.40))  # Default to flash pricing
+    input_cost = (input_tokens / 1_000_000) * pricing[0]
+    output_cost = (output_tokens / 1_000_000) * pricing[1]
+    return input_cost + output_cost
 
 
 def enrich_dataframe(
@@ -358,7 +398,7 @@ def enrich_dataframe(
         logger.info(f"Processing batch {batch_num}/{total_batches} ({len(batch)} rows)")
 
         # Process batch
-        batch_results, batch_errors = _process_batch(
+        batch_result = _process_batch(
             batch_rows=batch_rows,
             batch_keys=batch_keys,
             pk_cols=pk_cols,
@@ -367,19 +407,27 @@ def enrich_dataframe(
             model=config.model,
         )
 
+        # Track token usage
+        result.total_tokens += batch_result.input_tokens + batch_result.output_tokens
+        result.total_cost += _calculate_cost(
+            batch_result.input_tokens,
+            batch_result.output_tokens,
+            config.model
+        )
+
         # Save results to cache
         for key in batch_keys:
             row = batch_rows[batch_keys.index(key)]
 
-            if key in batch_results:
-                _save_cached_result(cache_dir, key, batch_results[key])
+            if key in batch_result.results:
+                _save_cached_result(cache_dir, key, batch_result.results[key])
                 _clear_error(cache_dir, key)
-                cached_results[key] = batch_results[key]
+                cached_results[key] = batch_result.results[key]
                 result.processed_rows += 1
-            elif key in batch_errors:
-                _save_error(cache_dir, key, batch_errors[key], row)
+            elif key in batch_result.errors:
+                _save_error(cache_dir, key, batch_result.errors[key], row)
                 result.error_rows += 1
-                result.errors.append({"key": key, "error": batch_errors[key]})
+                result.errors.append({"key": key, "error": batch_result.errors[key]})
 
     if progress_callback:
         progress_callback(len(rows_to_process), len(rows_to_process), "Complete")
@@ -396,7 +444,8 @@ def enrich_dataframe(
 
     logger.info(
         f"Enrichment complete: {result.processed_rows} processed, "
-        f"{result.cached_rows} from cache, {result.error_rows} errors"
+        f"{result.cached_rows} from cache, {result.error_rows} errors, "
+        f"{result.total_tokens:,} tokens, ${result.total_cost:.4f}"
     )
 
     return df_result, result
@@ -412,7 +461,7 @@ def load_cached_results(
         cache_dir: Directory containing cached JSON files
 
     Returns:
-        Dict mapping cache keys to their AI outputs
+        Dict mapping original cache keys to their AI outputs
     """
     cache_dir = Path(cache_dir)
     results = {}
@@ -427,9 +476,15 @@ def load_cached_results(
         try:
             with open(cache_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            # Key is filename without .json extension
-            key = cache_file.stem
-            results[key] = data
+
+            # Handle both new format (with _cache_key) and old format
+            if "_cache_key" in data and "result" in data:
+                key = data["_cache_key"]
+                results[key] = data["result"]
+            else:
+                # Old format: filename is sanitized key, data is result
+                key = cache_file.stem
+                results[key] = data
         except (json.JSONDecodeError, IOError) as e:
             logger.warning(f"Failed to load {cache_file}: {e}")
 
