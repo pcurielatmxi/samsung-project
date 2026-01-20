@@ -90,22 +90,29 @@ def get_subcontractor_from_path(filepath: Path, field_root: Path) -> str:
     return 'Unknown'
 
 
-def generate_output_filename(filepath: Path, subcontractor: str) -> str:
-    """Generate a unique output filename with subcontractor prefix."""
-    original_name = filepath.name
+def generate_output_filename(filepath: Path, field_root: Path) -> str:
+    """
+    Generate output filename from the folder structure.
 
-    # Clean up the filename
-    # Remove common prefixes that would be redundant with our prefix
-    name = original_name
-    for prefix in ['Copy of ', 'AXIOS ', 'Axios ', 'Yates - SECAI ']:
-        if name.startswith(prefix):
-            name = name[len(prefix):]
+    Uses the relative path from field_root with underscores as separators.
+    Example: Axios/1-2-26/file.xlsx → Axios_1-2-26_file.xlsx
+    """
+    try:
+        rel_path = filepath.relative_to(field_root)
+    except ValueError:
+        # Fallback if relative_to fails
+        return filepath.name
 
-    # Add subcontractor prefix if not already present
-    if not name.lower().startswith(subcontractor.lower()):
-        name = f"{subcontractor}_{name}"
+    # Get all path components and join with underscores
+    # Replace spaces and special chars in folder names
+    parts = []
+    for part in rel_path.parts:
+        # Replace spaces and & with underscores, collapse multiple underscores
+        cleaned = part.replace(' & ', '_').replace(' ', '_').replace('&', '_')
+        cleaned = '_'.join(filter(None, cleaned.split('_')))  # Collapse multiple underscores
+        parts.append(cleaned)
 
-    return name
+    return '_'.join(parts)
 
 
 def load_manifest(manifest_path: Path) -> dict:
@@ -190,7 +197,7 @@ def sync_files(
     stats['found'] = len(files)
 
     for filepath, subcontractor in files:
-        output_name = generate_output_filename(filepath, subcontractor)
+        output_name = generate_output_filename(filepath, field_dir)
         output_path = raw_dir / output_name
 
         # Calculate source file hash

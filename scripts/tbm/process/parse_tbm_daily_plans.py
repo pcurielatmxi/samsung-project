@@ -161,6 +161,124 @@ def find_work_plan_sheet(excel_file: pd.ExcelFile) -> str:
     return None
 
 
+def detect_column_indices(df: pd.DataFrame) -> dict:
+    """
+    Detect column indices from header rows.
+
+    The TBM files have headers in row 2 (index 2) with some merged cells,
+    and sub-headers in row 3 (index 3) for Location breakdown.
+
+    Some files have NO row number column - data starts directly with Division.
+    We detect this by checking if the first data rows have numeric values in col 0.
+
+    Returns:
+        dict mapping field names to column indices, plus 'has_row_num' flag
+    """
+    if len(df) < 4:
+        return None
+
+    # Get header rows
+    header_row = df.iloc[2]
+    sub_header_row = df.iloc[3]
+
+    # Convert to lowercase strings for matching
+    def normalize(val):
+        if pd.isna(val):
+            return ''
+        return str(val).lower().replace('\n', ' ').strip()
+
+    headers = [normalize(v) for v in header_row]
+    sub_headers = [normalize(v) for v in sub_header_row]
+
+    # Detect if column 0 has row numbers by checking first few data rows
+    has_row_num = False
+    for check_idx in range(4, min(10, len(df))):
+        val = df.iloc[check_idx, 0]
+        if pd.notna(val):
+            try:
+                int(val)
+                has_row_num = True
+                break
+            except (ValueError, TypeError):
+                # Not a number - likely division data
+                pass
+
+    # Find key columns by header text patterns
+    # Fixed positions are based on header row (before any data offset)
+    cols = {
+        'has_row_num': has_row_num,
+        'row_num': 0 if has_row_num else None,  # No row_num column in shifted files
+        'division': 1,     # Column 1 ("Division")
+        'tier1_gc': 2,     # Column 2 (Company / Tier 1)
+        'tier2_sc': 3,     # Column 3 (Tier 2)
+        'foreman': None,
+        'contact_number': None,
+        'num_employees': None,
+        'work_activities': None,
+        'location_building': None,
+        'location_level': None,
+        'location_row': None,
+        'start_time': None,
+        'end_time': None,
+    }
+
+    # Search for column indices
+    for i, header in enumerate(headers):
+        if 'foreman' in header:
+            cols['foreman'] = i
+        elif 'contact' in header and 'number' in header:
+            cols['contact_number'] = i
+        elif 'employee' in header and 'no' in header:
+            cols['num_employees'] = i
+        elif 'work activities' in header or 'activities/tasks' in header:
+            cols['work_activities'] = i
+        elif header == 'location' or 'location' in header and len(header) < 15:
+            # Found the Location header - look for sub-headers
+            # Location typically spans 3 columns (building, level, row)
+            cols['location_building'] = i
+        elif 'start' in header and 'time' in header:
+            cols['start_time'] = i
+        elif 'end' in header and 'time' in header:
+            cols['end_time'] = i
+
+    # Find location sub-columns from sub-header row
+    for i, sub_header in enumerate(sub_headers):
+        if 'lv.1' in sub_header or 'building' in sub_header:
+            cols['location_building'] = i
+        elif 'lv.2' in sub_header or 'level' in sub_header and 'lv' in sub_header:
+            cols['location_level'] = i
+        elif 'lv.3' in sub_header or 'row' in sub_header:
+            cols['location_row'] = i
+
+    # Validate we found the critical columns
+    required = ['num_employees', 'work_activities', 'start_time', 'end_time']
+    missing = [k for k in required if cols.get(k) is None]
+
+    if missing:
+        # Try fallback: if we found work_activities, location should be next
+        if cols['work_activities'] is not None:
+            wa_idx = cols['work_activities']
+            if cols['location_building'] is None:
+                cols['location_building'] = wa_idx + 1
+            if cols['location_level'] is None:
+                cols['location_level'] = wa_idx + 2
+            if cols['location_row'] is None:
+                cols['location_row'] = wa_idx + 3
+            if cols['start_time'] is None:
+                cols['start_time'] = wa_idx + 4
+            if cols['end_time'] is None:
+                cols['end_time'] = wa_idx + 5
+
+    # If no row numbers in data, apply offset to ALL column positions
+    # The headers still have "No." column but data is shifted left by 1
+    if not has_row_num:
+        for key in cols:
+            if key != 'has_row_num' and cols[key] is not None:
+                cols[key] = max(0, cols[key] - 1)  # Shift left by 1, min 0
+
+    return cols
+
+
 def parse_tbm_file(filepath: Path) -> tuple:
     """
     Parse a single TBM Excel file.
@@ -199,63 +317,88 @@ def parse_tbm_file(filepath: Path) -> tuple:
         'subcontractor_file': subcontractor,
     }
 
-    # Parse work entries starting from row 3 (0-indexed)
-    work_entries = []
+    # Detect column positions dynamically from headers
+    cols = detect_column_indices(df)
+    if cols is None:
+        print(f"  Could not detect column structure in {filepath.name}")
+        return None, []
 
-    for idx in range(3, len(df)):
+    # Helper to safely get cell value
+    def get_cell(row, col_name):
+        idx = cols.get(col_name)
+        if idx is None or idx >= len(row):
+            return None
+        val = row.iloc[idx]
+        if pd.isna(val):
+            return None
+        return val
+
+    def get_str(row, col_name):
+        val = get_cell(row, col_name)
+        return str(val) if val is not None else None
+
+    # Parse work entries starting from row 4 (0-indexed, after headers)
+    work_entries = []
+    has_row_num = cols.get('has_row_num', True)
+    synthetic_row_num = 0
+
+    for idx in range(4, len(df)):
         row = df.iloc[idx]
 
-        # Skip empty rows (check if row number is present)
-        row_num = row.iloc[0]
-        if pd.isna(row_num):
-            continue
+        # Handle files with or without row numbers
+        if has_row_num:
+            # Normal case: check if row number is present
+            row_num = get_cell(row, 'row_num')
+            if row_num is None:
+                continue
+            try:
+                row_num = int(row_num)
+            except (ValueError, TypeError):
+                continue
+        else:
+            # No row number column - check if division has data to identify valid rows
+            division = get_cell(row, 'division')
+            if division is None:
+                continue
+            # Generate synthetic row number
+            synthetic_row_num += 1
+            row_num = synthetic_row_num
 
-        try:
-            row_num = int(row_num)
-        except (ValueError, TypeError):
-            continue
-
-        # Extract fields
+        # Extract fields using detected column positions
         entry = {
             'report_date': report_date,
             'subcontractor_file': subcontractor,
             'row_num': row_num,
-            'division': str(row.iloc[1]) if pd.notna(row.iloc[1]) else None,
-            'tier1_gc': str(row.iloc[2]) if pd.notna(row.iloc[2]) else None,
-            'tier2_sc': str(row.iloc[3]) if pd.notna(row.iloc[3]) else None,
-            'foreman': str(row.iloc[4]) if pd.notna(row.iloc[4]) else None,
-            'contact_number': str(row.iloc[5]) if pd.notna(row.iloc[5]) else None,
+            'division': get_str(row, 'division'),
+            'tier1_gc': get_str(row, 'tier1_gc'),
+            'tier2_sc': get_str(row, 'tier2_sc'),
+            'foreman': get_str(row, 'foreman'),
+            'contact_number': get_str(row, 'contact_number'),
             'num_employees': None,
-            'work_activities': str(row.iloc[7]) if pd.notna(row.iloc[7]) else None,
-            'location_building': str(row.iloc[8]) if pd.notna(row.iloc[8]) else None,
-            'location_level': str(row.iloc[9]) if pd.notna(row.iloc[9]) else None,
-            'location_row': str(row.iloc[10]) if pd.notna(row.iloc[10]) else None,
-            'start_time': None,
-            'end_time': None,
+            'work_activities': get_str(row, 'work_activities'),
+            'location_building': get_str(row, 'location_building'),
+            'location_level': get_str(row, 'location_level'),
+            'location_row': get_str(row, 'location_row'),
+            'start_time': get_str(row, 'start_time'),
+            'end_time': get_str(row, 'end_time'),
         }
 
         # Parse number of employees (can be "7", "0-10", etc.)
-        emp_val = row.iloc[6]
-        if pd.notna(emp_val):
+        emp_val = get_cell(row, 'num_employees')
+        if emp_val is not None:
             emp_str = str(emp_val)
             # Handle ranges like "0-10"
-            if '-' in emp_str:
+            if '-' in emp_str and not emp_str.startswith('-'):
                 parts = emp_str.split('-')
                 try:
                     entry['num_employees'] = int(parts[1])  # Use upper bound
-                except:
+                except (ValueError, IndexError):
                     pass
             else:
                 try:
                     entry['num_employees'] = int(float(emp_val))
-                except:
+                except (ValueError, TypeError):
                     pass
-
-        # Parse times
-        if pd.notna(row.iloc[11]):
-            entry['start_time'] = str(row.iloc[11])
-        if pd.notna(row.iloc[12]):
-            entry['end_time'] = str(row.iloc[12])
 
         # Only add entries with actual work activities
         if entry['work_activities'] and entry['work_activities'].lower() not in ['nan', 'none', '']:

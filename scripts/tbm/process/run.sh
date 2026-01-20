@@ -40,6 +40,12 @@ case "${1:-help}" in
         echo "=== Stage 3: Adding CSI Section IDs ==="
         python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
         ;;
+    dedup)
+        # Stage 4: Flag duplicate company+date combinations
+        shift
+        echo "=== Stage 4: Flagging Duplicates ==="
+        python -m scripts.tbm.process.deduplicate_tbm "$@"
+        ;;
     all)
         # Run full pipeline
         shift
@@ -68,6 +74,14 @@ case "${1:-help}" in
         python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
         if [ $? -ne 0 ]; then
             echo "ERROR: CSI stage failed"
+            exit 1
+        fi
+        echo ""
+
+        echo "=== Stage 4: Flagging Duplicates ==="
+        python -m scripts.tbm.process.deduplicate_tbm "$@"
+        if [ $? -ne 0 ]; then
+            echo "ERROR: Dedup stage failed"
             exit 1
         fi
 
@@ -116,7 +130,8 @@ case "${1:-help}" in
         echo "  parse     Stage 1: Parse TBM Excel files -> work_entries.csv"
         echo "  enrich    Stage 2: Add dimension IDs (location, company, trade)"
         echo "  csi       Stage 3: Add CSI section inference from activities"
-        echo "  all       Run full pipeline (parse -> enrich -> csi)"
+        echo "  dedup     Stage 4: Flag duplicate company+date combinations"
+        echo "  all       Run full pipeline (parse -> enrich -> csi -> dedup)"
         echo "  status    Show pipeline status and file counts"
         echo ""
         echo "Output:"
