@@ -1,6 +1,6 @@
 # Fieldwire Scripts
 
-**Last Updated:** 2026-01-19
+**Last Updated:** 2026-01-20
 
 ## Purpose
 
@@ -26,8 +26,10 @@ TBM (Toolbox Meeting) plans specify where workers will be deployed each day:
 ## Data Source
 
 **Input:** Fieldwire CSV data dumps (UTF-16LE encoded, tab-separated)
-**Location:** `{WINDOWS_DATA_DIR}/processed/fieldwire/*.csv`
+**Location:** `{WINDOWS_DATA_DIR}/raw/fieldwire/*.csv`
 **Export Source:** www.fieldwire.com → Samsung - Progress Tracking project
+
+**Note:** Power BI processes raw Fieldwire files directly for LPI metrics. These scripts generate **idle time tags** only, which Power BI joins back to the raw data by ID.
 
 ## Data Model
 
@@ -162,126 +164,129 @@ Format: `{Yes|Not set}: {Category} ({Inspector}) - {Date}`
 | Multiple | 324 | Multi-contractor areas |
 | Brand Safway | 19 | Scaffold |
 
-## Data Flow
+## Idle Time Tagging Pipeline
+
+Extracts and classifies idle time indicators from Fieldwire messages and checklists using AI enrichment.
+
+### Use Cases
+
+1. **Idle Time Cost Analysis**: Quantify labor hours lost to each idle category (passive, waiting, obstruction) for cost impact reporting
+2. **Contractor Accountability**: Identify which contractors have highest idle time rates by category
+3. **Root Cause Analysis**: Correlate idle time tags with locations/dates to find systemic issues (e.g., recurring obstructions at specific grids)
+4. **LPI Deep Dive**: Explain WHY workers at planned locations aren't productive (complement to LPI metrics)
+
+### Data Sources
+
+| File | ID Prefix | Filter | Description |
+|------|-----------|--------|-------------|
+| `Manpower_-_SECAI_Power_BI_Data_Dump_*.csv` | `MP-` | `Status = "Manpower (During)"` | Mid-day field observations |
+| `Samsung_-_Progress_Tracking_QC_Inspections_Data_Dump_*.csv` | `TBM-` | `Status = "TBM" AND Category != "Manpower Count"` | TBM location observations |
+
+**Note:** Only the latest file for each source is processed. Older files are ignored.
+
+### Idle Time Tags
+
+| Tag | Description |
+|-----|-------------|
+| `passive` | Workers present but not actively engaged |
+| `standing` | Workers observed standing idle |
+| `not_started` | Work has not started, no manpower present |
+| `obstruction` | Work blocked by physical obstructions |
+| `phone` | Workers using phones instead of working |
+| `waiting` | Waiting for materials, instructions, equipment |
+| `permit` | Delayed due to permit issues |
+| `acting` | Simulating work activity |
+| `meeting` | Workers in meetings |
+| `talking` | Workers engaged in conversation |
+| `delay` | General delays, schedule impacts |
+
+### Pipeline Flow
 
 ```
-{WINDOWS_DATA_DIR}/processed/fieldwire/*.csv (UTF-16LE)
-    ↓ [Stage 1: Parse & Normalize]
-processed/fieldwire/tbm_audits.csv
-    ↓ [Stage 2: Enrich]
-processed/fieldwire/tbm_audits_enriched.csv (with dimension IDs)
-    ↓ [Stage 3: Aggregate]
-processed/fieldwire/lpi_summary.csv (daily LPI by contractor)
+{WINDOWS_DATA_DIR}/raw/fieldwire/*.csv (UTF-16LE, tab-separated)
+    ↓ [extract_tbm_content.py]
+    │  • Parse both Manpower and Progress Tracking files
+    │  • Extract checklist tags automatically
+    │  • Extract narratives (filter out change logs)
+    ↓
+{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv
+    │  Columns: id, source, title, status, category, start_date,
+    │           checklist_tags, narratives, narrative_count
+    ↓ [ai_enrich]
+    │  • Classify narratives into idle time tags
+    │  • Uses gemini-2.0-flash model
+    │  • Caches results per row (expensive to regenerate)
+    ↓
+{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content_enriched.csv
+    │  Columns: + ai_output (containing AI tags)
 ```
 
-## Structure
+### Output Files
+
+| File | Location | Description |
+|------|----------|-------------|
+| `tbm_content.csv` | `{WINDOWS_DATA_DIR}/derived/fieldwire/` | Extracted content with checklist tags |
+| `tbm_content_enriched.csv` | `{WINDOWS_DATA_DIR}/derived/fieldwire/` | With AI-generated tags |
+| `ai_cache/` | `{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache/` | Per-row JSON cache (do not delete) |
+
+### Usage
+
+```bash
+# Step 1: Extract content from Fieldwire dumps
+python -m scripts.fieldwire.extract_tbm_content
+
+# Step 2: Run AI enrichment on narratives (full run)
+python -m src.ai_enrich \
+    "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
+    --prompt scripts/fieldwire/ai_enrichment/idle_tags_prompt.txt \
+    --schema scripts/fieldwire/ai_enrichment/idle_tags_schema.json \
+    --primary-key id \
+    --columns narratives \
+    --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
+    --batch-size 20
+
+# Check enrichment progress
+python -m src.ai_enrich \
+    "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
+    --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
+    --status
+
+# Retry failed rows only
+python -m src.ai_enrich \
+    "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
+    --prompt scripts/fieldwire/ai_enrichment/idle_tags_prompt.txt \
+    --schema scripts/fieldwire/ai_enrichment/idle_tags_schema.json \
+    --primary-key id \
+    --columns narratives \
+    --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
+    --retry-errors
+```
+
+### Files
 
 ```
 fieldwire/
 ├── CLAUDE.md                    # This file
-├── POWER_BI_IMPLEMENTATION.md   # Power BI setup guide
-└── process/
-    ├── run.sh                   # Pipeline orchestrator
-    ├── parse_fieldwire.py       # CSV parser (UTF-16 → normalized)
+├── extract_tbm_content.py       # Extract checklists & narratives
+├── ai_enrichment/
+│   ├── idle_tags_prompt.txt     # AI prompt for narrative classification
+│   └── idle_tags_schema.json    # Output schema (tags array)
+└── process/                     # Exploratory scripts (not used in production)
+    ├── run.sh                   # Pipeline orchestrator (for exploration)
+    ├── parse_fieldwire.py       # CSV parser
     ├── enrich_tbm.py            # Add dimension IDs
-    ├── calculate_lpi.py         # LPI and idle metrics
-    ├── tbm_metrics_report.py    # Self-documented metrics report
-    └── transform_secai.py       # Transform SECAI data to main format
+    ├── calculate_lpi.py         # LPI metrics
+    └── tbm_metrics_report.py    # Metrics report
 ```
 
-## Usage
+### Tag Sources
 
-```bash
-cd scripts/fieldwire/process
-./run.sh parse      # Stage 1: Parse Fieldwire dump
-./run.sh enrich     # Stage 2: Add dimension IDs
-./run.sh lpi        # Stage 3: Calculate LPI metrics
-./run.sh all        # Run all stages
-./run.sh status     # Show processing status
-./run.sh report          # Generate TBM metrics report
-./run.sh transform-secai # Transform SECAI historical data
+Tags come from two sources that are combined in the output:
 
-# Report options
-./run.sh report --by-company    # Metrics by contractor
-./run.sh report --by-date       # Metrics by date
-./run.sh report --company Axios # Filter to specific company
-./run.sh report -o report.csv   # Export to CSV
-```
+1. **Checklist Tags** (automatic): Extracted from Fieldwire checklist columns, mapped to standard tags
+2. **AI Tags** (from narratives): LLM classifies inspector narratives into tags
 
-## Output Files
-
-| File | Description |
-|------|-------------|
-| `tbm_audits.csv` | Normalized TBM records |
-| `tbm_audits_enriched.csv` | With dim_location_id, dim_company_id |
-| `lpi_summary.csv` | Daily LPI by contractor |
-| `idle_analysis.csv` | Idle time breakdown by category |
-| `manpower_counts.csv` | Daily START/END totals |
-| `secai_transformed.csv` | SECAI data transformed to main format |
-| `secai_manpower_counts.csv` | SECAI manpower count records |
-
-## Metrics Calculated
-
-### Core TBM Metrics (Corrected Definitions)
-
-| Metric | Definition |
-|--------|------------|
-| **TBM Actual** | SUM(TBM Manpower) WHERE Category = "Manpower Count" — morning headcount |
-| **TBM Planned** | SUM(TBM Manpower) WHERE Status = "TBM" AND Category ≠ "Manpower Count" |
-| **Verified** | SUM(Direct + Indirect) WHERE TBM Manpower > 0 — at planned locations |
-| **Unverified** | SUM(Direct + Indirect) WHERE TBM Manpower = 0/NULL — at unplanned locations |
-| **Not Found** | TBM Actual - (Verified + Unverified) — missing workers |
-| **LPI %** | Verified / TBM Planned × 100 — Target: 80% |
-
-### Worker Flow
-```
-Morning TBM (TBM Actual)
-    ├─► Found (Verified + Unverified)
-    │     ├─► At PLANNED locations (Verified)
-    │     └─► At UNPLANNED locations (Unverified)
-    └─► NOT found at any location (Not Found)
-```
-
-### Idle Categories (from Checklists)
-- Active (working)
-- Passive (slow activity)
-- Obstructed (blocked)
-- Meeting
-- No Manpower
-- Work Has Not Started
-
-## Data Quality Notes
-
-1. **Encoding:** Files are UTF-16LE, must convert to UTF-8
-2. **TBM Manpower decimals:** Values like 0.8, 2.5 represent partial day allocations
-3. **Empty fields:** Many records have blank Direct/Indirect Manpower
-4. **Date format:** YYYY-MM-DD in Start date field
-5. **Checklist parsing:** Need regex to extract Yes/Not set prefix
-
-## Pipeline Results (2026-01-19)
-
-**Data Coverage:**
-- TBM Location Records: 2,922
-- Manpower Count Records: 112
-- Date Range: 2025-12-15 to 2026-01-18
-
-**TBM Metrics (Corrected):**
-| Metric | Value |
-|--------|-------|
-| TBM Actual (morning) | 13,081 |
-| TBM Planned | 6,077 |
-| Verified | 1,770 |
-| Unverified | 4,295 |
-| Total Found | 6,065 (46.4%) |
-| Not Found | 7,016 (53.6%) |
-| **LPI %** | **29.1%** |
-
-**By Company:**
-| Company | TBM Actual | Planned | Verified | Unverified | LPI % |
-|---------|------------|---------|----------|------------|-------|
-| Axios | 7,003 | 4,043 | 1,240 | 2,927 | 30.7% |
-| Berg | 3,184 | 993 | 172 | 754 | 17.3% |
-| MK Marlow | 2,894 | 1,015 | 354 | 427 | 34.9% |
+The `checklist_tags` column contains auto-extracted tags. The `ai_output` column contains `{'tags': [...]}` from AI classification.
 
 ## Integration with Other Sources
 

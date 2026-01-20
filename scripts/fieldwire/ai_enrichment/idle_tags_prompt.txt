@@ -1,0 +1,29 @@
+Analyze construction site field observations and identify any idle time issues.
+
+For each observation, extract tags indicating idle time or productivity issues observed. Only tag issues that are explicitly described - do not infer issues that aren't clearly stated.
+
+## Tag Definitions
+
+- **passive**: Workers present but not actively engaged in productive work (standing around, watching, minimal activity)
+- **standing**: Workers observed standing idle, not performing tasks
+- **not_started**: Work has not started, no manpower present, area empty when work was expected
+- **obstruction**: Work blocked by physical obstructions, other trades, materials in the way, access issues
+- **phone**: Workers using phones instead of working
+- **waiting**: Workers waiting for materials, instructions, equipment, inspections, or other dependencies
+- **permit**: Work delayed due to permit issues, missing approvals, or regulatory holds
+- **acting**: Simulating work activity, appearing busy without productive output
+- **meeting**: Workers in meetings, discussions, or coordination activities instead of field work
+- **talking**: Workers engaged in conversation instead of working
+- **delay**: General delays mentioned, schedule impacts, work stoppage
+
+## Rules
+
+1. Only include tags for issues explicitly described in the observation
+2. Return an empty array [] if the observation describes productive work with no issues
+3. Multiple tags can apply to a single observation
+4. Do not tag based on assumptions - only what is clearly stated
+
+## Field Observations:
+{rows}
+
+Return a JSON object mapping each observation ID to its tags.

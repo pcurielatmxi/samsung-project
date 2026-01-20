@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "passive",
+          "standing",
+          "not_started",
+          "obstruction",
+          "phone",
+          "waiting",
+          "permit",
+          "acting",
+          "meeting",
+          "talking",
+          "delay"
+        ]
+      }
+    }
+  },
+  "required": ["tags"]
+}
