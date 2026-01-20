@@ -93,7 +93,7 @@ def run_enrich(
     output_csv: Path | None = None,
     row_columns: list[str] | None = None,
     batch_size: int = 20,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-3-flash-preview",
     concurrency: int = 5,
     force: bool = False,
     retry_errors: bool = False,
@@ -337,8 +337,8 @@ Examples:
     parser.add_argument(
         "--model",
         type=str,
-        default="gemini-2.0-flash",
-        help="Gemini model name (default: gemini-2.0-flash)",
+        default="gemini-3-flash-preview",
+        help="Gemini model name (default: gemini-3-flash-preview)",
     )
     parser.add_argument(
         "--concurrency",

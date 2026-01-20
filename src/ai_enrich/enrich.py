@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class EnrichConfig:
     """Configuration for AI enrichment."""
     batch_size: int = 20
-    model: str = "gemini-2.0-flash"
+    model: str = "gemini-3-flash-preview"
     concurrency: int = 5
     retry_errors: bool = False
     force: bool = False

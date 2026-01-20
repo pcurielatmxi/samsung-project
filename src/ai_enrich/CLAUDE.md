@@ -151,7 +151,7 @@ df_enriched, result = enrich_dataframe(
     row_schema=row_schema,
     primary_key="issue_id",
     cache_dir=Path("cache/issues"),
-    config=EnrichConfig(batch_size=25, model="gemini-2.0-flash"),
+    config=EnrichConfig(batch_size=25, model="gemini-3-flash-preview"),
 )
 
 # Result: df with 'ai_output' column containing dicts
@@ -203,7 +203,7 @@ Standard JSON Schema for each row's output:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `batch_size` | 20 | Rows per LLM call |
-| `model` | gemini-2.0-flash | Gemini model |
+| `model` | gemini-3-flash-preview | Gemini model |
 | `concurrency` | 5 | Max parallel batches (not yet implemented) |
 | `force` | false | Reprocess cached rows |
 | `retry_errors` | false | Retry previously failed rows |

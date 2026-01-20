@@ -286,6 +286,7 @@ External data (not in repo) follows traceability classification:
 - **Settings:** `src/config/settings.py` - All path constants
 - **Environment:** `.env` file with `WINDOWS_DATA_DIR` path
 - **Python Environment:** Use the existing `.venv` virtual environment for all Python scripts and installations. Activate with `source .venv/bin/activate`
+- **Gemini Model:** Use `gemini-3-flash-preview` for all AI enrichment and document processing. Older models have consistency issues.
 
 ## Analysis Objectives
 

@@ -214,7 +214,7 @@ Extracts and classifies idle time indicators from Fieldwire messages and checkli
     │           checklist_tags, narratives, narrative_count
     ↓ [ai_enrich]
     │  • Classify narratives into idle time tags
-    │  • Uses gemini-2.0-flash model
+    │  • Uses gemini-3-flash-preview model
     │  • Caches results per row (expensive to regenerate)
     ↓
 {WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content_enriched.csv
@@ -231,11 +231,27 @@ Extracts and classifies idle time indicators from Fieldwire messages and checkli
 
 ### Usage
 
+**Recommended: Use the orchestration script (schedulable)**
+```bash
+cd scripts/fieldwire
+
+./run_idle_tags.sh           # Normal run (extract + enrich)
+./run_idle_tags.sh --status  # Show pipeline status
+./run_idle_tags.sh --force   # Reprocess all rows (clear cache)
+```
+
+**Schedule with cron:**
+```bash
+# Run daily at 6am
+0 6 * * * /path/to/scripts/fieldwire/run_idle_tags.sh >> /path/to/idle_tags.log 2>&1
+```
+
+**Manual steps (if needed):**
 ```bash
 # Step 1: Extract content from Fieldwire dumps
 python -m scripts.fieldwire.extract_tbm_content
 
-# Step 2: Run AI enrichment on narratives (full run)
+# Step 2: Run AI enrichment on narratives
 python -m src.ai_enrich \
     "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
     --prompt scripts/fieldwire/ai_enrichment/idle_tags_prompt.txt \
@@ -250,16 +266,6 @@ python -m src.ai_enrich \
     "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
     --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
     --status
-
-# Retry failed rows only
-python -m src.ai_enrich \
-    "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
-    --prompt scripts/fieldwire/ai_enrichment/idle_tags_prompt.txt \
-    --schema scripts/fieldwire/ai_enrichment/idle_tags_schema.json \
-    --primary-key id \
-    --columns narratives \
-    --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
-    --retry-errors
 ```
 
 ### Files
@@ -267,16 +273,13 @@ python -m src.ai_enrich \
 ```
 fieldwire/
 ├── CLAUDE.md                    # This file
+├── run_idle_tags.sh             # Orchestration script (schedulable)
 ├── extract_tbm_content.py       # Extract checklists & narratives
 ├── ai_enrichment/
 │   ├── idle_tags_prompt.txt     # AI prompt for narrative classification
 │   └── idle_tags_schema.json    # Output schema (tags array)
 └── process/                     # Exploratory scripts (not used in production)
-    ├── run.sh                   # Pipeline orchestrator (for exploration)
-    ├── parse_fieldwire.py       # CSV parser
-    ├── enrich_tbm.py            # Add dimension IDs
-    ├── calculate_lpi.py         # LPI metrics
-    └── tbm_metrics_report.py    # Metrics report
+    └── ...
 ```
 
 ### Tag Sources
