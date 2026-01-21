@@ -414,7 +414,8 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Get all Excel files, excluding non-standard ones
-    excluded_patterns = ['Manpower TrendReport', 'Structural  Exteriors', 'TaylorFab', 'Labor Day']
+    # MXI files are annotated copies with frozen dates that cause duplicates
+    excluded_patterns = ['Manpower TrendReport', 'Structural  Exteriors', 'TaylorFab', 'Labor Day', 'MXI']
 
     excel_files = list(input_dir.glob('*.xlsx')) + list(input_dir.glob('*.xlsm'))
     excel_files = [f for f in excel_files if not any(ex in f.name for ex in excluded_patterns)]
