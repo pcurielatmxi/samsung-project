@@ -128,6 +128,8 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
     # Compute flags for selection logic
     file_stats['date_matches'] = file_stats['report_date'] == file_stats['filename_date']
     file_stats['is_copy'] = file_stats['filename'].apply(is_copy_file)
+    # Date mismatch: filename has a date that differs from internal date (data quality issue)
+    file_stats['date_mismatch'] = (file_stats['filename_date'].notna()) & (~file_stats['date_matches'])
 
     # Find duplicate groups (same normalized subcontractor + report_date)
     dup_counts = file_stats.groupby(['subcontractor_normalized', 'report_date']).size().reset_index(name='group_size')
@@ -164,21 +166,29 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
         file_stats.loc[group.index, 'is_preferred'] = False
         file_stats.loc[best_idx, 'is_preferred'] = True
 
-    # Merge flags back to entries
-    flag_cols = ['file_id', 'is_duplicate', 'duplicate_group_id', 'is_preferred', 'subcontractor_normalized']
+    # Merge flags back to entries (drop existing columns first for idempotency)
+    flag_cols = ['file_id', 'is_duplicate', 'duplicate_group_id', 'is_preferred', 'subcontractor_normalized', 'date_mismatch']
+    existing_cols = [c for c in flag_cols if c in df.columns and c != 'file_id']
+    if existing_cols:
+        df = df.drop(columns=existing_cols)
     df = df.merge(file_stats[flag_cols], on='file_id', how='left')
 
     # Fill any NaN values (shouldn't happen, but be safe)
     df['is_duplicate'] = df['is_duplicate'].fillna(False)
     df['is_preferred'] = df['is_preferred'].fillna(True)
+    df['date_mismatch'] = df['date_mismatch'].fillna(False)
 
     # Summary stats
     dup_files = file_stats[file_stats['is_duplicate']]
+    mismatch_files = file_stats[file_stats['date_mismatch']]
     print(f"\nDeduplication Summary:")
     print(f"  Duplicate files: {len(dup_files)} in {dup_files['duplicate_group_id'].nunique()} groups")
     print(f"  Records in duplicates: {df[df['is_duplicate'] == True].shape[0]}")
     print(f"  Preferred files: {len(file_stats[file_stats['is_preferred']])}")
     print(f"  Records after dedup: {df[df['is_preferred'] == True].shape[0]}")
+    print(f"\nDate Mismatch Summary:")
+    print(f"  Files with date mismatch: {len(mismatch_files)}")
+    print(f"  Records with date mismatch: {df[df['date_mismatch'] == True].shape[0]}")
 
     # Show duplicate groups
     if len(dup_files) > 0:
@@ -195,6 +205,13 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
                 flags = " ".join(filter(None, [match, copy]))
                 flags_str = f" [{flags}]" if flags else ""
                 print(f"    [{pref}] {row['record_count']:3d} records | {row['filename']}{flags_str}")
+
+    # Show date mismatch files
+    if len(mismatch_files) > 0:
+        print(f"\nDate Mismatch Files (filename date ≠ internal date):")
+        for _, row in mismatch_files.iterrows():
+            print(f"  {row['filename'][:60]}")
+            print(f"    Internal: {row['report_date']} | Filename: {row['filename_date']}")
 
     return df
 
@@ -219,7 +236,7 @@ def main():
     # Save back to same file
     df.to_csv(entries_path, index=False)
     print(f"\nSaved to: {entries_path}")
-    print(f"Added columns: is_duplicate, duplicate_group_id, is_preferred, subcontractor_normalized")
+    print(f"Added columns: is_duplicate, duplicate_group_id, is_preferred, subcontractor_normalized, date_mismatch")
 
 
 if __name__ == '__main__':
