@@ -66,8 +66,8 @@ def extract_date_from_filename(filename: str) -> str:
     return None
 
 
-def normalize_subcontractor(subcontractor: str) -> str:
-    """Normalize subcontractor name by removing folder path prefixes."""
+def normalize_subcontractor_from_filename(subcontractor: str) -> str:
+    """Normalize subcontractor name by removing folder path prefixes (for dedup grouping)."""
     if not subcontractor:
         return subcontractor
 
@@ -88,6 +88,41 @@ def normalize_subcontractor(subcontractor: str) -> str:
             return parts[0]
 
     return subcontractor
+
+
+def normalize_tier2_sc(tier2_sc: str) -> str:
+    """Normalize tier2_sc (actual subcontractor from workbook) for analysis."""
+    if pd.isna(tier2_sc) or not tier2_sc:
+        return None
+
+    name = str(tier2_sc).strip().upper()
+
+    # Standardize common variations
+    name_map = {
+        'AXIOS': 'Axios',
+        'BERG': 'Berg',
+        'MK MARLOW': 'MK Marlow',
+        'CHERRY COATINGS': 'Cherry Coatings',
+        'INFINITY': 'Infinity',
+        'BAKER': 'Baker',
+        'BRAZOS URETHANE': 'Brazos Urethane',
+        'KOVACH': 'Kovach',
+        'PATRIOT ERECTORS, LLC': 'Patriot Erectors',
+        'PATRIOT ERECTORS': 'Patriot Erectors',
+        'ALERT LOCK & KEY': 'Alert Lock & Key',
+        'ALPHA': 'Alpha',
+        'GDA': 'GDA',
+        'APACHE': 'Apache',
+        'ROLLING PLAINS': 'Rolling Plains',
+        'LATCON': 'Latcon',
+        'SCHMIDT': 'Schmidt',
+        'STI': 'STI',
+        'YATES': 'Yates',
+        'SECAI': 'SECAI',
+        'ORCO STEEL': 'Orco Steel',
+    }
+
+    return name_map.get(name, tier2_sc.strip())
 
 
 def is_copy_file(filename: str) -> bool:
@@ -119,8 +154,8 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
     # Merge with filenames
     file_stats = file_stats.merge(tbm_files[['file_id', 'filename']], on='file_id')
 
-    # Normalize subcontractor names
-    file_stats['subcontractor_normalized'] = file_stats['subcontractor_raw'].apply(normalize_subcontractor)
+    # Normalize subcontractor from filename (for deduplication grouping)
+    file_stats['subcontractor_file_normalized'] = file_stats['subcontractor_raw'].apply(normalize_subcontractor_from_filename)
 
     # Extract date from filename
     file_stats['filename_date'] = file_stats['filename'].apply(extract_date_from_filename)
@@ -131,16 +166,16 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
     # Date mismatch: filename has a date that differs from internal date (data quality issue)
     file_stats['date_mismatch'] = (file_stats['filename_date'].notna()) & (~file_stats['date_matches'])
 
-    # Find duplicate groups (same normalized subcontractor + report_date)
-    dup_counts = file_stats.groupby(['subcontractor_normalized', 'report_date']).size().reset_index(name='group_size')
-    file_stats = file_stats.merge(dup_counts, on=['subcontractor_normalized', 'report_date'])
+    # Find duplicate groups (same file subcontractor + report_date)
+    dup_counts = file_stats.groupby(['subcontractor_file_normalized', 'report_date']).size().reset_index(name='group_size')
+    file_stats = file_stats.merge(dup_counts, on=['subcontractor_file_normalized', 'report_date'])
 
     # Mark duplicates
     file_stats['is_duplicate'] = file_stats['group_size'] > 1
 
     # Assign duplicate group IDs
     file_stats['duplicate_group_id'] = None
-    dup_groups = file_stats[file_stats['is_duplicate']].groupby(['subcontractor_normalized', 'report_date'])
+    dup_groups = file_stats[file_stats['is_duplicate']].groupby(['subcontractor_file_normalized', 'report_date'])
 
     group_id = 0
     for (sub, date), group in dup_groups:
@@ -167,8 +202,9 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
         file_stats.loc[best_idx, 'is_preferred'] = True
 
     # Merge flags back to entries (drop existing columns first for idempotency)
-    flag_cols = ['file_id', 'is_duplicate', 'duplicate_group_id', 'is_preferred', 'subcontractor_normalized', 'date_mismatch']
-    existing_cols = [c for c in flag_cols if c in df.columns and c != 'file_id']
+    flag_cols = ['file_id', 'is_duplicate', 'duplicate_group_id', 'is_preferred', 'date_mismatch']
+    drop_cols = flag_cols + ['subcontractor_normalized']  # Also drop old subcontractor_normalized
+    existing_cols = [c for c in drop_cols if c in df.columns and c != 'file_id']
     if existing_cols:
         df = df.drop(columns=existing_cols)
     df = df.merge(file_stats[flag_cols], on='file_id', how='left')
@@ -177,6 +213,51 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
     df['is_duplicate'] = df['is_duplicate'].fillna(False)
     df['is_preferred'] = df['is_preferred'].fillna(True)
     df['date_mismatch'] = df['date_mismatch'].fillna(False)
+
+    # Set subcontractor_normalized from tier2_sc (actual workbook data) instead of filename
+    df['subcontractor_normalized'] = df['tier2_sc'].apply(normalize_tier2_sc)
+
+    # Second pass: Detect content duplicates (same tier2_sc + date in different filename folders)
+    # This catches files misplaced in wrong folders
+    file_content = df.groupby('file_id').agg({
+        'report_date': 'first',
+        'tier2_sc': lambda x: x.mode().iloc[0] if len(x.mode()) > 0 else None,  # Dominant tier2_sc
+        'num_employees': 'sum',
+        'row_num': 'count',
+        'is_preferred': 'first',
+        'is_duplicate': 'first'
+    }).reset_index()
+    file_content.columns = ['file_id', 'date', 'dominant_tier2', 'total_mp', 'record_count', 'is_preferred', 'is_duplicate']
+    file_content = file_content.merge(tbm_files[['file_id', 'filename']], on='file_id')
+
+    # Find content duplicate groups (same dominant_tier2 + date + similar MP)
+    content_dup_groups = file_content.groupby(['dominant_tier2', 'date']).filter(lambda x: len(x) > 1)
+
+    if len(content_dup_groups) > 0:
+        print(f"\nContent Duplicate Detection (same tier2_sc + date in different folders):")
+
+        for (tier2, date), group in content_dup_groups.groupby(['dominant_tier2', 'date']):
+            if len(group) <= 1:
+                continue
+
+            # Check if this is a real content duplicate (similar MP and record count)
+            mp_values = group['total_mp'].values
+            if len(mp_values) >= 2 and abs(mp_values[0] - mp_values[1]) < 50:  # Similar MP
+                print(f"  {tier2} | {date}:")
+
+                # Prefer the file where filename matches tier2_sc
+                for _, row in group.iterrows():
+                    fname_upper = row['filename'].upper()
+                    tier2_upper = str(tier2).upper() if tier2 else ''
+                    matches_filename = tier2_upper in fname_upper
+
+                    # Mark non-matching files as not preferred for this content group
+                    if not matches_filename and row['is_preferred']:
+                        df.loc[df['file_id'] == row['file_id'], 'is_preferred'] = False
+                        df.loc[df['file_id'] == row['file_id'], 'is_duplicate'] = True
+                        print(f"    [SKIP] {row['filename'][:55]} ({row['total_mp']:.0f} MP) - wrong folder")
+                    else:
+                        print(f"    [KEEP] {row['filename'][:55]} ({row['total_mp']:.0f} MP)")
 
     # Summary stats
     dup_files = file_stats[file_stats['is_duplicate']]
@@ -195,7 +276,7 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
         print(f"\nDuplicate Groups:")
         for gid in sorted(dup_files['duplicate_group_id'].unique()):
             group = dup_files[dup_files['duplicate_group_id'] == gid]
-            sub = group['subcontractor_normalized'].iloc[0]
+            sub = group['subcontractor_file_normalized'].iloc[0]
             date = group['report_date'].iloc[0]
             print(f"\n  Group {gid}: {sub} | {date}")
             for _, row in group.iterrows():
