@@ -209,7 +209,7 @@ Extracts and classifies idle time indicators from Fieldwire messages and checkli
     │  • Extract checklist tags automatically
     │  • Extract narratives (filter out change logs)
     ↓
-{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv
+{WINDOWS_DATA_DIR}/processed/fieldwire/tbm_content.csv
     │  Columns: id, source, title, status, category, start_date,
     │           checklist_tags, narratives, narrative_count
     ↓ [ai_enrich]
@@ -217,7 +217,7 @@ Extracts and classifies idle time indicators from Fieldwire messages and checkli
     │  • Uses gemini-3-flash-preview model
     │  • Caches results per row (expensive to regenerate)
     ↓
-{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content_enriched.csv
+{WINDOWS_DATA_DIR}/processed/fieldwire/tbm_content_enriched.csv
     │  Columns: + ai_output (containing AI tags)
 ```
 
@@ -225,9 +225,9 @@ Extracts and classifies idle time indicators from Fieldwire messages and checkli
 
 | File | Location | Description |
 |------|----------|-------------|
-| `tbm_content.csv` | `{WINDOWS_DATA_DIR}/derived/fieldwire/` | Extracted content with checklist tags |
-| `tbm_content_enriched.csv` | `{WINDOWS_DATA_DIR}/derived/fieldwire/` | With AI-generated tags |
-| `ai_cache/` | `{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache/` | Per-row JSON cache (do not delete) |
+| `tbm_content.csv` | `{WINDOWS_DATA_DIR}/processed/fieldwire/` | Extracted content with checklist tags |
+| `tbm_content_enriched.csv` | `{WINDOWS_DATA_DIR}/processed/fieldwire/` | With AI-generated tags |
+| `ai_cache/` | `{WINDOWS_DATA_DIR}/processed/fieldwire/ai_cache/` | Per-row JSON cache (do not delete) |
 
 ### Usage
 
@@ -253,18 +253,18 @@ python -m scripts.fieldwire.extract_tbm_content
 
 # Step 2: Run AI enrichment on narratives
 python -m src.ai_enrich \
-    "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
+    "{WINDOWS_DATA_DIR}/processed/fieldwire/tbm_content.csv" \
     --prompt scripts/fieldwire/ai_enrichment/idle_tags_prompt.txt \
     --schema scripts/fieldwire/ai_enrichment/idle_tags_schema.json \
     --primary-key id \
     --columns narratives \
-    --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
+    --cache-dir "{WINDOWS_DATA_DIR}/processed/fieldwire/ai_cache" \
     --batch-size 20
 
 # Check enrichment progress
 python -m src.ai_enrich \
-    "{WINDOWS_DATA_DIR}/derived/fieldwire/tbm_content.csv" \
-    --cache-dir "{WINDOWS_DATA_DIR}/derived/fieldwire/ai_cache" \
+    "{WINDOWS_DATA_DIR}/processed/fieldwire/tbm_content.csv" \
+    --cache-dir "{WINDOWS_DATA_DIR}/processed/fieldwire/ai_cache" \
     --status
 ```
 

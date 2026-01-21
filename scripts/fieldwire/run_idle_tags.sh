@@ -23,10 +23,10 @@ source "$PROJECT_ROOT/.venv/bin/activate"
 
 # Data paths
 DATA_DIR="${WINDOWS_DATA_DIR:-/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data}"
-DERIVED_DIR="$DATA_DIR/derived/fieldwire"
-CACHE_DIR="$DERIVED_DIR/ai_cache"
-OUTPUT_FILE="$DERIVED_DIR/tbm_content.csv"
-ENRICHED_FILE="$DERIVED_DIR/tbm_content_enriched.csv"
+PROCESSED_DIR="$DATA_DIR/processed/fieldwire"
+CACHE_DIR="$PROCESSED_DIR/ai_cache"
+OUTPUT_FILE="$PROCESSED_DIR/tbm_content.csv"
+ENRICHED_FILE="$PROCESSED_DIR/tbm_content_enriched.csv"
 
 # AI enrichment config
 PROMPT_FILE="$SCRIPT_DIR/ai_enrichment/idle_tags_prompt.txt"

@@ -293,7 +293,7 @@ def main():
         "--output",
         type=Path,
         default=None,
-        help="Output CSV path (default: derived/fieldwire/tbm_content.csv)",
+        help="Output CSV path (default: processed/fieldwire/tbm_content.csv)",
     )
     parser.add_argument(
         "--manpower-file",
@@ -356,7 +356,7 @@ def main():
     # Determine output path
     output_path = args.output
     if output_path is None:
-        output_dir = Path("/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/derived/fieldwire")
+        output_dir = Path("/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/processed/fieldwire")
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = output_dir / "tbm_content.csv"
 

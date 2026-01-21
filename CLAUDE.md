@@ -275,11 +275,13 @@ External data (not in repo) follows traceability classification:
 {WINDOWS_DATA_DIR}/
 ├── raw/{source}/           # Source files exactly as received
 │                           # 100% traceable to external source
-├── processed/{source}/     # Parsed/transformed data
+├── processed/{source}/     # Parsed/transformed data (including AI-enriched)
 │                           # 100% traceable to raw/
-└── derived/{source}/       # Enhanced data with inference
-                            # Includes assumptions - NOT fully traceable
+└── derived/{source}/       # DEPRECATED - do not add new files here
+                            # Existing files being migrated to processed/
 ```
+
+**IMPORTANT:** The `derived/` folder is deprecated. All new outputs should go to `processed/`. Existing derived files are being migrated.
 
 ## Key Configuration
 
@@ -299,14 +301,14 @@ External data (not in repo) follows traceability classification:
 
 All analysis must maintain traceability to source documents:
 - `raw/` data is untouched source files
-- `processed/` data is direct transformation (fully traceable)
-- `derived/` data includes assumptions (document methodology)
+- `processed/` data is direct transformation (fully traceable), including AI-enriched outputs
+- `derived/` folder is **DEPRECATED** - do not add new files; migrate existing to processed/
 
 See [.claude/skills/mxi-powerpoint/SKILL.md](.claude/skills/mxi-powerpoint/SKILL.md) for presentation data traceability requirements.
 
 ## Data Artifact Schema Stability
 
-**IMPORTANT:** Generated data artifacts (CSV files in `processed/` and `derived/`) are production outputs consumed by Power BI dashboards and downstream analysis.
+**IMPORTANT:** Generated data artifacts (CSV files in `processed/`) are production outputs consumed by Power BI dashboards and downstream analysis.
 
 **Schema Rules:**
 - ❌ **FORBIDDEN:** Removing existing columns or changing column names without approval
