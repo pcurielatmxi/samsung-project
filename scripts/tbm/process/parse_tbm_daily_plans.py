@@ -223,13 +223,20 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
     }
 
     # Search for column indices
+    # Note: Some files have multiple employee columns (planned, absent, on site)
+    # We track the first generic match but prioritize "planned" if found
+    first_employee_col = None
     for i, header in enumerate(headers):
         if 'foreman' in header:
             cols['foreman'] = i
         elif 'contact' in header and 'number' in header:
             cols['contact_number'] = i
         elif 'employee' in header and 'no' in header:
-            cols['num_employees'] = i
+            # Prioritize "planned" column over other employee columns (absent, on site)
+            if 'planned' in header:
+                cols['num_employees'] = i
+            elif first_employee_col is None:
+                first_employee_col = i
         elif 'work activities' in header or 'activities/tasks' in header:
             cols['work_activities'] = i
         elif header == 'location' or 'location' in header and len(header) < 15:
@@ -240,6 +247,10 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
             cols['start_time'] = i
         elif 'end' in header and 'time' in header:
             cols['end_time'] = i
+
+    # Use first employee column as fallback if no "planned" column found
+    if cols['num_employees'] is None and first_employee_col is not None:
+        cols['num_employees'] = first_employee_col
 
     # Find location sub-columns from sub-header row
     for i, sub_header in enumerate(sub_headers):
