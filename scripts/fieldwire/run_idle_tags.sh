@@ -4,6 +4,7 @@
 # Scheduled script that:
 # 1. Extracts content from latest Fieldwire data dumps
 # 2. Runs AI enrichment (idempotent - skips cached rows)
+# 3. Generates long-format idle_tags.csv for Power BI
 #
 # Usage:
 #   ./run_idle_tags.sh           # Normal run
@@ -27,6 +28,7 @@ PROCESSED_DIR="$DATA_DIR/processed/fieldwire"
 CACHE_DIR="$PROCESSED_DIR/ai_cache"
 OUTPUT_FILE="$PROCESSED_DIR/tbm_content.csv"
 ENRICHED_FILE="$PROCESSED_DIR/tbm_content_enriched.csv"
+IDLE_TAGS_FILE="$PROCESSED_DIR/idle_tags.csv"
 
 # AI enrichment config
 PROMPT_FILE="$SCRIPT_DIR/ai_enrichment/idle_tags_prompt.txt"
@@ -81,6 +83,18 @@ status() {
     else
         log "Enriched file: ${YELLOW}Not created${NC}"
     fi
+
+    echo ""
+
+    # Check idle tags file
+    if [ -f "$IDLE_TAGS_FILE" ]; then
+        ROWS=$(wc -l < "$IDLE_TAGS_FILE")
+        MOD_TIME=$(stat -c %y "$IDLE_TAGS_FILE" 2>/dev/null | cut -d. -f1)
+        log "Idle tags file: ${GREEN}$IDLE_TAGS_FILE${NC}"
+        log "  Rows: $((ROWS - 1)) | Modified: $MOD_TIME"
+    else
+        log "Idle tags file: ${YELLOW}Not created${NC}"
+    fi
 }
 
 extract() {
@@ -108,6 +122,17 @@ enrich() {
         --batch-size "$BATCH_SIZE" \
         --model "$MODEL" \
         $EXTRA_ARGS
+}
+
+generate_tags() {
+    log "${GREEN}=== Phase 3: Generate Long-Format Tags ===${NC}"
+
+    if [ ! -f "$ENRICHED_FILE" ]; then
+        log "${RED}Error: Enriched file not found. Run enrich first.${NC}"
+        exit 1
+    fi
+
+    python -m scripts.fieldwire.generate_idle_tags_long
 }
 
 # Parse arguments
@@ -152,6 +177,11 @@ echo ""
 
 # Phase 2: Enrich
 enrich "$FORCE"
+
+echo ""
+
+# Phase 3: Generate long-format tags
+generate_tags
 
 echo ""
 log "${GREEN}=== Pipeline Complete ===${NC}"
