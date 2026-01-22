@@ -20,7 +20,8 @@ def cmd_build(args):
             source=args.source,
             force=args.force,
             verbose=True,
-            limit=args.limit
+            limit=args.limit,
+            cleanup_deleted=args.cleanup_deleted
         )
 
         if result.errors:
@@ -234,6 +235,11 @@ Valid sources: {valid_sources}
         "--sync",
         action="store_true",
         help="Sync to OneDrive after successful build"
+    )
+    build_parser.add_argument(
+        "--cleanup-deleted",
+        action="store_true",
+        help="Delete chunks for files that no longer exist in source (only for full runs without --limit)"
     )
     build_parser.set_defaults(func=cmd_build)
 

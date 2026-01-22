@@ -1,6 +1,5 @@
 """Build and update the document embeddings index from raw documents."""
 
-import hashlib
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -12,6 +11,8 @@ from .client import embed_for_index
 from .store import get_store
 from .chunker import chunk_document, Chunk
 from .metadata import extract_file_metadata
+from .manifest import Manifest, FileEntry, compute_content_hash
+from .backup import BackupManager
 
 
 # Supported file extensions
@@ -191,13 +192,6 @@ def deduplicate_files(files: List[Path]) -> Tuple[List[Path], int]:
     return unique, duplicates
 
 
-def get_file_hash(filepath: Path) -> str:
-    """Get hash of file for change detection (uses mtime + size for speed)."""
-    stat = filepath.stat()
-    content = f"{filepath.name}:{stat.st_size}:{stat.st_mtime}"
-    return hashlib.md5(content.encode()).hexdigest()
-
-
 def build_chunk_metadata(
     chunk: Chunk,
     filepath: Path,
@@ -302,7 +296,8 @@ def build_index(
     force: bool = False,
     verbose: bool = True,
     limit: Optional[int] = None,
-    batch_size: int = INCREMENTAL_BATCH_SIZE
+    batch_size: int = INCREMENTAL_BATCH_SIZE,
+    cleanup_deleted: bool = False
 ) -> BuildResult:
     """Build or update the embeddings index for a specific source.
 
@@ -313,6 +308,9 @@ def build_index(
         verbose: If True, print progress messages.
         limit: If set, only process this many files (for testing).
         batch_size: Number of files to process before storing (for incremental saves).
+        cleanup_deleted: If True and limit is None, delete chunks for files
+                        that no longer exist in source. Default False to prevent
+                        accidental deletion during partial runs.
 
     Returns:
         BuildResult with counts of operations performed.
@@ -333,35 +331,36 @@ def build_index(
     result = BuildResult()
     store = get_store()
 
+    # Load manifest for tracking indexed files
+    manifest = Manifest(config.MANIFEST_PATH)
+
     if verbose:
         print("=" * 80)
         print(f"Document Embeddings Builder - {source}")
         print("=" * 80)
         print(f"Source: {source_root}")
         print(f"ChromaDB: {config.CHROMA_PATH}")
+        print(f"Manifest: {config.MANIFEST_PATH}")
         print(f"Force rebuild: {force}")
+        print(f"Cleanup deleted: {cleanup_deleted}")
         print(f"Incremental batch size: {batch_size} files")
         if limit:
             print(f"Limit: {limit} files")
         print()
 
-    # Get existing chunk metadata from ChromaDB (only for this source)
-    all_existing_chunks = store.get_all_chunk_metadata()
-    existing_chunks = {
-        chunk_id: meta
-        for chunk_id, meta in all_existing_chunks.items()
-        if meta.get("source_type", "") == source or meta.get("source_type", "") == ""
-    }
-    if verbose:
-        print(f"Existing chunks for '{source}': {len(existing_chunks)}")
+    # Create backup before making changes (only for full runs without --limit)
+    if not limit:
+        backup_mgr = BackupManager(config.CHROMA_PATH, config.BACKUP_DIR)
+        backup_path = backup_mgr.create_backup()
+        if backup_path and verbose:
+            print(f"Created backup: {backup_path}")
+            print()
 
-    # Build a map of file_hash -> list of chunk_ids for that file
-    file_to_chunks: Dict[str, List[str]] = {}
-    for chunk_id, meta in existing_chunks.items():
-        file_hash = meta.get("file_hash", "")
-        if file_hash not in file_to_chunks:
-            file_to_chunks[file_hash] = []
-        file_to_chunks[file_hash].append(chunk_id)
+    # Get indexed files from manifest (not ChromaDB)
+    indexed_files = manifest.get_all_files(source)
+    if verbose:
+        print(f"Manifest entries for '{source}': {len(indexed_files)} files, "
+              f"{manifest.get_chunk_count(source)} chunks")
 
     # Scan for documents
     all_documents = list(scan_documents_for_source(source))
@@ -381,12 +380,13 @@ def build_index(
     # Initialize progress tracker
     progress = ProgressTracker(total_files=len(documents))
 
-    # Track which chunk IDs we've seen (for deletion detection)
-    seen_chunk_ids: Set[str] = set()
+    # Track which files we've seen (relative paths)
+    seen_files: Set[str] = set()
 
     # Batch accumulators for incremental processing
     current_batch_chunks: List[Tuple[str, str]] = []
     current_batch_metadata: List[Dict[str, Any]] = []
+    current_batch_file_entries: List[Tuple[str, FileEntry]] = []  # (rel_path, entry)
     files_in_current_batch = 0
     total_chars_embedded = 0
 
@@ -395,15 +395,23 @@ def build_index(
             print(f"[{i}/{len(documents)}] {filepath.name[:55]}...", end=" ", flush=True)
 
         try:
-            file_hash = get_file_hash(filepath)
+            # Get relative path for this file
+            try:
+                rel_path = filepath.relative_to(source_root)
+            except ValueError:
+                rel_path = Path(filepath.name)
+            rel_path_str = str(rel_path)
 
-            # Check if file is unchanged
-            if not force and file_hash in file_to_chunks:
-                # File unchanged, mark chunks as seen
-                for chunk_id in file_to_chunks[file_hash]:
-                    seen_chunk_ids.add(chunk_id)
+            # Compute content hash for change detection
+            content_hash = compute_content_hash(filepath)
+
+            # Check if file is unchanged (using manifest, not ChromaDB metadata)
+            existing_entry = manifest.get_file(source, rel_path_str)
+            if not force and existing_entry and existing_entry.content_hash == content_hash:
+                # File unchanged, mark as seen
+                seen_files.add(rel_path_str)
                 result.files_unchanged += 1
-                result.chunks_unchanged += len(file_to_chunks[file_hash])
+                result.chunks_unchanged += existing_entry.chunk_count
                 progress.file_done("unchanged")
                 if verbose:
                     print("unchanged")
@@ -422,25 +430,30 @@ def build_index(
             # Extract file-level metadata
             file_meta = extract_file_metadata(filepath, source_root, source).to_dict()
 
-            # Get relative path for unique chunk IDs (handles duplicate filenames in subdirs)
-            try:
-                rel_path = filepath.relative_to(source_root)
-            except ValueError:
-                rel_path = Path(filepath.name)
-
             # Calculate chars for this file
             file_chars = sum(len(c.text) for c in chunks)
 
-            # Add chunks to batch
+            # Build chunk IDs and metadata
+            chunk_ids_for_file: List[str] = []
             for chunk in chunks:
-                # Generate unique chunk ID: source_type/relative_path__cNNNN
-                safe_path = str(rel_path).replace("/", "_").replace("\\", "_")
+                # Generate unique chunk ID: source_type__relative_path__cNNNN
+                safe_path = rel_path_str.replace("/", "_").replace("\\", "_")
                 chunk_id = f"{source}__{safe_path}__c{chunk.chunk_index:04d}"
-                seen_chunk_ids.add(chunk_id)
+                chunk_ids_for_file.append(chunk_id)
                 current_batch_chunks.append((chunk_id, chunk.text))
                 current_batch_metadata.append(
-                    build_chunk_metadata(chunk, filepath, file_hash, file_meta, source_root, source)
+                    build_chunk_metadata(chunk, filepath, content_hash, file_meta, source_root, source)
                 )
+
+            # Track file entry for manifest update
+            file_entry = FileEntry(
+                content_hash=content_hash,
+                file_size=filepath.stat().st_size,
+                chunk_count=len(chunks),
+                chunk_ids=chunk_ids_for_file
+            )
+            current_batch_file_entries.append((rel_path_str, file_entry))
+            seen_files.add(rel_path_str)
 
             result.files_processed += 1
             files_in_current_batch += 1
@@ -455,8 +468,14 @@ def build_index(
                 result.chunks_added += chunks_stored
                 total_chars_embedded += chars_stored
                 progress.file_done("processed", chunks_stored, chars_stored)
+
+                # Update manifest with processed files
+                for file_rel_path, entry in current_batch_file_entries:
+                    manifest.add_file(source, file_rel_path, entry)
+
                 current_batch_chunks = []
                 current_batch_metadata = []
+                current_batch_file_entries = []
                 files_in_current_batch = 0
 
                 # Print periodic status update
@@ -487,13 +506,35 @@ def build_index(
         result.chunks_added += chunks_stored
         total_chars_embedded += chars_stored
 
-    # Find stale chunks to delete (only for this source)
-    stale_chunk_ids = set(existing_chunks.keys()) - seen_chunk_ids
-    if stale_chunk_ids:
-        if verbose:
-            print(f"\nDeleting {len(stale_chunk_ids)} stale chunks for '{source}'...")
-        store.delete_chunks(list(stale_chunk_ids))
-        result.chunks_deleted = len(stale_chunk_ids)
+        # Update manifest with final batch files
+        for file_rel_path, entry in current_batch_file_entries:
+            manifest.add_file(source, file_rel_path, entry)
+
+    # Only delete chunks for removed files if cleanup_deleted=True AND full run (no --limit)
+    if cleanup_deleted and not limit:
+        # Find files in manifest that were not seen (deleted from source)
+        stale_files = [
+            rel_path for rel_path in indexed_files
+            if rel_path not in seen_files
+        ]
+
+        if stale_files:
+            if verbose:
+                print(f"\nCleaning up {len(stale_files)} deleted files from '{source}'...")
+
+            for rel_path in stale_files:
+                entry = indexed_files[rel_path]
+                # Delete chunks from ChromaDB
+                store.delete_chunks(entry.chunk_ids)
+                # Remove from manifest
+                manifest.remove_file(source, rel_path)
+                result.chunks_deleted += entry.chunk_count
+
+            if verbose:
+                print(f"  Deleted {result.chunks_deleted} chunks from {len(stale_files)} files")
+
+    # Save manifest atomically
+    manifest.save()
 
     # Final summary
     if verbose:
@@ -512,6 +553,7 @@ def build_index(
         print(f"Characters embedded: {total_chars_embedded:,}")
         print(f"Time elapsed: {elapsed}")
         print(f"Estimated cost: ${cost:.4f}")
+        print(f"Manifest: {manifest.get_file_count(source)} files tracked")
 
         if result.errors:
             print(f"\nErrors ({len(result.errors)}):")
