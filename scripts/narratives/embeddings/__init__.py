@@ -6,17 +6,30 @@ using Gemini embeddings stored in ChromaDB.
 
 Usage:
     # CLI
-    python -m scripts.narratives.embeddings build
-    python -m scripts.narratives.embeddings build --limit 10
+    python -m scripts.narratives.embeddings build --source narratives
     python -m scripts.narratives.embeddings search "HVAC delays"
     python -m scripts.narratives.embeddings status
+    python -m scripts.narratives.embeddings backup
+    python -m scripts.narratives.embeddings restore
+    python -m scripts.narratives.embeddings verify
 
     # Python API
     from scripts.narratives.embeddings import search_chunks
-    results = search_chunks("HVAC delays", document_type="schedule_narrative", limit=10)
+    results = search_chunks("HVAC delays", source_type="narratives", limit=10)
 """
 
 from .store import search_chunks, get_store, ChunkResult
 from .builder import build_index
+from .manifest import Manifest, FileEntry, compute_content_hash
+from .backup import BackupManager
 
-__all__ = ["search_chunks", "build_index", "get_store", "ChunkResult"]
+__all__ = [
+    "search_chunks",
+    "build_index",
+    "get_store",
+    "ChunkResult",
+    "Manifest",
+    "FileEntry",
+    "compute_content_hash",
+    "BackupManager",
+]
