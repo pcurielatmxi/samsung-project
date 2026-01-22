@@ -330,3 +330,54 @@ WINDOWS_DATA_DIR=/path/to/data
 - Gemini schema format differs from JSON Schema
 - Use uppercase types: `STRING`, `INTEGER`, `BOOLEAN`, `ARRAY`, `OBJECT`
 - Use `nullable: true` instead of `["string", "null"]`
+
+## Schema Design Guidelines
+
+### Enum Fields: Always Include an Escape Hatch
+
+**Lesson Learned (2026-01-22):** Strict enum fields can hide edge cases by forcing the LLM to pick the "closest" option even when none truly fit. This masks data quality issues that only surface during analysis.
+
+**Problem Example:**
+```json
+// Original schema - no escape hatch
+"outcome": {
+  "enum": ["PASS", "FAIL", "PARTIAL"]
+}
+```
+When processing ~15K quality reports, the LLM was forced to classify trip charges and observation reports as FAIL or PARTIAL, hiding ~40% of records that didn't fit these categories.
+
+**Solution: Add OTHER + raw text field:**
+```json
+// Better schema - captures edge cases
+"outcome": {
+  "enum": ["PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT", "OTHER"]
+},
+"outcome_raw": {
+  "type": ["string", "null"],
+  "description": "Original text when OTHER selected or outcome uncertain"
+}
+```
+
+**Guidelines:**
+1. **Always include OTHER** in enum fields for classification/categorization
+2. **Add a companion `_raw` field** to capture original text when OTHER is used
+3. **Document OTHER in the prompt** with clear guidance on when to use it
+4. **Review OTHER records periodically** to discover new categories that should be added
+5. **Prefer free-form strings** over enums when categories aren't well-defined upfront
+
+**Prompt Pattern for OTHER:**
+```
+OTHER:
+  - Use when document doesn't clearly fit any of the above categories
+  - ALWAYS populate {field}_raw with the actual text from the document
+  - This captures edge cases for later review rather than forcing wrong categories
+```
+
+**Trade-offs:**
+| Approach | Pros | Cons |
+|----------|------|------|
+| Strict enum | Clean data, easy analytics | Hides edge cases, forces misclassification |
+| Enum + OTHER | Captures unknowns, discoverable | Requires review of OTHER records |
+| Free-form string | Maximum flexibility | Harder to analyze, inconsistent values |
+
+For initial extraction where you're still learning the data, prefer **Enum + OTHER**. Once categories stabilize, you can tighten the schema.

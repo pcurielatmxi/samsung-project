@@ -47,6 +47,19 @@ CANCELLED:
   - Part 2 indicates outcome is N/A because inspection was cancelled
   - Site was not ready for inspection
 
+MEASUREMENT:
+  - Document is an observation report without pass/fail criteria
+  - Inspection documents conditions or progress but doesn't judge pass/fail
+  - Data collection or documentation-only reports
+  - Part 2 explicitly states no pass/fail criteria exist
+
+OTHER:
+  - Use when document doesn't clearly fit any of the above categories
+  - Administrative documents, transmittals, or cover sheets without inspection results
+  - Incomplete or corrupted reports where outcome cannot be determined
+  - ALWAYS populate outcome_raw with the actual text describing the status/result from the document
+  - This allows edge cases to be captured for later review rather than forced into wrong categories
+
 IMPORTANT: CANCELLED is NOT the same as FAIL. Use CANCELLED when the inspection did not happen at all. Use FAIL when inspection occurred but work did not pass.
 
 Standardization rules (IMPORTANT - follow exactly):
@@ -62,7 +75,8 @@ Field mapping:
 - inspection_type: Type of inspection (e.g., "Paint Touch Up", "Framing", "Drywall", "MEP")
 - location: All location information as a single string
 - summary: Brief summary of the inspection and findings
-- outcome: "PASS", "FAIL", "PARTIAL", or "CANCELLED"
+- outcome: "PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT", or "OTHER"
+- outcome_raw: Original outcome text from document (required if OTHER, optional otherwise for uncertain cases)
 - failure_reason: Quote the reason for failure if stated
 - issues: Array of {description, severity} for each deficiency found
 - parties_involved: Array of {name, role} for inspector, contractor, subcontractor, trade

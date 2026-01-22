@@ -21,8 +21,12 @@
     },
     "outcome": {
       "type": "string",
-      "enum": ["PASS", "FAIL", "PARTIAL", "CANCELLED"],
-      "description": "Inspection outcome: PASS (all passed), FAIL (failed), PARTIAL (mixed results), CANCELLED (inspection did not occur)"
+      "enum": ["PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT", "OTHER"],
+      "description": "Inspection outcome: PASS (all passed), FAIL (failed), PARTIAL (mixed results), CANCELLED (inspection did not occur), MEASUREMENT (observation only, no pass/fail), OTHER (doesn't fit other categories)"
+    },
+    "outcome_raw": {
+      "type": ["string", "null"],
+      "description": "Original outcome text from document when OTHER is selected, or when outcome determination is uncertain"
     },
     "failure_reason": {
       "type": ["string", "null"],

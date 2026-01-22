@@ -49,6 +49,13 @@ MEASUREMENT:
   - Part 2 explicitly states "N/A" or explains no pass/fail criteria exist
   - Examples: "Length Change" shrinkage tests, concrete pickup reports, observation-only reports
 
+OTHER:
+  - Use when document doesn't clearly fit any of the above categories
+  - Administrative documents, transmittals, cover sheets without test results
+  - Incomplete or corrupted reports where outcome cannot be determined
+  - ALWAYS populate outcome_raw with the actual text describing the status/result from the document
+  - This allows edge cases to be captured for later review rather than forced into wrong categories
+
 IMPORTANT: Don't override Part 2's explanation. If Part 2 indicates CANCELLED or N/A, respect that classification.
 
 Standardization rules (IMPORTANT - follow exactly):
@@ -62,7 +69,8 @@ Field mapping:
 - test_type: Type of test performed (e.g., "Compressive Strength", "Soil Compaction")
 - location: All location information as a single string
 - summary: Brief summary of what was tested and the results
-- outcome: "PASS", "FAIL", "PARTIAL", "CANCELLED", or "MEASUREMENT"
+- outcome: "PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT", or "OTHER"
+- outcome_raw: Original outcome text from document (required if OTHER, optional otherwise for uncertain cases)
 - failure_reason: Quote the reason for failure if stated
 - issues: Array of {description, severity} for each deficiency found
 - parties_involved: Array of {name, role} for testing company, contractor, supplier, inspector
