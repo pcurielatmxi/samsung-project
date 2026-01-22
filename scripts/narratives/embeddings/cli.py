@@ -64,53 +64,42 @@ def cmd_search(args):
 
 def cmd_status(args):
     """Show index status."""
+    from .manifest import Manifest
+
     store = get_store()
     stats = store.get_chunks_stats()
+    manifest = Manifest(config.MANIFEST_PATH)
 
     print("=" * 60)
     print("Document Embeddings Index Status")
     print("=" * 60)
-    print(f"ChromaDB location: {stats['chroma_path']}")
+    print(f"ChromaDB: {stats['chroma_path']}")
+    print(f"Manifest: {config.MANIFEST_PATH}")
     print()
 
-    print("Index contents:")
-    print(f"  Total chunks: {stats['chunks_count']}")
-    print(f"  Total files: {stats['files_count']}")
+    # Manifest stats per source
+    print("Indexed files (from manifest):")
+    for source_name in config.SOURCE_DIRS.keys():
+        file_count = manifest.get_file_count(source_name)
+        chunk_count = manifest.get_chunk_count(source_name)
+        print(f"  {source_name}: {file_count} files, {chunk_count} chunks")
     print()
 
-    # Get breakdown by source_type
-    all_meta = store.get_all_chunk_metadata()
-    by_source = {}
-    source_files = {}
-    for chunk_id, meta in all_meta.items():
-        src = meta.get("source_type", "") or "unknown"
-        by_source[src] = by_source.get(src, 0) + 1
-        if src not in source_files:
-            source_files[src] = set()
-        source_files[src].add(meta.get("source_file", ""))
-
-    if by_source:
-        print("  By source:")
-        for src in sorted(by_source.keys()):
-            chunk_count = by_source[src]
-            file_count = len(source_files[src])
-            print(f"    {src}: {chunk_count} chunks ({file_count} files)")
-        print()
-
-    # Check each source directory
-    from .builder import scan_documents_for_source
-    print("Source directories:")
-    for source_name, source_dir in config.SOURCE_DIRS.items():
-        try:
-            docs = list(scan_documents_for_source(source_name))
-            indexed = len(source_files.get(source_name, set()))
-            status = "✓" if indexed == len(docs) else f"{indexed}/{len(docs)}"
-            print(f"  {source_name}: {len(docs)} files [{status}]")
-            print(f"    Path: {source_dir}")
-        except Exception as e:
-            print(f"  {source_name}: ERROR - {e}")
-
+    # ChromaDB stats (for verification)
+    print(f"ChromaDB total: {stats['chunks_count']} chunks, {stats['files_count']} files")
     print()
+
+    # Backup info
+    from .backup import BackupManager
+    manager = BackupManager(config.CHROMA_PATH, config.BACKUP_DIR)
+    backups = manager.list_backups()
+    if backups:
+        latest = backups[0]
+        size_mb = latest.stat().st_size / 1024 / 1024
+        print(f"Latest backup: {latest.name} ({size_mb:.1f} MB)")
+    else:
+        print("No backups available")
+
     print("=" * 60)
 
 
