@@ -44,6 +44,13 @@ CHROMA_PATH = Path.home() / ".local" / "share" / "samsung-embeddings" / "documen
 # OneDrive path for cross-computer sync (backup only)
 CHROMA_ONEDRIVE_PATH = DATA_DIR / "derived" / "embeddings" / "documents"
 
+# Backup configuration
+BACKUP_DIR = CHROMA_PATH.parent / "backups"
+MAX_BACKUPS = 5  # Keep last 5 backups
+
+# Manifest path (lives alongside database)
+MANIFEST_PATH = CHROMA_PATH.parent / "manifest.json"
+
 
 def ensure_local_db():
     """Ensure local WSL database exists, copying from OneDrive if needed.
