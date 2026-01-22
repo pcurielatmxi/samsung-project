@@ -1,0 +1,572 @@
+{
+  "source": "psi",
+  "timestamp": "2026-01-21T09:20:42.957629",
+  "parameters": {
+    "samples_per_outcome": 5,
+    "specific_outcome": null,
+    "model": "gemini-2.0-flash",
+    "seed": 42
+  },
+  "summary": {
+    "total_samples": 20,
+    "successful_audits": 20,
+    "failed_audits": 0,
+    "matches": 14,
+    "mismatches": 6,
+    "match_rate": 70.0
+  },
+  "stats_by_outcome": {
+    "PASS": {
+      "total": 5,
+      "matches": 5,
+      "match_rate": 100.0
+    },
+    "FAIL": {
+      "total": 5,
+      "matches": 5,
+      "match_rate": 100.0
+    },
+    "PARTIAL": {
+      "total": 5,
+      "matches": 1,
+      "match_rate": 20.0
+    },
+    "CANCELLED": {
+      "total": 5,
+      "matches": 3,
+      "match_rate": 60.0
+    }
+  },
+  "mismatches": [
+    {
+      "inspection_id": "DFR_0306103-8006-O1",
+      "inspection_type": "Visual Inspection / Observations of 1st Layer drywall",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "FAIL",
+      "reasoning": "The inspection occurred but a comment indicates a specific point of failure, thus disqualifying a pass. The comment in \"Comments / Exceptions\" section specifies that the \"control joint issue\" was the reason for exclusion, indicating a failure to meet standards.",
+      "summary": "Daily Field Report and Work Inspection Request (WIR) for the installation of 1st Layer drywall on the South wall of Stair 1, Level 3. The inspection was conducted by an Intertek PSI representative. A "
+    },
+    {
+      "inspection_id": "DFR_0306103-2143-O1",
+      "inspection_type": "Column Framing Inspection Body",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "PASS",
+      "reasoning": "The report indicates a visual inspection was performed, and the \"Comments / Exceptions\" section states \"Passed\". Although some areas were noted as \"Not ready\", the inspection that did occur passed.",
+      "summary": "Third-party inspection of column framing at Samsung Taylor FAB 1. Location G/10 was inspected and passed. Grid locations G/3 and G/19 were noted as not ready for inspection. The PSI cover sheet listed"
+    },
+    {
+      "inspection_id": "DFR_0306103-8359-O1",
+      "inspection_type": "Framing Inspection",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "FAIL",
+      "reasoning": "The inspection occurred, but the work needs to be re-inspected due to drawings approval, therefore failing inspection criteria.",
+      "summary": "Framing inspection for three box outs at Level 3 L.8-N/33 on the Samsung Taylor FAB 1 project. The inspection was conducted by Methaq Aheel from Intertek PSI. The Work Inspection Request (IR No. BT-WI"
+    },
+    {
+      "inspection_id": "DFR_0306103-7281-O1",
+      "inspection_type": "Visual inspection of SCP WALL",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "PASS",
+      "reasoning": "The inspector visually inspected the area and the attached inspection report shows that after reinspection, the items listed are marked \"Accepted\".",
+      "summary": "Visual inspection of SCP wall installation. The Daily Field Report states 'Conformed', however, the attached Work Inspection Request (WIR) notes specific deficiencies including incomplete panels at L1"
+    },
+    {
+      "inspection_id": "DFR_0306103-7389-O1",
+      "inspection_type": "1ST LAYER DENS GLASS",
+      "current_outcome": "CANCELLED",
+      "gemini_outcome": "FAIL",
+      "reasoning": "The inspection was cancelled because the materials did not pass internal requirements.",
+      "summary": "Daily Field Report (DFR) documenting inspections, testing, and observations. The inspection was recorded as \"Canceled\" because it \"Did not pass internals.\""
+    },
+    {
+      "inspection_id": "DFR_0306103-5289-O1",
+      "inspection_type": "1st Layer Drywall Inspection",
+      "current_outcome": "CANCELLED",
+      "gemini_outcome": "PARTIAL",
+      "reasoning": "The inspector arrived on site and conducted 1st layer drywall inspection but was unable to access the east side due to some issue. This can be considered PARTIAL inspection.",
+      "summary": "Daily Field Report documenting a construction site inspection for 1st Layer Drywall. The inspector noted \"No access on the east side.\" The report was marked as \"Cancelled\" in the Comments / Exceptions"
+    }
+  ],
+  "errors": [],
+  "all_results": [
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-8961-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The document shows a Work Inspection Request, Inspection Checklist and photos. The anchor inspection of the HCP pump was performed. The result of the inspection was accepted and all items on the checklist were N/A or marked P (for pass). The comments note that \"the installation is compliant with the construction documents.\"",
+        "key_quotes": [
+          "PSI inspector Ferdinand Tchieme presented at the location listed above to perform a visual inspection.",
+          "The installation is compliant with the construction documents."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The document shows a Work Inspection Request, Inspection Checklist and photos. The anchor inspection of the HCP pump was performed. The result of the inspection was accepted and all items on the checklist were N/A or marked P (for pass). The comments note that \"the installation is compliant with the construction documents.\"",
+      "inspection_id": "DFR_0306103-8961-O1",
+      "inspection_type": "Anchor inspection",
+      "summary": "Visual inspection of anchor installations for equipment (HCP Pumps) at Samsung Taylor FAB 1. The installation was found to be compliant with construction documents. Shop drawing compliance, equipment "
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-9310-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Daily Field Report",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The document is a daily field report where an inspection was conducted. The comment states the installation is compliant with construction documents, indicating a PASS.",
+        "key_quotes": [
+          "The installation is compliant with the construction documents."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The document is a daily field report where an inspection was conducted. The comment states the installation is compliant with construction documents, indicating a PASS.",
+      "inspection_id": "DFR_0306103-9310-O1",
+      "inspection_type": "Framing & Drywall",
+      "summary": "Inspection conducted by Ferdinand Tchieme (PSI inspector) for Architectural Framing & Drywall, specifically the '1st, 2nd Layer Catch Up' at Level 4 SUW L/3.2-5 East Wall West Face. The installation w"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-2179-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The report states that a 2nd layer drywall inspection occurred. The report notes that the work location was FAB 1 level 1 D/28.4-29. Under Comments/Exceptions it says \"Passed.\"",
+        "key_quotes": [
+          "Types of Testing / Observations\n2nd Layer drywall Inspection",
+          "Comments / Exceptions\nPassed"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The report states that a 2nd layer drywall inspection occurred. The report notes that the work location was FAB 1 level 1 D/28.4-29. Under Comments/Exceptions it says \"Passed.\"",
+      "inspection_id": "DFR_0306103-2179-O1",
+      "inspection_type": "2nd Layer drywall Inspection",
+      "summary": "This is an Intertek PSI Daily Field Report (No. DFR:0306103-2179-O1) documenting a \"2nd Layer drywall Inspection.\" The purpose was to record inspection results for architectural drywall installation. "
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-4097-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The report documents a drywall screw and frame inspection, which is an actual inspection. The first inspection shows \"Inspected\" and \"Accepted\". The second inspection shows \"Re-inspection required\" but \"Accepted\". No additional information is provided.",
+        "key_quotes": [
+          "DRAYWALL SCREW AND FRAME INSPECTION",
+          "X_ Inspected",
+          "Accepted",
+          "Re-Inspection Required",
+          "Accepted"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The report documents a drywall screw and frame inspection, which is an actual inspection. The first inspection shows \"Inspected\" and \"Accepted\". The second inspection shows \"Re-inspection required\" but \"Accepted\". No additional information is provided.",
+      "inspection_id": "DFR_0306103-4097-O1",
+      "inspection_type": "Drywall Screw and Frame Inspection",
+      "summary": "Daily Field Report and Work Inspection Request (WIR) for a Drywall Screw and Frame Inspection at Taylor - Samsung FAB1. The inspection was conducted on 11/23/2024 and the report was issued on 11/26/20"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-4827-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The Daily Field Report documents a 2nd Layer Drywall Inspection. The \"Comments / Exceptions\" section states \"Passed\". Thus, the inspection occurred and met the necessary criteria.",
+        "key_quotes": [
+          "2nd Layer Drywall Inspection",
+          "Passed"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The Daily Field Report documents a 2nd Layer Drywall Inspection. The \"Comments / Exceptions\" section states \"Passed\". Thus, the inspection occurred and met the necessary criteria.",
+      "inspection_id": "DFR_0306103-4827-O1",
+      "inspection_type": "2nd Layer Drywall Inspection",
+      "summary": "This is a Daily Field Report from Intertek PSI for a 2nd Layer Drywall Inspection for the Taylor - Samsung FAB1 project. The inspection covered Level 3 SUW J/4-4.7 W Face. The final outcome was 'Passe"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-9183-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspection occurred, but the remark indicates a \"Re-inspection: Due to wall being out of flush.\" and comments say \"Not Accepted\", implying a failure. Additionally, the Work Inspection Request form indicates the inspection result was \"Failure\".",
+        "key_quotes": [
+          "Re-inspection: Due to wall being out of flush.",
+          "Not Accepted",
+          "Inspection Result: Failure"
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The inspection occurred, but the remark indicates a \"Re-inspection: Due to wall being out of flush.\" and comments say \"Not Accepted\", implying a failure. Additionally, the Work Inspection Request form indicates the inspection result was \"Failure\".",
+      "inspection_id": "DFR_0306103-9183-O1",
+      "inspection_type": "Re-inspection (Framing & Drywall & CJ)",
+      "summary": "Re-inspection of Architecture (ARCH) Framing & Drywall and CJ Gap on Level 3 SUW L/3.2 W Face. The inspection focused on wall flushness and CJ Gap dimensions. The previous inspection noted the wall wa"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-7879-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspector performed a framing inspection and identified that re-inspection is required because the brackets are not attached to the steel beam. This indicates a failure of the framing installation.",
+        "key_quotes": [
+          "PSI Inspector Ferdinand Tchieme presented at the location listed above to observe the installation of the (FRAMING INSP), Re-inspection is required. Need all brackets attached to steel beam."
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The inspector performed a framing inspection and identified that re-inspection is required because the brackets are not attached to the steel beam. This indicates a failure of the framing installation.",
+      "inspection_id": "DFR_0306103-7879-O1",
+      "inspection_type": "Framing Inspection",
+      "summary": "This Daily Field Report (DFR) documents a framing inspection for the Samsung Taylor FAB 1 project. The inspection, conducted by PSI Inspector Ferdinand Tchieme on 8/8/2025, focused on the installation"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-9147-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspector inspected the pedestrian walkway and found that it did not meet requirements and it needed to be re-inspected.",
+        "key_quotes": [
+          "The work will be re-inspected due to (missing screws, deflection track been cut, gap in left side, missing supported plate on top)"
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The inspector inspected the pedestrian walkway and found that it did not meet requirements and it needed to be re-inspected.",
+      "inspection_id": "DFR_0306103-9147-O1",
+      "inspection_type": "Visual Inspection / Daily Field Report",
+      "summary": "Visual inspection of framing for the Level 1 SUW N/1 pedestrian walkway, East wall, East face (above floor). The inspection identified several deficiencies including missing screws, a cut deflection t"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-8151-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspector observed ceiling cement board with missing screws, leading to a 'Re-inspection Required' comment. This constitutes a failure because the initial installation did not meet the required standards.",
+        "key_quotes": [
+          "Several screws missing.",
+          "Re-inspection Required"
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The inspector observed ceiling cement board with missing screws, leading to a 'Re-inspection Required' comment. This constitutes a failure because the initial installation did not meet the required standards.",
+      "inspection_id": "DFR_0306103-8151-O1",
+      "inspection_type": "Daily Field Report / Visual Inspection of Ceiling Cement Board",
+      "summary": "PSI Daily Field Report (DFR:0306103-8151-O1) documenting the visual inspection of Ceiling Cement Board installation at Samsung Taylor FAB 1. The inspection noted \"Several screws missing\" from the ceil"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-7230-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The report shows that an inspection was performed and a non-compliance was observed (wrong length screws were used). Therefore, the correct outcome is FAIL.",
+        "key_quotes": [
+          "Wrong length screws were used. 2.5\" instead of 3\"."
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The report shows that an inspection was performed and a non-compliance was observed (wrong length screws were used). Therefore, the correct outcome is FAIL.",
+      "inspection_id": "DFR_0306103-7230-O1",
+      "inspection_type": "3rd Layer Sheathing Inspection",
+      "summary": "Daily Field Report for Samsung Taylor FAB 1 project, inspecting 3rd Layer Sheathing (Interior Gypsum Board Assemblies) at Level 4 FAB F-G.1/33. The inspection found that the wrong length screws were u"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-8006-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspection occurred but a comment indicates a specific point of failure, thus disqualifying a pass. The comment in \"Comments / Exceptions\" section specifies that the \"control joint issue\" was the reason for exclusion, indicating a failure to meet standards.",
+        "key_quotes": [
+          "Note: Die to the control joint issue, the QC from Axios, wanted to exclude the Control joint."
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": false,
+      "reasoning": "The inspection occurred but a comment indicates a specific point of failure, thus disqualifying a pass. The comment in \"Comments / Exceptions\" section specifies that the \"control joint issue\" was the reason for exclusion, indicating a failure to meet standards.",
+      "inspection_id": "DFR_0306103-8006-O1",
+      "inspection_type": "Visual Inspection / Observations of 1st Layer drywall",
+      "summary": "Daily Field Report and Work Inspection Request (WIR) for the installation of 1st Layer drywall on the South wall of Stair 1, Level 3. The inspection was conducted by an Intertek PSI representative. A "
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-2143-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The report indicates a visual inspection was performed, and the \"Comments / Exceptions\" section states \"Passed\". Although some areas were noted as \"Not ready\", the inspection that did occur passed.",
+        "key_quotes": [
+          "visual inspection",
+          "FAB 1 Level 3 G/10",
+          "G/3 & G/19 Not ready.",
+          "Passed"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": false,
+      "reasoning": "The report indicates a visual inspection was performed, and the \"Comments / Exceptions\" section states \"Passed\". Although some areas were noted as \"Not ready\", the inspection that did occur passed.",
+      "inspection_id": "DFR_0306103-2143-O1",
+      "inspection_type": "Column Framing Inspection Body",
+      "summary": "Third-party inspection of column framing at Samsung Taylor FAB 1. Location G/10 was inspected and passed. Grid locations G/3 and G/19 were noted as not ready for inspection. The PSI cover sheet listed"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-1082-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PARTIAL",
+        "reasoning": "The inspection occurred, but only the South wall passed. This indicates that part of the inspection failed to meet requirements.",
+        "key_quotes": [
+          "Only South wall passed"
+        ]
+      },
+      "gemini_outcome": "PARTIAL",
+      "match": true,
+      "reasoning": "The inspection occurred, but only the South wall passed. This indicates that part of the inspection failed to meet requirements.",
+      "inspection_id": "DFR_0306103-1082-O1",
+      "inspection_type": "LEVEL 3 ELEVATOR 18 (FRAMING & DRYWALL) FRAMING",
+      "summary": "Visual inspection of framing for Level 3 Elevator 18. Only the South wall passed. The inspection covers framing and drywall, categorized under Architectural discipline."
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-8359-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspection occurred, but the work needs to be re-inspected due to drawings approval, therefore failing inspection criteria.",
+        "key_quotes": [
+          "The work will be re-inspected due to drawings approval"
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": false,
+      "reasoning": "The inspection occurred, but the work needs to be re-inspected due to drawings approval, therefore failing inspection criteria.",
+      "inspection_id": "DFR_0306103-8359-O1",
+      "inspection_type": "Framing Inspection",
+      "summary": "Framing inspection for three box outs at Level 3 L.8-N/33 on the Samsung Taylor FAB 1 project. The inspection was conducted by Methaq Aheel from Intertek PSI. The Work Inspection Request (IR No. BT-WI"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-7281-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The inspector visually inspected the area and the attached inspection report shows that after reinspection, the items listed are marked \"Accepted\".",
+        "key_quotes": [
+          "PSI-Inspector Olayinka Akkani, presented at the location listed above, visually inspected the area.",
+          "Accepted",
+          "The WIR and area pictures were attached to this report."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": false,
+      "reasoning": "The inspector visually inspected the area and the attached inspection report shows that after reinspection, the items listed are marked \"Accepted\".",
+      "inspection_id": "DFR_0306103-7281-O1",
+      "inspection_type": "Visual inspection of SCP WALL",
+      "summary": "Visual inspection of SCP wall installation. The Daily Field Report states 'Conformed', however, the attached Work Inspection Request (WIR) notes specific deficiencies including incomplete panels at L1"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-8947-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "CANCELLED",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": false,
+        "has_pass_fail_criteria": false,
+        "correct_outcome": "CANCELLED",
+        "reasoning": "The report indicates that the inspection was canceled because of no access.",
+        "key_quotes": [
+          "Canceled for Re-inspection.",
+          "Reason - No Access"
+        ]
+      },
+      "gemini_outcome": "CANCELLED",
+      "match": true,
+      "reasoning": "The report indicates that the inspection was canceled because of no access.",
+      "inspection_id": "DFR_0306103-8947-O1",
+      "inspection_type": "Shaft Wall",
+      "summary": "Daily Field Report (No. DFR:0306103-8947-O1) documenting shaft wall testing/observations. The inspection was canceled due to no access. The inspector noted 'No Access' as the reason for cancellation."
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-7389-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "CANCELLED",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspection was cancelled because the materials did not pass internal requirements.",
+        "key_quotes": [
+          "Canceled.",
+          "Reason - Did not pass internals"
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": false,
+      "reasoning": "The inspection was cancelled because the materials did not pass internal requirements.",
+      "inspection_id": "DFR_0306103-7389-O1",
+      "inspection_type": "1ST LAYER DENS GLASS",
+      "summary": "Daily Field Report (DFR) documenting inspections, testing, and observations. The inspection was recorded as \"Canceled\" because it \"Did not pass internals.\""
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-7322-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "CANCELLED",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Daily Field Report",
+        "inspection_occurred": false,
+        "has_pass_fail_criteria": false,
+        "correct_outcome": "CANCELLED",
+        "reasoning": "The report states the inspection was cancelled due to no access, so an inspection did not occur. No pass/fail criteria were provided.",
+        "key_quotes": [
+          "PSI Inspector Hamidullah Sadra, presented at the location listed above, the inspection wase canceled due there is no access."
+        ]
+      },
+      "gemini_outcome": "CANCELLED",
+      "match": true,
+      "reasoning": "The report states the inspection was cancelled due to no access, so an inspection did not occur. No pass/fail criteria were provided.",
+      "inspection_id": "DFR_0306103-7322-O1",
+      "inspection_type": "Shaft-Wall an CJ",
+      "summary": "The Daily Field Report (No. DFR:0306103-7322-O1) for the Samsung Taylor FAB 1 project documents a canceled inspection for Shaft-Wall an CJ. The PSI Inspector, Hamidullah Sadra, arrived at the location"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-5289-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "CANCELLED",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PARTIAL",
+        "reasoning": "The inspector arrived on site and conducted 1st layer drywall inspection but was unable to access the east side due to some issue. This can be considered PARTIAL inspection.",
+        "key_quotes": [
+          "1st Layer Drywall Inspection",
+          "No access on the east side."
+        ]
+      },
+      "gemini_outcome": "PARTIAL",
+      "match": false,
+      "reasoning": "The inspector arrived on site and conducted 1st layer drywall inspection but was unable to access the east side due to some issue. This can be considered PARTIAL inspection.",
+      "inspection_id": "DFR_0306103-5289-O1",
+      "inspection_type": "1st Layer Drywall Inspection",
+      "summary": "Daily Field Report documenting a construction site inspection for 1st Layer Drywall. The inspector noted \"No access on the east side.\" The report was marked as \"Cancelled\" in the Comments / Exceptions"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/psi/reports/DFR_0306103-7473-O1.pdf",
+      "pdf_exists": true,
+      "current_outcome": "CANCELLED",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": false,
+        "has_pass_fail_criteria": false,
+        "correct_outcome": "CANCELLED",
+        "reasoning": "The inspection was cancelled because the area was energized and unsafe for access.",
+        "key_quotes": [
+          "Canceled.",
+          "Reason - No Access - Energized Area. Safety/Work Plan required."
+        ]
+      },
+      "gemini_outcome": "CANCELLED",
+      "match": true,
+      "reasoning": "The inspection was cancelled because the area was energized and unsafe for access.",
+      "inspection_id": "DFR_0306103-7473-O1",
+      "inspection_type": "FRAMING & 1ST, 2ND LAYER (CATCH UP)",
+      "summary": "The inspection was canceled because there was no access to an energized area, and a Safety/Work Plan was required. The stated reason for cancellation was 'No Access - Energized Area. Safety/Work Plan "
+    }
+  ]
+}

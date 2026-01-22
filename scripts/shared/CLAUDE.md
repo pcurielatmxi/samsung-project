@@ -1,6 +1,6 @@
 # Shared Utilities
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-21
 
 ## Purpose
 
@@ -46,3 +46,28 @@ canonical, score = matcher.match('Berg Electric')  # → ('Berg', 0.95)
 
 - `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Grid coordinate source
 - `processed/integrated_analysis/dimensions/` - Dimension tables (dim_location, dim_company, dim_trade)
+
+## Quality Data Audit Tool
+
+**Script:** `spotcheck_quality_data.py`
+
+Spot-check RABA/PSI quality data against source PDFs using Gemini to audit classifications.
+
+```bash
+# Check 5 samples per outcome
+python -m scripts.shared.spotcheck_quality_data raba --samples 5
+python -m scripts.shared.spotcheck_quality_data psi --samples 5
+
+# Check specific outcome with verbose output
+python -m scripts.shared.spotcheck_quality_data raba --outcome FAIL --samples 10 --verbose
+
+# Save full report
+python -m scripts.shared.spotcheck_quality_data raba --samples 10 --output report.json
+```
+
+**Features:**
+- Samples N records per outcome category
+- Uses Gemini to re-evaluate source PDFs
+- Compares against current classification
+- Flags mismatches with reasoning
+- Supports `--use-embeddings` for additional detection

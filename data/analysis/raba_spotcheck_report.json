@@ -1,0 +1,584 @@
+{
+  "source": "raba",
+  "timestamp": "2026-01-21T09:18:44.264157",
+  "parameters": {
+    "samples_per_outcome": 5,
+    "specific_outcome": null,
+    "model": "gemini-2.0-flash",
+    "seed": 42
+  },
+  "summary": {
+    "total_samples": 20,
+    "successful_audits": 19,
+    "failed_audits": 1,
+    "matches": 11,
+    "mismatches": 8,
+    "match_rate": 57.89473684210527
+  },
+  "stats_by_outcome": {
+    "PASS": {
+      "total": 5,
+      "matches": 5,
+      "match_rate": 100.0
+    },
+    "FAIL": {
+      "total": 4,
+      "matches": 2,
+      "match_rate": 50.0
+    },
+    "PARTIAL": {
+      "total": 5,
+      "matches": 0,
+      "match_rate": 0.0
+    },
+    "MEASUREMENT": {
+      "total": 5,
+      "matches": 4,
+      "match_rate": 80.0
+    }
+  },
+  "mismatches": [
+    {
+      "inspection_id": "A25-020989",
+      "inspection_type": "Visual Inspection \u2013 Firestop \u2013 Wall Penetration",
+      "current_outcome": "FAIL",
+      "gemini_outcome": "CANCELLED",
+      "reasoning": "The report states that the inspection was cancelled because the firestop detail provided by the contractor did not match the actual installation. Although an attempt to inspect was made, the inspection was cancelled before it could be completed, thus the correct outcome is CANCELLED.",
+      "summary": "The inspection report details a visual inspection for the installation of firestop products on the Samsung Taylor - FAB1 Project. The inspection was scheduled for May 2nd, 2025, but was cancelled beca"
+    },
+    {
+      "inspection_id": "A25-030444",
+      "inspection_type": "Visual Inspection",
+      "current_outcome": "FAIL",
+      "gemini_outcome": "CANCELLED",
+      "reasoning": "The document is a trip charge report and the inspection was cancelled, indicating that no actual inspection took place.",
+      "summary": "This Trip Charge Report documents a scheduled visual inspection for the Samsung Taylor - FAB1 Project at L4 K-L/18 STAIR 3 on 08/28/2025. The inspection was cancelled because the work did not pass a p"
+    },
+    {
+      "inspection_id": "A24-030825",
+      "inspection_type": "Visual Inspection (VT) of Waffle Slab Repairs/Coating process",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "MEASUREMENT",
+      "reasoning": "This is an observation report of the waffle slab repairs. The inspector was on site and took measurements and noted discrepancies but did not provide a pass/fail decision. This report also had notes of photos taken and grid locations measured which support the outcome being measurement.",
+      "summary": "This report documents visual inspections of waffle slab repairs during the coating process at Samsung FAB1 in Taylor, TX. The inspection covered concrete moisture content (< 6%), surface preparation ("
+    },
+    {
+      "inspection_id": "A23-025173",
+      "inspection_type": "SS Mortar grout mixing and placement observation",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "PASS",
+      "reasoning": "The inspector arrived on-site to observe SS Mortar grout mixing and placement. The report details the mixing process, temperatures, and other relevant observations. The cone flow test was observed which is typical for assessing mortar grout properties.",
+      "summary": "Inspection Report for Construction Operations documenting the observation of SS Mortar grout mixing and placement. Test methods included paddle mixing, cone flow observation, and temperature monitorin"
+    },
+    {
+      "inspection_id": "A25-018419",
+      "inspection_type": "Surface Preparation Observation (NACE)",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "MEASUREMENT",
+      "reasoning": "The document states that observation of surface prep was performed. While this is an inspection, no specific pass/fail criteria or results are included in the report. The document provides a characterization of the surface prep, making it an observation report. Lacking pass/fail criteria, this is MEASUREMENT.",
+      "summary": "This report documents a NACE non-destructive inspection focused on observing surface preparation for non-liquid and liquid coatings at the Samsung Taylor - FAB1 Project, specifically for sump pits in "
+    },
+    {
+      "inspection_id": "A23-014814",
+      "inspection_type": "Pre-Placement Visual Observation of Reinforcing Steel",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "PASS",
+      "reasoning": "The document is an inspection report of conventional reinforcing steel placement. The document states that a member of the staff conducted visual observations and the listed shop drawings are issued for construction. Since there is no mention of any failure, the inspection passes.",
+      "summary": "Inspection Report (Pre-Placement) for conventional reinforcing steel placement prior to concrete placement at Samsung Taylor - FAB1 Project. The technician conducted visual observations and documented"
+    },
+    {
+      "inspection_id": "A23-014376",
+      "inspection_type": "Compressive Strength Test (Mortar Cubes)",
+      "current_outcome": "PARTIAL",
+      "gemini_outcome": "PASS",
+      "reasoning": "The document contains compressive strength test results with a minimum PSI strength requirement. All tests that have results show passing the minimum.",
+      "summary": "Compressive Strength Test for SS Mortar (Non-Shrink Grout / SS Mortar Splice Sleeve) for the Samsung Taylor - FAB1 Project. The design strength requirement is 12,000 psi. While 7-day tests for Specime"
+    },
+    {
+      "inspection_id": "A22-024833",
+      "inspection_type": "Length Change of Hardened Hydraulic Cement Mortar & Concrete",
+      "current_outcome": "MEASUREMENT",
+      "gemini_outcome": "PASS",
+      "reasoning": "This is a lab testing report for the length change of hardened hydraulic cement mortar and concrete. Although the data fluctuates and there are negative numbers, none of these indicate a failure in meeting specific requirements or indicate that the testing was not done correctly. Therefore, there is no indication of any failing requirements.",
+      "summary": "Laboratory Testing Report for \"Length Change of Hardened Hydraulic Cement Mortar & Concrete\" using ASTM C 157/C 157M-08. The test measured shrinkage/expansion of concrete/mortar mix samples (Mix No. S"
+    }
+  ],
+  "errors": [
+    {
+      "inspection_id": "A24-030368",
+      "error": "JSON parse error: Expecting property name enclosed in double quotes: line 6 column 364 (char 529)"
+    }
+  ],
+  "all_results": [
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A25-013475.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The report states that a visual inspection (VT) was performed on welded connections and the outcome was 'Acceptable'. This indicates the inspection occurred and met the required standards.",
+        "key_quotes": [
+          "On this date, an inspection of the structural steel was performed in general accordance with the AWS D 1.1-2015 Structural Welding Code requirements, the International Building Code (IBC) and the project plans/specifications.",
+          "A Visual Inspection (VT) was performed on the welded connections on the Exterior Cladding steel on the SUE on levels 1-2 @ gridlines mentioned above.",
+          "Acceptable"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The report states that a visual inspection (VT) was performed on welded connections and the outcome was 'Acceptable'. This indicates the inspection occurred and met the required standards.",
+      "inspection_id": "A25-013475",
+      "inspection_type": "Welding Inspection - Visual Inspection (VT)",
+      "summary": "This Welding Inspection Report documents visual inspections of structural steel (Exterior Cladding steel) welded connections on the Samsung Taylor - FAB1 Project. The inspection was performed on 01/25"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A22-023383.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The document states that a visual observation was performed and that the items inspected were in accordance with project documents. Thus the result is pass.",
+        "key_quotes": [
+          "The items inspected on this date were in accordance with the project documents."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The document states that a visual observation was performed and that the items inspected were in accordance with project documents. Thus the result is pass.",
+      "inspection_id": "A22-023383",
+      "inspection_type": "Pre-Placement inspection of reinforcing steel and slab-on-ground cross-sections",
+      "summary": "Inspection Report for conventional reinforcing steel placement and slab-on-ground cross-sections at the Fab1 Building, Slab on Void Form, Area D2, between Gridlines (F.1-G.1) & (3.1-5.8) of the Samsun"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A25-030069.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The document is an inspection form. The report notes that the inspector conducted a visual inspection of firestop sealant installation. Since the contractor completed the work and there is no mention of failures, it is assumed the inspection passed.",
+        "key_quotes": [
+          "Conducted a visual inspection of firestop sealant installation performed by contractor Austin Global in the designated area . Contractor has completed the installation of firestop in the area."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The document is an inspection form. The report notes that the inspector conducted a visual inspection of firestop sealant installation. Since the contractor completed the work and there is no mention of failures, it is assumed the inspection passed.",
+      "inspection_id": "A25-030069",
+      "inspection_type": "Firestop and Fire Resistive Joint Systems Inspection",
+      "summary": "Visual inspection of firestop sealant installation performed by contractor Austin Global in Office Building 1, Lvl 7 NW Vestibule of the Samsung Taylor - FAB1 Project. The inspection form indicated no"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A22-025900.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The report states that a visual observation of reinforcing steel placement was conducted. It also states, \"The items inspected on this date were in accordance with the documents noted above.\"",
+        "key_quotes": [
+          "On this date, a member of our technical staff conducted visual observations of the conventional reinforcing steel placement for the following location prior to concrete placement:",
+          "The items inspected on this date were in accordance with the documents noted above."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The report states that a visual observation of reinforcing steel placement was conducted. It also states, \"The items inspected on this date were in accordance with the documents noted above.\"",
+      "inspection_id": "A22-025900",
+      "inspection_type": "Pre-Placement Inspection (Reinforcing Steel)",
+      "summary": "This Pre-Placement Inspection Report documents visual observations of conventional reinforcing steel placement, waterstop placement, concrete coverage, and vertical rebar spacing at the Samsung Taylor"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A24-019083.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PASS",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The inspection report documents the observation of post-installed reinforcing steel dowel installation, referencing specific requirements and standards. The report states, \"The items observed on this date were in general accordance with the project documents.\"",
+        "key_quotes": [
+          "On this date, members of our technical staff arrived on-site to inspect post-installed reinforcing steel dowel installation.",
+          "The items observed on this date were in general accordance with the project documents."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": true,
+      "reasoning": "The inspection report documents the observation of post-installed reinforcing steel dowel installation, referencing specific requirements and standards. The report states, \"The items observed on this date were in general accordance with the project documents.\"",
+      "inspection_id": "A24-019083",
+      "inspection_type": "Post-installed reinforcing steel dowel installation inspection",
+      "summary": "Inspection Report for Construction Operations conducted on 06/20/2024 to inspect post-installed reinforcing steel dowel installation using Hilti HIT-HY 200-R V3 Epoxy Adhesive Anchoring System. Observ"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A25-020989.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "CANCELLED",
+        "reasoning": "The report states that the inspection was cancelled because the firestop detail provided by the contractor did not match the actual installation. Although an attempt to inspect was made, the inspection was cancelled before it could be completed, thus the correct outcome is CANCELLED.",
+        "key_quotes": [
+          "The inspection has been cancelled as further review revealed that the firestop detail provided by the contractor did not match the actual installation, specifically due to the absence of firestopping on the opposite side of the penetration."
+        ]
+      },
+      "gemini_outcome": "CANCELLED",
+      "match": false,
+      "reasoning": "The report states that the inspection was cancelled because the firestop detail provided by the contractor did not match the actual installation. Although an attempt to inspect was made, the inspection was cancelled before it could be completed, thus the correct outcome is CANCELLED.",
+      "inspection_id": "A25-020989",
+      "inspection_type": "Visual Inspection \u2013 Firestop \u2013 Wall Penetration",
+      "summary": "The inspection report details a visual inspection for the installation of firestop products on the Samsung Taylor - FAB1 Project. The inspection was scheduled for May 2nd, 2025, but was cancelled beca"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A25-028215.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The inspection occurred but the contractor was unable to provide a UL system for the installation, and several voids were observed. The deficiency is recorded as 'No UL system'.",
+        "key_quotes": [
+          "Conducted a firestop inspection and the contractor was not able to provide a UL system for the installation.",
+          "Additionally, several voids were observed during the installation.",
+          "No UL system"
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The inspection occurred but the contractor was unable to provide a UL system for the installation, and several voids were observed. The deficiency is recorded as 'No UL system'.",
+      "inspection_id": "A25-028215",
+      "inspection_type": "Firestop Inspection",
+      "summary": "An in-progress inspection of firestop installations at the Samsung Taylor - FAB1 Project identified deficiencies. The contractor failed to provide a required UL system, and several voids were observed"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A24-030368.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": false,
+      "error": "JSON parse error: Expecting property name enclosed in double quotes: line 6 column 364 (char 529)",
+      "raw_response": "```json\n{\n    \"document_type\": \"Lab Test Report with pass/fail criteria\",\n    \"inspection_occurred\": true,\n    \"has_pass_fail_criteria\": true,\n    \"correct_outcome\": \"FAIL\",\n    \"reasoning\": \"The document is a lab test report for compressive strength. The test results are given for concrete samples with a design strength requirement of 7000 psi. The 'REMARKS' section states \\\"COMPRESSIVE STRENGTH REQUIREMENT FROM NOTE 6.B ON S000-000-3060 AND RFI 0340. The average of the 28 day compressive strength results did not achieve the...\", indicating that the tests did not meet the requirements.\",\n    \"key_quotes\": [\n        \"LABORATORY TEST REPORT\",\n        \"Compressive Strength Test\",\n        \"DESIGN STR. (psi): 7,000\",\n        \"REMARKS: Ahmed Alkutel with Yates was notified of field test results. ND-Not Determined; NP-Not Provided; NA-Not Applicable; Specimens are in a satisfactory condition unless otherwise noted. CURRENT AVAILABLE DRAWINGS PROVIDED TO RK DO NOT REFLECT COMPRESSIVE STRENGTH REQUIREMENT. COMPRESSIVE STRENGTH REQUIREMENT FROM NOTE 6.B ON S000-000-3060 AND RFI 0340. The average of the 28 day compressive strength results did not achieve the...\"\n    ]\n}\n```",
+      "inspection_id": "A24-030368",
+      "inspection_type": "Compressive Strength Test",
+      "summary": "Laboratory Test Report for Compressive Strength Test on NC Grout supplied by Euclid Chemical. The test was performed on samples cast on 12/19/2024, with 7-day and 28-day tests on 12/26/2024 and 01/16/"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A25-030444.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Trip Charge Report",
+        "inspection_occurred": false,
+        "has_pass_fail_criteria": false,
+        "correct_outcome": "CANCELLED",
+        "reasoning": "The document is a trip charge report and the inspection was cancelled, indicating that no actual inspection took place.",
+        "key_quotes": [
+          "Inspection was cancelled due to did not pass Yates internal inspection."
+        ]
+      },
+      "gemini_outcome": "CANCELLED",
+      "match": false,
+      "reasoning": "The document is a trip charge report and the inspection was cancelled, indicating that no actual inspection took place.",
+      "inspection_id": "A25-030444",
+      "inspection_type": "Visual Inspection",
+      "summary": "This Trip Charge Report documents a scheduled visual inspection for the Samsung Taylor - FAB1 Project at L4 K-L/18 STAIR 3 on 08/28/2025. The inspection was cancelled because the work did not pass a p"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A24-014914.pdf",
+      "pdf_exists": true,
+      "current_outcome": "FAIL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Lab Test Report",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "FAIL",
+        "reasoning": "The document presents a laboratory test report for compressive strength testing. Although tests were run, the remarks section indicates that the average of the 28-day compressive strength results did not achieve the 28-day design strength requirements, resulting in an overall failure.",
+        "key_quotes": [
+          "LABORATORY TEST REPORT",
+          "Compressive Strength Test",
+          "REMARKS: Mohammed Majeed with Yates was notified of field test results. ND-Not Determined; NP-Not Provided; NA-Not Applicable. The average of the 28 day compressive strength results did not achieve the 28 day design strength requirements."
+        ]
+      },
+      "gemini_outcome": "FAIL",
+      "match": true,
+      "reasoning": "The document presents a laboratory test report for compressive strength testing. Although tests were run, the remarks section indicates that the average of the 28-day compressive strength results did not achieve the 28-day design strength requirements, resulting in an overall failure.",
+      "inspection_id": "A24-014914",
+      "inspection_type": "Compressive Strength Test",
+      "summary": "Laboratory Test Report for Compressive Strength Test (Mortar Cubes) of NC GROUT used at the Samsung Taylor - FAB1 Project. Design strength requirement was 7,000 psi. Results at 7 days (average 4,460 p"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A24-030825.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Observation/Characterization Report",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": false,
+        "correct_outcome": "MEASUREMENT",
+        "reasoning": "This is an observation report of the waffle slab repairs. The inspector was on site and took measurements and noted discrepancies but did not provide a pass/fail decision. This report also had notes of photos taken and grid locations measured which support the outcome being measurement.",
+        "key_quotes": [
+          "On this date, a member of our technical staff arrived on-site to Observe waffle slab repairs.",
+          "The above mentioned items were inspected on the precast waffle slab pockets at the grid lines listed below unless noted otherwise.",
+          "Discrepancies found:\nE.5/25-No CSP;H.3/3.8-No CSP;H.8/9.6-No CSP;H.8/5.3-No CSP"
+        ]
+      },
+      "gemini_outcome": "MEASUREMENT",
+      "match": false,
+      "reasoning": "This is an observation report of the waffle slab repairs. The inspector was on site and took measurements and noted discrepancies but did not provide a pass/fail decision. This report also had notes of photos taken and grid locations measured which support the outcome being measurement.",
+      "inspection_id": "A24-030825",
+      "inspection_type": "Visual Inspection (VT) of Waffle Slab Repairs/Coating process",
+      "summary": "This report documents visual inspections of waffle slab repairs during the coating process at Samsung FAB1 in Taylor, TX. The inspection covered concrete moisture content (< 6%), surface preparation ("
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A23-025173.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The inspector arrived on-site to observe SS Mortar grout mixing and placement. The report details the mixing process, temperatures, and other relevant observations. The cone flow test was observed which is typical for assessing mortar grout properties.",
+        "key_quotes": [
+          "On this date, a member of our technical staff arrived on-site to SS Mortar grout mixing and placement."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": false,
+      "reasoning": "The inspector arrived on-site to observe SS Mortar grout mixing and placement. The report details the mixing process, temperatures, and other relevant observations. The cone flow test was observed which is typical for assessing mortar grout properties.",
+      "inspection_id": "A23-025173",
+      "inspection_type": "SS Mortar grout mixing and placement observation",
+      "summary": "Inspection Report for Construction Operations documenting the observation of SS Mortar grout mixing and placement. Test methods included paddle mixing, cone flow observation, and temperature monitorin"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A25-018419.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": false,
+        "correct_outcome": "MEASUREMENT",
+        "reasoning": "The document states that observation of surface prep was performed. While this is an inspection, no specific pass/fail criteria or results are included in the report. The document provides a characterization of the surface prep, making it an observation report. Lacking pass/fail criteria, this is MEASUREMENT.",
+        "key_quotes": [
+          "On this date, a member of our technical staff arrived on-site to perform NACE non-destructive inspection of non-liquid and liquid coatings.",
+          "Performed observation of surface prep that was done."
+        ]
+      },
+      "gemini_outcome": "MEASUREMENT",
+      "match": false,
+      "reasoning": "The document states that observation of surface prep was performed. While this is an inspection, no specific pass/fail criteria or results are included in the report. The document provides a characterization of the surface prep, making it an observation report. Lacking pass/fail criteria, this is MEASUREMENT.",
+      "inspection_id": "A25-018419",
+      "inspection_type": "Surface Preparation Observation (NACE)",
+      "summary": "This report documents a NACE non-destructive inspection focused on observing surface preparation for non-liquid and liquid coatings at the Samsung Taylor - FAB1 Project, specifically for sump pits in "
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A23-014814.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The document is an inspection report of conventional reinforcing steel placement. The document states that a member of the staff conducted visual observations and the listed shop drawings are issued for construction. Since there is no mention of any failure, the inspection passes.",
+        "key_quotes": [
+          "On this date, a member of our technical staff conducted visual observations of the conventional reinforcing steel placement for the following location prior to concrete placement"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": false,
+      "reasoning": "The document is an inspection report of conventional reinforcing steel placement. The document states that a member of the staff conducted visual observations and the listed shop drawings are issued for construction. Since there is no mention of any failure, the inspection passes.",
+      "inspection_id": "A23-014814",
+      "inspection_type": "Pre-Placement Visual Observation of Reinforcing Steel",
+      "summary": "Inspection Report (Pre-Placement) for conventional reinforcing steel placement prior to concrete placement at Samsung Taylor - FAB1 Project. The technician conducted visual observations and documented"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A23-014376.pdf",
+      "pdf_exists": true,
+      "current_outcome": "PARTIAL",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Lab Test Report with pass/fail criteria",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "The document contains compressive strength test results with a minimum PSI strength requirement. All tests that have results show passing the minimum.",
+        "key_quotes": [
+          "Compressive Strength Test",
+          "DESIGN STR. (psi): 12,000",
+          "REMARKS: Michael Adams with Yates Construction was notified of field test results.",
+          "Base Plate Column (Steel Plate) PSI Strength Requirement: 12000"
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": false,
+      "reasoning": "The document contains compressive strength test results with a minimum PSI strength requirement. All tests that have results show passing the minimum.",
+      "inspection_id": "A23-014376",
+      "inspection_type": "Compressive Strength Test (Mortar Cubes)",
+      "summary": "Compressive Strength Test for SS Mortar (Non-Shrink Grout / SS Mortar Splice Sleeve) for the Samsung Taylor - FAB1 Project. The design strength requirement is 12,000 psi. While 7-day tests for Specime"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A23-019297.pdf",
+      "pdf_exists": true,
+      "current_outcome": "MEASUREMENT",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Lab Test Report with pass/fail criteria",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "MEASUREMENT",
+        "reasoning": "This is a lab test report detailing the length change of hardened hydraulic cement mortar and concrete. While there are data points, the document doesn't explicitly state a PASS or FAIL outcome based on predefined criteria. It's a measurement report showing the shrinkage results.",
+        "key_quotes": [
+          "LABORATORY TESTING REPORT\nLength Change of Hardened Hydraulic Cement Mortar & Concrete",
+          "Shrinkage results correspond to: FAB1, Slab-on-Metal Deck, Level 5, Pour N5, Between Gridlines J-G/27-29, A23-018497. Testing was performed in general\naccordance with ASTM C157 and per client modifications."
+        ]
+      },
+      "gemini_outcome": "MEASUREMENT",
+      "match": true,
+      "reasoning": "This is a lab test report detailing the length change of hardened hydraulic cement mortar and concrete. While there are data points, the document doesn't explicitly state a PASS or FAIL outcome based on predefined criteria. It's a measurement report showing the shrinkage results.",
+      "inspection_id": "A23-019297",
+      "inspection_type": "Length Change of Hardened Hydraulic Cement Mortar & Concrete",
+      "summary": "Laboratory Testing Report from Raba Kistner, Inc. for \"Length Change of Hardened Hydraulic Cement Mortar & Concrete\" (shrinkage testing) on Mix No.: S3525DH, performed per ASTM C 157/C 157M-08 and cli"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A22-018008.pdf",
+      "pdf_exists": true,
+      "current_outcome": "MEASUREMENT",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Inspection Report with PASS/FAIL",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "MEASUREMENT",
+        "reasoning": "This is a field observation report with detailed measurements of pier installations. There are no pass/fail statements or compliance criteria. The data is collected and recorded.",
+        "key_quotes": [
+          "Observations of Drilled Piers",
+          "Shaft Diameter (in.)",
+          "Description of Bearing Material",
+          "Ground Water Conditions"
+        ]
+      },
+      "gemini_outcome": "MEASUREMENT",
+      "match": true,
+      "reasoning": "This is a field observation report with detailed measurements of pier installations. There are no pass/fail statements or compliance criteria. The data is collected and recorded.",
+      "inspection_id": "A22-018008",
+      "inspection_type": "Observations of Drilled Piers",
+      "summary": "This report documents the observation of 21 drilled piers for the Samsung Taylor - FAB1 Project. The observations cover excavation and concrete placement. All piers were excavated to a clean and dry c"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A23-017919.pdf",
+      "pdf_exists": true,
+      "current_outcome": "MEASUREMENT",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Lab Test Report with pass/fail criteria",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "MEASUREMENT",
+        "reasoning": "The document is a lab testing report, which includes data on the length change of hardened hydraulic cement mortar & concrete. The report doesn't state explicitly if it passes or fails, but it provides numerical results from the tests. Therefore it falls under the category of measurement because the document collected data, but the criteria for pass or fail is not explicitly stated. The document is not pass or fail.",
+        "key_quotes": [
+          "LABORATORY TESTING REPORT",
+          "Length Change of Hardened Hydraulic Cement Mortar & Concrete"
+        ]
+      },
+      "gemini_outcome": "MEASUREMENT",
+      "match": true,
+      "reasoning": "The document is a lab testing report, which includes data on the length change of hardened hydraulic cement mortar & concrete. The report doesn't state explicitly if it passes or fails, but it provides numerical results from the tests. Therefore it falls under the category of measurement because the document collected data, but the criteria for pass or fail is not explicitly stated. The document is not pass or fail.",
+      "inspection_id": "A23-017919",
+      "inspection_type": "Length Change of Hardened Hydraulic Cement Mortar & Concrete",
+      "summary": "Laboratory Testing Report for the measurement of 'Length Change of Hardened Hydraulic Cement Mortar & Concrete' (shrinkage testing) for the Samsung Taylor - FAB1 Project. The test was performed on Har"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A22-025482.pdf",
+      "pdf_exists": true,
+      "current_outcome": "MEASUREMENT",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Lab Test Report with pass/fail criteria",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "MEASUREMENT",
+        "reasoning": "This is a lab test report that provides measurements related to the length change of hardened hydraulic cement mortar and concrete. Although the document reports measurements against time, there is no explicit mention of PASS/FAIL or whether material passed specified quality controls. Therefore, the correct classification is MEASUREMENT.",
+        "key_quotes": [
+          "LABORATORY TESTING REPORT",
+          "Length Change of Hardened Hydraulic Cement Mortar & Concrete"
+        ]
+      },
+      "gemini_outcome": "MEASUREMENT",
+      "match": true,
+      "reasoning": "This is a lab test report that provides measurements related to the length change of hardened hydraulic cement mortar and concrete. Although the document reports measurements against time, there is no explicit mention of PASS/FAIL or whether material passed specified quality controls. Therefore, the correct classification is MEASUREMENT.",
+      "inspection_id": "A22-025482",
+      "inspection_type": "Length Change of Hardened Hydraulic Cement Mortar & Concrete",
+      "summary": "This report details the length change (shrinkage/expansion) measurements of hardened hydraulic cement mortar & concrete (Mix No. S3635DHASRR) over a 28-day period, performed in accordance with ASTM C1"
+    },
+    {
+      "pdf_path": "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/raba/individual/A22-024833.pdf",
+      "pdf_exists": true,
+      "current_outcome": "MEASUREMENT",
+      "audit_success": true,
+      "error": null,
+      "audit_data": {
+        "document_type": "Lab Test Report with pass/fail criteria",
+        "inspection_occurred": true,
+        "has_pass_fail_criteria": true,
+        "correct_outcome": "PASS",
+        "reasoning": "This is a lab testing report for the length change of hardened hydraulic cement mortar and concrete. Although the data fluctuates and there are negative numbers, none of these indicate a failure in meeting specific requirements or indicate that the testing was not done correctly. Therefore, there is no indication of any failing requirements.",
+        "key_quotes": [
+          "LABORATORY TESTING REPORT",
+          "Length Change of Hardened Hydraulic Cement Mortar & Concrete",
+          "Shrinkage results correspond to FAB1, SoVF P NP-P1, A22-023879. Testing was performed in general accordance with ASTM C157 and per client modifications."
+        ]
+      },
+      "gemini_outcome": "PASS",
+      "match": false,
+      "reasoning": "This is a lab testing report for the length change of hardened hydraulic cement mortar and concrete. Although the data fluctuates and there are negative numbers, none of these indicate a failure in meeting specific requirements or indicate that the testing was not done correctly. Therefore, there is no indication of any failing requirements.",
+      "inspection_id": "A22-024833",
+      "inspection_type": "Length Change of Hardened Hydraulic Cement Mortar & Concrete",
+      "summary": "Laboratory Testing Report for \"Length Change of Hardened Hydraulic Cement Mortar & Concrete\" using ASTM C 157/C 157M-08. The test measured shrinkage/expansion of concrete/mortar mix samples (Mix No. S"
+    }
+  ]
+}

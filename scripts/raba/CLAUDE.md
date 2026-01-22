@@ -1,6 +1,6 @@
 # RABA Quality Inspections
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-21
 
 ## Purpose
 
@@ -30,7 +30,8 @@ raba/
 │   ├── config.json                 # 3-stage pipeline config
 │   ├── run.sh                      # CLI wrapper
 │   ├── postprocess.py              # Stage 3: normalization
-│   └── consolidate.py              # Stage 4: CSV export
+│   ├── consolidate.py              # Stage 4: CSV export
+│   └── fix_raba_outcomes.py        # Programmatic outcome correction
 └── archive/
     └── scrape_raba_reports.py      # Legacy batch scraper
 ```
@@ -57,3 +58,37 @@ cd scripts/raba/document_processing
 ## Environment
 
 Requires `.env` with `RABA_USERNAME`, `RABA_PASSWORD`
+
+## Open Issues
+
+### Outcome Misclassification (2026-01-21)
+
+**Status:** Prompts updated, awaiting re-extraction
+
+**Problem:** ~40% of records have incorrect outcome classifications:
+- **FAIL → CANCELLED**: Trip charge reports where inspection was cancelled (~50+ records)
+- **PARTIAL → MEASUREMENT**: Observation/pickup reports without pass/fail criteria (~100+ records)
+- **PARTIAL → PASS**: Reports with no deficiencies noted (~50+ records)
+
+**Root Cause:** Extract prompt and format schema only allowed PASS/FAIL/PARTIAL. Trip charges and observation reports were forced into wrong categories.
+
+**Fix Applied:**
+- `extract_prompt.txt`: Added CANCELLED and N/A as outcome options
+- `schema.json`: Added CANCELLED and MEASUREMENT to outcome enum
+- `format_prompt.txt`: Added guidance for CANCELLED and MEASUREMENT cases
+
+**Pending:** Full re-extraction required to apply fixes.
+
+**Interim Fix Script:**
+```bash
+# Dry run - see what would change
+python -m scripts.raba.document_processing.fix_raba_outcomes --dry-run
+
+# Apply pattern-based fixes (creates backup)
+python -m scripts.raba.document_processing.fix_raba_outcomes --apply
+
+# Use embeddings for additional detection
+python -m scripts.raba.document_processing.fix_raba_outcomes --dry-run --use-embeddings
+```
+
+**Spot-check tool:** `python -m scripts.shared.spotcheck_quality_data raba --samples 5`

@@ -23,9 +23,15 @@ Answer each question based ONLY on document contents. If information is not pres
 - Full location information (capture ALL location details exactly as stated in the document):
 
 ### Outcome
-- Did all tests/inspections PASS or FAIL?: (State: PASS, FAIL, or PARTIAL if some passed and some failed)
+- Did all tests/inspections PASS or FAIL?: (State one of: PASS, FAIL, PARTIAL, CANCELLED, or N/A)
+  - PASS: All tests/inspections met requirements
+  - FAIL: Tests/inspections occurred but did not meet requirements
+  - PARTIAL: Some passed, some failed
+  - CANCELLED: Inspection was cancelled, not performed, or work was not ready (includes trip charges)
+  - N/A: Document has no pass/fail criteria (e.g., pickup receipts, observation reports, material characterization)
 - If FAIL or PARTIAL, what specific tests/criteria failed?:
 - Failure reason or cause (quote from document if available):
+- If CANCELLED, why was it cancelled?:
 
 ### Issues & Deficiencies
 - Were any deficiencies, non-conformances, or issues noted?:

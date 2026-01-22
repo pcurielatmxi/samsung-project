@@ -21,8 +21,8 @@
     },
     "outcome": {
       "type": "string",
-      "enum": ["PASS", "FAIL", "PARTIAL"],
-      "description": "Test outcome: PASS (all passed), FAIL (all/any critical failed), PARTIAL (mixed results)"
+      "enum": ["PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT"],
+      "description": "Test outcome: PASS (all passed), FAIL (failed requirements), PARTIAL (mixed results), CANCELLED (inspection did not occur), MEASUREMENT (no pass/fail criteria - observation/characterization only)"
     },
     "failure_reason": {
       "type": ["string", "null"],

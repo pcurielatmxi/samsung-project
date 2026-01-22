@@ -1,6 +1,6 @@
 # PSI Quality Inspections
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-21
 
 ## Purpose
 
@@ -30,7 +30,8 @@ psi/
     ├── config.json                 # 3-stage pipeline config
     ├── run.sh                      # CLI wrapper
     ├── postprocess.py              # Stage 3: normalization
-    └── consolidate.py              # Stage 4: CSV export
+    ├── consolidate.py              # Stage 4: CSV export
+    └── fix_psi_outcomes.py         # Programmatic outcome correction
 ```
 
 ## Usage
@@ -57,3 +58,31 @@ cd scripts/psi/document_processing
 ## Environment
 
 Requires `.env` with `PSI_USERNAME`, `PSI_PASSWORD`
+
+## Open Issues
+
+### Outcome Misclassification (2026-01-21)
+
+**Status:** Prompts updated, awaiting re-extraction
+
+**Problem:** ~30% of records have incorrect outcome classifications:
+- **FAIL → CANCELLED**: Records where work was "not ready" marked as FAIL
+- **PARTIAL → PASS/FAIL**: Ambiguous PARTIAL classifications
+
+**Root Cause:** Extract prompt didn't clearly distinguish CANCELLED from FAIL.
+
+**Fix Applied:**
+- `extract_prompt.txt`: Added clear CANCELLED definition
+
+**Pending:** Full re-extraction required to apply fixes.
+
+**Interim Fix Script:**
+```bash
+# Dry run - see what would change
+python -m scripts.psi.document_processing.fix_psi_outcomes --dry-run
+
+# Apply pattern-based fixes (creates backup)
+python -m scripts.psi.document_processing.fix_psi_outcomes --apply
+```
+
+**Spot-check tool:** `python -m scripts.shared.spotcheck_quality_data psi --samples 5`

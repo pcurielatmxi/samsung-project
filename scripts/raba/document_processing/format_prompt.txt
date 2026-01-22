@@ -35,12 +35,21 @@ PARTIAL:
   - Deficiencies noted in Part 1 but also noted as corrected/fixed, OR
   - Mixed results clearly stated in Part 2
 
-NULL (use when):
-  - Part 2 explicitly explains no outcome was determined (e.g., characterization report, baseline data, no specifications listed)
-  - No test results or clear pass/fail indicators anywhere in document
-  - Cannot reasonably infer from available data
+CANCELLED:
+  - Document is a "Trip Charge Report" - inspector arrived but inspection was cancelled
+  - Work was not ready for inspection
+  - Inspection was cancelled due to failing internal inspection (e.g., "did not pass Yates internal inspection")
+  - Document explicitly states inspection was "cancelled", "not performed", or "did not occur"
+  - IMPORTANT: CANCELLED means NO inspection occurred. If inspection occurred but failed, use FAIL.
 
-IMPORTANT: Don't override Part 2's explanation. If Part 2 gives a reason why outcome can't be determined, use NULL rather than inferring.
+MEASUREMENT:
+  - Document is an observation/characterization report without pass/fail criteria
+  - Material pickup or delivery receipt (just documenting pickup, no testing)
+  - Lab report that provides data but does not list pass/fail requirements or specifications
+  - Part 2 explicitly states "N/A" or explains no pass/fail criteria exist
+  - Examples: "Length Change" shrinkage tests, concrete pickup reports, observation-only reports
+
+IMPORTANT: Don't override Part 2's explanation. If Part 2 indicates CANCELLED or N/A, respect that classification.
 
 Standardization rules (IMPORTANT - follow exactly):
 - Dates: ALWAYS use YYYY-MM-DD format (e.g., "2022-08-09", NOT "08/09/2022")
@@ -53,7 +62,7 @@ Field mapping:
 - test_type: Type of test performed (e.g., "Compressive Strength", "Soil Compaction")
 - location: All location information as a single string
 - summary: Brief summary of what was tested and the results
-- outcome: "PASS", "FAIL", or "PARTIAL"
+- outcome: "PASS", "FAIL", "PARTIAL", "CANCELLED", or "MEASUREMENT"
 - failure_reason: Quote the reason for failure if stated
 - issues: Array of {description, severity} for each deficiency found
 - parties_involved: Array of {name, role} for testing company, contractor, supplier, inspector
