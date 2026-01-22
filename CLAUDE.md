@@ -823,4 +823,11 @@ for r in results:
 - `file_date`: Extracted from filename (YYYY-MM-DD)
 - `subfolder`: Relative path within source directory
 
+**Robustness:**
+- Content-based change detection (SHA-256, not mtime)
+- Manifest tracks indexed files (`~/.local/share/samsung-embeddings/manifest.json`)
+- Automatic backups before destructive operations
+- `--cleanup-deleted` flag required to remove stale chunks
+- `verify` command checks manifest/DB consistency
+
 **Dependencies:** `chromadb`, `google-genai` (in requirements.txt)

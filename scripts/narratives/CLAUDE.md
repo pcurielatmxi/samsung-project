@@ -41,6 +41,25 @@ python -m scripts.narratives.embeddings status
 
 **Index:** `~/.local/share/samsung-embeddings/documents/`
 
+### Robustness Features
+
+The embeddings system uses manifest-based tracking for reliability:
+
+- **Content hashing**: SHA-256 of file contents (not mtime) for change detection
+- **Manifest tracking**: `manifest.json` tracks all indexed files
+- **Automatic backups**: Created before destructive operations
+- **Safe partial runs**: `--limit` flag doesn't delete existing chunks
+- **Explicit cleanup**: `--cleanup-deleted` flag required to remove stale files
+
+**Backup/Restore:**
+```bash
+python -m scripts.narratives.embeddings backup           # Create backup
+python -m scripts.narratives.embeddings list-backups     # List backups
+python -m scripts.narratives.embeddings restore          # Restore latest
+python -m scripts.narratives.embeddings restore -b FILE  # Restore specific
+python -m scripts.narratives.embeddings verify           # Check consistency
+```
+
 ## Structure
 
 ```
