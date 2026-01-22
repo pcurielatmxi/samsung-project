@@ -165,6 +165,47 @@ def cmd_list_backups(args):
         print(f"  {backup.name}  ({size_mb:.1f} MB, {mtime:%Y-%m-%d %H:%M})")
 
 
+def cmd_verify(args):
+    """Verify manifest and ChromaDB are in sync."""
+    from .manifest import Manifest
+
+    manifest = Manifest(config.MANIFEST_PATH)
+    store = get_store()
+
+    issues = []
+
+    for source_name in config.SOURCE_DIRS.keys():
+        manifest_chunks = manifest.get_all_chunk_ids(source_name)
+
+        # Get ChromaDB chunks for this source
+        all_meta = store.get_all_chunk_metadata()
+        db_chunks = {
+            chunk_id for chunk_id, meta in all_meta.items()
+            if meta.get("source_type") == source_name
+        }
+
+        # Check for mismatches
+        in_manifest_not_db = manifest_chunks - db_chunks
+        in_db_not_manifest = db_chunks - manifest_chunks
+
+        if in_manifest_not_db:
+            issues.append(f"{source_name}: {len(in_manifest_not_db)} chunks in manifest but not in DB")
+
+        if in_db_not_manifest:
+            issues.append(f"{source_name}: {len(in_db_not_manifest)} chunks in DB but not in manifest")
+
+    if issues:
+        print("Issues found:")
+        for issue in issues:
+            print(f"  - {issue}")
+        print()
+        print("Run 'rebuild' to fix, or 'restore' to revert to backup")
+        return 1
+    else:
+        print("Manifest and ChromaDB are in sync")
+        return 0
+
+
 def print_chunk_results(results: List[ChunkResult], query: str, context: int):
     """Print chunk search results."""
     if not results:
@@ -370,6 +411,10 @@ Valid sources: {valid_sources}
     # List backups command
     list_backups_parser = subparsers.add_parser("list-backups", help="List available backups")
     list_backups_parser.set_defaults(func=cmd_list_backups)
+
+    # Verify command
+    verify_parser = subparsers.add_parser("verify", help="Verify manifest/DB consistency")
+    verify_parser.set_defaults(func=cmd_verify)
 
     args = parser.parse_args()
     args.func(args)
