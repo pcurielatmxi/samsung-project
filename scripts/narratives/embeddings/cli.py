@@ -2,6 +2,8 @@
 
 import argparse
 import sys
+from datetime import datetime
+from pathlib import Path
 from typing import List
 
 from . import config
@@ -110,6 +112,68 @@ def cmd_status(args):
 
     print()
     print("=" * 60)
+
+
+def cmd_backup(args):
+    """Create a backup of the database."""
+    from .backup import BackupManager
+
+    manager = BackupManager(config.CHROMA_PATH, config.BACKUP_DIR)
+    backup_path = manager.create_backup()
+
+    if backup_path:
+        print(f"Backup created: {backup_path}")
+        print(f"Size: {backup_path.stat().st_size / 1024 / 1024:.1f} MB")
+    else:
+        print("Nothing to backup (database empty)")
+
+
+def cmd_restore(args):
+    """Restore from a backup."""
+    from .backup import BackupManager
+
+    manager = BackupManager(config.CHROMA_PATH, config.BACKUP_DIR)
+
+    if args.backup:
+        backup_path = Path(args.backup)
+    else:
+        backup_path = manager.get_latest_backup()
+        if not backup_path:
+            print("No backups available")
+            return
+
+    if not backup_path.exists():
+        print(f"Backup not found: {backup_path}")
+        return
+
+    print(f"Restoring from: {backup_path}")
+
+    if not args.yes:
+        response = input("This will replace the current database. Continue? [y/N] ")
+        if response.lower() != 'y':
+            print("Aborted")
+            return
+
+    manager.restore_backup(backup_path)
+    print("Restore complete")
+
+
+def cmd_list_backups(args):
+    """List available backups."""
+    from .backup import BackupManager
+
+    manager = BackupManager(config.CHROMA_PATH, config.BACKUP_DIR)
+    backups = manager.list_backups()
+
+    if not backups:
+        print("No backups available")
+        return
+
+    print(f"Available backups ({len(backups)}):")
+    for backup in backups:
+        size_mb = backup.stat().st_size / 1024 / 1024
+        mtime = datetime.fromtimestamp(backup.stat().st_mtime)
+        print(f"  {backup.name}  ({size_mb:.1f} MB, {mtime:%Y-%m-%d %H:%M})")
 
 
 def print_chunk_results(results: List[ChunkResult], query: str, context: int):
@@ -296,6 +360,27 @@ Valid sources: {valid_sources}
     # Sync command
     sync_parser = subparsers.add_parser("sync", help="Sync local database to OneDrive")
     sync_parser.set_defaults(func=cmd_sync)
+
+    # Backup command
+    backup_parser = subparsers.add_parser("backup", help="Create a backup")
+    backup_parser.set_defaults(func=cmd_backup)
+
+    # Restore command
+    restore_parser = subparsers.add_parser("restore", help="Restore from backup")
+    restore_parser.add_argument(
+        "--backup", "-b",
+        help="Path to backup file (default: latest)"
+    )
+    restore_parser.add_argument(
+        "--yes", "-y",
+        action="store_true",
+        help="Skip confirmation prompt"
+    )
+    restore_parser.set_defaults(func=cmd_restore)
+
+    # List backups command
+    list_backups_parser = subparsers.add_parser("list-backups", help="List available backups")
+    list_backups_parser.set_defaults(func=cmd_list_backups)
 
     args = parser.parse_args()
     args.func(args)
