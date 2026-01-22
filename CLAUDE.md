@@ -33,6 +33,7 @@ Established data pipelines for 9 primary sources:
 - WBS taxonomy classifier (`src/classifiers/task_classifier.py`)
 - Quality taxonomy extraction (`scripts/quality/derive/`)
 - Data source documentation (`docs/SOURCES.md`, `docs/DATA_SOURCE_NOTES.md`)
+- Data quality fixes registry (`docs/DATA_QUALITY_FIXES.md`)
 
 ### Phase 2: Integrated Analysis 🔄
 

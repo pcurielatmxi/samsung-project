@@ -1,17 +1,31 @@
 #!/usr/bin/env python3
 """
-Fix Duplicate Aliases in map_company_aliases.csv
+Fix: Company Alias Duplicates
+Source: integrated_analysis/mappings
+Type: One-time
+Status: DEPRECATED (2026-01-22)
+Date Created: 2026-01-20
+Last Applied: 2026-01-20
 
-Removes known duplicate aliases that map to multiple companies.
-These duplicates cause Power BI relationship errors.
+DEPRECATION NOTICE:
+    This script is DEPRECATED. Duplicate alias prevention is now built into the
+    generation script (build_company_dimension.py).
 
-Known duplicates to fix:
-- ABR: maps to both company_id=0 (Unknown) and company_id=35 (Austin Bridge & Road)
-       Resolution: Keep only mapping to 35 (Austin Bridge & Road)
+    To fix duplicate aliases:
+    1. Edit COMPANIES list in scripts/integrated_analysis/dimensions/build_company_dimension.py
+    2. Remove the duplicate alias from the wrong company's aliases list
+    3. Re-run: python -m scripts.integrated_analysis.dimensions.build_company_dimension
 
-Usage:
-    python scripts/integrated_analysis/mappings/fix_alias_duplicates.py
-    python scripts/integrated_analysis/mappings/fix_alias_duplicates.py --dry-run
+    The generation script will fail if duplicates are detected, forcing you to
+    fix them at the source rather than patching the output CSV.
+
+Original Issue:
+    Some aliases in map_company_aliases.csv map to multiple companies, causing
+    Power BI relationship errors (many-to-many not allowed in some contexts).
+
+Original Fix Logic:
+    Removed specific known duplicate mappings based on manual review:
+    - ABR: Remove mapping to company_id=0 (Unknown), keep mapping to 35 (Austin Bridge & Road)
 """
 
 import argparse
@@ -114,6 +128,19 @@ def main():
         help='Apply fixes to map_company_aliases.csv'
     )
     args = parser.parse_args()
+
+    # Deprecation warning
+    print("=" * 70)
+    print("⚠️  DEPRECATION WARNING")
+    print("=" * 70)
+    print("This script is DEPRECATED as of 2026-01-22.")
+    print()
+    print("Duplicate alias prevention is now built into the generation script.")
+    print("To fix duplicates:")
+    print("  1. Edit COMPANIES in scripts/integrated_analysis/dimensions/build_company_dimension.py")
+    print("  2. Re-run: python -m scripts.integrated_analysis.dimensions.build_company_dimension")
+    print("=" * 70)
+    print()
 
     print("Checking for duplicate aliases...")
     duplicates = find_duplicates()

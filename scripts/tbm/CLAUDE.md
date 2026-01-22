@@ -1,6 +1,6 @@
 # TBM Scripts
 
-**Last Updated:** 2026-01-19
+**Last Updated:** 2026-01-22
 
 ## Purpose
 
@@ -16,6 +16,8 @@ Field TBM (OneDrive)     raw/tbm/*.xlsx (512+ files)
                         work_entries_enriched.csv (with dim_location_id, dim_company_id, dim_trade_id)
                                 ↓ [Stage 3: CSI]
                         work_entries_enriched.csv (with csi_section)
+                                ↓ [Stage 4: Dedup]
+                        work_entries_enriched.csv (with is_duplicate, is_preferred, date_mismatch)
 ```
 
 ## Structure
@@ -25,7 +27,8 @@ tbm/
 └── process/
     ├── run.sh                     # Pipeline orchestrator
     ├── sync_field_tbm.py          # Sync from field team's OneDrive
-    └── parse_tbm_daily_plans.py   # Excel parser
+    ├── parse_tbm_daily_plans.py   # Excel parser
+    └── deduplicate_tbm.py         # Duplicate detection & data quality flags
 ```
 
 ## Usage
@@ -37,6 +40,7 @@ cd scripts/tbm/process
 ./run.sh parse           # Stage 1: Extract Excel data
 ./run.sh enrich          # Stage 2: Add dimension IDs
 ./run.sh csi             # Stage 3: Add CSI codes
+./run.sh dedup           # Stage 4: Flag duplicates & quality issues
 ./run.sh all             # Run all stages
 ./run.sh status          # Show file counts
 ```
@@ -71,4 +75,77 @@ The sync script:
 ## Output Location
 
 - `processed/tbm/work_entries.csv` (raw)
-- `processed/tbm/work_entries_enriched.csv` (with dimensions + CSI)
+- `processed/tbm/work_entries_enriched.csv` (with dimensions + CSI + dedup flags)
+
+## Data Quality Issues
+
+### Duplicate Files (Pipeline - Active)
+
+**Script:** `process/deduplicate_tbm.py`
+
+**Problem:** Multiple files for same company+date cause double-counting of manpower.
+
+**Root Causes:**
+1. **Folder duplicates:** Same file in multiple dated folders (e.g., Axios Jan 15 in both `1-15-26` and `1-16-26` folders)
+2. **Content duplicates:** Files in wrong folders (e.g., Axios data in Berg folder)
+3. **Copy files:** Explicit copies (`Copy of`, `-2-` suffix)
+
+**Fix Logic:**
+- Groups files by `subcontractor + date`
+- Scores files: `DATE_MATCH (100) + RECORD_COUNT (up to 99) + NOT_COPY (1)`
+- Marks best file as `is_preferred=True`, others as `is_duplicate=True`
+- Content deduplication: Compares `tier2_sc` (actual workbook subcontractor) vs filename
+
+**Columns Added:**
+| Column | Type | Description |
+|--------|------|-------------|
+| `is_duplicate` | bool | True if file shares company+date with another |
+| `duplicate_group_id` | int | Groups duplicate files |
+| `is_preferred` | bool | True for best file in duplicate group |
+| `subcontractor_normalized` | str | Normalized from `tier2_sc` (workbook data) |
+
+**Power BI Usage:** Filter by `is_preferred = True` to exclude duplicates.
+
+### Date Mismatch (Pipeline - Active)
+
+**Script:** `process/deduplicate_tbm.py`
+
+**Problem:** Some files have internal `report_date` that differs from filename date. Causes incorrect date assignment if filename is trusted.
+
+**Example:** `Axios 12.04.25 Daily Work Plan.xlsx` contains data for `2025-12-03`
+
+**Fix Logic:** Compares extracted filename date vs internal `report_date`
+
+**Columns Added:**
+| Column | Type | Description |
+|--------|------|-------------|
+| `date_mismatch` | bool | True if filename date ≠ internal date |
+
+**Impact:** 12 records flagged. Power BI can filter or highlight these for review.
+
+### Dynamic Column Detection (Embedded Fix)
+
+**Script:** `process/parse_tbm_daily_plans.py`
+
+**Problem:** Different TBM files have varying column layouts. Some files lack row number columns, causing data to shift left.
+
+**Fix Applied:** Dynamic header detection that:
+- Scans for known column headers ("ACTIVITY", "NO OF EMPLOYEES", etc.)
+- Adjusts column indices if no row number column present
+- Recovers 534 records from 14 previously unparseable files
+
+### MXI File Exclusion (Embedded Fix)
+
+**Script:** `process/parse_tbm_daily_plans.py`
+
+**Problem:** MXI-annotated files have frozen internal dates from template creation, causing duplicate grouping issues.
+
+**Fix Applied:** Excludes files matching patterns: `MXI`, `Manpower TrendReport`, `TaylorFab`, etc.
+
+### Employee Column Priority (Embedded Fix)
+
+**Script:** `process/parse_tbm_daily_plans.py`
+
+**Problem:** Some files have multiple employee columns (planned, absent, on site). Parser selected last match, which sometimes had NULL values.
+
+**Fix Applied:** Prioritizes columns containing "planned" over other variants.

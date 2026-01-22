@@ -1783,6 +1783,56 @@ def write_map_company_aliases(records: List[dict]):
     print(f"  Total aliases: {len(records)}")
 
 
+def validate_no_duplicate_aliases() -> bool:
+    """
+    Post-generation validation: ensure no alias maps to multiple companies.
+
+    This is a defensive check that catches duplicates from any source:
+    - Bugs in generation logic
+    - Manual CSV edits
+    - External data merges
+
+    Returns True if valid, False if duplicates found.
+    """
+    import pandas as pd
+
+    if not MAP_OUTPUT_FILE.exists():
+        print("  ⚠️  Cannot validate - map_company_aliases.csv not found")
+        return True
+
+    df = pd.read_csv(MAP_OUTPUT_FILE)
+
+    # Find aliases that map to multiple companies
+    alias_company_counts = df.groupby('alias')['company_id'].nunique()
+    duplicates = alias_company_counts[alias_company_counts > 1]
+
+    if len(duplicates) == 0:
+        print("  ✅ No duplicate aliases found")
+        return True
+
+    print(f"\n  ❌ DUPLICATE ALIASES FOUND ({len(duplicates)}):")
+    print("  " + "-" * 60)
+
+    for alias in duplicates.index:
+        rows = df[df['alias'] == alias]
+        company_ids = rows['company_id'].tolist()
+        sources = rows['source'].tolist()
+        print(f"    '{alias}' maps to {len(company_ids)} companies:")
+        for cid, src in zip(company_ids, sources):
+            # Find company name
+            company_name = "Unknown"
+            for c in COMPANIES:
+                if c.company_id == cid:
+                    company_name = c.canonical_name
+                    break
+            print(f"      [{src}] company_id={cid} ({company_name})")
+
+    print("\n  To fix: Update COMPANIES list in build_company_dimension.py")
+    print("  Either remove the duplicate alias or assign it to the correct company.")
+
+    return False
+
+
 def print_summary(dim_records: List[dict], alias_records: List[dict]):
     """Print summary statistics."""
     print("\n" + "=" * 60)
@@ -2039,6 +2089,14 @@ def main():
 
     write_dim_company(dim_records)
     write_map_company_aliases(alias_records)
+
+    # Post-generation validation: fail if duplicates exist
+    print("\nValidating output...")
+    if not validate_no_duplicate_aliases():
+        print("\n❌ Build failed: duplicate aliases detected.")
+        print("The standalone fix script (fix_alias_duplicates.py) is DEPRECATED.")
+        print("Fix duplicates in the COMPANIES list above instead.")
+        return 1
 
     print_summary(dim_records, alias_records)
 

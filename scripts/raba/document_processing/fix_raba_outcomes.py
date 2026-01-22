@@ -1,24 +1,39 @@
 #!/usr/bin/env python3
 """
-Fix RABA outcome misclassifications using text patterns and embeddings.
+Fix: RABA Outcome Misclassification
+Source: raba
+Type: One-time
+Status: Prompts updated, awaiting re-extraction
+Date Created: 2026-01-21
+Last Applied: 2026-01-21
 
-This script identifies and fixes records that were incorrectly classified due to
-the original extract/format prompts not having CANCELLED and MEASUREMENT options.
+Issue:
+    ~40% of RABA records have incorrect outcome classifications due to the original
+    extract/format prompts only allowing PASS/FAIL/PARTIAL options.
 
-Patterns detected:
-- FAIL → CANCELLED: Trip charges, cancelled inspections, work not ready
-- PARTIAL → MEASUREMENT: Observation reports, pickup receipts, no pass/fail criteria
-- PARTIAL → PASS: Reports with no deficiencies (implied pass)
+Root Cause:
+    Trip charges and observation reports were forced into wrong categories because
+    CANCELLED and MEASUREMENT were not available as outcome options.
+
+Fix Logic:
+    Uses regex patterns to detect misclassified records:
+    - FAIL → CANCELLED: 14 patterns (trip charge, work not ready, etc.)
+    - PARTIAL → MEASUREMENT: 14 patterns (pickup report, observation only, etc.)
+    - PARTIAL → PASS: 9 patterns (no deficiencies, acceptable, etc.)
+    Optional embeddings-based semantic search for additional detection.
 
 Usage:
     # Dry run - show what would be changed
     python -m scripts.raba.document_processing.fix_raba_outcomes --dry-run
 
-    # Apply fixes
+    # Apply fixes (creates .csv.bak backup)
     python -m scripts.raba.document_processing.fix_raba_outcomes --apply
 
     # Use embeddings for additional detection (slower but more thorough)
     python -m scripts.raba.document_processing.fix_raba_outcomes --apply --use-embeddings
+
+Output Columns Modified:
+    - outcome: Changed from FAIL/PARTIAL to CANCELLED/MEASUREMENT/PASS where detected
 """
 
 import argparse

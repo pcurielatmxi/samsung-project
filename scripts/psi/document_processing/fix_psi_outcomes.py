@@ -1,19 +1,34 @@
 #!/usr/bin/env python3
 """
-Fix PSI outcome misclassifications using text patterns.
+Fix: PSI Outcome Misclassification
+Source: psi
+Type: One-time
+Status: Prompts updated, awaiting re-extraction
+Date Created: 2026-01-21
+Last Applied: 2026-01-21
 
-This script identifies and fixes records that were incorrectly classified.
+Issue:
+    ~30% of PSI records have incorrect outcome classifications. Records where work
+    was "not ready" were marked as FAIL instead of CANCELLED.
 
-Patterns detected:
-- FAIL → CANCELLED: Work not ready, cancelled, did not pass internals
-- PARTIAL → PASS: Records with no deficiencies that passed on reinspection
+Root Cause:
+    Extract prompt didn't clearly distinguish CANCELLED from FAIL.
+
+Fix Logic:
+    Uses regex patterns to detect misclassified records:
+    - FAIL → CANCELLED: 11 patterns (not ready, cancelled, no access, etc.)
+    - PARTIAL → PASS: 10 patterns (accepted, no deficiencies, in compliance, etc.)
+    Checks if issues were resolved before reclassifying PARTIAL → PASS.
 
 Usage:
     # Dry run - show what would be changed
     python -m scripts.psi.document_processing.fix_psi_outcomes --dry-run
 
-    # Apply fixes
+    # Apply fixes (creates .csv.bak backup)
     python -m scripts.psi.document_processing.fix_psi_outcomes --apply
+
+Output Columns Modified:
+    - outcome: Changed from FAIL/PARTIAL to CANCELLED/PASS where detected
 """
 
 import argparse
