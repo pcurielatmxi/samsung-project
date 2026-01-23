@@ -403,40 +403,40 @@ def extract_elevator_from_task_name(task_name: str) -> str | None:
     Extract elevator code from task_name.
 
     Elevator code patterns:
-    - ELV-A-1, ELV-A-2, ELV-A-3 (elevator letters with levels)
-    - ELV_A_1, ELV A 1 (alternate formats)
-    - Explicit "Elevator A", "Elevator B", etc.
-    - Numeric "Elevator #01", "Elevator 1", etc.
+    - Numeric: "Elevator 01", "Elevator #1", "Elevator 1A", "ELEVATOR-5"
+    - Explicit: "ELV-01", "ELV 01A"
 
-    Returns: Elevator code (ELV-A-1, ELV-B-2, ELV-01, etc.) or None
+    NOTE: Does NOT match single letters like "Elevator A" as these are always
+    false positives from words like "ELEVATOR ACCESS", "ELEVATOR HALL", etc.
+
+    Returns: Elevator code (ELV-01, ELV-01A, ELV-22, etc.) or None
     """
     if not task_name or pd.isna(task_name):
         return None
 
     task_name_upper = str(task_name).upper()
 
-    # Pattern 1: ELV-A-1, ELV-B-2 format (most common)
-    elv_match = re.search(r'ELV\s*[-_]?\s*([A-Z])\s*[-_]?\s*(\d)', task_name_upper)
-    if elv_match:
-        return f"ELV-{elv_match.group(1)}-{elv_match.group(2)}"
+    # Pattern 1: Explicit ELV-XX format (ELV-01, ELV-01A, ELV 22)
+    elv_explicit = re.search(r'\bELV\s*[-_]?\s*(\d+[A-Z]?)\b', task_name_upper)
+    if elv_explicit:
+        elv_num = elv_explicit.group(1)
+        # Normalize: pad single digit numbers (5 -> 05, but 01A stays 01A)
+        if len(elv_num) == 1:
+            elv_num = f"0{elv_num}"
+        elif len(elv_num) == 2 and elv_num[0].isdigit() and elv_num[1].isalpha():
+            elv_num = f"0{elv_num}"  # 1A -> 01A
+        return f"ELV-{elv_num}"
 
-    # Pattern 2: Explicit "Elevator A", "Elevator B" with optional level
-    explicit_elv = re.search(r'(?:ELEVATOR|ELEV)\s+([A-Z])\s*(?:\(L(\d)\)|-\s*(\d))?', task_name_upper)
-    if explicit_elv:
-        letter = explicit_elv.group(1)
-        level = explicit_elv.group(2) or explicit_elv.group(3)
-        if level:
-            return f"ELV-{letter}-{level}"
-        return f"ELV-{letter}"
-
-    # Pattern 3: Numeric elevators (Elevator #01, Elevator 1, etc.)
-    numeric_elv = re.search(r'(?:ELEVATOR|ELEV)\s+[#]?(\d+)', task_name_upper)
+    # Pattern 2: Numeric elevators (Elevator #01, Elevator 1, Elevator 1A, ELEVATOR-5)
+    # Must have a number, optionally followed by a letter suffix (A, B)
+    numeric_elv = re.search(r'(?:ELEVATOR|ELEV)[-\s]*[#]?(\d+)([A-B])?(?:\s|$|[,\.\-])', task_name_upper)
     if numeric_elv:
         elv_num = numeric_elv.group(1)
+        suffix = numeric_elv.group(2) or ''
         # Pad single digits to 2 digits for consistency (1 -> 01)
         if len(elv_num) == 1:
             elv_num = f"0{elv_num}"
-        return f"ELV-{elv_num}"
+        return f"ELV-{elv_num}{suffix}"
 
     return None
 
