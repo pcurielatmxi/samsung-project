@@ -82,22 +82,40 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 
 #### Location Master Status
 
-| Location Type | Total | With Grid Bounds | Status |
-|---------------|-------|------------------|--------|
-| ROOM | 360 | ~60 | Needs manual lookup from drawings |
-| ELEVATOR | 13 | 13 | Complete |
-| STAIR | 25 | ~10 | Partial |
-| GRIDLINE | 35 | 35 | Auto-generated (full row span) |
-| LEVEL/AREA | 90 | N/A | Special cases |
+| Location Type | Total | With Grid Bounds | In Drawings | Status |
+|---------------|-------|------------------|-------------|--------|
+| ROOM | 367 | 291 | 293 True / 74 False | 76 rooms need manual lookup |
+| ELEVATOR | 23 | 8 | 8 True / 15 False | Letter codes (ELV-S) use different naming |
+| STAIR | 80 | 11 | 11 True / 69 False | Letter codes (STR-R) use different naming |
+| GRIDLINE | 35 | 35 | Always True | Auto-generated (full row span) |
+| LEVEL/AREA/BUILDING | 25 | N/A | Always True | Multi-room aggregates |
 
-**Working File:** `raw/location_mappings/location_master.csv`
-**Grid Source:** `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx`
+**Working Files:**
+- `raw/location_mappings/location_master.csv` - Master location list with grid bounds
+- `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Grid coordinate source (340 codes)
+- `raw/location_mappings/rooms_needing_gridlines.csv` - 76 rooms missing grid bounds
+- `raw/drawings/*.pdf` - Floor plan PDFs (1st-5th floor)
+
+**In_Drawings Flag:**
+The `in_drawings` column indicates whether a location code was found in the PDF floor drawings:
+- **Rooms**: FAB1XXXXX codes checked against drawing text
+- **Elevators/Stairs**: Numeric codes (ELV-01) matched to FAB1-ELXX in drawings
+- **Letter-based codes** (ELV-S, STR-R): Marked False - different naming convention in drawings
+- **Multi-room types**: Always True (GRIDLINE, LEVEL, BUILDING, AREA, SITE)
+
+**Known Gap:** 74 P6 room codes are not found in the floor drawings. These may be:
+- Rooms added after drawings were created
+- Rooms with different naming conventions
+- Data entry discrepancies
+
+This will be investigated further at a later stage. For now, the `in_drawings` flag enables filtering in BI reports.
 
 #### Key Scripts
 
 | Script | Purpose |
 |--------|---------|
 | `scripts/primavera/derive/generate_location_master.py` | Generate location master from P6 taxonomy |
+| `scripts/shared/populate_grid_bounds.py` | Sync grid bounds from Excel + check drawings |
 | `scripts/shared/gridline_mapping.py` | Low-level grid coordinate lookup |
 | `scripts/shared/location_model.py` | High-level location API (forward/reverse lookups) |
 | `scripts/shared/company_standardization.py` | Company/trade/category normalization |
@@ -132,19 +150,20 @@ Coverage of dimension IDs (`dim_location_id`, `dim_company_id`, `dim_trade_id`) 
 
 #### dim_location Structure
 
-The location dimension (`scripts/integrated_analysis/dimensions/dim_location.csv`) contains 523 location codes from the taxonomy:
+The location dimension (`processed/integrated_analysis/dimensions/dim_location.csv`) contains 531 location codes:
 
-| Location Type | Count | Grid Coverage | Description |
-|---------------|-------|---------------|-------------|
-| ROOM | 367 | 80% | Room codes (FAB114402, FAB136302) |
-| STAIR | 80 | 14% | Stair codes (STR-A, STR-B) |
-| GRIDLINE | 35 | 100% | Column-based locations (full row span) |
-| ELEVATOR | 23 | 35% | Elevator codes (ELV-S, ELV-H) |
-| LEVEL | 9 | 0% | Level-only references |
-| BUILDING | 5 | 0% | Building-only references |
-| AREA | 4 | 0% | Area references |
+| Location Type | Count | Grid Coverage | In Drawings | Description |
+|---------------|-------|---------------|-------------|-------------|
+| ROOM | 367 | 79% (291) | 293 True | Room codes (FAB114402, FAB136302) |
+| STAIR | 80 | 14% (11) | 11 True | Stair codes (STR-A, STR-01) |
+| GRIDLINE | 35 | 100% (35) | Always True | Column-based locations (full row span) |
+| ELEVATOR | 23 | 35% (8) | 8 True | Elevator codes (ELV-S, ELV-01) |
+| LEVEL | 9 | 0% | Always True | Level-only references |
+| BUILDING | 12 | 0% | Always True | Building refs + building-wide (SUP-ALL) |
+| AREA | 4 | 0% | Always True | Area references |
+| SITE | 1 | 0% | Always True | Site-wide fallback |
 
-**Key columns:** `location_code`, `location_type`, `building`, `level`, `grid_row_min/max`, `grid_col_min/max`, `building_level`
+**Key columns:** `location_code`, `location_type`, `building`, `level`, `grid_row_min/max`, `grid_col_min/max`, `building_level`, `in_drawings`
 
 **Spatial Join Workflow:**
 ```
@@ -157,7 +176,7 @@ Returns: rooms whose grid bounds contain G/10
 
 #### Deliverables
 
-- `dim_location` - 523 location codes with grid bounds (from location_master.csv)
+- `dim_location` - 531 location codes with grid bounds and in_drawings flag
 - `dim_company` - Master company list with alias resolution
 - `dim_trade` - Trade/work type classification
 - `map_company_location` - Company work areas by period (derived from quality data)
