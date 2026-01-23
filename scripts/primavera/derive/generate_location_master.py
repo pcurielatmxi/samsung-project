@@ -117,8 +117,8 @@ def determine_action_status(row: pd.Series) -> str:
 def generate_location_master():
     """Generate comprehensive location master document."""
 
-    # Load taxonomy (all schedules)
-    taxonomy_path = Settings.DERIVED_DATA_DIR / 'primavera' / 'task_taxonomy.csv'
+    # Load taxonomy (all schedules) - use processed p6_task_taxonomy.csv which has all 483K tasks
+    taxonomy_path = Settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv'
     print(f"Loading taxonomy from: {taxonomy_path}")
     df = pd.read_csv(taxonomy_path, low_memory=False)
     print(f"Total tasks across all schedules: {len(df)}")
