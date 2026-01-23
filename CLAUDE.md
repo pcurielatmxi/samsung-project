@@ -103,12 +103,17 @@ The `in_drawings` column indicates whether a location code was found in the PDF 
 - **Letter-based codes** (ELV-S, STR-R): Marked False - different naming convention in drawings
 - **Multi-room types**: Always True (GRIDLINE, LEVEL, BUILDING, AREA, SITE)
 
-**Known Gap:** 74 P6 room codes are not found in the floor drawings. These may be:
-- Rooms added after drawings were created
-- Rooms with different naming conventions
-- Data entry discrepancies
+**Known Gap - 74 rooms not in drawings (investigated 2026-01-23):**
 
-This will be investigated further at a later stage. For now, the `in_drawings` flag enables filtering in BI reports.
+The floor drawings (1st-5th-Floor.pdf) only cover SUE, SUW, and FIZ buildings:
+| Building | In Drawings | Not In Drawings | Reason |
+|----------|-------------|-----------------|--------|
+| FAB | 0 | 29 | **No FAB building drawings available** |
+| SUW | 119 | 24 | Equipment/utility rooms not on architectural drawings |
+| SUE | 109 | 18 | Equipment/utility rooms not on architectural drawings |
+| FIZ | 40 | 3 | Rooms added after drawings created |
+
+These are NOT data quality issues - they are legitimate P6 rooms that don't appear in the available drawings. The FAB building (main fab) needs separate drawings to be added to `raw/drawings/`.
 
 #### Key Scripts
 
