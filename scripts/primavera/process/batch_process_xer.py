@@ -29,6 +29,10 @@ Task Taxonomy Generation:
 - task_taxonomy.csv is automatically generated with phase, scope, location classifications
 - Saved to derived/primavera/ directory (separate from processed data)
 
+Incremental Mode:
+- Use --incremental to only process new XER files not already in xer_files.csv
+- New data is appended to existing output files with continuing file_ids
+
 Output Tables (all with file_id and prefixed IDs):
 - xer_files.csv        - Metadata about each XER file (auto-discovered)
 - task.csv             - Tasks (activities)
@@ -52,11 +56,13 @@ Usage:
     python scripts/batch_process_xer.py --all           # All schedules
     python scripts/batch_process_xer.py --schedule-type SECAI  # SECAI schedules only
     python scripts/batch_process_xer.py --current-only  # Only process current file
+    python scripts/batch_process_xer.py --incremental   # Only process new files
     python scripts/batch_process_xer.py --output-dir data/primavera/processed
 """
 
 import sys
 import json
+import time
 from pathlib import Path
 from datetime import datetime
 import pandas as pd
@@ -64,6 +70,8 @@ import pandas as pd
 # Add project root to path (scripts/primavera/process -> scripts/primavera -> scripts -> project_root)
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
+
+from scripts.shared.sync_log import SyncLog, SyncType
 
 # Add derive directory for task_taxonomy module
 derive_dir = Path(__file__).parent.parent / 'derive'
@@ -159,6 +167,27 @@ def extract_date_from_filename(filename: str) -> str | None:
                 return f"{year:04d}-{month:02d}-{day:02d}"
 
     return None
+
+
+def get_processed_files(output_dir: Path) -> tuple[set, int]:
+    """
+    Get set of already processed filenames and max file_id from xer_files.csv.
+
+    Returns:
+        tuple: (set of processed filenames, max file_id or 0 if no files)
+    """
+    files_csv = output_dir / 'xer_files.csv'
+    if not files_csv.exists():
+        return set(), 0
+
+    try:
+        df = pd.read_csv(files_csv)
+        processed = set(df['filename'].tolist())
+        max_id = df['file_id'].max() if len(df) > 0 else 0
+        return processed, int(max_id)
+    except Exception as e:
+        print(f"  Warning: Could not read {files_csv}: {e}")
+        return set(), 0
 
 
 def discover_xer_files(xer_dir: Path, verbose: bool = True) -> pd.DataFrame:
@@ -590,6 +619,8 @@ def batch_process(
     output_dir: Path = DEFAULT_OUTPUT_DIR,
     current_only: bool = False,
     schedule_type: str | None = DEFAULT_SCHEDULE_TYPE,
+    incremental: bool = False,
+    dry_run: bool = False,
     verbose: bool = True
 ) -> dict[str, Path]:
     """
@@ -602,20 +633,46 @@ def batch_process(
         output_dir: Directory for output CSV files
         current_only: If True, only process the current (latest) file
         schedule_type: Filter by schedule type ('YATES', 'SECAI', or None for all)
+        incremental: If True, only process files not already in xer_files.csv
+        dry_run: If True, show what would be processed without processing
         verbose: Print progress messages
 
     Returns:
         Dict mapping table name to output file path
     """
+    start_time = time.time()
+
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Track existing records for delta calculation
+    records_before = 0
+    task_csv = output_dir / 'task.csv'
+    if task_csv.exists():
+        records_before = len(pd.read_csv(task_csv))
 
     if verbose:
         print(f"XER Batch Processor")
         print(f"=" * 60)
         print(f"Input: {XER_DIR}")
         print(f"Output: {output_dir}")
+        if dry_run:
+            print(f"Mode: DRY RUN (no files will be processed)")
+        elif incremental:
+            print(f"Mode: Incremental (processing new files only)")
         print()
+
+    # In incremental mode, get already processed files
+    processed_files = set()
+    start_file_id = 0
+    files_skipped = 0
+
+    if incremental:
+        processed_files, start_file_id = get_processed_files(output_dir)
+        files_skipped = len(processed_files)
+        if verbose and processed_files:
+            print(f"Already processed: {len(processed_files)} files (max file_id: {start_file_id})")
+            print()
 
     # Auto-discover XER files from directory
     files_df = discover_xer_files(XER_DIR, verbose=verbose)
@@ -642,16 +699,69 @@ def batch_process(
         if verbose:
             print("Filter: All schedule types")
 
+    # In incremental mode, filter out already processed files
+    if incremental and processed_files:
+        original_count = len(files_to_process)
+        files_to_process = files_to_process[~files_to_process['filename'].isin(processed_files)]
+        if verbose:
+            print(f"Incremental: {original_count} total, {len(files_to_process)} new files to process")
+
+        if len(files_to_process) == 0:
+            print("\nNo new files to process.")
+            # Log the no-change sync
+            SyncLog.log(
+                pipeline="primavera",
+                sync_type=SyncType.INCREMENTAL,
+                files_processed=0,
+                files_skipped=files_skipped,
+                records_before=records_before,
+                records_after=records_before,
+                duration_seconds=time.time() - start_time,
+                status="no_change",
+                message="No new files to process"
+            )
+            return {}
+
     if verbose:
         print(f"Files to process: {len(files_to_process)}")
 
-    # Reassign sequential file_ids after filtering (1, 2, 3, ... instead of gaps)
+    # Reassign sequential file_ids after filtering
+    # In incremental mode, continue from max existing file_id
     files_to_process = files_to_process.reset_index(drop=True)
-    files_to_process['file_id'] = range(1, len(files_to_process) + 1)
+    if incremental and start_file_id > 0:
+        files_to_process['file_id'] = range(start_file_id + 1, start_file_id + 1 + len(files_to_process))
+        if verbose:
+            print(f"Assigned file_ids: {start_file_id + 1}-{start_file_id + len(files_to_process)}")
+    else:
+        files_to_process['file_id'] = range(1, len(files_to_process) + 1)
+        if verbose:
+            print(f"Assigned file_ids: 1-{len(files_to_process)}")
 
     if verbose:
-        print(f"Reassigned file_ids: 1-{len(files_to_process)}")
         print()
+
+    # Dry run mode - show what would be processed and exit
+    if dry_run:
+        print("DRY RUN - Would process the following files:")
+        print("-" * 60)
+        for _, row in files_to_process.iterrows():
+            print(f"  [{row['file_id']:3}] {row['filename']} ({row['date']}) - {row['schedule_type']}")
+        print("-" * 60)
+        print(f"Total: {len(files_to_process)} files")
+
+        # Log the dry run
+        SyncLog.log(
+            pipeline="primavera",
+            sync_type=SyncType.DRY_RUN,
+            files_processed=0,
+            files_skipped=files_skipped,
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="success",
+            message=f"Would process {len(files_to_process)} files"
+        )
+        return {}
 
     # Process each file and collect all tables
     all_tables: dict[str, list[pd.DataFrame]] = {}
@@ -694,13 +804,22 @@ def batch_process(
 
     # 1. Save xer_files.csv first
     files_output = output_dir / "xer_files.csv"
-    files_to_process.to_csv(files_output, index=False)
+    if incremental and processed_files and files_output.exists():
+        # Append to existing xer_files.csv
+        existing_files = pd.read_csv(files_output)
+        combined_files = pd.concat([existing_files, files_to_process], ignore_index=True)
+        combined_files.to_csv(files_output, index=False)
+        if verbose:
+            print(f"Saving {len(all_tables) + 1} tables (incremental append)...")
+            print("-" * 60)
+            print(f"✓ xer_files.csv ({len(combined_files)} rows, +{len(files_to_process)} new)")
+    else:
+        files_to_process.to_csv(files_output, index=False)
+        if verbose:
+            print(f"Saving {len(all_tables) + 1} tables...")
+            print("-" * 60)
+            print(f"✓ xer_files.csv ({len(files_to_process)} rows)")
     output_files['xer_files'] = files_output
-
-    if verbose:
-        print(f"Saving {len(all_tables) + 1} tables...")
-        print("-" * 60)
-        print(f"✓ xer_files.csv ({len(files_to_process)} rows)")
 
     # 2. Save all other tables (keep tables needed for taxonomy generation)
     tasks_combined = None
@@ -713,6 +832,13 @@ def batch_process(
         dfs = all_tables[table_name]
         if dfs:
             combined = pd.concat(dfs, ignore_index=True)
+            new_rows = len(combined)
+
+            # In incremental mode, append to existing table
+            output_path = output_dir / f"{table_name}.csv"
+            if incremental and processed_files and output_path.exists():
+                existing = pd.read_csv(output_path)
+                combined = pd.concat([existing, combined], ignore_index=True)
 
             # Enhance projwbs with hierarchy tier columns
             if table_name == 'projwbs':
@@ -729,12 +855,14 @@ def batch_process(
             elif table_name == 'actvtype':
                 actvtype_combined = combined
 
-            output_path = output_dir / f"{table_name}.csv"
             combined.to_csv(output_path, index=False)
             output_files[table_name] = output_path
 
             if verbose:
-                print(f"✓ {table_name}.csv ({len(combined):,} rows)")
+                if incremental and processed_files:
+                    print(f"✓ {table_name}.csv ({len(combined):,} rows, +{new_rows:,} new)")
+                else:
+                    print(f"✓ {table_name}.csv ({len(combined):,} rows)")
 
     # 3. Generate task taxonomy (derived data)
     if tasks_combined is not None and wbs_combined is not None:
@@ -774,6 +902,27 @@ def batch_process(
             print(f"Derived directory: {Settings.PRIMAVERA_DERIVED_DIR}")
         print(f"Total tables: {len(output_files)}")
 
+    # Log the sync operation
+    duration = time.time() - start_time
+    records_after = len(tasks_combined) if tasks_combined is not None else records_before
+    sync_type = SyncType.INCREMENTAL if incremental else SyncType.FULL
+
+    status = "success" if error_count == 0 else "partial"
+    message = f"{error_count} files failed" if error_count > 0 else ""
+
+    SyncLog.log(
+        pipeline="primavera",
+        sync_type=sync_type,
+        files_processed=processed_count,
+        files_skipped=files_skipped,
+        files_failed=error_count,
+        records_before=records_before,
+        records_after=records_after,
+        duration_seconds=duration,
+        status=status,
+        message=message
+    )
+
     return output_files
 
 
@@ -794,6 +943,7 @@ Examples:
   %(prog)s --all                        # Process all schedules
   %(prog)s --schedule-type SECAI        # SECAI schedules only
   %(prog)s --current-only               # Only process current file
+  %(prog)s --incremental                # Only process new files
   %(prog)s --output-dir ./output        # Custom output directory
         """
     )
@@ -809,6 +959,18 @@ Examples:
         '--current-only', '-c',
         action='store_true',
         help='Only process the current file from manifest'
+    )
+
+    parser.add_argument(
+        '--incremental', '-i',
+        action='store_true',
+        help='Only process new files not already in xer_files.csv'
+    )
+
+    parser.add_argument(
+        '--dry-run', '-n',
+        action='store_true',
+        help='Show what would be processed without actually processing'
     )
 
     # Schedule type filtering - mutually exclusive group
@@ -848,6 +1010,8 @@ Examples:
             output_dir=args.output_dir,
             current_only=args.current_only,
             schedule_type=schedule_type,
+            incremental=args.incremental,
+            dry_run=args.dry_run,
             verbose=not args.quiet
         )
         return 0

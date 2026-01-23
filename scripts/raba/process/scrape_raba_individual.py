@@ -48,6 +48,13 @@ import json
 import time
 import logging
 import argparse
+
+# Add project root to path for imports
+from pathlib import Path
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from scripts.shared.sync_log import SyncLog, SyncType
 import tempfile
 import shutil
 from calendar import monthrange
@@ -1055,6 +1062,8 @@ class RABAIndividualScraper:
 
 def main():
     """Main entry point."""
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(
         description='Scrape RABA quality inspection reports (individual downloads)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -1124,6 +1133,9 @@ Parallel Processing Examples:
     manifest_file = output_dir.parent / 'individual_manifest.json'
     manifest = load_manifest(manifest_file)
 
+    # Count existing files before scrape
+    records_before = len(list(output_dir.glob('*.pdf')))
+
     # Generate all months
     all_months = generate_months(start_date, end_date)
 
@@ -1153,24 +1165,63 @@ Parallel Processing Examples:
     logger.info(f"Force re-download: {args.force}")
     logger.info(f"Limit: {args.limit or 'None'}")
 
+    # Determine sync type
     if args.dry_run:
+        sync_type = SyncType.DRY_RUN
         logger.info("\n--- DRY RUN MODE ---\n")
+    elif args.force:
+        sync_type = SyncType.FULL
+    else:
+        sync_type = SyncType.SCRAPE
 
     try:
         with RABAIndividualScraper(headless=False, download_dir=output_dir) as scraper:
             # Login
             if not scraper.login():
                 logger.error("Login failed!")
+                SyncLog.log(
+                    pipeline="raba",
+                    sync_type=sync_type,
+                    files_processed=0,
+                    files_failed=1,
+                    records_before=records_before,
+                    records_after=records_before,
+                    duration_seconds=time.time() - start_time,
+                    status="error",
+                    message="Login failed"
+                )
                 return 1
 
             # Navigate to reports page
             if not scraper.navigate_to_reports():
                 logger.error("Failed to navigate to reports page!")
+                SyncLog.log(
+                    pipeline="raba",
+                    sync_type=sync_type,
+                    files_processed=0,
+                    files_failed=1,
+                    records_before=records_before,
+                    records_after=records_before,
+                    duration_seconds=time.time() - start_time,
+                    status="error",
+                    message="Navigation failed"
+                )
                 return 1
 
             # Select project
             if not scraper.select_project():
                 logger.error("Failed to select project!")
+                SyncLog.log(
+                    pipeline="raba",
+                    sync_type=sync_type,
+                    files_processed=0,
+                    files_failed=1,
+                    records_before=records_before,
+                    records_after=records_before,
+                    duration_seconds=time.time() - start_time,
+                    status="error",
+                    message="Project selection failed"
+                )
                 return 1
 
             # Extract all months
@@ -1185,12 +1236,49 @@ Parallel Processing Examples:
             atomic_json_save(manifest, manifest_file)
             logger.info(f"Manifest saved: {manifest_file}")
 
+            # Count files after scrape
+            records_after = len(list(output_dir.glob('*.pdf')))
+            files_processed = records_after - records_before
+
+            # Count errors from manifest
+            error_count = sum(
+                1 for m in manifest.get('months', {}).values()
+                if m.get('status') == 'error'
+            )
+
+            # Log the sync
+            SyncLog.log(
+                pipeline="raba",
+                sync_type=sync_type,
+                files_processed=max(0, files_processed),
+                files_skipped=0,  # Manifest handles skip tracking
+                files_failed=error_count,
+                records_before=records_before,
+                records_after=records_after,
+                duration_seconds=time.time() - start_time,
+                status="success" if error_count == 0 else "partial",
+                message=f"Date range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}"
+            )
+
             return 0
 
     except Exception as e:
         logger.error(f"Fatal error: {e}")
         import traceback
         logger.error(traceback.format_exc())
+
+        # Log the error
+        SyncLog.log(
+            pipeline="raba",
+            sync_type=sync_type,
+            files_processed=0,
+            files_failed=1,
+            records_before=records_before,
+            records_after=len(list(output_dir.glob('*.pdf'))),
+            duration_seconds=time.time() - start_time,
+            status="error",
+            message=str(e)[:200]
+        )
         return 1
 
 

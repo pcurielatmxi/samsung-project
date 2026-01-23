@@ -58,6 +58,8 @@ sys.path.insert(0, str(project_root))
 
 load_dotenv(override=True)
 
+from scripts.shared.sync_log import SyncLog, SyncType
+
 # Global logger
 logger = logging.getLogger('psi_scraper')
 
@@ -547,6 +549,8 @@ class PSIScraper:
 
 def main():
     """Main entry point."""
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(description='Scrape PSI quality inspection reports')
     parser.add_argument('--project-uuid', type=str, default=DEFAULT_PROJECT_UUID,
                         help=f'Project UUID (default: {DEFAULT_PROJECT_UUID})')
@@ -565,6 +569,14 @@ def main():
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Show DEBUG level output')
     args = parser.parse_args()
+
+    # Determine sync type
+    if args.dry_run:
+        sync_type = SyncType.DRY_RUN
+    elif args.force:
+        sync_type = SyncType.FULL
+    else:
+        sync_type = SyncType.SCRAPE
 
     # Setup output directory
     try:
@@ -591,22 +603,36 @@ def main():
     manifest_file = output_dir.parent / 'manifest.json'
     manifest = load_manifest(manifest_file)
 
+    # Count existing files before scrape
+    records_before = len(list(output_dir.glob('*.pdf')))
+
     logger.info("=" * 60)
     logger.info("PSI Quality Reports Scraper")
     logger.info("=" * 60)
+    logger.info(f"Mode: {sync_type.value}")
     logger.info(f"Project UUID: {args.project_uuid}")
     logger.info(f"Output directory: {output_dir}")
     logger.info(f"Start offset: {args.start_offset}")
     logger.info(f"Limit: {args.limit if args.limit > 0 else 'None'}")
     logger.info(f"Headless mode: {args.headless}")
     logger.info(f"Force re-download: {args.force}")
-    logger.info(f"Dry run: {args.dry_run}")
 
     try:
         with PSIScraper(headless=args.headless, download_dir=output_dir) as scraper:
             # Login
             if not scraper.login():
                 logger.error("Login failed!")
+                SyncLog.log(
+                    pipeline="psi",
+                    sync_type=sync_type,
+                    files_processed=0,
+                    files_failed=1,
+                    records_before=records_before,
+                    records_after=records_before,
+                    duration_seconds=time.time() - start_time,
+                    status="error",
+                    message="Login failed"
+                )
                 return 1
 
             # Scrape documents
@@ -622,12 +648,50 @@ def main():
             )
 
             logger.info(f"Manifest saved: {manifest_file}")
+
+            # Count files after scrape
+            records_after = len(list(output_dir.glob('*.pdf')))
+            files_processed = records_after - records_before
+
+            # Count errors from manifest
+            error_count = sum(
+                1 for doc in manifest.get('documents', {}).values()
+                if doc.get('status') == 'error'
+            )
+
+            # Log the sync
+            SyncLog.log(
+                pipeline="psi",
+                sync_type=sync_type,
+                files_processed=max(0, files_processed),
+                files_skipped=0,  # Manifest handles skip tracking
+                files_failed=error_count,
+                records_before=records_before,
+                records_after=records_after,
+                duration_seconds=time.time() - start_time,
+                status="success" if error_count == 0 else "partial",
+                message=f"Documents scraped from offset {args.start_offset}"
+            )
+
             return 0
 
     except Exception as e:
         logger.error(f"Fatal error: {e}")
         import traceback
         logger.error(traceback.format_exc())
+
+        # Log the error
+        SyncLog.log(
+            pipeline="psi",
+            sync_type=sync_type,
+            files_processed=0,
+            files_failed=1,
+            records_before=records_before,
+            records_after=len(list(output_dir.glob('*.pdf'))),
+            duration_seconds=time.time() - start_time,
+            status="error",
+            message=str(e)[:200]
+        )
         return 1
 
 

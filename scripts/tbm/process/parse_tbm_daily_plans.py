@@ -11,11 +11,19 @@ These are Excel files in the SECAI Daily Work Plan format containing:
 
 Input: data/raw/tbm/*.xlsx, *.xlsm
 Output: data/tbm/tables/*.csv
+
+Incremental Mode:
+    python parse_tbm_daily_plans.py --incremental
+
+    In incremental mode, only new files (not in tbm_files.csv) are processed.
+    New entries are appended to existing output files with continuing file_ids.
 """
 
+import argparse
 import pandas as pd
 import re
 import sys
+import time
 import warnings
 from pathlib import Path
 from datetime import datetime
@@ -24,6 +32,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from src.config.settings import Settings
 from schemas.validator import validated_df_to_csv
+from scripts.shared.sync_log import SyncLog, SyncType
 
 # Suppress openpyxl warnings about data validation
 warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
@@ -418,27 +427,113 @@ def parse_tbm_file(filepath: Path) -> tuple:
     return file_info, work_entries
 
 
-def main():
+def get_processed_files(output_dir: Path) -> tuple[set, int]:
+    """
+    Get set of already processed filenames and max file_id from tbm_files.csv.
+
+    Returns:
+        tuple: (set of processed filenames, max file_id or 0 if no files)
+    """
+    files_csv = output_dir / 'tbm_files.csv'
+    if not files_csv.exists():
+        return set(), 0
+
+    try:
+        df = pd.read_csv(files_csv)
+        processed = set(df['filename'].tolist())
+        max_id = df['file_id'].max() if len(df) > 0 else 0
+        return processed, int(max_id)
+    except Exception as e:
+        print(f"  Warning: Could not read {files_csv}: {e}")
+        return set(), 0
+
+
+def main(incremental: bool = False, dry_run: bool = False):
     """Main processing function."""
+    start_time = time.time()
+
     input_dir = Settings.TBM_RAW_DIR
     output_dir = Settings.TBM_PROCESSED_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    if dry_run:
+        print("=" * 60)
+        print("DRY RUN MODE - No files will be processed or saved")
+        print("=" * 60)
+
     # Get all Excel files, excluding non-standard ones
     # MXI files are annotated copies with frozen dates that cause duplicates
-    excluded_patterns = ['Manpower TrendReport', 'Structural  Exteriors', 'TaylorFab', 'Labor Day', 'MXI']
+    # "TBM 담당 현황" are Korean status summary files, not actual daily work plans
+    excluded_patterns = ['Manpower TrendReport', 'Structural  Exteriors', 'TaylorFab', 'Labor Day', 'MXI', 'TBM 담당 현황']
 
     excel_files = list(input_dir.glob('*.xlsx')) + list(input_dir.glob('*.xlsm'))
     excel_files = [f for f in excel_files if not any(ex in f.name for ex in excluded_patterns)]
     excel_files = sorted(excel_files)
 
-    print(f"Found {len(excel_files)} TBM files to process")
+    # Track existing records for delta calculation
+    records_before = 0
+    existing_entries_path = output_dir / 'work_entries.csv'
+    if existing_entries_path.exists():
+        records_before = len(pd.read_csv(existing_entries_path))
+
+    # In incremental mode, filter out already processed files
+    processed_files = set()
+    start_file_id = 0
+    files_skipped = 0
+
+    if incremental:
+        processed_files, start_file_id = get_processed_files(output_dir)
+        original_count = len(excel_files)
+        files_skipped = len(processed_files)
+        excel_files = [f for f in excel_files if f.name not in processed_files]
+        print(f"Incremental mode: {original_count} total files, {len(processed_files)} already processed")
+
+        if not excel_files:
+            print("No new files to process.")
+            # Log the no-change sync
+            SyncLog.log(
+                pipeline="tbm",
+                sync_type=SyncType.DRY_RUN if dry_run else SyncType.INCREMENTAL,
+                files_processed=0,
+                files_skipped=files_skipped,
+                records_before=records_before,
+                records_after=records_before,
+                duration_seconds=time.time() - start_time,
+                status="no_change",
+                message="No new files to process"
+            )
+            return
+
+    # In dry-run mode, just show what would be processed
+    if dry_run:
+        print(f"\nWould process {len(excel_files)} TBM files:")
+        for f in excel_files[:10]:
+            print(f"  - {f.name}")
+        if len(excel_files) > 10:
+            print(f"  ... and {len(excel_files) - 10} more")
+
+        # Log the dry run
+        SyncLog.log(
+            pipeline="tbm",
+            sync_type=SyncType.DRY_RUN,
+            files_processed=0,
+            files_skipped=files_skipped,
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="success",
+            message=f"Dry run: {len(excel_files)} files would be processed"
+        )
+        print("\nDry run complete. No files were processed.")
+        return
+
+    print(f"Processing {len(excel_files)} TBM files...")
 
     all_entries = []
     file_infos = []
     errors = []
 
-    file_id = 0
+    file_id = start_file_id
     for i, filepath in enumerate(excel_files):
         if i % 50 == 0:
             print(f"Processing {i+1}/{len(excel_files)}...")
@@ -461,29 +556,85 @@ def main():
     if errors:
         print(f"  Failed files: {errors[:10]}{'...' if len(errors) > 10 else ''}")
 
-    # Create DataFrames and save
-    print("\n=== Saving outputs ===")
+    if not file_infos:
+        print("\nNo new data to save.")
+        # Log the sync with no new data (but files were attempted)
+        SyncLog.log(
+            pipeline="tbm",
+            sync_type=SyncType.INCREMENTAL if incremental else SyncType.FULL,
+            files_processed=0,
+            files_skipped=files_skipped,
+            files_failed=len(errors),
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="partial" if errors else "no_change",
+            message=f"{len(errors)} files failed to parse" if errors else "No parseable files"
+        )
+        return
 
-    # Work entries table
-    if all_entries:
-        entries_df = pd.DataFrame(all_entries)
-        # Reorder columns to put file_id first
+    # Create DataFrames
+    entries_df = pd.DataFrame(all_entries)
+    files_df = pd.DataFrame(file_infos)
+
+    # Reorder columns to put file_id first
+    if len(entries_df) > 0:
         cols = ['file_id'] + [c for c in entries_df.columns if c != 'file_id']
         entries_df = entries_df[cols]
-        validated_df_to_csv(entries_df, output_dir / 'work_entries.csv', index=False)
-        print(f"work_entries.csv: {len(entries_df)} records (validated)")
-
-    # File info table
-    if file_infos:
-        files_df = pd.DataFrame(file_infos)
-        # Reorder columns to put file_id first
+    if len(files_df) > 0:
         cols = ['file_id'] + [c for c in files_df.columns if c != 'file_id']
         files_df = files_df[cols]
-        validated_df_to_csv(files_df, output_dir / 'tbm_files.csv', index=False)
-        print(f"tbm_files.csv: {len(files_df)} files (validated)")
+
+    # In incremental mode, append to existing files
+    print("\n=== Saving outputs ===")
+
+    if incremental and processed_files:
+        # Load existing data and append
+        existing_entries = pd.read_csv(output_dir / 'work_entries.csv')
+        existing_files = pd.read_csv(output_dir / 'tbm_files.csv')
+
+        entries_df = pd.concat([existing_entries, entries_df], ignore_index=True)
+        files_df = pd.concat([existing_files, files_df], ignore_index=True)
+
+        print(f"  Appended {len(all_entries)} new entries to {len(existing_entries)} existing")
+
+    # Save output files
+    validated_df_to_csv(entries_df, output_dir / 'work_entries.csv', index=False)
+    print(f"work_entries.csv: {len(entries_df)} records (validated)")
+
+    validated_df_to_csv(files_df, output_dir / 'tbm_files.csv', index=False)
+    print(f"tbm_files.csv: {len(files_df)} files (validated)")
+
+    # Log the sync operation
+    duration = time.time() - start_time
+    records_after = len(entries_df)
+    sync_type = SyncType.INCREMENTAL if incremental else SyncType.FULL
+
+    status = "success" if not errors else "partial"
+    message = f"{len(errors)} files failed" if errors else ""
+
+    SyncLog.log(
+        pipeline="tbm",
+        sync_type=sync_type,
+        files_processed=len(file_infos),
+        files_skipped=files_skipped,
+        files_failed=len(errors),
+        records_before=records_before,
+        records_after=records_after,
+        duration_seconds=duration,
+        status=status,
+        message=message
+    )
 
     print("\nDone!")
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Parse TBM Daily Work Plans')
+    parser.add_argument('--incremental', '-i', action='store_true',
+                        help='Only process new files not in tbm_files.csv')
+    parser.add_argument('--dry-run', '-n', action='store_true',
+                        help='Show what would be processed without actually processing')
+    args = parser.parse_args()
+
+    main(incremental=args.incremental, dry_run=args.dry_run)

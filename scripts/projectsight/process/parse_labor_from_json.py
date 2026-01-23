@@ -20,9 +20,16 @@ The history tab contains audit entries like:
 Output:
     - labor_entries.csv: All labor entries with full audit trail
 
+Incremental Mode:
+    python parse_labor_from_json.py --incremental
+
+    In incremental mode, only new JSON files (dates not in labor_entries.csv)
+    are processed. New entries are appended to the existing output file.
+
 Usage:
     python scripts/projectsight/process/parse_labor_from_json.py
     python scripts/projectsight/process/parse_labor_from_json.py --input path/to/daily_reports/
+    python scripts/projectsight/process/parse_labor_from_json.py --incremental
 """
 
 import argparse
@@ -30,10 +37,18 @@ import csv
 import json
 import re
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
+
+import pandas as pd
+
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+from scripts.shared.sync_log import SyncLog, SyncType
 
 
 def parse_trade(trade_str: str) -> Tuple[str, str]:
@@ -287,12 +302,43 @@ def extract_labor_from_history(history: Dict, report_date: str) -> List[Dict]:
     return entries
 
 
-def load_records_from_directory(input_path: Path) -> List[Dict]:
+def get_processed_dates(output_dir: Path) -> set:
+    """
+    Get set of already processed dates from labor_entries.csv.
+
+    The report_date column contains dates in MM/DD/YYYY format.
+    JSON files are named YYYY-MM-DD.json.
+
+    Returns:
+        set of processed dates in YYYY-MM-DD format (matching JSON filenames)
+    """
+    labor_csv = output_dir / 'labor_entries.csv'
+    if not labor_csv.exists():
+        return set()
+
+    try:
+        df = pd.read_csv(labor_csv, usecols=['report_date'])
+        processed = set()
+        for date_str in df['report_date'].unique():
+            # Convert MM/DD/YYYY to YYYY-MM-DD
+            try:
+                dt = datetime.strptime(date_str, '%m/%d/%Y')
+                processed.add(dt.strftime('%Y-%m-%d'))
+            except (ValueError, TypeError):
+                pass
+        return processed
+    except Exception as e:
+        print(f"  Warning: Could not read {labor_csv}: {e}")
+        return set()
+
+
+def load_records_from_directory(input_path: Path, skip_dates: set = None) -> List[Dict]:
     """
     Load records from a directory of individual JSON files.
 
     Args:
         input_path: Path to directory containing individual YYYY-MM-DD.json files
+        skip_dates: Optional set of dates (YYYY-MM-DD) to skip (already processed)
 
     Returns:
         List of record dictionaries
@@ -300,8 +346,17 @@ def load_records_from_directory(input_path: Path) -> List[Dict]:
     print(f"Loading individual report files from {input_path}/...")
     records = []
     json_files = sorted(input_path.glob('*.json'))
+    skipped = 0
 
     for json_file in json_files:
+        # Check if this date should be skipped
+        if skip_dates:
+            # Extract date from filename (YYYY-MM-DD.json)
+            file_date = json_file.stem  # e.g., "2022-05-02"
+            if file_date in skip_dates:
+                skipped += 1
+                continue
+
         try:
             with open(json_file, 'r', encoding='utf-8') as f:
                 record = json.load(f)
@@ -309,21 +364,25 @@ def load_records_from_directory(input_path: Path) -> List[Dict]:
         except Exception as e:
             print(f"  Warning: Could not load {json_file.name}: {e}")
 
-    print(f"  Loaded {len(records)} report files")
+    if skip_dates:
+        print(f"  Loaded {len(records)} report files ({skipped} skipped as already processed)")
+    else:
+        print(f"  Loaded {len(records)} report files")
     return records
 
 
-def process_daily_reports(input_path: Path) -> Tuple[List[Dict], Dict]:
+def process_daily_reports(input_path: Path, skip_dates: set = None) -> Tuple[List[Dict], Dict]:
     """
     Process daily reports and extract all labor entries.
 
     Args:
         input_path: Path to directory containing individual YYYY-MM-DD.json files
+        skip_dates: Optional set of dates (YYYY-MM-DD) to skip (already processed)
 
     Returns:
         Tuple of (labor_entries list, stats dict)
     """
-    records = load_records_from_directory(input_path)
+    records = load_records_from_directory(input_path, skip_dates=skip_dates)
 
     all_entries = []
     stats = {
@@ -432,15 +491,18 @@ def write_labor_entries_csv(entries: List[Dict], output_file: Path):
 
 
 def main():
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(description='Parse labor entries from ProjectSight daily reports JSON')
     parser.add_argument('--input', type=str, help='Input directory containing individual YYYY-MM-DD.json files')
     parser.add_argument('--output-dir', type=str, help='Output directory for CSV files')
+    parser.add_argument('--incremental', '-i', action='store_true',
+                        help='Only process new dates not in labor_entries.csv')
+    parser.add_argument('--dry-run', '-n', action='store_true',
+                        help='Show what would be processed without actually processing')
     args = parser.parse_args()
 
-    # Set up paths
-    project_root = Path(__file__).parent.parent.parent.parent
-    sys.path.insert(0, str(project_root))
-
+    # Set up paths - use already imported project_root
     try:
         from src.config.settings import Settings
         raw_dir = Settings.PROJECTSIGHT_RAW_DIR
@@ -463,6 +525,10 @@ def main():
     print("=" * 70)
     print(f"Input:  {input_path}")
     print(f"Output: {output_dir}")
+    if args.dry_run:
+        print("Mode:   DRY RUN (no files will be processed)")
+    elif args.incremental:
+        print("Mode:   Incremental (processing new dates only)")
     print()
 
     if not input_path.exists() or not input_path.is_dir():
@@ -470,8 +536,52 @@ def main():
         print(f"\nExpected directory: {raw_dir / 'extracted' / 'daily_reports'}/")
         return 1
 
+    # Track existing records for delta calculation
+    records_before = 0
+    existing_csv = output_dir / 'labor_entries.csv'
+    if existing_csv.exists():
+        records_before = len(pd.read_csv(existing_csv))
+
+    # In incremental mode, get already processed dates
+    skip_dates = None
+    files_skipped = 0
+    if args.incremental or args.dry_run:
+        skip_dates = get_processed_dates(output_dir)
+        files_skipped = len(skip_dates) if skip_dates else 0
+        if skip_dates:
+            print(f"Already processed: {len(skip_dates)} dates")
+        print()
+
+    # In dry-run mode, show what would be processed
+    if args.dry_run:
+        json_files = sorted(input_path.glob('*.json'))
+        files_to_process = json_files
+        if skip_dates:
+            files_to_process = [f for f in json_files if f.stem not in skip_dates]
+
+        print(f"Would process {len(files_to_process)} JSON files:")
+        for f in files_to_process[:10]:
+            print(f"  - {f.name}")
+        if len(files_to_process) > 10:
+            print(f"  ... and {len(files_to_process) - 10} more")
+
+        # Log the dry run
+        SyncLog.log(
+            pipeline="projectsight",
+            sync_type=SyncType.DRY_RUN,
+            files_processed=0,
+            files_skipped=files_skipped,
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="success",
+            message=f"Dry run: {len(files_to_process)} files would be processed"
+        )
+        print("\nDry run complete. No files were processed.")
+        return 0
+
     # Process the data
-    entries, stats = process_daily_reports(input_path)
+    entries, stats = process_daily_reports(input_path, skip_dates=skip_dates)
 
     # Print stats
     print()
@@ -493,10 +603,60 @@ def main():
     if stats['date_range']['min'] and stats['date_range']['max']:
         print(f"Date range: {stats['date_range']['min'].strftime('%Y-%m-%d')} to {stats['date_range']['max'].strftime('%Y-%m-%d')}")
 
-    # Write output file
+    if not entries:
+        print()
+        print("No new entries to save.")
+        # Log the no-change sync
+        SyncLog.log(
+            pipeline="projectsight",
+            sync_type=SyncType.INCREMENTAL if args.incremental else SyncType.FULL,
+            files_processed=stats['total_records'],
+            files_skipped=files_skipped,
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="no_change",
+            message="No new entries to save"
+        )
+        return 0
+
+    # In incremental mode, append to existing data
     print()
     print("Writing output file...")
-    write_labor_entries_csv(entries, output_dir / 'labor_entries.csv')
+
+    records_after = records_before
+    if args.incremental and skip_dates:
+        existing_csv = output_dir / 'labor_entries.csv'
+        if existing_csv.exists():
+            existing_df = pd.read_csv(existing_csv)
+            new_df = pd.DataFrame(entries)
+            combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+            combined_df.to_csv(existing_csv, index=False)
+            records_after = len(combined_df)
+            print(f"  Appended {len(entries)} new entries to {len(existing_df)} existing")
+            print(f"  Total: {len(combined_df)} entries in {existing_csv.name}")
+        else:
+            write_labor_entries_csv(entries, output_dir / 'labor_entries.csv')
+            records_after = len(entries)
+    else:
+        write_labor_entries_csv(entries, output_dir / 'labor_entries.csv')
+        records_after = len(entries)
+
+    # Log the sync operation
+    duration = time.time() - start_time
+    sync_type = SyncType.INCREMENTAL if args.incremental else SyncType.FULL
+
+    SyncLog.log(
+        pipeline="projectsight",
+        sync_type=sync_type,
+        files_processed=stats['total_records'],
+        files_skipped=files_skipped,
+        records_before=records_before,
+        records_after=records_after,
+        duration_seconds=duration,
+        status="success",
+        message=""
+    )
 
     print()
     print("Done!")

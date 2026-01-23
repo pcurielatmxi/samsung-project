@@ -15,34 +15,35 @@ Each report is saved as an individual JSON file (YYYY-MM-DD.json) to:
 Output: raw/projectsight/extracted/daily_reports/YYYY-MM-DD.json
 
 RECOMMENDED: Run on Windows with headed mode (real display).
-The script uses Chromium by default and navigates using the "Next record" button.
+The script uses Chromium by default and uses date filtering for efficient extraction.
 
 Usage:
-    # On Windows - best approach (headed mode with real display)
-    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
+    # Incremental update (default: last 14 days, skips existing)
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py
 
-    # Full extraction (all records)
-    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 0
+    # Custom redownload window (last 7 days)
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --redownload-days 7
 
-    # Idempotent mode - skip already extracted reports (run multiple times safely)
-    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --skip-existing --limit 0
-
-    # Extract only new reports since last scrape (auto-detects last scraped date)
-    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 0
-
-    # Extract reports within a specific date range
+    # Extract specific date range
     python scripts/projectsight/process/scrape_projectsight_daily_reports.py --from-date 2024-01-01 --to-date 2024-12-31
 
+    # Force redownload all (ignore existing)
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --force
+
+    # Dry run (show what would be downloaded)
+    python scripts/projectsight/process/scrape_projectsight_daily_reports.py --dry-run
+
     # On Linux with Xvfb (virtual display)
-    xvfb-run -a python scripts/projectsight/process/scrape_projectsight_daily_reports.py --limit 10
+    xvfb-run -a python scripts/projectsight/process/scrape_projectsight_daily_reports.py
 
 Command-line Arguments:
-    --limit N              Limit number of reports to extract (0 = all, default: 10)
-    --skip-existing        Skip already-extracted reports (idempotent mode)
+    --limit N              Limit number of reports to extract (0 = all, default: 0)
+    --redownload-days N    Redownload reports from last N days (default: 14)
     --from-date DATE       Start date for extraction (YYYY-MM-DD or MM/DD/YYYY)
-                           Defaults to day after last scraped date if not specified
     --to-date DATE         End date for extraction (YYYY-MM-DD, MM/DD/YYYY, or "today")
-                           Default: today
+                           Default: yesterday
+    --force                Force redownload all reports (ignore existing)
+    --dry-run              Show what would be downloaded without downloading
     --headless             Run in headless mode
     --output-dir PATH      Custom output directory
 
@@ -62,13 +63,20 @@ import sys
 import json
 import time
 import argparse
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dotenv import load_dotenv
 
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 # Load environment variables (override=True to use .env values over shell env)
 load_dotenv(override=True)
+
+# Import sync logging
+from scripts.shared.sync_log import SyncLog, SyncType
 
 
 def create_scraper():
@@ -315,6 +323,152 @@ def create_scraper():
 
             except Exception as e:
                 print(f"  Navigation error: {e}")
+                return False
+
+        def apply_date_filter(self, from_date: date, to_date: date) -> bool:
+            """Apply date filter to the grid to show only reports in date range.
+
+            This is the key optimization - instead of scrolling through years of data,
+            we filter the grid to only show the target date range.
+
+            Args:
+                from_date: Start date (inclusive)
+                to_date: End date (inclusive)
+
+            Returns:
+                True if filter was applied successfully
+            """
+            print(f"Applying date filter: {from_date.strftime('%m/%d/%Y')} to {to_date.strftime('%m/%d/%Y')}...")
+
+            try:
+                list_frame = self.page.frame_locator('iframe[name="fraMenuContent"]')
+                frame = self.page.frame('fraMenuContent')
+
+                if not frame:
+                    print("  Could not access frame for filtering")
+                    return False
+
+                # Find the date column header and click it to open filter
+                # The Infragistics grid has a filter row or filter icon in the header
+                # Try multiple approaches to open the filter
+
+                # Approach 1: Look for filter icon in the Date column header
+                filter_applied = False
+
+                # Try clicking the filter icon in the Date header
+                try:
+                    # Find the Date column header (usually column index 1)
+                    date_header = list_frame.locator('th:has-text("Date"), th:has-text("Report Date")').first
+                    if date_header.count() > 0:
+                        # Look for filter icon within the header
+                        filter_icon = date_header.locator('[class*="filter"], [title*="filter"], .ui-iggrid-filtericon')
+                        if filter_icon.count() > 0:
+                            filter_icon.click()
+                            time.sleep(1)
+                            filter_applied = True
+                except Exception as e:
+                    print(f"  Filter icon approach failed: {e}")
+
+                # Approach 2: Use the grid's built-in filter row if available
+                if not filter_applied:
+                    try:
+                        # Look for filter input in the Date column
+                        filter_row = list_frame.locator('.ui-iggrid-filterrow, tr.ui-iggrid-filterrow')
+                        if filter_row.count() > 0:
+                            # Find the date filter input (usually second cell)
+                            date_filter_cell = filter_row.locator('td').nth(1)
+                            date_filter_input = date_filter_cell.locator('input')
+                            if date_filter_input.count() > 0:
+                                # Enter date range filter
+                                date_filter_input.fill(f">={from_date.strftime('%m/%d/%Y')}")
+                                date_filter_input.press('Enter')
+                                time.sleep(2)
+                                filter_applied = True
+                    except Exception as e:
+                        print(f"  Filter row approach failed: {e}")
+
+                # Approach 3: Use JavaScript to filter the grid programmatically
+                if not filter_applied:
+                    try:
+                        # Many Infragistics grids expose a JavaScript API
+                        from_str = from_date.strftime('%m/%d/%Y')
+                        to_str = to_date.strftime('%m/%d/%Y')
+
+                        result = frame.evaluate(f"""
+                            (function() {{
+                                // Try to find the grid and apply filter via API
+                                var grid = $(".ui-iggrid").data("igGrid");
+                                if (grid) {{
+                                    // Get the date column key
+                                    var columns = grid.options.columns;
+                                    var dateColKey = null;
+                                    for (var i = 0; i < columns.length; i++) {{
+                                        if (columns[i].headerText &&
+                                            (columns[i].headerText.toLowerCase().includes('date') ||
+                                             columns[i].key.toLowerCase().includes('date'))) {{
+                                            dateColKey = columns[i].key;
+                                            break;
+                                        }}
+                                    }}
+
+                                    if (dateColKey) {{
+                                        // Apply filtering
+                                        grid.dataSource.filter([
+                                            {{fieldName: dateColKey, expr: new Date("{from_str}"), cond: "greaterThanOrEqualTo"}},
+                                            {{fieldName: dateColKey, expr: new Date("{to_str}"), cond: "lessThanOrEqualTo"}}
+                                        ], "AND", true);
+                                        return {{success: true, column: dateColKey}};
+                                    }}
+                                    return {{success: false, error: "Date column not found"}};
+                                }}
+                                return {{success: false, error: "Grid not found"}};
+                            }})()
+                        """)
+
+                        if result and result.get('success'):
+                            print(f"  Filter applied via JS API to column: {result.get('column')}")
+                            filter_applied = True
+                            time.sleep(2)
+                        else:
+                            print(f"  JS API filter failed: {result}")
+                    except Exception as e:
+                        print(f"  JS API approach failed: {e}")
+
+                # Approach 4: Click on the header to sort by date (newest first)
+                # and then use row navigation with early termination
+                if not filter_applied:
+                    try:
+                        # At minimum, ensure sorted by date descending (newest first)
+                        date_header = list_frame.locator('th:has-text("Date")').first
+                        if date_header.count() > 0:
+                            # Check current sort state
+                            sort_indicator = date_header.locator('.ui-iggrid-colasc, .ui-iggrid-coldesc')
+                            if sort_indicator.count() == 0:
+                                # Click to sort
+                                date_header.click()
+                                time.sleep(1)
+                            # Check if sorted descending (we want newest first)
+                            if date_header.locator('.ui-iggrid-colasc').count() > 0:
+                                # Currently ascending, click again for descending
+                                date_header.click()
+                                time.sleep(1)
+                            print("  Sorted by date (newest first) - will use early termination")
+                            filter_applied = True
+                    except Exception as e:
+                        print(f"  Sort approach failed: {e}")
+
+                if filter_applied:
+                    # Wait for grid to refresh
+                    time.sleep(2)
+                    new_count = self.get_report_count()
+                    print(f"  Filter active, showing {new_count} reports")
+                    return True
+                else:
+                    print("  Warning: Could not apply date filter, will use full scan")
+                    return False
+
+            except Exception as e:
+                print(f"  Error applying date filter: {e}")
                 return False
 
         def get_report_count(self) -> int:
@@ -1327,27 +1481,42 @@ def load_existing_data(output_file: Path) -> tuple[dict, set]:
 
 def main():
     """Main entry point."""
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(description='Scrape ProjectSight Daily Reports')
-    parser.add_argument('--limit', type=int, default=10, help='Limit number of reports to extract')
-    parser.add_argument('--headless', action='store_true', help='Run in headless mode')
-    parser.add_argument('--output-dir', type=str, default=None, help='Output directory for individual report files')
-    parser.add_argument('--skip-existing', action='store_true',
-                        help='Skip reports that have already been extracted (idempotent mode)')
+    parser.add_argument('--limit', type=int, default=0, help='Limit number of reports to extract (0 = all)')
+    parser.add_argument('--redownload-days', type=int, default=14,
+                        help='Redownload reports from last N days to capture updates (default: 14)')
     parser.add_argument('--from-date', type=str, default=None,
-                        help='Start date for extraction (YYYY-MM-DD or MM/DD/YYYY). Defaults to day after last scraped date.')
+                        help='Start date for extraction (YYYY-MM-DD or MM/DD/YYYY)')
     parser.add_argument('--to-date', type=str, default='yesterday',
                         help='End date for extraction (YYYY-MM-DD, MM/DD/YYYY, "today", or "yesterday"). Default: yesterday')
+    parser.add_argument('--force', action='store_true',
+                        help='Force redownload all reports (ignore existing)')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='Show what would be downloaded without downloading')
+    parser.add_argument('--headless', action='store_true', help='Run in headless mode')
+    parser.add_argument('--output-dir', type=str, default=None, help='Output directory for individual report files')
     args = parser.parse_args()
 
     # Check headless setting from env
     headless = args.headless or os.getenv('PROJECTSIGHT_HEADLESS', 'false').lower() == 'true'
 
+    # Determine sync type
+    if args.dry_run:
+        sync_type = SyncType.DRY_RUN
+    elif args.force:
+        sync_type = SyncType.FULL
+    else:
+        sync_type = SyncType.INCREMENTAL
+
     print("=" * 60)
     print("ProjectSight Daily Reports Scraper")
     print("=" * 60)
+    print(f"Mode: {sync_type.value}")
     print(f"Headless mode: {headless}")
-    print(f"Record limit: {args.limit}")
-    print(f"Skip existing: {args.skip_existing}")
+    print(f"Record limit: {args.limit if args.limit > 0 else 'unlimited'}")
+    print(f"Redownload window: {args.redownload_days} days")
     if args.from_date:
         print(f"From date: {args.from_date}")
     if args.to_date:
@@ -1355,9 +1524,6 @@ def main():
 
     # Create output path using project settings
     try:
-        # Add project root to path for imports
-        project_root = Path(__file__).parent.parent.parent.parent
-        sys.path.insert(0, str(project_root))
         from src.config.settings import Settings
         base_output_dir = Settings.PROJECTSIGHT_RAW_DIR / 'extracted'
     except ImportError:
@@ -1376,7 +1542,7 @@ def main():
         print(f"Error: Could not parse --to-date: {args.to_date}")
         return 1
 
-    # Auto-detect from_date if not specified
+    # Determine from_date
     from_date = None
     if args.from_date:
         from_date = parse_date_arg(args.from_date)
@@ -1384,49 +1550,26 @@ def main():
             print(f"Error: Could not parse --from-date: {args.from_date}")
             return 1
     else:
-        # Auto-detect: start from 14 days ago (to always capture recent updates)
-        # This ensures we redownload the last 14 days to catch any changes
-        from datetime import timedelta
-        from_date = datetime.now().date() - timedelta(days=14)
-        print(f"Auto-detected from-date (14 days ago): {from_date.strftime('%Y-%m-%d')}")
+        # Default: start from redownload_days ago
+        from_date = datetime.now().date() - timedelta(days=args.redownload_days)
+        print(f"Auto-detected from-date ({args.redownload_days} days ago): {from_date.strftime('%Y-%m-%d')}")
 
-    # Get already-extracted dates from individual files
+    # Count existing files before scrape
+    records_before = len(list(reports_dir.glob('*.json')))
+
+    # Get already-extracted dates from individual files (unless --force)
     extracted_dates = set()
-    if args.skip_existing:
+    if not args.force:
         extracted_dates = get_extracted_dates(reports_dir)
         if extracted_dates:
             print(f"  Found {len(extracted_dates)} already-extracted reports")
 
-    # Always redownload last 14 days (to capture any updates)
-    # Remove any dates from extracted_dates that are within the last 14 days
-    from datetime import timedelta
-    today = datetime.now().date()
-    fourteen_days_ago = today - timedelta(days=14)
+        # Remove dates within redownload window from skip set
+        today = datetime.now().date()
+        redownload_cutoff = today - timedelta(days=args.redownload_days)
 
-    dates_to_redownload = set()
-    for date_str in list(extracted_dates):
-        try:
-            # Parse normalized date format (M/D/YYYY)
-            parts = date_str.split('/')
-            if len(parts) == 3:
-                month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
-                report_date = date(year, month, day)
-
-                # Mark for redownload if within last 14 days
-                if report_date >= fourteen_days_ago:
-                    dates_to_redownload.add(date_str)
-        except (ValueError, TypeError):
-            pass
-
-    if dates_to_redownload:
-        print(f"  Will redownload {len(dates_to_redownload)} reports from last 14 days (to capture updates)")
-        extracted_dates -= dates_to_redownload
-
-    # If date range is specified, filter extracted_dates to only those in range
-    if from_date or to_date:
-        print(f"Filtering reports to date range: {from_date.strftime('%Y-%m-%d') if from_date else 'earliest'} to {to_date.strftime('%Y-%m-%d')}")
-        filtered_extracted = set()
-        for date_str in extracted_dates:
+        dates_to_redownload = set()
+        for date_str in list(extracted_dates):
             try:
                 # Parse normalized date format (M/D/YYYY)
                 parts = date_str.split('/')
@@ -1434,19 +1577,98 @@ def main():
                     month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
                     report_date = date(year, month, day)
 
-                    # Check if report is within the date range
-                    if from_date and report_date < from_date:
-                        continue
-                    if to_date and report_date > to_date:
-                        continue
-
-                    filtered_extracted.add(date_str)
+                    # Mark for redownload if within redownload window
+                    if report_date >= redownload_cutoff:
+                        dates_to_redownload.add(date_str)
             except (ValueError, TypeError):
                 pass
 
-        extracted_dates = filtered_extracted
-        if extracted_dates:
-            print(f"  {len(extracted_dates)} older reports outside 14-day window (will skip these)")
+        if dates_to_redownload:
+            print(f"  Will redownload {len(dates_to_redownload)} reports from last {args.redownload_days} days")
+            extracted_dates -= dates_to_redownload
+
+    # Filter extracted_dates to only those in the target date range
+    print(f"Date range: {from_date.strftime('%Y-%m-%d')} to {to_date.strftime('%Y-%m-%d')}")
+    filtered_extracted = set()
+    for date_str in extracted_dates:
+        try:
+            parts = date_str.split('/')
+            if len(parts) == 3:
+                month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+                report_date = date(year, month, day)
+
+                # Check if report is within the date range
+                if from_date and report_date < from_date:
+                    continue
+                if to_date and report_date > to_date:
+                    continue
+
+                filtered_extracted.add(date_str)
+        except (ValueError, TypeError):
+            pass
+
+    extracted_dates = filtered_extracted
+    if extracted_dates:
+        print(f"  {len(extracted_dates)} reports in range already exist (will skip)")
+
+    # Calculate expected dates in range
+    expected_dates = []
+    current = from_date
+    while current <= to_date:
+        expected_dates.append(current)
+        current += timedelta(days=1)
+
+    # Determine which dates need to be scraped
+    dates_to_scrape = []
+    for d in expected_dates:
+        normalized = date_to_normalized_string(d)
+        if normalized not in extracted_dates:
+            dates_to_scrape.append(d)
+
+    print(f"  Dates in range: {len(expected_dates)}")
+    print(f"  Dates to scrape: {len(dates_to_scrape)}")
+
+    # Dry run mode - show what would be scraped and exit
+    if args.dry_run:
+        print("\nDRY RUN - Would scrape the following dates:")
+        print("-" * 40)
+        for d in dates_to_scrape[:20]:
+            print(f"  {d.strftime('%Y-%m-%d')}")
+        if len(dates_to_scrape) > 20:
+            print(f"  ... and {len(dates_to_scrape) - 20} more")
+        print("-" * 40)
+
+        # Log the dry run
+        SyncLog.log(
+            pipeline="projectsight_daily",
+            sync_type=SyncType.DRY_RUN,
+            files_processed=0,
+            files_skipped=len(extracted_dates),
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="success",
+            message=f"Would scrape {len(dates_to_scrape)} dates"
+        )
+        return 0
+
+    # No dates to scrape
+    if not dates_to_scrape:
+        print("\nNo new dates to scrape - all reports in range already exist!")
+
+        # Log no-change
+        SyncLog.log(
+            pipeline="projectsight_daily",
+            sync_type=sync_type,
+            files_processed=0,
+            files_skipped=len(extracted_dates),
+            records_before=records_before,
+            records_after=records_before,
+            duration_seconds=time.time() - start_time,
+            status="no_change",
+            message="All reports in range already exist"
+        )
+        return 0
 
     # Create and run scraper
     ScraperClass = create_scraper()
@@ -1455,41 +1677,36 @@ def main():
     # Track extraction stats
     extracted_count = 0
     skipped_count = 0
+    error_count = 0
 
     # Save function - saves each report immediately to its own file
     def save_report_immediately(new_report, all_new_reports):
-        """Save each report to its own JSON file immediately after extraction.
-
-        Skips saving if:
-        1. The report date already exists as a file (idempotent mode)
-        2. The report date is outside the specified date range
-        """
+        """Save each report to its own JSON file immediately after extraction."""
         nonlocal extracted_count, skipped_count
 
-        # Check if this report date already exists (normalize for comparison)
         report_date = new_report.get('reportDate', '')
         normalized = normalize_date(report_date)
 
         # Check date range filter
-        if from_date or to_date:
-            try:
-                parts = normalized.split('/')
-                if len(parts) == 3:
-                    month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
-                    report_obj_date = date(year, month, day)
+        try:
+            parts = normalized.split('/')
+            if len(parts) == 3:
+                month, day, year = int(parts[0]), int(parts[1]), int(parts[2])
+                report_obj_date = date(year, month, day)
 
-                    if from_date and report_obj_date < from_date:
-                        skipped_count += 1
-                        print(f"    Skipping (before date range): {report_date}")
-                        return
-                    if to_date and report_obj_date > to_date:
-                        skipped_count += 1
-                        print(f"    Skipping (after date range): {report_date}")
-                        return
-            except (ValueError, TypeError):
-                pass
+                if from_date and report_obj_date < from_date:
+                    skipped_count += 1
+                    print(f"    Skipping (before date range): {report_date}")
+                    return
+                if to_date and report_obj_date > to_date:
+                    skipped_count += 1
+                    print(f"    Skipping (after date range): {report_date}")
+                    return
+        except (ValueError, TypeError):
+            pass
 
-        if args.skip_existing and normalized in extracted_dates:
+        # Skip if already exists (unless force mode)
+        if not args.force and normalized in extracted_dates:
             skipped_count += 1
             print(f"    Skipping (already exists): {report_date}")
             return
@@ -1506,29 +1723,69 @@ def main():
 
         if not scraper.login():
             print("Login failed!")
+            SyncLog.log(
+                pipeline="projectsight_daily",
+                sync_type=sync_type,
+                files_processed=0,
+                files_failed=1,
+                records_before=records_before,
+                records_after=records_before,
+                duration_seconds=time.time() - start_time,
+                status="error",
+                message="Login failed"
+            )
             return 1
 
         if not scraper.navigate_to_daily_reports():
             print("Navigation failed!")
+            SyncLog.log(
+                pipeline="projectsight_daily",
+                sync_type=sync_type,
+                files_processed=0,
+                files_failed=1,
+                records_before=records_before,
+                records_after=records_before,
+                duration_seconds=time.time() - start_time,
+                status="error",
+                message="Navigation failed"
+            )
             return 1
+
+        # Apply date filter to the grid for efficient extraction
+        scraper.apply_date_filter(from_date, to_date)
 
         # Extract reports - each one is saved immediately via callback
         reports = scraper.extract_all_reports(
-            limit=args.limit,
-            skip_dates=extracted_dates if args.skip_existing else None,
+            limit=args.limit if args.limit > 0 else None,
+            skip_dates=extracted_dates if not args.force else None,
             on_record_extracted=save_report_immediately,
             from_date=from_date,
             to_date=to_date
         )
 
         # Final summary
-        total_files = len(list(reports_dir.glob('*.json')))
+        records_after = len(list(reports_dir.glob('*.json')))
+        duration = time.time() - start_time
 
         print(f"\nExtraction complete!")
         print(f"  New reports extracted: {extracted_count}")
         print(f"  Skipped (already existed): {skipped_count}")
-        print(f"  Total reports in {reports_dir.name}/: {total_files}")
+        print(f"  Total reports in {reports_dir.name}/: {records_after}")
+        print(f"  Duration: {duration:.1f}s")
         print(f"  Output directory: {reports_dir}")
+
+        # Log the sync
+        SyncLog.log(
+            pipeline="projectsight_daily",
+            sync_type=sync_type,
+            files_processed=extracted_count,
+            files_skipped=skipped_count,
+            records_before=records_before,
+            records_after=records_after,
+            duration_seconds=duration,
+            status="success" if error_count == 0 else "partial",
+            message=f"Date range: {from_date} to {to_date}"
+        )
 
         return 0
 
@@ -1536,6 +1793,19 @@ def main():
         print(f"Error: {e}")
         import traceback
         traceback.print_exc()
+
+        # Log the error
+        SyncLog.log(
+            pipeline="projectsight_daily",
+            sync_type=sync_type,
+            files_processed=extracted_count,
+            files_failed=1,
+            records_before=records_before,
+            records_after=len(list(reports_dir.glob('*.json'))),
+            duration_seconds=time.time() - start_time,
+            status="error",
+            message=str(e)[:200]
+        )
         return 1
 
     finally:
