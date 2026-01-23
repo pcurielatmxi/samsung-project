@@ -81,6 +81,9 @@ def build_dim_location(location_master: pd.DataFrame, preserve_extra: bool = Fal
     rows = []
     location_id = 1
 
+    # Check if In_Drawings column exists in location_master
+    has_in_drawings = 'In_Drawings' in location_master.columns
+
     # Process each row from location_master
     for _, row in location_master.iterrows():
         entry = {
@@ -96,6 +99,7 @@ def build_dim_location(location_master: pd.DataFrame, preserve_extra: bool = Fal
             'grid_col_max': row['Col_Max'] if pd.notna(row['Col_Max']) else None,
             'status': row['Action_Status'],
             'task_count': row['Task_Count'] if pd.notna(row['Task_Count']) else 0,
+            'in_drawings': row['In_Drawings'] if has_in_drawings and pd.notna(row.get('In_Drawings')) else None,
         }
 
         # Build building_level key
@@ -124,6 +128,7 @@ def build_dim_location(location_master: pd.DataFrame, preserve_extra: bool = Fal
             'status': 'BUILDING_WIDE',
             'task_count': 0,
             'building_level': f"{bw_entry['building']}-ALL",
+            'in_drawings': True,
         }
         rows.append(entry)
         location_id += 1
@@ -145,6 +150,7 @@ def build_dim_location(location_master: pd.DataFrame, preserve_extra: bool = Fal
         'status': 'SITE_WIDE',
         'task_count': 0,
         'building_level': 'SITE',
+        'in_drawings': True,
     }
     rows.append(entry)
     location_id += 1
@@ -176,6 +182,7 @@ def build_dim_location(location_master: pd.DataFrame, preserve_extra: bool = Fal
                         'status': erow['status'] if pd.notna(erow['status']) else 'PRESERVED',
                         'task_count': erow['task_count'] if pd.notna(erow['task_count']) else 0,
                         'building_level': erow['building_level'] if pd.notna(erow['building_level']) else None,
+                        'in_drawings': erow['in_drawings'] if 'in_drawings' in erow and pd.notna(erow['in_drawings']) else None,
                     }
                     rows.append(entry)
                     location_id += 1
@@ -187,7 +194,8 @@ def build_dim_location(location_master: pd.DataFrame, preserve_extra: bool = Fal
     columns = [
         'location_id', 'location_code', 'location_type', 'room_name',
         'building', 'level', 'grid_row_min', 'grid_row_max',
-        'grid_col_min', 'grid_col_max', 'status', 'task_count', 'building_level'
+        'grid_col_min', 'grid_col_max', 'status', 'task_count', 'building_level',
+        'in_drawings'
     ]
     df = df[columns]
 

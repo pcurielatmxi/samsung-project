@@ -5,13 +5,15 @@ Populate Grid Bounds in location_master.csv
 Reads grid mappings from Samsung_FAB_Codes_by_Gridline_3.xlsx and updates
 location_master.csv with row/column bounds for each location.
 
+Also checks PDF floor drawings to flag which rooms are visible in drawings.
+
 Matching Strategy:
 1. Room codes: Direct match (FAB110101 -> FAB110101)
 2. Elevators: Number match (ELV-01 -> FAB1-EL01, ELV-22 -> FAB1-EL22)
 3. Stairs: Number match (STR-01 -> FAB1-ST01, STR-22 -> FAB1-ST22)
 
 Generates:
-- Updated location_master.csv with grid bounds
+- Updated location_master.csv with grid bounds and in_drawings flag
 - rooms_needing_gridlines.csv for gaps needing manual mapping
 
 Usage:
@@ -32,6 +34,72 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.config.settings import settings
+
+
+def extract_codes_from_drawings() -> dict:
+    """Extract all location codes from PDF floor drawings.
+
+    Extracts:
+    - Room codes: FAB1 + 5 digits (e.g., FAB110101)
+    - Elevator codes: FAB1-EL + number (e.g., FAB1-EL01)
+    - Stair codes: FAB1-ST + number (e.g., FAB1-ST01)
+
+    Returns:
+        Dict with keys 'rooms', 'elevators', 'stairs' containing sets of codes
+    """
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        print("Warning: PyMuPDF not installed, skipping drawings check")
+        return {'rooms': set(), 'elevators': set(), 'stairs': set()}
+
+    drawings_dir = settings.RAW_DATA_DIR / 'drawings'
+    if not drawings_dir.exists():
+        print(f"Warning: Drawings folder not found: {drawings_dir}")
+        return {'rooms': set(), 'elevators': set(), 'stairs': set()}
+
+    pdf_files = list(drawings_dir.glob('*.pdf'))
+    if not pdf_files:
+        print("Warning: No PDF files found in drawings folder")
+        return {'rooms': set(), 'elevators': set(), 'stairs': set()}
+
+    all_rooms = set()
+    all_elevators = set()
+    all_stairs = set()
+
+    print(f"\nExtracting location codes from {len(pdf_files)} PDF drawings...")
+
+    for pdf_path in sorted(pdf_files):
+        doc = fitz.open(pdf_path)
+        text = ""
+        for page in doc:
+            text += page.get_text()
+        doc.close()
+
+        # Find room codes (9 characters: FAB1 + 5 digits)
+        rooms = set(re.findall(r'FAB1\d{5}', text, re.IGNORECASE))
+        rooms = {c.upper() for c in rooms}
+        all_rooms.update(rooms)
+
+        # Find elevator codes (FAB1-EL + number, e.g., FAB1-EL01, FAB1-EL18)
+        elevators = set(re.findall(r'FAB1-EL\d+[A-Z]?', text, re.IGNORECASE))
+        elevators = {c.upper() for c in elevators}
+        all_elevators.update(elevators)
+
+        # Find stair codes (FAB1-ST + number, e.g., FAB1-ST01, FAB1-ST50)
+        stairs = set(re.findall(r'FAB1-ST\d+', text, re.IGNORECASE))
+        stairs = {c.upper() for c in stairs}
+        all_stairs.update(stairs)
+
+        print(f"  {pdf_path.name}: {len(rooms)} rooms, {len(elevators)} elevators, {len(stairs)} stairs")
+
+    print(f"  Total unique: {len(all_rooms)} rooms, {len(all_elevators)} elevators, {len(all_stairs)} stairs")
+
+    return {
+        'rooms': all_rooms,
+        'elevators': all_elevators,
+        'stairs': all_stairs
+    }
 
 
 def load_excel_bounds() -> pd.DataFrame:
@@ -107,9 +175,29 @@ def populate_bounds(dry_run: bool = False) -> dict:
     master_path = settings.RAW_DATA_DIR / 'location_mappings' / 'location_master.csv'
     loc_master = pd.read_csv(master_path)
 
+    # Extract codes from PDF drawings
+    drawing_codes = extract_codes_from_drawings()
+
     # Build lookups
     bounds_lookup = {row['fab_code'].upper(): row for _, row in bounds.iterrows()}
     elev_bounds, stair_bounds = build_elev_stair_mapping(bounds)
+
+    # Build elevator/stair number lookups from drawings
+    # FAB1-EL01 -> 01, FAB1-ST22 -> 22
+    elev_numbers_in_drawings = set()
+    for code in drawing_codes['elevators']:
+        match = re.search(r'FAB1-EL(\d+[A-Z]?)', code)
+        if match:
+            elev_numbers_in_drawings.add(match.group(1))
+
+    stair_numbers_in_drawings = set()
+    for code in drawing_codes['stairs']:
+        match = re.search(r'FAB1-ST(\d+)', code)
+        if match:
+            stair_numbers_in_drawings.add(match.group(1))
+
+    # Initialize in_drawings column
+    loc_master['In_Drawings'] = None
 
     # Statistics
     stats = {
@@ -127,6 +215,25 @@ def populate_bounds(dry_run: bool = False) -> dict:
         code_upper = code.upper()
         loc_type = row['Location_Type']
         matched_bounds = None
+        in_drawings = True  # Default True for multi-room types (GRIDLINE, LEVEL, BUILDING, AREA, SITE)
+
+        # Determine in_drawings based on location type
+        if loc_type == 'ROOM':
+            in_drawings = code_upper in drawing_codes['rooms']
+        elif loc_type == 'ELEVATOR':
+            num = extract_elev_stair_number(code, 'ELV-')
+            if num:
+                in_drawings = num in elev_numbers_in_drawings
+            else:
+                # Letter-based codes (ELV-S, ELV-H) - not in drawings naming convention
+                in_drawings = False
+        elif loc_type == 'STAIR':
+            num = extract_elev_stair_number(code, 'STR-')
+            if num:
+                in_drawings = num in stair_numbers_in_drawings
+            else:
+                # Letter-based codes (STR-R, STR-T) - not in drawings naming convention
+                in_drawings = False
 
         # Try direct match (rooms)
         if code_upper in bounds_lookup:
@@ -153,13 +260,17 @@ def populate_bounds(dry_run: bool = False) -> dict:
                 stats['stair_missing'].append(code)
 
         # Track missing rooms
-        elif loc_type == 'ROOM' and pd.isna(row['Row_Min']):
+        if loc_type == 'ROOM' and code_upper not in bounds_lookup and pd.isna(row['Row_Min']):
             stats['rooms_missing'].append({
                 'Code': code,
                 'Building': row['Building'],
                 'Level': row['Level'],
-                'Task_Count': row['Task_Count']
+                'Task_Count': row['Task_Count'],
+                'in_drawings': in_drawings
             })
+
+        # Set in_drawings flag
+        loc_master.at[idx, 'In_Drawings'] = in_drawings
 
         # Apply bounds if found
         if matched_bounds is not None:
