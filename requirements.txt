@@ -45,6 +45,7 @@ scipy>=1.11.0            # Scientific computing (for KDE, etc.)
 # ============================================================================
 matplotlib>=3.8.0
 pillow>=10.0.0
+plotly>=5.18.0           # Interactive HTML visualizations
 
 # ============================================================================
 # Database

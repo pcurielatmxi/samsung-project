@@ -1110,3 +1110,342 @@ def generate_all_visualizations(
         print(f"All visualizations saved to: {output_dir}")
 
     return data
+
+
+# =============================================================================
+# Interactive Visualizations (Plotly)
+# =============================================================================
+
+def plot_interactive_clusters(
+    data: VisualizationData,
+    output_path: Path,
+    title: str = "Document Embeddings - Interactive",
+    verbose: bool = True
+):
+    """Create interactive 2D or 3D cluster visualization with Plotly.
+
+    Args:
+        data: Prepared visualization data
+        output_path: Path to save HTML file
+        title: Plot title
+        verbose: Print progress
+    """
+    try:
+        import plotly.graph_objects as go
+        import plotly.express as px
+    except ImportError:
+        raise ImportError("plotly not installed. Run: pip install plotly")
+
+    if verbose:
+        print(f"Creating interactive {data.n_dimensions}D cluster plot...")
+
+    # Build hover text with document info
+    hover_texts = []
+    for i, (text, meta) in enumerate(zip(data.texts, data.metadata)):
+        # Truncate text for hover
+        preview = text[:200].replace('\n', ' ')
+        if len(text) > 200:
+            preview += "..."
+
+        hover = f"<b>{meta.get('source_file', 'Unknown')}</b><br>"
+        hover += f"Type: {meta.get('document_type', 'N/A')}<br>"
+        hover += f"Author: {meta.get('author', 'N/A')}<br>"
+        hover += f"Date: {meta.get('file_date', 'N/A')}<br>"
+        hover += f"<br>{preview}"
+        hover_texts.append(hover)
+
+    # Get cluster assignments and colors
+    unique_clusters = sorted(set(data.cluster_labels))
+
+    # Color palette
+    n_clusters = len([c for c in unique_clusters if c != -1])
+    if n_clusters <= 10:
+        colors = px.colors.qualitative.Plotly
+    else:
+        colors = px.colors.qualitative.Alphabet
+
+    fig = go.Figure()
+
+    for cluster_id in unique_clusters:
+        mask = data.cluster_labels == cluster_id
+        indices = np.where(mask)[0]
+
+        if cluster_id == -1:
+            name = "Noise"
+            color = "rgba(180, 180, 180, 0.4)"
+            size = 4
+        else:
+            info = data.cluster_info[cluster_id]
+            name = f"{info.label} ({info.size})"
+            color = colors[cluster_id % len(colors)]
+            size = 6
+
+        if data.n_dimensions == 3:
+            fig.add_trace(go.Scatter3d(
+                x=data.embeddings_reduced[mask, 0],
+                y=data.embeddings_reduced[mask, 1],
+                z=data.embeddings_reduced[mask, 2],
+                mode='markers',
+                name=name,
+                marker=dict(size=size, color=color, opacity=0.7),
+                hovertext=[hover_texts[i] for i in indices],
+                hoverinfo='text'
+            ))
+        else:
+            fig.add_trace(go.Scatter(
+                x=data.embeddings_reduced[mask, 0],
+                y=data.embeddings_reduced[mask, 1],
+                mode='markers',
+                name=name,
+                marker=dict(size=size, color=color, opacity=0.7),
+                hovertext=[hover_texts[i] for i in indices],
+                hoverinfo='text'
+            ))
+
+    # Layout
+    if data.n_dimensions == 3:
+        fig.update_layout(
+            title=dict(text=title, font=dict(size=16)),
+            scene=dict(
+                xaxis_title="UMAP 1",
+                yaxis_title="UMAP 2",
+                zaxis_title="UMAP 3",
+            ),
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=1.02,
+                font=dict(size=10)
+            ),
+            margin=dict(l=0, r=200, t=50, b=0),
+            hoverlabel=dict(
+                bgcolor="white",
+                font_size=11,
+                font_family="monospace"
+            )
+        )
+    else:
+        fig.update_layout(
+            title=dict(text=title, font=dict(size=16)),
+            xaxis_title="UMAP 1",
+            yaxis_title="UMAP 2",
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=1.02,
+                font=dict(size=10)
+            ),
+            hovermode='closest',
+            hoverlabel=dict(
+                bgcolor="white",
+                font_size=11,
+                font_family="monospace"
+            )
+        )
+
+    # Save
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.write_html(str(output_path), include_plotlyjs=True)
+
+    if verbose:
+        print(f"  Saved: {output_path}")
+
+
+def plot_interactive_by_metadata(
+    data: VisualizationData,
+    output_path: Path,
+    metadata_field: str,
+    title: str = None,
+    verbose: bool = True
+):
+    """Create interactive visualization colored by metadata field.
+
+    Args:
+        data: Prepared visualization data
+        output_path: Path to save HTML file
+        metadata_field: Field to color by
+        title: Plot title
+        verbose: Print progress
+    """
+    try:
+        import plotly.graph_objects as go
+        import plotly.express as px
+    except ImportError:
+        raise ImportError("plotly not installed")
+
+    if verbose:
+        print(f"Creating interactive {metadata_field} plot...")
+
+    title = title or f"Document Embeddings by {metadata_field.replace('_', ' ').title()}"
+
+    # Get unique values
+    values = [m.get(metadata_field, "unknown") for m in data.metadata]
+    unique_values = sorted(set(values))
+
+    # Color palette
+    if len(unique_values) <= 10:
+        colors = px.colors.qualitative.Plotly
+    else:
+        colors = px.colors.qualitative.Alphabet
+
+    # Build hover text
+    hover_texts = []
+    for text, meta in zip(data.texts, data.metadata):
+        preview = text[:200].replace('\n', ' ')
+        if len(text) > 200:
+            preview += "..."
+        hover = f"<b>{meta.get('source_file', 'Unknown')}</b><br>"
+        hover += f"Type: {meta.get('document_type', 'N/A')}<br>"
+        hover += f"Author: {meta.get('author', 'N/A')}<br>"
+        hover += f"<br>{preview}"
+        hover_texts.append(hover)
+
+    fig = go.Figure()
+
+    for i, value in enumerate(unique_values):
+        mask = np.array([v == value for v in values])
+        indices = np.where(mask)[0]
+        count = mask.sum()
+
+        if data.n_dimensions == 3:
+            fig.add_trace(go.Scatter3d(
+                x=data.embeddings_reduced[mask, 0],
+                y=data.embeddings_reduced[mask, 1],
+                z=data.embeddings_reduced[mask, 2],
+                mode='markers',
+                name=f"{value} ({count})",
+                marker=dict(size=5, color=colors[i % len(colors)], opacity=0.7),
+                hovertext=[hover_texts[j] for j in indices],
+                hoverinfo='text'
+            ))
+        else:
+            fig.add_trace(go.Scatter(
+                x=data.embeddings_reduced[mask, 0],
+                y=data.embeddings_reduced[mask, 1],
+                mode='markers',
+                name=f"{value} ({count})",
+                marker=dict(size=5, color=colors[i % len(colors)], opacity=0.7),
+                hovertext=[hover_texts[j] for j in indices],
+                hoverinfo='text'
+            ))
+
+    # Layout
+    if data.n_dimensions == 3:
+        fig.update_layout(
+            title=dict(text=title, font=dict(size=16)),
+            scene=dict(
+                xaxis_title="UMAP 1",
+                yaxis_title="UMAP 2",
+                zaxis_title="UMAP 3",
+            ),
+            legend=dict(yanchor="top", y=0.99, xanchor="left", x=1.02),
+            margin=dict(l=0, r=200, t=50, b=0),
+        )
+    else:
+        fig.update_layout(
+            title=dict(text=title, font=dict(size=16)),
+            xaxis_title="UMAP 1",
+            yaxis_title="UMAP 2",
+            legend=dict(yanchor="top", y=0.99, xanchor="left", x=1.02),
+            hovermode='closest',
+        )
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.write_html(str(output_path), include_plotlyjs=True)
+
+    if verbose:
+        print(f"  Saved: {output_path}")
+
+
+def generate_interactive_visualizations(
+    output_dir: Path,
+    source_type: Optional[str] = None,
+    limit: Optional[int] = None,
+    n_neighbors: int = 15,
+    min_dist: float = 0.1,
+    min_cluster_size: int = 50,
+    n_dimensions: int = 2,
+    generate_labels: bool = True,
+    verbose: bool = True
+) -> VisualizationData:
+    """Generate interactive HTML visualizations.
+
+    Args:
+        output_dir: Directory to save HTML files
+        source_type: Filter by source type
+        limit: Limit chunks
+        n_neighbors: UMAP parameter
+        min_dist: UMAP parameter
+        min_cluster_size: HDBSCAN parameter
+        n_dimensions: 2 or 3
+        generate_labels: Use LLM for cluster labels
+        verbose: Print progress
+
+    Returns:
+        The prepared VisualizationData
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Prepare data
+    data = prepare_visualization(
+        source_type=source_type,
+        limit=limit,
+        n_neighbors=n_neighbors,
+        min_dist=min_dist,
+        min_cluster_size=min_cluster_size,
+        n_dimensions=n_dimensions,
+        generate_labels=generate_labels,
+        verbose=verbose
+    )
+
+    if verbose:
+        print()
+        print(f"Generating interactive {n_dimensions}D visualizations...")
+
+    source_suffix = f"_{source_type}" if source_type else ""
+
+    # Main cluster view
+    plot_interactive_clusters(
+        data,
+        output_dir / f"clusters_interactive{source_suffix}.html",
+        title=f"Document Embeddings - Clusters ({n_dimensions}D)" + (f" [{source_type}]" if source_type else ""),
+        verbose=verbose
+    )
+
+    # By metadata fields
+    for field in ["document_type", "author", "source_type"]:
+        has_data = any(m.get(field) for m in data.metadata)
+        if has_data:
+            plot_interactive_by_metadata(
+                data,
+                output_dir / f"interactive_by_{field}{source_suffix}.html",
+                field,
+                verbose=verbose
+            )
+
+    # Save cluster summary
+    cluster_summary = {
+        str(cid): {
+            "label": info.label,
+            "size": info.size,
+            "centroid": info.centroid,
+        }
+        for cid, info in data.cluster_info.items()
+    }
+
+    summary_path = output_dir / f"cluster_summary{source_suffix}.json"
+    with open(summary_path, "w") as f:
+        json.dump(cluster_summary, f, indent=2)
+
+    if verbose:
+        print(f"  Saved: {summary_path}")
+        print()
+        print(f"Interactive visualizations saved to: {output_dir}")
+        print("Open the HTML files in a browser to explore.")
+
+    return data

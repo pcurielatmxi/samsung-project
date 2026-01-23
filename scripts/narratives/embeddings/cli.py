@@ -13,7 +13,7 @@ from .store import (
     search_chunks,
     ChunkResult
 )
-from .visualize import generate_all_visualizations, prepare_visualization
+from .visualize import generate_all_visualizations, generate_interactive_visualizations, prepare_visualization
 
 
 def cmd_build(args):
@@ -215,25 +215,39 @@ def cmd_visualize(args):
     n_dimensions = 3 if args.three_d else 2
 
     try:
-        data = generate_all_visualizations(
-            output_dir=output_dir,
-            source_type=args.source,
-            limit=args.limit,
-            n_neighbors=args.n_neighbors,
-            min_dist=args.min_dist,
-            min_cluster_size=args.min_cluster_size,
-            n_dimensions=n_dimensions,
-            generate_labels=not args.no_labels,
-            create_gif=args.gif,
-            verbose=True
-        )
+        if args.interactive:
+            data = generate_interactive_visualizations(
+                output_dir=output_dir,
+                source_type=args.source,
+                limit=args.limit,
+                n_neighbors=args.n_neighbors,
+                min_dist=args.min_dist,
+                min_cluster_size=args.min_cluster_size,
+                n_dimensions=n_dimensions,
+                generate_labels=not args.no_labels,
+                verbose=True
+            )
+        else:
+            data = generate_all_visualizations(
+                output_dir=output_dir,
+                source_type=args.source,
+                limit=args.limit,
+                n_neighbors=args.n_neighbors,
+                min_dist=args.min_dist,
+                min_cluster_size=args.min_cluster_size,
+                n_dimensions=n_dimensions,
+                generate_labels=not args.no_labels,
+                create_gif=args.gif,
+                verbose=True
+            )
 
         # Print summary
         n_clusters = len([c for c in data.cluster_info if c != -1])
         n_noise = (data.cluster_labels == -1).sum()
+        mode = "Interactive" if args.interactive else "Static"
         print()
         print("=" * 60)
-        print(f"Visualization Summary ({n_dimensions}D)")
+        print(f"Visualization Summary ({n_dimensions}D {mode})")
         print("=" * 60)
         print(f"Total points: {len(data.ids):,}")
         print(f"Clusters: {n_clusters}")
@@ -250,7 +264,7 @@ def cmd_visualize(args):
 
     except ImportError as e:
         print(f"Error: Missing dependency - {e}")
-        print("Install with: pip install umap-learn hdbscan matplotlib scipy")
+        print("Install with: pip install umap-learn hdbscan matplotlib scipy plotly")
         sys.exit(1)
     except Exception as e:
         print(f"Error: {e}")
@@ -474,10 +488,16 @@ Valid sources: {valid_sources}
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Generate 2D visualizations (default)
+  # Generate 2D static images (default)
   python -m scripts.narratives.embeddings visualize
 
-  # Generate 3D visualizations (multiple angle views)
+  # Generate interactive HTML (zoom, pan, hover)
+  python -m scripts.narratives.embeddings visualize --interactive
+
+  # Generate interactive 3D (rotate in browser)
+  python -m scripts.narratives.embeddings visualize --interactive --3d
+
+  # Generate 3D static images (multiple angle views)
   python -m scripts.narratives.embeddings visualize --3d
 
   # Generate 3D with rotating GIF animation
@@ -546,6 +566,11 @@ Examples:
         "--gif",
         action="store_true",
         help="Create rotating GIF animation (only with --3d, slower)"
+    )
+    viz_parser.add_argument(
+        "--interactive", "-i",
+        action="store_true",
+        help="Generate interactive HTML files (Plotly) instead of static images"
     )
     viz_parser.set_defaults(func=cmd_visualize)
 
