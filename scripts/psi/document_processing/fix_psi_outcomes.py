@@ -17,6 +17,7 @@ Root Cause:
 Fix Logic:
     Uses regex patterns to detect misclassified records:
     - FAIL → CANCELLED: 11 patterns (not ready, cancelled, no access, etc.)
+    - PARTIAL → CANCELLED: Patterns in issues field (cancelled, not ready, no access, etc.)
     - PARTIAL → PASS: 10 patterns (accepted, no deficiencies, in compliance, etc.)
     Checks if issues were resolved before reclassifying PARTIAL → PASS.
 
@@ -63,6 +64,22 @@ CANCELLED_PATTERNS = [
     r"inspection\s+did\s+not\s+occur",
     r"no\s+access",
     r"unable\s+to\s+access",
+]
+
+# Patterns for detecting CANCELLED in issues/summary field (from PARTIAL)
+# These patterns indicate inspections that were cancelled but document was marked PARTIAL
+PARTIAL_CANCELLED_PATTERNS = [
+    r"cancell?ed",
+    r"not\s+ready\s+for\s+inspection",
+    r"was\s+not\s+ready",
+    r"wasn't\s+ready",
+    r"weren't\s+ready",
+    r"no\s+access",
+    r"unable\s+to\s+access",
+    r"rescheduled",
+    r"will\s+be\s+re-?scheduled",
+    r"could\s+not\s+be\s+completed",
+    r"inspection\s+could\s+not",
 ]
 
 # Patterns suggesting PASS (from PARTIAL)
@@ -123,6 +140,37 @@ def detect_cancelled(row: pd.Series, extract_content: str = "") -> Tuple[bool, L
     return len(matches) > 0, list(set(matches))
 
 
+def detect_partial_cancelled(row: pd.Series, extract_content: str = "") -> Tuple[bool, List[str]]:
+    """
+    Detect if a PARTIAL record should be CANCELLED.
+
+    This catches cases where some locations in an inspection were not ready
+    but the overall record was marked PARTIAL.
+    """
+    if row["outcome"] != "PARTIAL":
+        return False, []
+
+    matches = []
+
+    # Check issues field (primary source for partial cancellations)
+    issues = str(row.get("issues", ""))
+    matches.extend(check_patterns(issues, PARTIAL_CANCELLED_PATTERNS))
+
+    # Check summary
+    summary = str(row.get("summary", ""))
+    matches.extend(check_patterns(summary, PARTIAL_CANCELLED_PATTERNS))
+
+    # Check failure reason
+    failure_reason = str(row.get("failure_reason", ""))
+    matches.extend(check_patterns(failure_reason, PARTIAL_CANCELLED_PATTERNS))
+
+    # Check extract content
+    if extract_content:
+        matches.extend(check_patterns(extract_content, PARTIAL_CANCELLED_PATTERNS))
+
+    return len(matches) > 0, list(set(matches))
+
+
 def detect_implied_pass(row: pd.Series, extract_content: str = "") -> Tuple[bool, List[str]]:
     """
     Detect if a PARTIAL record should be PASS.
@@ -150,6 +198,7 @@ def analyze_records(df: pd.DataFrame, use_extracts: bool = True) -> Dict[str, Li
     """Analyze all records and identify misclassifications."""
     fixes = {
         "FAIL_to_CANCELLED": [],
+        "PARTIAL_to_CANCELLED": [],
         "PARTIAL_to_PASS": [],
     }
 
@@ -170,6 +219,20 @@ def analyze_records(df: pd.DataFrame, use_extracts: bool = True) -> Dict[str, Li
                 "reasons": cancel_reasons,
                 "inspection_type": row.get("inspection_type"),
                 "summary": str(row.get("summary", ""))[:200],
+            })
+            continue
+
+        # Check for PARTIAL → CANCELLED
+        should_partial_cancel, partial_cancel_reasons = detect_partial_cancelled(row, extract_content)
+        if should_partial_cancel:
+            fixes["PARTIAL_to_CANCELLED"].append({
+                "inspection_id": inspection_id,
+                "current_outcome": "PARTIAL",
+                "new_outcome": "CANCELLED",
+                "reasons": partial_cancel_reasons,
+                "inspection_type": row.get("inspection_type"),
+                "summary": str(row.get("summary", ""))[:200],
+                "issues": str(row.get("issues", ""))[:200],
             })
             continue
 

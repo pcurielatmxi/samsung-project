@@ -18,6 +18,7 @@ Root Cause:
 Fix Logic:
     Uses regex patterns to detect misclassified records:
     - FAIL → CANCELLED: 14 patterns (trip charge, work not ready, etc.)
+    - PARTIAL → CANCELLED: Patterns in issues field (cancelled by contractor, not ready, etc.)
     - PARTIAL → MEASUREMENT: 14 patterns (pickup report, observation only, etc.)
     - PARTIAL → PASS: 9 patterns (no deficiencies, acceptable, etc.)
     Optional embeddings-based semantic search for additional detection.
@@ -66,6 +67,24 @@ CANCELLED_PATTERNS = [
     r"inspection\s+did\s+not\s+occur",
     r"inspection\s+not\s+performed",
     r"could\s+not\s+be\s+inspected",
+]
+
+# Patterns for detecting CANCELLED in issues field (from PARTIAL)
+# These patterns indicate inspections that were cancelled but document was marked PARTIAL
+# because other inspections in the same report passed
+PARTIAL_CANCELLED_PATTERNS = [
+    r"cancell?ed\s+by\s+(yates|contractor|the\s+contractor)",
+    r"was\s+cancell?ed",
+    r"work\s+to\s+be\s+cancell?ed",
+    r"not\s+ready\s+for\s+inspection",
+    r"was\s+not\s+ready",
+    r"wasn't\s+ready",
+    r"weren't\s+ready",
+    r"no\s+access",
+    r"removed\s+from\s+schedule",
+    r"cancel-?\s*contractor\s+not\s+ready",
+    r"rescheduled",
+    r"will\s+be\s+re-?scheduled",
 ]
 
 # Patterns for detecting MEASUREMENT (from PARTIAL)
@@ -154,6 +173,40 @@ def detect_cancelled(row: pd.Series, extract_content: Optional[str] = None) -> T
     return len(matches) > 0, list(set(matches))
 
 
+def detect_partial_cancelled(row: pd.Series, extract_content: Optional[str] = None) -> Tuple[bool, List[str]]:
+    """
+    Detect if a PARTIAL record should be CANCELLED.
+
+    This catches cases where a multi-inspection report has some cancelled inspections
+    but was marked PARTIAL because other inspections passed. The cancellation info
+    is typically in the 'issues' field.
+
+    Returns (should_change, matching_patterns)
+    """
+    if row["outcome"] != "PARTIAL":
+        return False, []
+
+    matches = []
+
+    # Check issues field (primary source for partial cancellations)
+    issues = str(row.get("issues", ""))
+    matches.extend(check_patterns(issues, PARTIAL_CANCELLED_PATTERNS))
+
+    # Check summary
+    summary = str(row.get("summary", ""))
+    matches.extend(check_patterns(summary, PARTIAL_CANCELLED_PATTERNS))
+
+    # Check failure reason
+    failure_reason = str(row.get("failure_reason", ""))
+    matches.extend(check_patterns(failure_reason, PARTIAL_CANCELLED_PATTERNS))
+
+    # Check extract content if available
+    if extract_content:
+        matches.extend(check_patterns(extract_content, PARTIAL_CANCELLED_PATTERNS))
+
+    return len(matches) > 0, list(set(matches))
+
+
 def detect_measurement(row: pd.Series, extract_content: Optional[str] = None) -> Tuple[bool, List[str]]:
     """
     Detect if a PARTIAL record should be MEASUREMENT.
@@ -220,6 +273,7 @@ def analyze_records(
     """
     fixes = {
         "FAIL_to_CANCELLED": [],
+        "PARTIAL_to_CANCELLED": [],
         "PARTIAL_to_MEASUREMENT": [],
         "PARTIAL_to_PASS": [],
     }
@@ -242,6 +296,20 @@ def analyze_records(
                 "reasons": cancel_reasons,
                 "inspection_type": row.get("inspection_type"),
                 "summary": str(row.get("summary", ""))[:200],
+            })
+            continue  # Don't check other patterns
+
+        # Check for PARTIAL → CANCELLED (multi-inspection reports with some cancelled)
+        should_partial_cancel, partial_cancel_reasons = detect_partial_cancelled(row, extract_content)
+        if should_partial_cancel:
+            fixes["PARTIAL_to_CANCELLED"].append({
+                "inspection_id": inspection_id,
+                "current_outcome": "PARTIAL",
+                "new_outcome": "CANCELLED",
+                "reasons": partial_cancel_reasons,
+                "inspection_type": row.get("inspection_type"),
+                "summary": str(row.get("summary", ""))[:200],
+                "issues": str(row.get("issues", ""))[:200],
             })
             continue  # Don't check other patterns
 
