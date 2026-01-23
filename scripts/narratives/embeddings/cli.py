@@ -13,6 +13,7 @@ from .store import (
     search_chunks,
     ChunkResult
 )
+from .visualize import generate_all_visualizations, prepare_visualization
 
 
 def cmd_build(args):
@@ -204,6 +205,56 @@ def cmd_verify(args):
     else:
         print("Manifest and ChromaDB are in sync")
         return 0
+
+
+def cmd_visualize(args):
+    """Generate embedding visualizations."""
+    from pathlib import Path
+
+    output_dir = Path(args.output) if args.output else config.CHROMA_PATH.parent / "visualizations"
+    n_dimensions = 3 if args.three_d else 2
+
+    try:
+        data = generate_all_visualizations(
+            output_dir=output_dir,
+            source_type=args.source,
+            limit=args.limit,
+            n_neighbors=args.n_neighbors,
+            min_dist=args.min_dist,
+            min_cluster_size=args.min_cluster_size,
+            n_dimensions=n_dimensions,
+            generate_labels=not args.no_labels,
+            create_gif=args.gif,
+            verbose=True
+        )
+
+        # Print summary
+        n_clusters = len([c for c in data.cluster_info if c != -1])
+        n_noise = (data.cluster_labels == -1).sum()
+        print()
+        print("=" * 60)
+        print(f"Visualization Summary ({n_dimensions}D)")
+        print("=" * 60)
+        print(f"Total points: {len(data.ids):,}")
+        print(f"Clusters: {n_clusters}")
+        print(f"Noise points: {n_noise:,} ({n_noise/len(data.ids)*100:.1f}%)")
+        print()
+        print("Top clusters:")
+        sorted_clusters = sorted(
+            [(cid, info) for cid, info in data.cluster_info.items() if cid != -1],
+            key=lambda x: -x[1].size
+        )[:10]
+        for cid, info in sorted_clusters:
+            print(f"  {info.label}: {info.size:,} points")
+        print("=" * 60)
+
+    except ImportError as e:
+        print(f"Error: Missing dependency - {e}")
+        print("Install with: pip install umap-learn hdbscan matplotlib scipy")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
 
 def print_chunk_results(results: List[ChunkResult], query: str, context: int):
@@ -415,6 +466,88 @@ Valid sources: {valid_sources}
     # Verify command
     verify_parser = subparsers.add_parser("verify", help="Verify manifest/DB consistency")
     verify_parser.set_defaults(func=cmd_verify)
+
+    # Visualize command
+    viz_parser = subparsers.add_parser(
+        "visualize",
+        help="Generate embedding visualizations (UMAP + clustering)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Generate 2D visualizations (default)
+  python -m scripts.narratives.embeddings visualize
+
+  # Generate 3D visualizations (multiple angle views)
+  python -m scripts.narratives.embeddings visualize --3d
+
+  # Generate 3D with rotating GIF animation
+  python -m scripts.narratives.embeddings visualize --3d --gif
+
+  # Filter by source
+  python -m scripts.narratives.embeddings visualize --source narratives
+
+  # Custom output directory
+  python -m scripts.narratives.embeddings visualize -o ./my_plots
+
+  # Tune UMAP/clustering parameters
+  python -m scripts.narratives.embeddings visualize --n-neighbors 30 --min-cluster-size 100
+
+  # Skip LLM labeling (faster, uses generic labels)
+  python -m scripts.narratives.embeddings visualize --no-labels
+
+  # Test with subset of data
+  python -m scripts.narratives.embeddings visualize --limit 1000
+"""
+    )
+    viz_parser.add_argument(
+        "--source", "-s",
+        choices=list(config.SOURCE_DIRS.keys()),
+        help="Filter by source type"
+    )
+    viz_parser.add_argument(
+        "--output", "-o",
+        help="Output directory for visualizations (default: ~/.local/share/samsung-embeddings/visualizations)"
+    )
+    viz_parser.add_argument(
+        "--limit", "-n",
+        type=int,
+        help="Limit number of points (for testing)"
+    )
+    viz_parser.add_argument(
+        "--n-neighbors",
+        type=int,
+        default=15,
+        help="UMAP n_neighbors parameter (default: 15, higher=more global structure)"
+    )
+    viz_parser.add_argument(
+        "--min-dist",
+        type=float,
+        default=0.1,
+        help="UMAP min_dist parameter (default: 0.1, lower=tighter clusters)"
+    )
+    viz_parser.add_argument(
+        "--min-cluster-size",
+        type=int,
+        default=50,
+        help="HDBSCAN min_cluster_size (default: 50)"
+    )
+    viz_parser.add_argument(
+        "--no-labels",
+        action="store_true",
+        help="Skip LLM-generated cluster labels (faster)"
+    )
+    viz_parser.add_argument(
+        "--3d",
+        dest="three_d",
+        action="store_true",
+        help="Generate 3D visualizations (multiple angle views)"
+    )
+    viz_parser.add_argument(
+        "--gif",
+        action="store_true",
+        help="Create rotating GIF animation (only with --3d, slower)"
+    )
+    viz_parser.set_defaults(func=cmd_visualize)
 
     args = parser.parse_args()
     args.func(args)

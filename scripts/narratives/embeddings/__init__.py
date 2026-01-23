@@ -22,6 +22,12 @@ from .store import search_chunks, get_store, ChunkResult
 from .builder import build_index
 from .manifest import Manifest, FileEntry, compute_content_hash
 from .backup import BackupManager
+from .visualize import (
+    prepare_visualization,
+    generate_all_visualizations,
+    VisualizationData,
+    ClusterInfo,
+)
 
 __all__ = [
     "search_chunks",
@@ -32,4 +38,8 @@ __all__ = [
     "FileEntry",
     "compute_content_hash",
     "BackupManager",
+    "prepare_visualization",
+    "generate_all_visualizations",
+    "VisualizationData",
+    "ClusterInfo",
 ]
