@@ -446,37 +446,34 @@ def extract_stair_from_task_name(task_name: str) -> str | None:
     Extract stairwell code from task_name.
 
     Stair code patterns:
-    - STR-A-1, STR-B-2 format
-    - STAIR-A, STAIR B, STAIRWELL B format
-    - Can include level: STR-A-1, STR-B-2
-    - Numeric stair IDs: STAIR #01, STAIR #3, STAIRWELL 1
+    - Numeric: "Stair 01", "Stair #50", "STAIR-21", "STAIRWELL 27"
+    - Explicit: "STR-01", "STR 50"
 
-    Returns: Stair code (STR-A-1, STR-B-2, STR-01, STR-03, etc.) or None
+    NOTE: Does NOT match single letters like "Stair A" as these are always
+    false positives from words like "STAIR TURNOVER", "STAIR SHUTDOWN", etc.
+
+    Returns: Stair code (STR-01, STR-21, STR-50, etc.) or None
     """
     if not task_name or pd.isna(task_name):
         return None
 
     task_name_upper = str(task_name).upper()
 
-    # Pattern 1: STR-A-1, STR-B-2 format (most common)
-    stair_match = re.search(r'STR\s*[-_]?\s*([A-Z])\s*[-_]?\s*(\d)', task_name_upper)
-    if stair_match:
-        return f"STR-{stair_match.group(1)}-{stair_match.group(2)}"
+    # Pattern 1: Explicit STR-XX format (STR-01, STR-50, STR 21)
+    str_explicit = re.search(r'\bSTR\s*[-_]?\s*(\d+)\b', task_name_upper)
+    if str_explicit:
+        stair_num = str_explicit.group(1)
+        # Pad single digits to 2 digits for consistency (5 -> 05)
+        if len(stair_num) == 1:
+            stair_num = f"0{stair_num}"
+        return f"STR-{stair_num}"
 
-    # Pattern 2: STAIR/STAIRWELL A, STAIRWELL B with optional level
-    explicit_stair = re.search(r'(?:STAIR|STAIRWELL|STAIRS)\s+([A-Z])\s*(?:\(L(\d)\)|-\s*(\d))?', task_name_upper)
-    if explicit_stair:
-        letter = explicit_stair.group(1)
-        level = explicit_stair.group(2) or explicit_stair.group(3)
-        if level:
-            return f"STR-{letter}-{level}"
-        return f"STR-{letter}"
-
-    # Pattern 3: Numeric stairs (STAIR #01, STAIR #3, STAIRWELL 1, etc.)
-    numeric_stair = re.search(r'(?:STAIR|STAIRWELL|STAIRS)\s+[#]?(\d+)', task_name_upper)
+    # Pattern 2: Numeric stairs (STAIR #01, STAIR 50, STAIRWELL 21, STAIRS-27)
+    # Must have a number
+    numeric_stair = re.search(r'(?:STAIR|STAIRWELL|STAIRS)[-\s]*[#]?(\d+)(?:\s|$|[,\.\-])', task_name_upper)
     if numeric_stair:
         stair_num = numeric_stair.group(1)
-        # Pad single digits to 2 digits for consistency (3 -> 03, etc.)
+        # Pad single digits to 2 digits for consistency (3 -> 03)
         if len(stair_num) == 1:
             stair_num = f"0{stair_num}"
         return f"STR-{stair_num}"
