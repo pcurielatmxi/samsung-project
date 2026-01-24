@@ -84,11 +84,14 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 
 | Location Type | Total | With Grid Bounds | In Drawings | Status |
 |---------------|-------|------------------|-------------|--------|
-| ROOM | 367 | 328 | 293 True / 74 False | 39 rooms need manual lookup |
+| ROOM | 367 | 315 (291 direct + 24 inferred) | 328 True / 39 False | 52 rooms need manual lookup |
 | ELEVATOR | 11 | 10 | 10 True / 1 False | 90.9% grid coverage |
 | STAIR | 66 | 66 | 11 True / 55 False | 100% grid coverage (extracted from task names) |
 | GRIDLINE | 35 | 35 | Always True | Auto-generated (full row span) |
 | LEVEL/AREA/BUILDING | 26 | N/A | Always True | Multi-room aggregates |
+
+**Grid Inference:**
+Rooms missing grid bounds can inherit coordinates from sibling rooms on other floors. FAB codes have structure `FAB1[FLOOR_AREA][ROOM_NUM]` where the same `ROOM_NUM` on different floors represents the same room type at the same grid location. The `grid_inferred_from` column tracks the source room when grids are inferred.
 
 **Working Files:**
 - `raw/location_mappings/location_master.csv` - Master location list with grid bounds
@@ -119,6 +122,7 @@ These are NOT data quality issues - they are legitimate P6 rooms that don't appe
 | Script | Purpose |
 |--------|---------|
 | `scripts/primavera/derive/generate_location_master.py` | Generate location master from P6 taxonomy |
+| `scripts/integrated_analysis/dimensions/build_dim_location.py` | Build dim_location with grid inference + drawing extraction |
 | `scripts/shared/extract_location_grids.py` | Extract grid coordinates from P6 task names |
 | `scripts/shared/populate_grid_bounds.py` | Sync grid bounds from Excel + check drawings |
 | `scripts/shared/gridline_mapping.py` | Low-level grid coordinate lookup |
@@ -155,20 +159,20 @@ Coverage of dimension IDs (`dim_location_id`, `dim_company_id`, `dim_trade_id`) 
 
 #### dim_location Structure
 
-The location dimension (`processed/integrated_analysis/dimensions/dim_location.csv`) contains 531 location codes:
+The location dimension (`processed/integrated_analysis/dimensions/dim_location.csv`) contains 505 location codes:
 
 | Location Type | Count | Grid Coverage | In Drawings | Description |
 |---------------|-------|---------------|-------------|-------------|
-| ROOM | 367 | 79% (291) | 293 True | Room codes (FAB114402, FAB136302) |
-| STAIR | 80 | 14% (11) | 11 True | Stair codes (STR-A, STR-01) |
+| ROOM | 367 | 86% (315) | 328 True | Room codes (FAB114402, FAB136302) |
+| STAIR | 66 | 100% (66) | 11 True | Stair codes - FAB1-STXX format (drawing codes) |
 | GRIDLINE | 35 | 100% (35) | Always True | Column-based locations (full row span) |
-| ELEVATOR | 23 | 35% (8) | 8 True | Elevator codes (ELV-S, ELV-01) |
+| ELEVATOR | 11 | 91% (10) | 10 True | Elevator codes - FAB1-ELXX format (drawing codes) |
 | LEVEL | 9 | 0% | Always True | Level-only references |
 | BUILDING | 12 | 0% | Always True | Building refs + building-wide (SUP-ALL) |
 | AREA | 4 | 0% | Always True | Area references |
 | SITE | 1 | 0% | Always True | Site-wide fallback |
 
-**Key columns:** `location_code`, `location_type`, `building`, `level`, `grid_row_min/max`, `grid_col_min/max`, `building_level`, `in_drawings`
+**Key columns:** `location_code`, `location_type`, `p6_alias`, `building`, `level`, `grid_row_min/max`, `grid_col_min/max`, `grid_inferred_from`, `building_level`, `in_drawings`
 
 **Spatial Join Workflow:**
 ```
@@ -181,7 +185,7 @@ Returns: rooms whose grid bounds contain G/10
 
 #### Deliverables
 
-- `dim_location` - 531 location codes with grid bounds and in_drawings flag
+- `dim_location` - 505 location codes with grid bounds, grid inference tracking, and in_drawings flag
 - `dim_company` - Master company list with alias resolution
 - `dim_trade` - Trade/work type classification
 - `map_company_location` - Company work areas by period (derived from quality data)
