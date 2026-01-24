@@ -239,6 +239,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
             )
             if rooms:
                 affected_rooms = json.dumps(rooms)
+    affected_rooms_count = len(json.loads(affected_rooms)) if affected_rooms else None
 
     # Infer CSI section from inspection type and category
     csi_section_id, csi_section_code, csi_source = infer_csi_section(inspection_type, inspection_category)
@@ -324,6 +325,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
 
         # Affected rooms (JSON array of rooms whose grid bounds overlap)
         'affected_rooms': affected_rooms,
+        'affected_rooms_count': affected_rooms_count,
     }
 
 

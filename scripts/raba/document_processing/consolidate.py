@@ -287,6 +287,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
             )
             if rooms:
                 affected_rooms = json.dumps(rooms)
+    affected_rooms_count = len(json.loads(affected_rooms)) if affected_rooms else None
 
     # Detect and reclassify measurement-only records
     # These were forced into PARTIAL by LLM because schema didn't allow null
@@ -379,6 +380,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
 
         # Affected rooms (JSON array of rooms whose grid bounds overlap)
         'affected_rooms': affected_rooms,
+        'affected_rooms_count': affected_rooms_count,
     }
 
 

@@ -1230,6 +1230,17 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
 
     df['affected_rooms'] = df.apply(compute_affected_rooms, axis=1)
 
+    # Add affected_rooms_count for easy filtering (1 = single room, >1 = multiple)
+    def count_rooms(json_str):
+        if pd.isna(json_str):
+            return None
+        try:
+            return len(json.loads(json_str))
+        except (json.JSONDecodeError, TypeError):
+            return None
+
+    df['affected_rooms_count'] = df['affected_rooms'].apply(count_rooms)
+
     # Calculate coverage
     has_grid_row = df['grid_row_min'].notna()
     has_grid_col = df['grid_col_min'].notna()
