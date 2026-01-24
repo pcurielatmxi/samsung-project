@@ -93,12 +93,54 @@ def extract_codes_from_drawings() -> dict:
     }
 
 
+def get_drawing_code(location_type: str, location_code: str, drawing_codes: dict | None) -> str | None:
+    """Convert P6 location code to drawing code if it exists in drawings.
+
+    Args:
+        location_type: Type of location (STAIR, ELEVATOR, etc.)
+        location_code: The P6 location code (e.g., STR-01, ELV-05)
+        drawing_codes: Dict from extract_codes_from_drawings() or None
+
+    Returns:
+        Drawing code (FAB1-STXX, FAB1-ELXX) if exists, None otherwise
+    """
+    if drawing_codes is None:
+        return None
+
+    code_upper = str(location_code).upper()
+
+    # Convert STAIR (STR-XX -> FAB1-STXX)
+    if location_type == 'STAIR':
+        match = re.match(r'STR-(\d+)$', code_upper)
+        if match:
+            num = match.group(1).zfill(2)
+            fab_code = f'FAB1-ST{num}'
+            # Check if this FAB code exists in drawings
+            if fab_code in drawing_codes['stairs']:
+                return fab_code
+        return None
+
+    # Convert ELEVATOR (ELV-XX -> FAB1-ELXX)
+    if location_type == 'ELEVATOR':
+        match = re.match(r'ELV-(\d+)([A-Z])?$', code_upper)
+        if match:
+            num = match.group(1).zfill(2)
+            suffix = match.group(2) or ''
+            fab_code = f'FAB1-EL{num}{suffix}'
+            # Check if this FAB code exists in drawings
+            if fab_code in drawing_codes['elevators']:
+                return fab_code
+        return None
+
+    return None
+
+
 def compute_in_drawings(location_type: str, location_code: str, drawing_codes: dict | None) -> bool | None:
     """Determine if a location is found in the PDF drawings.
 
     Args:
         location_type: Type of location (ROOM, ELEVATOR, STAIR, etc.)
-        location_code: The location code (e.g., FAB112345, ELV-01)
+        location_code: The location code (e.g., FAB112345, ELV-01, FAB1-ST01)
         drawing_codes: Dict from extract_codes_from_drawings() or None
 
     Returns:
@@ -117,35 +159,31 @@ def compute_in_drawings(location_type: str, location_code: str, drawing_codes: d
     if location_type == 'ROOM':
         return code_upper in drawing_codes['rooms']
 
-    # Check ELEVATOR (ELV-XX -> FAB1-ELXX)
+    # Check ELEVATOR - handles both P6 format (ELV-XX) and drawing format (FAB1-ELXX)
     if location_type == 'ELEVATOR':
+        # Direct match for drawing codes
+        if code_upper in drawing_codes['elevators']:
+            return True
+        # P6 format (ELV-XX -> FAB1-ELXX)
         match = re.match(r'ELV-(\d+)([A-Z])?$', code_upper)
         if match:
             num = match.group(1).zfill(2)
             suffix = match.group(2) or ''
-            # Build lookup set of elevator numbers from drawings
-            elev_numbers = set()
-            for code in drawing_codes['elevators']:
-                m = re.search(r'FAB1-EL(\d+[A-Z]?)', code)
-                if m:
-                    elev_numbers.add(m.group(1))
-            return f"{num}{suffix}" in elev_numbers
-        # Letter codes (ELV-S, ELV-H) not in drawings naming convention
+            fab_code = f'FAB1-EL{num}{suffix}'
+            return fab_code in drawing_codes['elevators']
         return False
 
-    # Check STAIR (STR-XX -> FAB1-STXX)
+    # Check STAIR - handles both P6 format (STR-XX) and drawing format (FAB1-STXX)
     if location_type == 'STAIR':
+        # Direct match for drawing codes
+        if code_upper in drawing_codes['stairs']:
+            return True
+        # P6 format (STR-XX -> FAB1-STXX)
         match = re.match(r'STR-(\d+)$', code_upper)
         if match:
             num = match.group(1).zfill(2)
-            # Build lookup set of stair numbers from drawings
-            stair_numbers = set()
-            for code in drawing_codes['stairs']:
-                m = re.search(r'FAB1-ST(\d+)', code)
-                if m:
-                    stair_numbers.add(m.group(1))
-            return num in stair_numbers
-        # Letter codes (STR-R, STR-T) not in drawings naming convention
+            fab_code = f'FAB1-ST{num}'
+            return fab_code in drawing_codes['stairs']
         return False
 
     return None
@@ -214,11 +252,16 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
     # Process each row from location_master
     for _, row in location_master.iterrows():
         loc_type = row['Location_Type']
-        loc_code = row['Code']
+        p6_code = row['Code']  # Original P6 code (STR-XX, ELV-XX, etc.)
+
+        # Convert to drawing code if available (STR-01 -> FAB1-ST01)
+        drawing_code = get_drawing_code(loc_type, p6_code, drawing_codes)
+        loc_code = drawing_code if drawing_code else p6_code
 
         entry = {
             'location_id': location_id,
             'location_code': loc_code,
+            'p6_alias': p6_code if drawing_code else None,  # Only set alias if we converted
             'location_type': loc_type,
             'room_name': row['Room_Name'] if pd.notna(row['Room_Name']) else None,
             'building': row['Building'] if pd.notna(row['Building']) else None,
@@ -247,6 +290,7 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
         entry = {
             'location_id': location_id,
             'location_code': bw_entry['location_code'],
+            'p6_alias': None,
             'location_type': bw_entry['location_type'],
             'room_name': bw_entry['room_name'],
             'building': bw_entry['building'],
@@ -269,6 +313,7 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
     entry = {
         'location_id': location_id,
         'location_code': SITE_ENTRY['location_code'],
+        'p6_alias': None,
         'location_type': SITE_ENTRY['location_type'],
         'room_name': SITE_ENTRY['room_name'],
         'building': SITE_ENTRY['building'],
@@ -300,9 +345,12 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
                 for _, erow in extra_rows.iterrows():
                     loc_type = erow['location_type']
                     loc_code = erow['location_code']
+                    # Get p6_alias from existing if available
+                    p6_alias = erow.get('p6_alias') if 'p6_alias' in erow.index and pd.notna(erow.get('p6_alias')) else None
                     entry = {
                         'location_id': location_id,
                         'location_code': loc_code,
+                        'p6_alias': p6_alias,
                         'location_type': loc_type,
                         'room_name': erow['room_name'] if pd.notna(erow['room_name']) else None,
                         'building': erow['building'] if pd.notna(erow['building']) else None,
@@ -324,7 +372,7 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
 
     # Ensure proper column order
     columns = [
-        'location_id', 'location_code', 'location_type', 'room_name',
+        'location_id', 'location_code', 'p6_alias', 'location_type', 'room_name',
         'building', 'level', 'grid_row_min', 'grid_row_max',
         'grid_col_min', 'grid_col_max', 'status', 'task_count', 'building_level',
         'in_drawings'
@@ -342,6 +390,17 @@ def print_summary(df: pd.DataFrame):
 
     print(f"\nTotal entries: {len(df)}")
     print(f"Unique location_codes: {df['location_code'].nunique()}")
+
+    # P6 alias conversions
+    if 'p6_alias' in df.columns:
+        converted = df['p6_alias'].notna().sum()
+        if converted > 0:
+            print(f"\n--- P6 Code Conversions ---")
+            print(f"Codes converted to drawing codes: {converted}")
+            for lt in ['STAIR', 'ELEVATOR']:
+                subset = df[(df['location_type'] == lt) & df['p6_alias'].notna()]
+                if len(subset) > 0:
+                    print(f"  {lt}: {len(subset)} (e.g., {subset.iloc[0]['p6_alias']} -> {subset.iloc[0]['location_code']})")
 
     print("\nBy location_type:")
     for lt, count in df['location_type'].value_counts().items():
