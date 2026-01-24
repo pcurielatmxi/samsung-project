@@ -209,33 +209,50 @@ def print_summary(df: pd.DataFrame) -> None:
 
 def add_dim_location_id(taxonomy: pd.DataFrame) -> pd.DataFrame:
     """
-    Add dim_location_id column by looking up building+level in dim_location.
+    Add dim_location_id column by looking up location in dim_location.
 
     This enables Power BI relationships between P6 tasks and dim_location.
-    Uses fallback logic:
-    1. Try building + level first (e.g., "FAB-1F")
-    2. If level is missing, try building-wide (e.g., "FAB-ALL")
-    3. If building is also missing, try site-wide ("SITE")
+    Uses priority-based lookup:
+    1. Try location_code first (exact match to room, elevator, stair codes)
+    2. Fall back to building + level (e.g., "FAB-1F")
+    3. If level is missing, try building-wide (e.g., "FAB-ALL")
+    4. If building is also missing, try site-wide ("SITE")
 
     Args:
-        taxonomy: DataFrame with 'building' and 'level' columns
+        taxonomy: DataFrame with 'location_code', 'building', and 'level' columns
 
     Returns:
         DataFrame with 'dim_location_id' column added (Int64, nullable)
     """
     # Import here to avoid circular imports
-    from scripts.shared.dimension_lookup import get_location_id, reset_cache
+    from scripts.shared.dimension_lookup import get_location_id, get_location_id_by_code, reset_cache
 
     # Reset cache to ensure we pick up latest dim_location
     reset_cache()
 
     print("\nAdding dim_location_id column...")
 
+    matched_by_code = 0
+    matched_by_building_level = 0
+
     def safe_get_location_id(row):
+        nonlocal matched_by_code, matched_by_building_level
+
+        # First try location_code (exact match to room/elevator/stair codes)
+        loc_code = row.get('location_code')
+        if loc_code and pd.notna(loc_code):
+            loc_id = get_location_id_by_code(loc_code)
+            if loc_id is not None:
+                matched_by_code += 1
+                return loc_id
+
+        # Fall back to building+level lookup
         b = row.get('building')
         l = row.get('level')
-        # Pass values to get_location_id - it handles None/NaN with fallback logic
-        return get_location_id(b, l, allow_fallback=True)
+        loc_id = get_location_id(b, l, allow_fallback=True)
+        if loc_id is not None:
+            matched_by_building_level += 1
+        return loc_id
 
     taxonomy['dim_location_id'] = taxonomy.apply(safe_get_location_id, axis=1)
     taxonomy['dim_location_id'] = taxonomy['dim_location_id'].astype('Int64')
@@ -244,14 +261,8 @@ def add_dim_location_id(taxonomy: pd.DataFrame) -> pd.DataFrame:
     matched = taxonomy['dim_location_id'].notna().sum()
     total = len(taxonomy)
     print(f"  dim_location_id coverage: {matched:,}/{total:,} ({100*matched/total:.1f}%)")
-
-    # Report breakdown by fallback type
-    has_both = ((taxonomy['building'].notna()) & (taxonomy['level'].notna())).sum()
-    has_building_only = ((taxonomy['building'].notna()) & (taxonomy['level'].isna())).sum()
-    has_neither = ((taxonomy['building'].isna()) & (taxonomy['level'].isna())).sum()
-    print(f"    - building+level: {has_both:,}")
-    print(f"    - building-only (→ ALL): {has_building_only:,}")
-    print(f"    - neither (→ SITE): {has_neither:,}")
+    print(f"    - matched by location_code: {matched_by_code:,}")
+    print(f"    - matched by building+level: {matched_by_building_level:,}")
 
     return taxonomy
 

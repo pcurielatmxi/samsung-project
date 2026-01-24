@@ -43,6 +43,8 @@ _dim_company: Optional[pd.DataFrame] = None
 _dim_trade: Optional[pd.DataFrame] = None
 _map_company_aliases: Optional[pd.DataFrame] = None
 _building_level_to_id: Optional[Dict[str, int]] = None
+_location_code_to_id: Optional[Dict[str, int]] = None  # location_code -> location_id
+_p6_alias_to_id: Optional[Dict[str, int]] = None  # p6_alias -> location_id
 
 
 def _normalize_level(level: str) -> str:
@@ -59,10 +61,12 @@ def _normalize_level(level: str) -> str:
 
 def _load_dimensions():
     """Load dimension tables if not already loaded."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases, _building_level_to_id
+    global _dim_location, _dim_company, _dim_trade, _map_company_aliases
+    global _building_level_to_id, _location_code_to_id, _p6_alias_to_id
 
     if _dim_location is None:
         _dim_location = pd.read_csv(_dimensions_dir / 'dim_location.csv')
+
         # Build building_level -> location_id lookup
         # For building_levels with multiple entries, prefer LEVEL type, then lowest ID
         _building_level_to_id = {}
@@ -70,6 +74,20 @@ def _load_dimensions():
             bl = row.get('building_level')
             if bl and pd.notna(bl) and bl not in _building_level_to_id:
                 _building_level_to_id[bl] = int(row['location_id'])
+
+        # Build location_code -> location_id lookup (case-insensitive)
+        _location_code_to_id = {}
+        for _, row in _dim_location.iterrows():
+            code = row.get('location_code')
+            if code and pd.notna(code):
+                _location_code_to_id[str(code).upper()] = int(row['location_id'])
+
+        # Build p6_alias -> location_id lookup (for STR-XX, ELV-XX codes)
+        _p6_alias_to_id = {}
+        for _, row in _dim_location.iterrows():
+            alias = row.get('p6_alias')
+            if alias and pd.notna(alias):
+                _p6_alias_to_id[str(alias).upper()] = int(row['location_id'])
 
     if _dim_company is None:
         _dim_company = pd.read_csv(_dimensions_dir / 'dim_company.csv')
@@ -128,6 +146,39 @@ def get_location_id(building: str, level: str, allow_fallback: bool = True) -> O
         loc_id = _building_level_to_id.get('SITE')
         if loc_id is not None:
             return loc_id
+
+    return None
+
+
+def get_location_id_by_code(location_code: str) -> Optional[int]:
+    """
+    Get location_id from location_code (room, elevator, stair, gridline codes).
+
+    Matches against both location_code and p6_alias columns in dim_location.
+    This is the preferred lookup method for tasks that have extracted location codes.
+
+    Args:
+        location_code: Location code (e.g., FAB112345, ELV-24, STR-05, FAB1-ST05)
+
+    Returns:
+        Integer location_id or None if not found
+    """
+    _load_dimensions()
+
+    if not location_code or pd.isna(location_code):
+        return None
+
+    code_upper = str(location_code).upper().strip()
+
+    # Try direct location_code match
+    loc_id = _location_code_to_id.get(code_upper)
+    if loc_id is not None:
+        return loc_id
+
+    # Try p6_alias match (for STR-XX, ELV-XX -> FAB1-STXX, FAB1-ELXX)
+    loc_id = _p6_alias_to_id.get(code_upper)
+    if loc_id is not None:
+        return loc_id
 
     return None
 
@@ -996,12 +1047,15 @@ def get_coverage_stats(
 
 def reset_cache():
     """Reset cached dimension data (useful for testing)."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases, _building_level_to_id, _dim_csi_section
+    global _dim_location, _dim_company, _dim_trade, _map_company_aliases
+    global _building_level_to_id, _location_code_to_id, _p6_alias_to_id, _dim_csi_section
     _dim_location = None
     _dim_company = None
     _dim_trade = None
     _map_company_aliases = None
     _building_level_to_id = None
+    _location_code_to_id = None
+    _p6_alias_to_id = None
     _dim_csi_section = None
 
 
