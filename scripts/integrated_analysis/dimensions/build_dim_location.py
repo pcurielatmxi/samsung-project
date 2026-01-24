@@ -264,6 +264,99 @@ def infer_grid_from_sibling_rooms(location_master: pd.DataFrame) -> dict[str, di
 
 
 # ============================================================================
+# Manual Location Fixes
+# ============================================================================
+# Some locations in P6 have incorrect metadata or missing grid bounds that
+# cannot be automatically inferred. These fixes are applied after loading
+# location_master but before building dim_location.
+#
+# Each fix documents the investigation findings for traceability.
+
+MANUAL_LOCATION_FIXES = {
+    # -------------------------------------------------------------------------
+    # ELV-24: Elevator not in drawings, incorrectly assigned to SUW
+    # -------------------------------------------------------------------------
+    # Investigation (2026-01-24):
+    #
+    # PROBLEM: ELV-24 was assigned to SUW-1F with no grid bounds.
+    #          FAB1-EL24 does NOT exist in the floor drawings.
+    #
+    # EVIDENCE FROM P6 TASK NAMES:
+    #   - "PH1- INSTALL ELEVATOR STEEL - SEB-5- ELEVATOR 24 - L1 GL 31-32 B-C"
+    #   - "FRAMING & DRYWALL - ELEVATOR 24 - SEA5 - GL 31-33 - L1 - C-A"
+    #   - "ELEVATOR SUPPORT STEEL - ELEVATOR 24 - SEB5 - GL 33"
+    #
+    # KEY FINDINGS:
+    #   - Building: SEB-5, SEA5 = Support EAST Building (SUE), not SUW
+    #   - Grid columns: 31-33
+    #   - Grid rows: B-C (from "GL 31-32 B-C" and "C-A" references)
+    #   - Levels: 1F, 2F, 3F (MULTI)
+    #
+    # RELATIONSHIP WITH EL18:
+    #   - UDF data contains "ELEVATOR 18/24" references, indicating paired elevators
+    #   - FAB1-EL18: SUE, rows B-D, cols 30-32
+    #   - ELV-24:    SUE, rows B-C, cols 31-33 (offset by 1 column)
+    #   - These are adjacent elevator shafts in the same bank
+    #
+    # CONCLUSION: ELV-24 is a real elevator in SUE building adjacent to EL18,
+    #             but it has no drawing code (FAB1-EL24 not in architectural drawings).
+    #             Grid bounds extracted from P6 task names.
+    #
+    'ELV-24': {
+        'building': 'SUE',           # Changed from SUW (was incorrect)
+        'level': 'MULTI',            # Spans 1F-3F per task names
+        'grid_row_min': 'B',
+        'grid_row_max': 'C',
+        'grid_col_min': 31,
+        'grid_col_max': 33,
+        'status': 'EXTRACTED',       # Grid extracted from P6 task names
+        'room_name': 'ELEVATOR 24',  # Add descriptive name
+        # Note: in_drawings will be False (FAB1-EL24 doesn't exist)
+    },
+}
+
+
+def apply_manual_fixes(location_master: pd.DataFrame) -> pd.DataFrame:
+    """Apply manual fixes to location_master before building dim_location.
+
+    Args:
+        location_master: DataFrame from location_master.csv
+
+    Returns:
+        DataFrame with manual fixes applied
+    """
+    df = location_master.copy()
+    fixes_applied = 0
+
+    for code, fixes in MANUAL_LOCATION_FIXES.items():
+        mask = df['Code'] == code
+        if mask.any():
+            for field, value in fixes.items():
+                # Map our fix field names to location_master column names
+                col_map = {
+                    'building': 'Building',
+                    'level': 'Level',
+                    'grid_row_min': 'Row_Min',
+                    'grid_row_max': 'Row_Max',
+                    'grid_col_min': 'Col_Min',
+                    'grid_col_max': 'Col_Max',
+                    'status': 'Action_Status',
+                    'room_name': 'Room_Name',
+                }
+                if field in col_map:
+                    col = col_map[field]
+                    old_val = df.loc[mask, col].iloc[0] if col in df.columns else None
+                    df.loc[mask, col] = value
+                    print(f"  {code}: {col} = {old_val} -> {value}")
+            fixes_applied += 1
+
+    if fixes_applied > 0:
+        print(f"Applied manual fixes to {fixes_applied} locations")
+
+    return df
+
+
+# ============================================================================
 # Static Entries
 # ============================================================================
 
@@ -622,6 +715,10 @@ def main():
     else:
         # Build from location_master.csv
         location_master = load_location_master()
+
+        # Apply manual fixes for locations with known issues
+        print("\nApplying manual location fixes...")
+        location_master = apply_manual_fixes(location_master)
 
         # Infer grid bounds for rooms missing them from sibling rooms on other floors
         print("\nInferring grid bounds from sibling rooms...")
