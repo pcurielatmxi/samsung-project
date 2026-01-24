@@ -84,11 +84,11 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 
 | Location Type | Total | With Grid Bounds | In Drawings | Status |
 |---------------|-------|------------------|-------------|--------|
-| ROOM | 367 | 291 | 293 True / 74 False | 76 rooms need manual lookup |
-| ELEVATOR | 23 | 8 | 8 True / 15 False | Letter codes (ELV-S) use different naming |
-| STAIR | 80 | 11 | 11 True / 69 False | Letter codes (STR-R) use different naming |
+| ROOM | 367 | 328 | 293 True / 74 False | 39 rooms need manual lookup |
+| ELEVATOR | 11 | 10 | 10 True / 1 False | 90.9% grid coverage |
+| STAIR | 66 | 66 | 11 True / 55 False | 100% grid coverage (extracted from task names) |
 | GRIDLINE | 35 | 35 | Always True | Auto-generated (full row span) |
-| LEVEL/AREA/BUILDING | 25 | N/A | Always True | Multi-room aggregates |
+| LEVEL/AREA/BUILDING | 26 | N/A | Always True | Multi-room aggregates |
 
 **Working Files:**
 - `raw/location_mappings/location_master.csv` - Master location list with grid bounds
@@ -99,8 +99,7 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 **In_Drawings Flag:**
 The `in_drawings` column indicates whether a location code was found in the PDF floor drawings:
 - **Rooms**: FAB1XXXXX codes checked against drawing text
-- **Elevators/Stairs**: Numeric codes (ELV-01) matched to FAB1-ELXX in drawings
-- **Letter-based codes** (ELV-S, STR-R): Marked False - different naming convention in drawings
+- **Elevators/Stairs**: Numeric codes (ELV-01, STR-23) matched to FAB1-ELXX, FAB1-STXX in drawings
 - **Multi-room types**: Always True (GRIDLINE, LEVEL, BUILDING, AREA, SITE)
 
 **Known Gap - 74 rooms not in drawings (investigated 2026-01-23):**
@@ -120,6 +119,7 @@ These are NOT data quality issues - they are legitimate P6 rooms that don't appe
 | Script | Purpose |
 |--------|---------|
 | `scripts/primavera/derive/generate_location_master.py` | Generate location master from P6 taxonomy |
+| `scripts/shared/extract_location_grids.py` | Extract grid coordinates from P6 task names |
 | `scripts/shared/populate_grid_bounds.py` | Sync grid bounds from Excel + check drawings |
 | `scripts/shared/gridline_mapping.py` | Low-level grid coordinate lookup |
 | `scripts/shared/location_model.py` | High-level location API (forward/reverse lookups) |
@@ -302,11 +302,13 @@ External data (not in repo) follows traceability classification:
 │                           # 100% traceable to external source
 ├── processed/{source}/     # Parsed/transformed data (including AI-enriched)
 │                           # 100% traceable to raw/
-└── derived/{source}/       # DEPRECATED - do not add new files here
-                            # Existing files being migrated to processed/
+└── derived/{source}/       # ⛔ DEPRECATED - DO NOT USE
 ```
 
-**IMPORTANT:** The `derived/` folder is deprecated. All new outputs should go to `processed/`. Existing derived files are being migrated.
+**⛔ DEPRECATED:** The `derived/` folder is deprecated and should NOT be used:
+- **Data files:** All outputs go to `processed/`, not `derived/`
+- **Scripts:** Use `scripts/shared/` or `scripts/{source}/process/`, not `scripts/{source}/derive/`
+- **Existing files:** Being migrated to `processed/` over time
 
 ## Key Configuration
 
@@ -327,7 +329,7 @@ External data (not in repo) follows traceability classification:
 All analysis must maintain traceability to source documents:
 - `raw/` data is untouched source files
 - `processed/` data is direct transformation (fully traceable), including AI-enriched outputs
-- `derived/` folder is **DEPRECATED** - do not add new files; migrate existing to processed/
+- `derived/` folder is **⛔ DEPRECATED** - see Data Directory Structure above
 
 See [.claude/skills/mxi-powerpoint/SKILL.md](.claude/skills/mxi-powerpoint/SKILL.md) for presentation data traceability requirements.
 
