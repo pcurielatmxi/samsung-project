@@ -94,6 +94,7 @@ UNIFIED_COLUMNS = [
 
     # Room matching (JSON array of rooms whose grid bounds overlap)
     'affected_rooms',            # JSON: [{"location_code": "FAB1xxx", "room_name": "...", "match_type": "FULL|PARTIAL"}, ...]
+    'affected_rooms_count',      # Count of rooms (1=single match, >1=multiple)
 
     # Validation
     '_validation_issues',        # Pipe-delimited validation issues

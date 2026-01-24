@@ -120,6 +120,11 @@ def types_compatible(pandas_type: str, pydantic_type: str) -> bool:
     if pandas_type == 'bool' and pydantic_type == 'bool':
         return True
 
+    # object dtype (str) can represent columns with all None/NaN values
+    # which should be compatible with any type in the schema
+    if pandas_type == 'str' and pydantic_type in ('int', 'float'):
+        return True
+
     return False
 
 

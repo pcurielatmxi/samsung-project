@@ -111,6 +111,10 @@ class QCInspectionConsolidated(BaseModel):
         default=None,
         description="JSON array of rooms whose grid bounds overlap"
     )
+    affected_rooms_count: Optional[int] = Field(
+        default=None,
+        description="Count of rooms in affected_rooms (1=single match, >1=multiple)"
+    )
 
     # Validation (note: field uses alias for CSV column name with underscore prefix)
     validation_issues: Optional[str] = Field(
@@ -211,6 +215,10 @@ class PsiConsolidated(BaseModel):
     affected_rooms: Optional[str] = Field(
         default=None,
         description="JSON array of rooms whose grid bounds overlap"
+    )
+    affected_rooms_count: Optional[int] = Field(
+        default=None,
+        description="Count of rooms in affected_rooms (1=single match, >1=multiple)"
     )
 
     # Validation

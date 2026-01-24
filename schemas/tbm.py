@@ -104,6 +104,7 @@ class TbmWorkEntriesEnriched(BaseModel):
 
     # Room matching
     affected_rooms: Optional[str] = Field(default=None, description="JSON array of affected rooms")
+    affected_rooms_count: Optional[int] = Field(default=None, description="Count of rooms (1=single match, >1=multiple)")
 
 
 # Alias for the enriched version with CSI
