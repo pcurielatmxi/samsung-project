@@ -16,7 +16,13 @@ Mapping Tables (from processed/integrated_analysis/mappings/):
 Location Lookup:
 - get_location_id(building, level) → integer location_id from dim_location
 - get_building_level(building, level) → building_level string (e.g., "FAB-1F")
-- get_locations_at_grid(building, level, row, col) → list of location_codes
+- get_locations_at_grid(level, row, col) → list of rooms at grid point
+- get_affected_rooms(level, row_min, row_max, col_min, col_max) → rooms in grid range
+
+IMPORTANT: Grid Coordinate System
+The FAB1 project uses a UNIFIED grid coordinate system across all buildings
+(FAB, SUE, SUW, FIZ). For spatial joins, building is ignored - only level
+and grid coordinates matter. See CLAUDE.md for details.
 """
 
 import sys
@@ -243,7 +249,6 @@ def _cols_overlap(col_min1, col_max1, col_min2, col_max2):
 
 
 def get_locations_at_grid(
-    building: str,
     level: str,
     grid_row: str,
     grid_col: float
@@ -251,29 +256,27 @@ def get_locations_at_grid(
     """
     Find all locations (rooms, elevators, etc.) whose grid bounds contain the given point.
 
-    This enables spatial joins from quality inspection grid coordinates to room codes.
+    IMPORTANT: The FAB1 project uses a unified grid coordinate system across all
+    buildings. Building is NOT used as a filter - only level and grid matter.
 
     Args:
-        building: Building code (FAB, SUE, SUW)
         level: Level code (1F, 2F, B1, etc.)
         grid_row: Grid row letter (A-N, may include decimal like "E.5")
         grid_col: Grid column number (1-34, may include decimal like 17.5)
 
     Returns:
-        List of dicts with location_id, location_code, location_type, room_name
+        List of dicts with location_id, location_code, building, location_type, room_name
     """
-    if not building or not level or not grid_row or grid_col is None:
+    if not level or not grid_row or grid_col is None:
         return []
 
     _load_dimensions()
 
-    building = str(building).upper().strip()
     level = str(level).upper().strip()
     grid_row = str(grid_row).upper().strip()
 
-    # Filter by building and level first
+    # Filter by level only (NOT building - unified grid system)
     candidates = _dim_location[
-        (_dim_location['building'] == building) &
         (_dim_location['level'] == level) &
         (_dim_location['grid_row_min'].notna()) &
         (_dim_location['grid_col_min'].notna())
@@ -289,8 +292,9 @@ def get_locations_at_grid(
             if (_row_in_range(row['grid_row_min'], row['grid_row_max'], grid_row) and
                 row['grid_col_min'] <= grid_col <= row['grid_col_max']):
                 results.append({
-                    'location_id': row['location_id'],
+                    'location_id': int(row['location_id']),
                     'location_code': row['location_code'],
+                    'building': row['building'],
                     'location_type': row['location_type'],
                     'room_name': row['room_name'],
                 })
@@ -337,7 +341,6 @@ def get_location_by_code(location_code: str) -> Optional[Dict]:
 
 
 def get_affected_rooms(
-    building: str,
     level: str,
     grid_row_min: Optional[str] = None,
     grid_row_max: Optional[str] = None,
@@ -347,10 +350,13 @@ def get_affected_rooms(
     """
     Find all rooms/locations whose grid bounds overlap with the given grid range.
 
+    IMPORTANT: The FAB1 project uses a unified grid coordinate system across all
+    buildings (FAB, SUE, SUW, FIZ). Building is NOT used as a filter - only level
+    and grid coordinates matter for spatial matching.
+
     Returns a list of affected rooms with a PARTIAL flag when grid info is incomplete.
 
     Args:
-        building: Building code (FAB, SUE, SUW)
         level: Level code (1F, 2F, B1, etc.)
         grid_row_min: Starting row letter (A-N, may include decimal like "E.5")
         grid_row_max: Ending row letter (defaults to row_min if not provided)
@@ -359,13 +365,15 @@ def get_affected_rooms(
 
     Returns:
         List of dicts with:
+        - location_id: Integer FK to dim_location
         - location_code: Standardized room code
+        - building: Building code for reference
         - room_name: Room description
         - match_type: FULL (both row+col match) or PARTIAL (only row or col)
 
         Returns empty list if no grid information provided.
     """
-    if not building or not level:
+    if not level:
         return []
 
     # Determine what grid info we have
@@ -378,7 +386,6 @@ def get_affected_rooms(
 
     _load_dimensions()
 
-    building = str(building).upper().strip()
     level = str(level).upper().strip()
 
     # Normalize inputs
@@ -394,10 +401,9 @@ def get_affected_rooms(
     else:
         col_min = col_max = None
 
-    # Filter locations by building and level, excluding non-room types
+    # Filter locations by level only (NOT building - unified grid system)
     # Include ROOM, ELEVATOR, STAIR (exclude LEVEL, BUILDING, AREA, GRIDLINE)
     candidates = _dim_location[
-        (_dim_location['building'] == building) &
         (_dim_location['level'] == level) &
         (_dim_location['location_type'].isin(['ROOM', 'ELEVATOR', 'STAIR'])) &
         (_dim_location['grid_row_min'].notna()) &
@@ -423,7 +429,9 @@ def get_affected_rooms(
 
                 if rows_match and cols_match:
                     results.append({
+                        'location_id': int(loc['location_id']),
                         'location_code': loc['location_code'],
+                        'building': loc['building'],
                         'room_name': loc['room_name'],
                         'match_type': 'FULL',
                     })
@@ -432,7 +440,9 @@ def get_affected_rooms(
                 # Row only - check row overlap (PARTIAL match)
                 if _rows_overlap(row_min, row_max, loc_row_min, loc_row_max):
                     results.append({
+                        'location_id': int(loc['location_id']),
                         'location_code': loc['location_code'],
+                        'building': loc['building'],
                         'room_name': loc['room_name'],
                         'match_type': 'PARTIAL',
                     })
@@ -441,7 +451,9 @@ def get_affected_rooms(
                 # Column only - check column overlap (PARTIAL match)
                 if _cols_overlap(col_min, col_max, loc_col_min, loc_col_max):
                     results.append({
+                        'location_id': int(loc['location_id']),
                         'location_code': loc['location_code'],
+                        'building': loc['building'],
                         'room_name': loc['room_name'],
                         'match_type': 'PARTIAL',
                     })

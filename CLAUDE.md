@@ -80,6 +80,19 @@ The centerpiece is a location dimension table where every room/elevator/stair ha
 └─────────────────┘           └─────────────────┘
 ```
 
+#### Unified Grid Coordinate System
+
+**IMPORTANT:** The entire FAB1 project uses a **single unified grid coordinate system** across all buildings:
+- Grid rows: A through N (north-south)
+- Grid columns: 1 through 33+ (east-west)
+
+While P6 data references different "buildings" (FAB, SUE, SUW, FIZ), these are conceptually different areas of the same facility sharing one continuous grid. For spatial joins:
+- **Ignore building** - it's not a reliable discriminator
+- **Use LEVEL + GRID only** - a grid coordinate like G/10 on 1F identifies a specific location regardless of building label
+- Grid coordinates are the primary means to calculate affected rooms
+
+This means `get_affected_rooms(level, grid_row, grid_col)` should match rooms across ALL buildings that contain those grid coordinates on that level.
+
 #### Location Master Status
 
 | Location Type | Total | With Grid Bounds | In Drawings | Status |

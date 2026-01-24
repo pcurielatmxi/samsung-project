@@ -224,13 +224,14 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     grid_parsed = parse_grid_field(grid_raw)
 
     # Compute affected_rooms based on grid overlap
+    # NOTE: Building is ignored - FAB1 uses unified grid system across all buildings
     affected_rooms = None
-    if building and level_std:
+    if level_std:
         has_row = grid_parsed['grid_row_min'] is not None
         has_col = grid_parsed['grid_col_min'] is not None
         if has_row or has_col:
             rooms = get_affected_rooms(
-                building, level_std,
+                level_std,
                 grid_parsed['grid_row_min'] if has_row else None,
                 grid_parsed['grid_row_max'] if has_row else None,
                 grid_parsed['grid_col_min'] if has_col else None,

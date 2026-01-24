@@ -1197,10 +1197,9 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
 
     def compute_affected_rooms(row):
         """Find rooms that overlap with the record's grid bounds."""
-        # Need at least building, level, and some grid info
-        building = row.get('building_normalized')
+        # Need level and some grid info (building ignored - unified grid system)
         level = row.get('level_normalized')
-        if pd.isna(building) or pd.isna(level):
+        if pd.isna(level):
             return None
 
         # Get grid bounds (may be partial)
@@ -1216,7 +1215,7 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
             return None
 
         rooms = get_affected_rooms(
-            building, level,
+            level,
             row_min if has_row else None,
             row_max if has_row else None,
             col_min if has_col else None,
