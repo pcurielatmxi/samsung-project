@@ -44,7 +44,6 @@ SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
     'tbm_files.csv': TbmFiles,
     'work_entries.csv': TbmWorkEntries,
     'work_entries_enriched.csv': TbmWorkEntriesEnriched,
-    'tbm_with_csi.csv': TbmWorkEntriesEnriched,
 
     # NCR data
     'ncr_consolidated.csv': NcrConsolidated,
@@ -91,7 +90,6 @@ SOURCE_FILES: Dict[str, Dict[str, Type[BaseModel]]] = {
         'tbm_files.csv': TbmFiles,
         'work_entries.csv': TbmWorkEntries,
         'work_entries_enriched.csv': TbmWorkEntriesEnriched,
-        'tbm_with_csi.csv': TbmWorkEntriesEnriched,
     },
     'projectsight': {
         'ncr_consolidated.csv': NcrConsolidated,

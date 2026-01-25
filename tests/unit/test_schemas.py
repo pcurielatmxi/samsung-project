@@ -166,10 +166,11 @@ class TestDataFrameValidation:
         """Empty dataframe should pass if columns match."""
         import pandas as pd
 
-        df = pd.DataFrame(columns=['location_id', 'location_code', 'location_type',
+        df = pd.DataFrame(columns=['location_id', 'location_code', 'p6_alias', 'location_type',
                                     'room_name', 'building', 'level', 'grid_row_min',
                                     'grid_row_max', 'grid_col_min', 'grid_col_max',
-                                    'status', 'task_count', 'building_level'])
+                                    'grid_inferred_from', 'status', 'task_count',
+                                    'building_level', 'in_drawings'])
 
         # Add dtypes that match
         df = df.astype({
