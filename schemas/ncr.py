@@ -20,6 +20,8 @@ class NcrConsolidated(BaseModel):
     Purpose: Track quality issues and non-conformances.
     """
 
+    model_config = {'populate_by_name': True}
+
     number: int = Field(description="NCR number/ID")
     type: Optional[str] = Field(default=None, description="NCR type (NCR, QOR, SOR, SWN, VR)")
     status: Optional[str] = Field(default=None, description="Current status")
@@ -31,6 +33,11 @@ class NcrConsolidated(BaseModel):
     date_resolved: Optional[str] = Field(default=None, description="Resolution date")
     resolution: Optional[str] = Field(default=None, description="Resolution description")
     data_quality_flags: Optional[str] = Field(default=None, description="Data quality issues")
+    validation_issues: Optional[str] = Field(
+        default=None,
+        alias='_validation_issues',
+        description="Pipe-delimited validation issues (for consistency with RABA/PSI)"
+    )
 
     # Dimension keys
     dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company")

@@ -216,6 +216,10 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
         lambda x: get_trade_code(x) if pd.notna(x) else None
     )
 
+    # Add _validation_issues column for consistency with RABA/PSI
+    # NCR uses data_quality_flags for similar purpose, map it
+    df['_validation_issues'] = df.get('data_quality_flags', None)
+
     # Infer CSI section from description and discipline
     print("  Inferring CSI sections...")
     csi_results = df.apply(
