@@ -834,7 +834,7 @@ Semantic search tool for project documents using Gemini embeddings and ChromaDB.
     ├── chroma.sqlite3                         # SQLite metadata
     └── {uuid}/                                # HNSW vector index
 
-{WINDOWS_DATA_DIR}/derived/embeddings/documents/  # OneDrive backup (sync)
+{WINDOWS_DATA_DIR}/backup/embeddings/documents/  # OneDrive backup (sync)
 ```
 
 - **Primary:** WSL local path for fast queries

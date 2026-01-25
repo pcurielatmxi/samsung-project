@@ -9,19 +9,25 @@ Inputs:
     - data/processed/quality/yates_all_inspections.csv
 
 Outputs:
-    - data/derived/quality/secai_taxonomy.csv
-    - data/derived/quality/yates_taxonomy.csv
+    - data/processed/quality/secai_taxonomy.csv
+    - data/processed/quality/yates_taxonomy.csv
 """
 
 import re
+import sys
 import pandas as pd
 from pathlib import Path
 from typing import Optional, Tuple, Dict
 
-# Paths - Windows data folder (OneDrive)
-DATA_ROOT = Path("/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Data")
-PROCESSED_DIR = DATA_ROOT / "processed" / "quality"
-DERIVED_DIR = DATA_ROOT / "derived" / "quality"
+# Add project root to path for settings import
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.config.settings import Settings
+
+# Paths - use settings for proper path resolution
+PROCESSED_DIR = Settings.PROCESSED_DATA_DIR / "quality"
+OUTPUT_DIR = PROCESSED_DIR  # Output to processed directory
 
 # Building codes
 BUILDINGS = ['FAB', 'SUE', 'SUW', 'FIZ', 'CUB', 'GCS', 'GCSA', 'GCSB', 'OB1', 'OB2']
@@ -493,15 +499,15 @@ def main():
     print("Deriving Quality Inspection Taxonomy")
     print("=" * 60)
 
-    DERIVED_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Process both sources
     yates_tax = process_yates_taxonomy()
     secai_tax = process_secai_taxonomy()
 
     # Save derived tables
-    yates_file = DERIVED_DIR / "yates_taxonomy.csv"
-    secai_file = DERIVED_DIR / "secai_taxonomy.csv"
+    yates_file = OUTPUT_DIR / "yates_taxonomy.csv"
+    secai_file = OUTPUT_DIR / "secai_taxonomy.csv"
 
     yates_tax.to_csv(yates_file, index=False)
     secai_tax.to_csv(secai_file, index=False)

@@ -4,9 +4,9 @@
 This system prevents data loss by using individual batch files that are merged safely into the main CSV. Each batch is preserved as a backup and all merges create timestamped backups before overwriting.
 
 ## File Locations
-- **Main Database:** `/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Data/derived/primavera_narratives/narrative_findings.csv`
+- **Main Database:** `{WINDOWS_DATA_DIR}/processed/primavera_narratives/narrative_findings.csv`
 - **Batch Files:** `batch_YYYY-MM-DD_findings.csv` (same directory as main CSV)
-- **Merge Script:** `/home/pcuriel/samsung-project/scripts/primavera/process/merge_narrative_batches.py`
+- **Merge Script:** `scripts/primavera/process/merge_narrative_batches.py`
 
 ## Workflow
 

@@ -71,7 +71,7 @@ def validate_p6_taxonomy(alias_lookup, location_set):
     """Validate P6 task taxonomy coverage."""
     print("\n--- Validating P6 Task Taxonomy ---")
 
-    taxonomy_path = Settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv'
+    taxonomy_path = Settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv'
     if not taxonomy_path.exists():
         print("  WARNING: task_taxonomy.csv not found")
         return None

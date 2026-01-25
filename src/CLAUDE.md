@@ -34,8 +34,6 @@ output_path = settings.PRIMAVERA_PROCESSED_DIR
 
 ## Path Constants
 
-Each source has four paths:
+Each source has two paths:
 - `{SOURCE}_RAW_DIR` - raw input files
-- `{SOURCE}_PROCESSED_DIR` - parsed output (traceable)
-- `{SOURCE}_DERIVED_DIR` - enhanced output (includes assumptions)
-- `{SOURCE}_ANALYSIS_DIR` - analysis in repo (git tracked)
+- `{SOURCE}_PROCESSED_DIR` - parsed and enriched output

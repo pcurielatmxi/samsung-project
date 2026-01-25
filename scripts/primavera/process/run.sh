@@ -6,11 +6,10 @@
 #
 # Pipeline stages:
 #   1. parse    - Parse XER files -> processed/primavera/
-#   2. taxonomy - Generate task taxonomy -> derived/primavera/task_taxonomy.csv
-#   3. csi      - Add CSI section IDs (appends to task_taxonomy.csv)
-#   4. copy     - Copy final file to processed/primavera/p6_task_taxonomy.csv
+#   2. taxonomy - Generate task taxonomy -> processed/primavera/p6_task_taxonomy.csv
+#   3. csi      - Add CSI section IDs (appends to p6_task_taxonomy.csv)
 #
-# The 'all' command runs stages 1-4 in sequence.
+# The 'all' command runs stages 1-3 in sequence.
 #
 # OUTPUT (processed/primavera/):
 #   - xer_files.csv      - File metadata (auto-discovered)
@@ -29,10 +28,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 # Activate virtual environment
 source "$PROJECT_ROOT/.venv/bin/activate"
 
-# Get data directories from Python settings (handles .env parsing properly)
-DATA_DIRS=$(python -c "from src.config.settings import Settings; print(Settings.PROCESSED_DATA_DIR); print(Settings.DERIVED_DATA_DIR)")
-PROCESSED_DIR=$(echo "$DATA_DIRS" | head -1)/primavera
-DERIVED_DIR=$(echo "$DATA_DIRS" | tail -1)/primavera
+# Get processed directory from Python settings (handles .env parsing properly)
+PROCESSED_DIR=$(python -c "from src.config.settings import Settings; print(Settings.PRIMAVERA_PROCESSED_DIR)")
 
 case "${1:-help}" in
     parse)
@@ -52,26 +49,6 @@ case "${1:-help}" in
         shift
         echo "=== Stage 3: Adding CSI Section IDs ==="
         python -m scripts.integrated_analysis.add_csi_to_p6_tasks "$@"
-        ;;
-    copy)
-        # Stage 4: Copy final file to processed directory
-        shift
-        echo "=== Stage 4: Copying to Processed Directory ==="
-
-        # Source file is task_taxonomy.csv in derived (CSI columns appended in-place)
-        SRC_FILE="$DERIVED_DIR/task_taxonomy.csv"
-        DST_FILE="$PROCESSED_DIR/p6_task_taxonomy.csv"
-
-        if [ -f "$SRC_FILE" ]; then
-            cp "$SRC_FILE" "$DST_FILE"
-            rows=$(wc -l < "$DST_FILE")
-            echo "  Copied: task_taxonomy.csv -> p6_task_taxonomy.csv"
-            echo "  Records: $((rows-1))"
-        else
-            echo "ERROR: Source file not found: $SRC_FILE"
-            echo "  Run './run.sh taxonomy' and './run.sh csi' first"
-            exit 1
-        fi
         ;;
     all)
         # Run full pipeline
@@ -103,21 +80,6 @@ case "${1:-help}" in
             echo "ERROR: CSI stage failed"
             exit 1
         fi
-        echo ""
-
-        echo "=== Stage 4: Copying to Processed Directory ==="
-        SRC_FILE="$DERIVED_DIR/task_taxonomy.csv"
-        DST_FILE="$PROCESSED_DIR/p6_task_taxonomy.csv"
-
-        if [ -f "$SRC_FILE" ]; then
-            cp "$SRC_FILE" "$DST_FILE"
-            rows=$(wc -l < "$DST_FILE")
-            echo "  Copied: task_taxonomy.csv -> p6_task_taxonomy.csv"
-            echo "  Records: $((rows-1))"
-        else
-            echo "ERROR: Source file not found after CSI stage"
-            exit 1
-        fi
 
         echo ""
         echo "================================================"
@@ -142,18 +104,6 @@ case "${1:-help}" in
                 echo "  $f: NOT FOUND"
             fi
         done
-        echo ""
-        echo "Derived files ($DERIVED_DIR):"
-        for f in task_taxonomy.csv wbs_taxonomy.csv; do
-            path="$DERIVED_DIR/$f"
-            if [ -f "$path" ]; then
-                rows=$(wc -l < "$path")
-                mod=$(stat -c %y "$path" 2>/dev/null | cut -d. -f1 || stat -f %Sm "$path" 2>/dev/null)
-                echo "  $f: $((rows-1)) rows (modified: $mod)"
-            else
-                echo "  $f: NOT FOUND"
-            fi
-        done
         ;;
     help|*)
         echo "P6 Primavera Processing Pipeline"
@@ -164,8 +114,7 @@ case "${1:-help}" in
         echo "  parse     Stage 1: Parse XER files to CSV tables"
         echo "  taxonomy  Stage 2: Generate task taxonomy with dim_location_id"
         echo "  csi       Stage 3: Add CSI section IDs"
-        echo "  copy      Stage 4: Copy final file to processed directory"
-        echo "  all       Run full pipeline (parse -> taxonomy -> csi -> copy)"
+        echo "  all       Run full pipeline (parse -> taxonomy -> csi)"
         echo "  status    Show pipeline status and file counts"
         echo ""
         echo "Parse Options (passed to batch_process_xer.py):"

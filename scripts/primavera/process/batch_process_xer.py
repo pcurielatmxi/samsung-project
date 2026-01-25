@@ -26,8 +26,8 @@ WBS Hierarchy Enhancement:
 - Each tier represents a level in the WBS hierarchy for easy filtering/grouping
 
 Task Taxonomy Generation:
-- task_taxonomy.csv is automatically generated with phase, scope, location classifications
-- Saved to derived/primavera/ directory (separate from processed data)
+- p6_task_taxonomy.csv is automatically generated with phase, scope, location classifications
+- Saved to processed/primavera/ directory alongside other processed data
 
 Incremental Mode:
 - Use --incremental to only process new XER files not already in xer_files.csv
@@ -875,15 +875,13 @@ def batch_process(
             verbose=verbose
         )
 
-        # Save to derived directory
-        derived_dir = Settings.PRIMAVERA_DERIVED_DIR
-        derived_dir.mkdir(parents=True, exist_ok=True)
-        taxonomy_path = derived_dir / "task_taxonomy.csv"
+        # Save to processed directory
+        taxonomy_path = Settings.PRIMAVERA_PROCESSED_DIR / "p6_task_taxonomy.csv"
         taxonomy_df.to_csv(taxonomy_path, index=False)
         output_files['task_taxonomy'] = taxonomy_path
 
         if verbose:
-            print(f"✓ task_taxonomy.csv ({len(taxonomy_df):,} rows) -> {derived_dir}")
+            print(f"✓ p6_task_taxonomy.csv ({len(taxonomy_df):,} rows) -> {Settings.PRIMAVERA_PROCESSED_DIR}")
 
     # 4. Add task code versions (tracks task evolution across schedule versions)
     if 'task' in output_files:
@@ -898,8 +896,6 @@ def batch_process(
         print("-" * 60)
         print(f"\n✅ Batch processing complete!")
         print(f"\nOutput directory: {output_dir}")
-        if tasks_combined is not None:
-            print(f"Derived directory: {Settings.PRIMAVERA_DERIVED_DIR}")
         print(f"Total tables: {len(output_files)}")
 
     # Log the sync operation

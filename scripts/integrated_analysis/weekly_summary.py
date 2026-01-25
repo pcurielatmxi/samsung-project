@@ -53,7 +53,7 @@ def load_p6_data():
     """Load P6 tasks with taxonomy."""
     # Load taxonomy
     taxonomy = pd.read_csv(
-        Settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv',
+        Settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv',
         low_memory=False
     )
 

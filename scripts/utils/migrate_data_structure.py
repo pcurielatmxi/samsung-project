@@ -7,8 +7,6 @@ New structure:
     ├── raw/{source}/           # Source files (XER, PDF, Excel, CSV dumps)
     └── processed/{source}/     # Parsed/transformed data (CSV tables)
 
-    PROJECT_ROOT/data/analysis/{source}/  # Analysis outputs (tracked by git)
-
 Usage:
     python scripts/migrate_data_structure.py --dry-run   # Preview changes
     python scripts/migrate_data_structure.py             # Execute migration
@@ -39,14 +37,13 @@ def get_migration_plan(windows_data_dir: Path) -> list[tuple[Path, Path, str]]:
     xer_exports = windows_data_dir / 'xer_exports'
     if xer_exports.exists():
         for f in xer_exports.glob('*.csv'):
-            if f.name != 'wbs_taxonomy_enriched.csv':  # Skip generated analysis
-                plan.append((f, settings.PRIMAVERA_PROCESSED_DIR / f.name,
-                            "Primavera parsed table"))
-        # Generated analysis file goes to analysis dir
+            plan.append((f, settings.PRIMAVERA_PROCESSED_DIR / f.name,
+                        "Primavera parsed table"))
+        # Generated analysis file also goes to processed
         enriched = xer_exports / 'generated' / 'wbs_taxonomy_enriched.csv'
         if enriched.exists():
-            plan.append((enriched, settings.PRIMAVERA_ANALYSIS_DIR / 'wbs_taxonomy_enriched.csv',
-                        "Primavera analysis output"))
+            plan.append((enriched, settings.PRIMAVERA_PROCESSED_DIR / 'wbs_taxonomy_enriched.csv',
+                        "Primavera enriched output"))
 
     # =========================================================================
     # Weekly Reports migrations
@@ -58,13 +55,13 @@ def get_migration_plan(windows_data_dir: Path) -> list[tuple[Path, Path, str]]:
             plan.append((f, settings.WEEKLY_REPORTS_PROCESSED_DIR / f.name,
                         "Weekly reports parsed table"))
 
-    # weekly_reports/analysis/ -> repo analysis (will be handled separately)
+    # weekly_reports/analysis/ -> processed/weekly_reports/
     wr_analysis = windows_data_dir / 'weekly_reports' / 'analysis'
     if wr_analysis.exists():
         for f in wr_analysis.glob('*'):
             if f.is_file():
-                plan.append((f, settings.WEEKLY_REPORTS_ANALYSIS_DIR / f.name,
-                            "Weekly reports analysis"))
+                plan.append((f, settings.WEEKLY_REPORTS_PROCESSED_DIR / f.name,
+                            "Weekly reports analysis output"))
 
     # =========================================================================
     # TBM migrations
@@ -97,14 +94,13 @@ def get_migration_plan(windows_data_dir: Path) -> list[tuple[Path, Path, str]]:
                         "ProjectSight export"))
 
     # =========================================================================
-    # Objective migrations (to analysis)
+    # Objective migrations (to processed/integrated)
     # =========================================================================
     objective = windows_data_dir / 'objective'
     if objective.exists():
         for f in objective.glob('*.csv'):
-            # These are analysis tracking files - keep in repo
-            plan.append((f, settings.ANALYSIS_DIR / f.name,
-                        "Analysis tracking"))
+            plan.append((f, settings.INTEGRATED_PROCESSED_DIR / f.name,
+                        "Integrated analysis output"))
 
     return plan
 

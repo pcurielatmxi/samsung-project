@@ -15,9 +15,17 @@ import csv
 import os
 import glob
 import shutil
+import sys
 from datetime import datetime
+from pathlib import Path
 
-BASE_DIR = '/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Data/derived/primavera_narratives'
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.config.settings import Settings
+
+BASE_DIR = str(Settings.PROCESSED_DATA_DIR / 'primavera_narratives')
 MAIN_CSV = os.path.join(BASE_DIR, 'narrative_findings.csv')
 BATCH_PATTERN = os.path.join(BASE_DIR, 'batch_*_findings.csv')
 

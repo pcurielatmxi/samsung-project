@@ -306,7 +306,7 @@ def load_schedule_data(period: MonthlyPeriod) -> Dict[str, Any]:
             tasks[col] = pd.to_datetime(tasks[col], errors='coerce')
 
     # Load taxonomy for building/level/trade enrichment
-    taxonomy_path = Settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv'
+    taxonomy_path = Settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv'
     if taxonomy_path.exists():
         taxonomy = pd.read_csv(taxonomy_path, low_memory=False)
         # Merge on task_id or task_code

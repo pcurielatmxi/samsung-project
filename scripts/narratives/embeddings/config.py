@@ -42,7 +42,7 @@ DATA_DIR = _get_data_dir()
 CHROMA_PATH = Path.home() / ".local" / "share" / "samsung-embeddings" / "documents"
 
 # OneDrive path for cross-computer sync (backup only)
-CHROMA_ONEDRIVE_PATH = DATA_DIR / "derived" / "embeddings" / "documents"
+CHROMA_ONEDRIVE_PATH = DATA_DIR / "backup" / "embeddings" / "documents"
 
 # Backup configuration
 BACKUP_DIR = CHROMA_PATH.parent / "backups"

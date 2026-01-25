@@ -297,7 +297,7 @@ def load_schedule_data(period: SnapshotPeriod) -> Dict[str, Any]:
         - 'availability': DataAvailability info
     """
     # Load taxonomy
-    taxonomy_path = Settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv'
+    taxonomy_path = Settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv'
     taxonomy = pd.read_csv(taxonomy_path, low_memory=False) if taxonomy_path.exists() else pd.DataFrame()
 
     # Load tasks for both snapshots

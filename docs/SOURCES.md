@@ -11,8 +11,7 @@ This project integrates data from multiple construction management systems. All 
 | Type | Location | Description |
 |------|----------|-------------|
 | Raw files | `{WINDOWS_DATA_DIR}/raw/{source}/` | Source files as received |
-| Processed | `{WINDOWS_DATA_DIR}/processed/{source}/` | Parsed CSV tables (100% traceable) |
-| Derived | `{WINDOWS_DATA_DIR}/derived/{source}/` | Enhanced data (includes assumptions) |
+| Processed | `{WINDOWS_DATA_DIR}/processed/{source}/` | Parsed and enriched CSV tables |
 | Analysis | `data/analysis/{source}/` | Findings (tracked in git) |
 
 ---

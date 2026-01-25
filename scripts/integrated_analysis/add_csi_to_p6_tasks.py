@@ -9,7 +9,7 @@ Appends CSI columns to the original taxonomy file (does not create separate file
 New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
 
 Input/Output:
-    {WINDOWS_DATA_DIR}/derived/primavera/task_taxonomy.csv
+    {WINDOWS_DATA_DIR}/processed/primavera/p6_task_taxonomy.csv
 
 Usage:
     python -m scripts.integrated_analysis.add_csi_to_p6_tasks
@@ -202,7 +202,7 @@ def infer_csi_from_taxonomy(sub_trade: str, scope: str, trade_id) -> Tuple[Optio
 def add_csi_to_p6_tasks(dry_run: bool = False):
     """Add CSI section IDs to P6 task taxonomy (appends to original file)."""
 
-    input_path = settings.PRIMAVERA_DERIVED_DIR / "task_taxonomy.csv"
+    input_path = settings.PRIMAVERA_PROCESSED_DIR / "p6_task_taxonomy.csv"
     # Write back to the same file (append columns to original)
     output_path = input_path
 

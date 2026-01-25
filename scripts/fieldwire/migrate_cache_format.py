@@ -46,7 +46,8 @@ logger = logging.getLogger(__name__)
 
 def get_old_cache_dir() -> Path:
     """Get the old (deprecated) Fieldwire AI cache directory in derived/."""
-    return settings.FIELDWIRE_DERIVED_DIR / "ai_cache"
+    # Hardcoded path since derived folder constants have been removed
+    return settings.DATA_DIR / "derived" / "fieldwire" / "ai_cache"
 
 
 def get_new_cache_dir() -> Path:
@@ -62,7 +63,8 @@ def get_backup_dir() -> Path:
 
 def get_old_derived_dir() -> Path:
     """Get the old (deprecated) derived/fieldwire directory."""
-    return settings.FIELDWIRE_DERIVED_DIR
+    # Hardcoded path since derived folder constants have been removed
+    return settings.DATA_DIR / "derived" / "fieldwire"
 
 
 def get_new_processed_dir() -> Path:

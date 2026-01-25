@@ -361,7 +361,7 @@ class ScheduleSlippageAnalyzer:
             DataFrame with task_code as index and taxonomy columns (scope_desc, trade_name, etc.)
             Returns empty DataFrame if taxonomy file doesn't exist.
         """
-        taxonomy_path = settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv'
+        taxonomy_path = settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv'
         if not taxonomy_path.exists():
             return pd.DataFrame()
 

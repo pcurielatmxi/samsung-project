@@ -47,7 +47,7 @@ def extract_from_p6(alias_map: dict) -> pd.DataFrame:
     print("\n--- Extracting from P6 Taxonomy ---")
 
     # Load taxonomy and tasks
-    taxonomy = pd.read_csv(Settings.PRIMAVERA_DERIVED_DIR / 'task_taxonomy.csv', low_memory=False)
+    taxonomy = pd.read_csv(Settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv', low_memory=False)
     tasks = pd.read_csv(Settings.PRIMAVERA_PROCESSED_DIR / 'task.csv', low_memory=False)
 
     # Merge to get dates

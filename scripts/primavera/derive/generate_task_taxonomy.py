@@ -14,7 +14,7 @@ Source Tracking:
 - Each field has a corresponding _source column showing how it was derived
 - Values: 'activity_code', 'wbs', 'inferred', or None
 
-Output: derived/primavera/task_taxonomy.csv
+Output: processed/primavera/p6_task_taxonomy.csv
 
 Usage:
     python scripts/primavera/derive/generate_task_taxonomy.py [--latest-only]
@@ -280,7 +280,7 @@ def main():
         '--output',
         type=str,
         default=None,
-        help='Output CSV path (default: derived/primavera/task_taxonomy.csv)'
+        help='Output CSV path (default: processed/primavera/p6_task_taxonomy.csv)'
     )
     parser.add_argument(
         '--skip-location-id',
@@ -317,7 +317,7 @@ def main():
     if args.output:
         output_path = Path(args.output)
     else:
-        output_path = Settings.PRIMAVERA_DERIVED_DIR / "task_taxonomy.csv"
+        output_path = Settings.PRIMAVERA_PROCESSED_DIR / "p6_task_taxonomy.csv"
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     taxonomy.to_csv(output_path, index=False)

@@ -29,7 +29,6 @@ from src.config.settings import Settings
 def load_data() -> tuple:
     """Load all necessary data files."""
     data_dir = Settings.PRIMAVERA_PROCESSED_DIR
-    derived_dir = Settings.PRIMAVERA_DERIVED_DIR
 
     print("Loading data files...")
 
@@ -42,7 +41,7 @@ def load_data() -> tuple:
     actvtype = pd.read_csv(data_dir / "actvtype.csv", low_memory=False)
 
     # Load generated taxonomy
-    taxonomy = pd.read_csv(derived_dir / "task_taxonomy.csv")
+    taxonomy = pd.read_csv(data_dir / "p6_task_taxonomy.csv")
 
     # Filter to YATES latest only
     yates_files = files[files['schedule_type'] == 'YATES']
