@@ -125,6 +125,12 @@ case "${1:-help}" in
         echo "ALL DIMENSIONS COMPLETE"
         echo "================================================"
         ;;
+    bridge)
+        # Generate affected_rooms_bridge table
+        shift
+        echo "=== Generating affected_rooms_bridge.csv ==="
+        python -m scripts.integrated_analysis.generate_affected_rooms_bridge "$@"
+        ;;
     status)
         # Show status of dimension files
         shift
@@ -141,6 +147,21 @@ case "${1:-help}" in
 
         for f in dim_location.csv dim_company.csv dim_trade.csv dim_csi_section.csv; do
             path="$DIMS_DIR/$f"
+            if [ -f "$path" ]; then
+                rows=$(wc -l < "$path")
+                mod=$(stat -c %y "$path" 2>/dev/null | cut -d. -f1 || stat -f %Sm "$path" 2>/dev/null)
+                echo "  $f: $((rows-1)) rows (modified: $mod)"
+            else
+                echo "  $f: NOT FOUND"
+            fi
+        done
+
+        # Bridge tables status
+        echo ""
+        echo "Bridge Tables:"
+        BRIDGE_DIR="$DATA_DIRS/integrated_analysis/bridge_tables"
+        for f in affected_rooms_bridge.csv; do
+            path="$BRIDGE_DIR/$f"
             if [ -f "$path" ]; then
                 rows=$(wc -l < "$path")
                 mod=$(stat -c %y "$path" 2>/dev/null | cut -d. -f1 || stat -f %Sm "$path" 2>/dev/null)
@@ -178,6 +199,9 @@ case "${1:-help}" in
         echo "  dim-company      Build dim_company.csv"
         echo "  dim-trade        Build dim_trade.csv"
         echo "  dim-csi          Build dim_csi_section.csv"
+        echo ""
+        echo "Bridge Tables:"
+        echo "  bridge           Generate affected_rooms_bridge.csv (requires RABA/PSI/TBM)"
         echo ""
         echo "Meta:"
         echo "  all              Build all dimensions"
