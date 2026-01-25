@@ -19,6 +19,7 @@ from .weekly_reports import (
     LaborDetail, LaborDetailByCompany,
     AddendumFiles, AddendumManpower, AddendumRfiLog, AddendumSubmittalLog,
 )
+from .bridge_tables import AffectedRoomsBridge
 
 
 # Registry mapping file names to schemas
@@ -61,6 +62,9 @@ SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
     'addendum_manpower.csv': AddendumManpower,
     'addendum_rfi_log.csv': AddendumRfiLog,
     'addendum_submittal_log.csv': AddendumSubmittalLog,
+
+    # Bridge tables
+    'affected_rooms_bridge.csv': AffectedRoomsBridge,
 }
 
 
@@ -103,6 +107,9 @@ SOURCE_FILES: Dict[str, Dict[str, Type[BaseModel]]] = {
         'addendum_manpower.csv': AddendumManpower,
         'addendum_rfi_log.csv': AddendumRfiLog,
         'addendum_submittal_log.csv': AddendumSubmittalLog,
+    },
+    'integrated_analysis/bridge_tables': {
+        'affected_rooms_bridge.csv': AffectedRoomsBridge,
     },
 }
 
