@@ -1,6 +1,6 @@
 # RABA Quality Inspections
 
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026-01-25
 
 ## Purpose
 
@@ -92,3 +92,18 @@ python -m scripts.raba.document_processing.fix_raba_outcomes --dry-run --use-emb
 ```
 
 **Spot-check tool:** `python -m scripts.shared.spotcheck_quality_data raba --samples 5`
+
+### Party Parsing Issues (2026-01-25)
+
+**Status:** ✅ Fixed in postprocess.py
+
+**Problem:** ~9% of records had persons incorrectly assigned company roles:
+- "Kevin Jeong" (Samsung PM) as "contractor" (571 instances)
+- "Mark Hammond", "Saad Ekab", etc. as "contractor" instead of representative roles
+
+**Fix Applied:** `postprocess.py` now calls `normalize_parties()` from `scripts.shared.shared_normalization` which:
+- Maps known persons to correct roles (Kevin Jeong → client_contact, others → contractor_rep)
+- Adds `entity_type` field (person/company)
+- Uses company name indicators for entity classification
+
+**To apply:** Re-run clean stage: `./run.sh clean --force`

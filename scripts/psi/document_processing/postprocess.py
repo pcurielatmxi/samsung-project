@@ -17,6 +17,7 @@ from scripts.shared.shared_normalization import (
     normalize_date,
     normalize_role,
     normalize_inspection_type,
+    normalize_parties,
 )
 from scripts.shared.location_parser import parse_location
 
@@ -43,23 +44,9 @@ def process_record(input_data: Dict[str, Any], source_path: Path) -> Dict[str, A
     # Parse location into structured components
     location_parsed = parse_location(content.get('location'))
 
-    # Normalize parties if present
-    normalized_parties = []
+    # Normalize parties - fixes trade-as-party, company-as-inspector, mixed names
     parties = content.get('parties_involved', [])
-    if parties:
-        for party in parties:
-            if isinstance(party, dict):
-                normalized_parties.append({
-                    'name': party.get('name'),
-                    'role': normalize_role(party.get('role')),
-                    'company': party.get('company'),
-                })
-            elif isinstance(party, str):
-                normalized_parties.append({
-                    'name': party,
-                    'role': None,
-                    'company': None,
-                })
+    normalized_parties = normalize_parties(parties, source='psi')
 
     # Normalize issues if present
     normalized_issues = []

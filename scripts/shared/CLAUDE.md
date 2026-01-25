@@ -1,6 +1,6 @@
 # Shared Utilities
 
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026-01-25
 
 ## Purpose
 
@@ -40,7 +40,32 @@ loc = parse_location('FAB 1F Grid G/10')  # → {building, level, grid, ...}
 from scripts.shared.company_matcher import CompanyMatcher
 matcher = CompanyMatcher(threshold=0.85)
 canonical, score = matcher.match('Berg Electric')  # → ('Berg', 0.95)
+
+# Party normalization
+from scripts.shared.shared_normalization import normalize_parties
+parties = normalize_parties(raw_parties, source='psi')
 ```
+
+## Party Normalization
+
+**Module:** `shared_normalization.py` → `normalize_parties()`
+
+Fixes common LLM extraction errors in `parties_involved` arrays during postprocessing.
+
+**Issues Fixed:**
+
+| Issue | Example | Fix |
+|-------|---------|-----|
+| Trade as party | `{"name": "Arch", "role": "trade"}` | Filtered out |
+| Company as inspector | `{"name": "Intertek PSI", "role": "inspector"}` | Role → `inspection_company` |
+| Mixed person/company | `{"name": "Chris Plassmann/YATES"}` | Split into 2 entries |
+| Person as contractor | `{"name": "Kevin Jeong", "role": "contractor"}` | Role → `client_contact` |
+
+**Output fields:** `name`, `role`, `company`, `entity_type` (person/company)
+
+**Known persons list:** Kevin Jeong (client_contact), Mark Hammond, Saad Ekab, Chris Plassmann, etc. → contractor_rep
+
+**Applied in:** `scripts/psi/document_processing/postprocess.py`, `scripts/raba/document_processing/postprocess.py`
 
 ## Data Dependencies
 

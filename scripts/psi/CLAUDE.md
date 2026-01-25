@@ -1,6 +1,6 @@
 # PSI Quality Inspections
 
-**Last Updated:** 2026-01-21
+**Last Updated:** 2026-01-25
 
 ## Purpose
 
@@ -86,3 +86,20 @@ python -m scripts.psi.document_processing.fix_psi_outcomes --apply
 ```
 
 **Spot-check tool:** `python -m scripts.shared.spotcheck_quality_data psi --samples 5`
+
+### Party Parsing Issues (2026-01-25)
+
+**Status:** ✅ Fixed in postprocess.py
+
+**Problem:** ~62% of records had incorrect `parties_involved` entries:
+- **Trade as party**: "Arch", "Architectural", "Drywall" extracted with role "trade" (3,931 instances)
+- **Company as inspector**: "Intertek PSI" with role "inspector" instead of "inspection_company" (879 instances)
+- **Mixed names**: "Chris Plassmann/YATES" combined person and company (1,144 instances)
+
+**Fix Applied:** `postprocess.py` now calls `normalize_parties()` from `scripts.shared.shared_normalization` which:
+- Filters out trade/discipline entries
+- Fixes company-as-inspector roles
+- Splits mixed person/company names into separate entries
+- Adds `entity_type` field (person/company)
+
+**To apply:** Re-run clean stage: `./run.sh clean --force`
