@@ -775,6 +775,41 @@ Additional fields include: Author Company, Module, Reasons for failure, Week, Ye
 - Contractor performance comparison
 - Re-inspection tracking and rework quantification
 
+### Room Timeline Analysis Tool
+
+**Location:** [scripts/integrated_analysis/room_timeline.py](scripts/integrated_analysis/room_timeline.py)
+
+Query tool that retrieves all work entries and inspections for a specific room within a time window, with optional P6 schedule cross-reference.
+
+**Purpose:** Answer "What happened at this room during this time period?" by consolidating RABA, PSI, and TBM data with schedule context.
+
+**Features:**
+- Searches RABA, PSI, and TBM for entries matching a room via `affected_rooms` JSON
+- Separates **single room matches** (precise) from **multi-room matches** (shared)
+- Optional P6 schedule lookup showing what was planned at the time of each event
+- CSV export for further analysis
+
+**Usage:**
+```bash
+# Basic usage
+python -m scripts.integrated_analysis.room_timeline FAB116101 --start 2023-01-01 --end 2023-06-30
+
+# Skip P6 schedule lookup (faster)
+python -m scripts.integrated_analysis.room_timeline FAB116101 --start 2023-01-01 --end 2023-06-30 --no-schedule
+
+# Export to CSV
+python -m scripts.integrated_analysis.room_timeline FAB116101 --start 2023-01-01 --end 2023-06-30 --output timeline.csv
+```
+
+**Output Sections:**
+1. **Single room matches** - Entries where ONLY this room was affected (~22% of RABA/PSI)
+2. **Multi-room matches** - Entries where this room was one of several affected
+
+**Schedule Cross-Reference Notes:**
+- P6 room-level tasks only exist for interior work (2025+)
+- Foundation work (2023) is not tracked at room level in P6
+- Schedule context shows tasks that were in-progress, starting soon, or recently completed
+
 ### Document Embeddings Search
 
 **Location:** [scripts/narratives/embeddings/](scripts/narratives/embeddings/)
