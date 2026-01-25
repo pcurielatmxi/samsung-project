@@ -106,6 +106,20 @@ class TbmWorkEntriesEnriched(BaseModel):
     affected_rooms: Optional[str] = Field(default=None, description="JSON array of affected rooms")
     affected_rooms_count: Optional[int] = Field(default=None, description="Count of rooms (1=single match, >1=multiple)")
 
+    # Location quality diagnostics (for Power BI filtering)
+    grid_completeness: Optional[str] = Field(
+        default=None,
+        description="What grid info was available: FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE"
+    )
+    match_quality: Optional[str] = Field(
+        default=None,
+        description="Summary of match types: PRECISE, MIXED, PARTIAL, NONE"
+    )
+    location_review_flag: Optional[bool] = Field(
+        default=None,
+        description="True if location needs human investigation"
+    )
+
 
 # Alias for the enriched version with CSI
 TbmWithCSI = TbmWorkEntriesEnriched

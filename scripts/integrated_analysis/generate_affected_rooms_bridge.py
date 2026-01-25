@@ -19,6 +19,9 @@ Output Schema:
     room_name           - Human-readable room name
     match_type          - FULL or PARTIAL (grid overlap type)
     source_room_count   - Total rooms affected by this event (for context)
+    grid_completeness   - What grid info was in source: FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE
+    match_quality       - Summary of match types: PRECISE, MIXED, PARTIAL, NONE
+    location_review_flag - Boolean suggesting human review needed
 
 Usage:
     python -m scripts.integrated_analysis.generate_affected_rooms_bridge
@@ -76,6 +79,11 @@ def explode_source(
         source_id = row.get(id_col)
         event_date = row.get(date_col)
 
+        # Get location quality columns from source record
+        grid_completeness = row.get('grid_completeness')
+        match_quality = row.get('match_quality')
+        location_review_flag = row.get('location_review_flag')
+
         for room in rooms:
             records.append({
                 'source': source,
@@ -87,6 +95,9 @@ def explode_source(
                 'room_name': room.get('room_name'),
                 'match_type': room.get('match_type'),
                 'source_room_count': room_count,
+                'grid_completeness': grid_completeness,
+                'match_quality': match_quality,
+                'location_review_flag': location_review_flag,
             })
 
     return pd.DataFrame(records)
@@ -213,6 +224,20 @@ def main():
     for mt, count in bridge['match_type'].value_counts().items():
         pct = count / len(bridge) * 100
         print(f"    {mt}: {count:,} ({pct:.1f}%)")
+
+    # Grid completeness distribution
+    if 'grid_completeness' in bridge.columns:
+        print(f"  Grid completeness:")
+        for gc, count in bridge['grid_completeness'].value_counts(dropna=False).items():
+            pct = count / len(bridge) * 100
+            label = gc if pd.notna(gc) else 'N/A'
+            print(f"    {label}: {count:,} ({pct:.1f}%)")
+
+    # Location review flag
+    if 'location_review_flag' in bridge.columns:
+        review_count = bridge['location_review_flag'].sum()
+        review_pct = review_count / len(bridge) * 100 if len(bridge) > 0 else 0
+        print(f"  Needs review: {review_count:,} ({review_pct:.1f}%)")
 
 
 if __name__ == '__main__':

@@ -28,3 +28,17 @@ class AffectedRoomsBridge(BaseModel):
     source_room_count: Optional[int] = Field(
         description="Total rooms affected by this event (for context)"
     )
+
+    # Location quality diagnostics (from source record)
+    grid_completeness: Optional[str] = Field(
+        default=None,
+        description="What grid info was available: FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE"
+    )
+    match_quality: Optional[str] = Field(
+        default=None,
+        description="Summary of all match types for this event: PRECISE, MIXED, PARTIAL, NONE"
+    )
+    location_review_flag: Optional[bool] = Field(
+        default=None,
+        description="True if source record needs location investigation"
+    )

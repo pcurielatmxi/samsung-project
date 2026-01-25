@@ -1241,6 +1241,84 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
 
     df['affected_rooms_count'] = df['affected_rooms'].apply(count_rooms)
 
+    # Add grid_completeness - describes what location info was available in source
+    def get_grid_completeness(row):
+        """Determine what grid info was available in the source record."""
+        has_level = pd.notna(row.get('level_normalized'))
+        has_row = pd.notna(row.get('grid_row_min'))
+        has_col = pd.notna(row.get('grid_col_min'))
+
+        if has_row and has_col:
+            return 'FULL'
+        elif has_row:
+            return 'ROW_ONLY'
+        elif has_col:
+            return 'COL_ONLY'
+        elif has_level:
+            return 'LEVEL_ONLY'
+        else:
+            return 'NONE'
+
+    df['grid_completeness'] = df.apply(get_grid_completeness, axis=1)
+
+    # Add match_quality - summary of how rooms were matched
+    def get_match_quality(row):
+        """Summarize the quality of room matches."""
+        json_str = row.get('affected_rooms')
+        if pd.isna(json_str):
+            return 'NONE'
+
+        try:
+            rooms = json.loads(json_str)
+            if not rooms:
+                return 'NONE'
+
+            match_types = [r.get('match_type') for r in rooms]
+            full_count = sum(1 for m in match_types if m == 'FULL')
+            partial_count = sum(1 for m in match_types if m == 'PARTIAL')
+
+            if partial_count == 0:
+                return 'PRECISE'
+            elif full_count == 0:
+                return 'PARTIAL'
+            else:
+                return 'MIXED'
+        except (json.JSONDecodeError, TypeError):
+            return 'NONE'
+
+    df['match_quality'] = df.apply(get_match_quality, axis=1)
+
+    # Add location_review_flag - suggests whether human review is needed
+    def needs_location_review(row):
+        """Determine if record needs location investigation."""
+        grid_completeness = row.get('grid_completeness')
+        match_quality = row.get('match_quality')
+        room_count = row.get('affected_rooms_count')
+
+        # No rooms matched - nothing to review
+        if pd.isna(room_count) or room_count == 0:
+            return False
+
+        # High room count with imprecise matching
+        if room_count > 10 and match_quality != 'PRECISE':
+            return True
+
+        # Partial matches with moderate room count
+        if match_quality == 'PARTIAL' and room_count > 5:
+            return True
+
+        # Mixed matches with high room count
+        if match_quality == 'MIXED' and room_count > 8:
+            return True
+
+        # Level-only records that matched rooms (unusual)
+        if grid_completeness == 'LEVEL_ONLY' and room_count > 0:
+            return True
+
+        return False
+
+    df['location_review_flag'] = df.apply(needs_location_review, axis=1)
+
     # Calculate coverage
     has_grid_row = df['grid_row_min'].notna()
     has_grid_col = df['grid_col_min'].notna()

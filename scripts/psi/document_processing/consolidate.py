@@ -241,6 +241,48 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
                 affected_rooms = json.dumps(rooms)
     affected_rooms_count = len(json.loads(affected_rooms)) if affected_rooms else None
 
+    # Compute location quality diagnostics for Power BI filtering
+    # grid_completeness: what grid info was available in the source
+    has_row = grid_parsed['grid_row_min'] is not None
+    has_col = grid_parsed['grid_col_min'] is not None
+    if has_row and has_col:
+        grid_completeness = 'FULL'
+    elif has_row:
+        grid_completeness = 'ROW_ONLY'
+    elif has_col:
+        grid_completeness = 'COL_ONLY'
+    elif level_std:
+        grid_completeness = 'LEVEL_ONLY'
+    else:
+        grid_completeness = 'NONE'
+
+    # match_quality: summary of how rooms were matched
+    if affected_rooms:
+        rooms_list = json.loads(affected_rooms)
+        match_types = [r.get('match_type') for r in rooms_list]
+        full_count = sum(1 for m in match_types if m == 'FULL')
+        partial_count = sum(1 for m in match_types if m == 'PARTIAL')
+        if partial_count == 0:
+            match_quality = 'PRECISE'
+        elif full_count == 0:
+            match_quality = 'PARTIAL'
+        else:
+            match_quality = 'MIXED'
+    else:
+        match_quality = 'NONE'
+
+    # location_review_flag: suggests whether human review is needed
+    location_review_flag = False
+    if affected_rooms_count:
+        if affected_rooms_count > 10 and match_quality != 'PRECISE':
+            location_review_flag = True
+        elif match_quality == 'PARTIAL' and affected_rooms_count > 5:
+            location_review_flag = True
+        elif match_quality == 'MIXED' and affected_rooms_count > 8:
+            location_review_flag = True
+        elif grid_completeness == 'LEVEL_ONLY':
+            location_review_flag = True
+
     # Infer CSI section from inspection type and category
     csi_section_id, csi_section_code, csi_source = infer_csi_section(inspection_type, inspection_category)
     csi_title = CSI_SECTIONS[csi_section_id][1] if csi_section_id and csi_section_id in CSI_SECTIONS else None
@@ -326,6 +368,11 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         # Affected rooms (JSON array of rooms whose grid bounds overlap)
         'affected_rooms': affected_rooms,
         'affected_rooms_count': affected_rooms_count,
+
+        # Location quality diagnostics (for Power BI filtering)
+        'grid_completeness': grid_completeness,
+        'match_quality': match_quality,
+        'location_review_flag': location_review_flag,
     }
 
 
