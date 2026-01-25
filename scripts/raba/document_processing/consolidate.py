@@ -548,6 +548,9 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
         for issue_type, count in sorted(report['issues_by_type'].items(), key=lambda x: -x[1])[:10]:
             print(f"  {issue_type}: {count}")
 
+    print("\n[!] Remember to regenerate bridge table after consolidation:")
+    print("    cd scripts/integrated_analysis/dimensions && ./run.sh bridge")
+
     return report
 
 
