@@ -79,6 +79,10 @@ UNIFIED_COLUMNS = [
     'issues',                    # Pipe-delimited issue descriptions
     'issue_count',               # Count of issues
 
+    # Multi-party inspection metadata (narrative extraction)
+    'is_multi_party',            # Boolean - True if multiple subcontractors mentioned in narrative
+    'narrative_companies',       # Pipe-delimited list of companies extracted from narrative text
+
     # Dimension keys (for integration)
     'dim_location_id',           # Location dimension ID (integer FK)
     'building_level',            # Building-level string for display (e.g., "FAB-1F")

@@ -163,10 +163,33 @@ def extract_date_from_sheet_name(sheet_name: str) -> str:
 
 
 def find_work_plan_sheet(excel_file: pd.ExcelFile) -> str:
-    """Find the SECAI Daily Work Plan sheet (handles dynamic names)."""
-    for sheet in excel_file.sheet_names:
+    """
+    Find the TBM work plan sheet (handles multiple formats).
+
+    Accepts:
+    - "SECAI Daily Work Plan" (2025 OneDrive format)
+    - "Form of work list and TBM" (2023-2024 EML format)
+    - Sheets containing "Daily Work Plan" or "TBM" keywords
+    """
+    sheet_names = excel_file.sheet_names
+
+    # Priority 1: Exact match for known formats
+    for sheet in sheet_names:
         if sheet.startswith('SECAI Daily Work Plan'):
             return sheet
+        if 'Form of work list and TBM' in sheet:
+            return sheet
+
+    # Priority 2: Sheets containing "Daily Work Plan" or "TBM"
+    for sheet in sheet_names:
+        sheet_lower = sheet.lower()
+        if 'daily work plan' in sheet_lower or 'tbm' in sheet_lower:
+            return sheet
+
+    # Priority 3: Use first sheet as fallback (many files have unnamed main sheet)
+    if sheet_names:
+        return sheet_names[0]
+
     return None
 
 
@@ -174,8 +197,9 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
     """
     Detect column indices from header rows.
 
-    The TBM files have headers in row 2 (index 2) with some merged cells,
-    and sub-headers in row 3 (index 3) for Location breakdown.
+    Handles two formats:
+    - SECAI format: Headers on row 2-3 (indices 2-3), has date on row 1
+    - EML format: Headers on row 1 (index 1), has title on row 0
 
     Some files have NO row number column - data starts directly with Division.
     We detect this by checking if the first data rows have numeric values in col 0.
@@ -186,9 +210,21 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
     if len(df) < 4:
         return None
 
+    # Detect header row by searching for "Division" keyword
+    header_row_idx = None
+    for i in range(min(5, len(df))):  # Check first 5 rows
+        row_values = [str(v).lower() if pd.notna(v) else '' for v in df.iloc[i]]
+        if 'division' in ' '.join(row_values):
+            header_row_idx = i
+            break
+
+    if header_row_idx is None:
+        return None  # No valid header found
+
     # Get header rows
-    header_row = df.iloc[2]
-    sub_header_row = df.iloc[3]
+    header_row = df.iloc[header_row_idx]
+    # Sub-header is next row (for location breakdown in SECAI format)
+    sub_header_row = df.iloc[header_row_idx + 1] if header_row_idx + 1 < len(df) else pd.Series()
 
     # Convert to lowercase strings for matching
     def normalize(val):
@@ -215,6 +251,7 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
     # Find key columns by header text patterns
     # Fixed positions are based on header row (before any data offset)
     cols = {
+        'header_row_idx': header_row_idx,  # Store for data row calculation
         'has_row_num': has_row_num,
         'row_num': 0 if has_row_num else None,  # No row_num column in shifted files
         'division': 1,     # Column 1 ("Division")
@@ -357,12 +394,18 @@ def parse_tbm_file(filepath: Path) -> tuple:
         val = get_cell(row, col_name)
         return str(val) if val is not None else None
 
-    # Parse work entries starting from row 4 (0-indexed, after headers)
+    # Parse work entries starting after headers
+    # EML format: header row 1, data starts row 4
+    # SECAI format: header row 2-3, data starts row 4
+    # Calculate data start row dynamically
+    header_row_idx = cols.get('header_row_idx', 2)
+    data_start_row = max(4, header_row_idx + 3)  # At least row 4, or 3 rows after header
+
     work_entries = []
     has_row_num = cols.get('has_row_num', True)
     synthetic_row_num = 0
 
-    for idx in range(4, len(df)):
+    for idx in range(data_start_row, len(df)):
         row = df.iloc[idx]
 
         # Handle files with or without row numbers

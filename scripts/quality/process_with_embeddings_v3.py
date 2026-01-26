@@ -23,8 +23,8 @@ from tqdm import tqdm
 from src.config.settings import settings
 from scripts.quality.embedding_classifier import QualityClassifier, cosine_similarity
 from scripts.quality.improve_labels import ENHANCED_CSI_LABELS, build_enhanced_company_label
+from scripts.quality.label_embedding_cache import LabelEmbeddingCache
 from scripts.narratives.embeddings import get_store
-from scripts.narratives.embeddings.client import embed_for_query
 
 
 def load_enhanced_company_labels() -> Dict[str, str]:
@@ -79,25 +79,22 @@ class EnhancedClassifier:
                            Superseded by revision. Not applicable.'''
         }
 
-        # Cache embeddings
-        print("Caching label embeddings...")
-        self.status_embeddings = {
-            label: embed_for_query(desc)
-            for label, desc in self.status_labels.items()
-        }
+        # Initialize cache
+        cache = LabelEmbeddingCache()
+
+        # Get embeddings (cached if available, else API call)
+        print("Loading label embeddings...")
+        self.status_embeddings = cache.get_embeddings('status', self.status_labels)
         print(f"  Status: {len(self.status_embeddings)} labels")
 
-        self.csi_embeddings = {
-            label: embed_for_query(desc)
-            for label, desc in self.csi_labels.items()
-        }
+        self.csi_embeddings = cache.get_embeddings('csi', self.csi_labels)
         print(f"  CSI: {len(self.csi_embeddings)} sections")
 
-        self.company_embeddings = {
-            name: embed_for_query(desc)
-            for name, desc in self.company_labels.items()
-        }
+        self.company_embeddings = cache.get_embeddings('company', self.company_labels)
         print(f"  Company: {len(self.company_embeddings)} companies")
+
+        # Print cache stats
+        cache.print_stats()
 
     def classify_chunk(self, chunk_embedding: np.ndarray) -> Dict:
         """Classify a chunk using cached embeddings."""
