@@ -9,7 +9,9 @@ Parse and enrich Toolbox Meeting (TBM) daily work plans from subcontractors (Exc
 ## Data Flow
 
 ```
-Field TBM (OneDrive)     raw/tbm/*.xlsx (512+ files)
+EML Archive              raw/tbm/TBM EML Files/*.eml (740 files, Jul 2023 - Feb 2025)
+        ↓ [extract-eml]
+Field TBM (OneDrive)     raw/tbm/*.xlsx (5,983 total: 5,377 from EML + 606 from OneDrive)
         ↓ [sync]                ↓ [Stage 1: Parse]
         └──────────────► work_entries.csv + tbm_files.csv
                                 ↓ [Stage 2: Enrich]
@@ -25,43 +27,65 @@ Field TBM (OneDrive)     raw/tbm/*.xlsx (512+ files)
 ```
 tbm/
 └── process/
-    ├── run.sh                     # Pipeline orchestrator
-    ├── sync_field_tbm.py          # Sync from field team's OneDrive
-    ├── parse_tbm_daily_plans.py   # Excel parser
-    └── deduplicate_tbm.py         # Duplicate detection & data quality flags
+    ├── run.sh                        # Pipeline orchestrator
+    ├── extract_eml_attachments.py    # Extract Excel from EML archive (one-time)
+    ├── sync_field_tbm.py             # Sync from field team's OneDrive
+    ├── parse_tbm_daily_plans.py      # Excel parser
+    └── deduplicate_tbm.py            # Duplicate detection & data quality flags
 ```
 
 ## Usage
 
 ```bash
 cd scripts/tbm/process
-./run.sh sync --dry-run  # Preview sync from field folder
-./run.sh sync            # Sync new files from field team
-./run.sh parse           # Stage 1: Extract Excel data
-./run.sh enrich          # Stage 2: Add dimension IDs
-./run.sh csi             # Stage 3: Add CSI codes
-./run.sh dedup           # Stage 4: Flag duplicates & quality issues
-./run.sh all             # Run all stages
-./run.sh status          # Show file counts
+./run.sh extract-eml --dry-run  # Preview EML extraction (one-time)
+./run.sh extract-eml            # Extract Excel from EML archive (one-time)
+./run.sh sync --dry-run         # Preview sync from field folder
+./run.sh sync                   # Sync new files from field team
+./run.sh parse                  # Stage 1: Extract Excel data
+./run.sh enrich                 # Stage 2: Add dimension IDs
+./run.sh csi                    # Stage 3: Add CSI codes
+./run.sh dedup                  # Stage 4: Flag duplicates & quality issues
+./run.sh all                    # Run all stages (parse -> enrich -> csi -> dedup)
+./run.sh status                 # Show file counts
 ```
 
-## Field Sync
+## Data Sources
 
-The field team maintains TBM files in OneDrive (FIELD_TBM_FILES env var):
+### 1. EML Archive (Historical - One-Time Extraction)
+
+**Location:** `raw/tbm/TBM EML Files/` (740 EML files)
+**Date Range:** July 2023 - February 2025 (~20 months)
+**Content:** Email messages containing TBM Excel attachments
+**Extraction:** `./run.sh extract-eml`
+
+The EML archive contains historical TBM data delivered via email before the OneDrive sync process was established. Each EML file contains 1-15 Excel attachments.
+
+**Extracted Files:** 5,377 Excel files named `eml_YYYYMMDD_NN.xlsx`
+**Manifest:** `raw/tbm/eml_extraction_manifest.json` tracks extraction status
+
+### 2. Field OneDrive Sync (Current Operations)
+
+**Location:** FIELD_TBM_FILES env var
+**Folders:**
 - `Axios/` - Daily Work Plans by date
 - `Berg & MK Marlow/` - Daily Work Plans by date
 
-The sync script:
+**Sync Process:**
 1. Recursively finds "Daily Work Plan" files
 2. Copies new files to raw/tbm/ (flattens folder structure)
 3. Tracks synced files in manifest to avoid duplicates
 
+**Current Files:** 606 Excel files from ongoing field operations
+
 ## Key Data
 
-- **13,539 daily work activities** across 421 files
+- **5,983 Excel files total** (5,377 EML archive + 606 OneDrive sync)
+- **Date range:** July 2023 - December 2025 (~30 months)
+- **Previous coverage:** 13,539 work activities (Mar-Dec 2025, 421 files)
+- **Expected after reprocessing:** ~30,000+ work activities (estimated 2-3x increase)
 - Crew info: foreman, headcount, contact
 - Location: building, level, row codes
-- Date range: Mar 2025 - Dec 2025
 
 ## Dimension Coverage
 

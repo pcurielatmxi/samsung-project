@@ -18,7 +18,7 @@ Established data pipelines for 9 primary sources:
 |--------|---------|---------|--------|
 | Primavera P6 | Schedule snapshots (YATES + SECAI) | 66 files, 964K tasks | ✅ Processed |
 | Weekly Reports | Issues, progress, manpower | 37 reports, 1,108 issues | ✅ Processed |
-| TBM Daily Plans | Daily work activities by crew | 13.5K entries | ✅ Processed |
+| TBM Daily Plans | Daily work activities by crew | 5,983 files (Jul 2023-Dec 2025) | 🔄 Needs Reprocessing |
 | ProjectSight | Daily reports, labor hours | 857K labor entries | ✅ Processed |
 | ProjectSight NCR | Quality non-conformance records (Notice to Comply) | 1,985 records (NCR/QOR/SOR/SWN/VR) | ✅ Processed |
 | Quality Records | Inspections (Yates WIR + SECAI IR) | 37K inspections | ✅ Processed |

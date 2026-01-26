@@ -236,11 +236,12 @@ class EmbeddingStore:
         chunks.sort(key=lambda c: c.metadata.get("chunk_index", 0))
         return chunks
 
-    def get_chunks_by_file(self, source_file: str) -> List[ChunkResult]:
+    def get_chunks_by_file(self, source_file: str, include_embeddings: bool = False) -> List[ChunkResult]:
         """Get all chunks for a specific source file.
 
         Args:
             source_file: The source filename to retrieve chunks for.
+            include_embeddings: Whether to include embedding vectors (adds 'embedding' attribute)
 
         Returns:
             List of ChunkResult objects, sorted by chunk_index.
@@ -248,9 +249,13 @@ class EmbeddingStore:
         collection = self.get_chunks_collection()
 
         # Query by source_file metadata
+        include_fields = ["documents", "metadatas"]
+        if include_embeddings:
+            include_fields.append("embeddings")
+
         result = collection.get(
             where={"source_file": source_file},
-            include=["documents", "metadatas"]
+            include=include_fields
         )
 
         if not result["ids"]:
@@ -259,12 +264,20 @@ class EmbeddingStore:
         # Parse results
         chunks = []
         for i, id_ in enumerate(result["ids"]):
-            chunks.append(ChunkResult(
+            chunk = ChunkResult(
                 id=id_,
                 text=result["documents"][i] if result["documents"] else "",
                 score=0,
                 metadata=result["metadatas"][i] if result["metadatas"] else {}
-            ))
+            )
+
+            # Add embedding if requested
+            if include_embeddings and "embeddings" in result and result["embeddings"] is not None:
+                chunk.embedding = result["embeddings"][i] if i < len(result["embeddings"]) else None
+            else:
+                chunk.embedding = None
+
+            chunks.append(chunk)
 
         # Sort by chunk_index
         chunks.sort(key=lambda c: c.metadata.get("chunk_index", 0))
