@@ -89,7 +89,7 @@ def explode_source(
                 'source': source,
                 'source_id': str(source_id),
                 'event_date': event_date,
-                'location_id': room.get('dim_location_id'),
+                'location_id': room.get('location_id'),
                 'location_code': room.get('location_code'),
                 'building': room.get('building'),
                 'room_name': room.get('room_name'),

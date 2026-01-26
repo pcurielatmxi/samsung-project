@@ -2,8 +2,17 @@
 """
 Add CSI Section IDs to P6 Task Taxonomy.
 
-Maps task taxonomy sub_trade/scope codes to specific CSI MasterFormat sections.
-Uses hierarchical inference: sub_trade → scope → trade_id fallback.
+Maps task taxonomy to specific CSI MasterFormat sections using hierarchical inference:
+1. task_name keywords (most specific) - distinguishes fire-related work types
+2. sub_trade codes (e.g., CIP, STL, DRY)
+3. scope codes (broader category)
+4. trade_id fallback
+
+The keyword-based inference is critical for fire-related work where the FIR sub_trade
+is used as a catch-all but actually contains:
+- Firestopping (07 84 00) - penetration seals, fire caulk
+- Fire Suppression (21 10 00) - sprinklers
+- Fireproofing (07 81 00) - SFRM, IFRM, intumescent coatings
 
 Appends CSI columns to the original taxonomy file (does not create separate file).
 New columns added: dim_csi_section_id, csi_section, csi_inference_source, csi_title
@@ -31,6 +40,66 @@ from src.config.settings import settings
 
 # Import shared CSI definitions
 from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
+
+# Keyword patterns for task_name-based CSI inference
+# Order matters - more specific patterns checked first
+# Format: (keywords_list, csi_section_id, description)
+TASK_NAME_KEYWORDS = [
+    # Firestopping vs Fireproofing (both Division 07, commonly confused)
+    # Check firestopping FIRST since it's more specific
+    (["firestop", "fire stop", "fire-stop", "firestopping", "penetration seal", "fire caulk"],
+     19, "Firestopping"),  # 07 84 00
+
+    # Fireproofing (SFRM/IFRM) - only if explicit keywords
+    (["sfrm", "ifrm", "intumescent", "fireproofing", "spray fire", "applied fire"],
+     18, "Fireproofing"),  # 07 81 00
+
+    # Fire Suppression (sprinklers) - distinguish from firestopping
+    (["sprinkler", "fire suppression", "fire protection piping", "fire line"],
+     34, "Fire Suppression"),  # 21 10 00
+
+    # Fire Pump
+    (["fire pump"], 35, "Fire Pump"),  # 21 30 00
+
+    # Grouting - often missed
+    (["grout", "grouting", "non-shrink grout", "grout tube"], 4, "Grouting"),  # 03 60 00
+
+    # Masonry - CMU, block work
+    (["cmu", "masonry", "block wall", "concrete block", "parapet"], 5, "Masonry"),  # 04 20 00
+
+    # Steel Decking - specific
+    (["steel deck", "metal deck", "floor deck", "roof deck", "decking"], 7, "Steel Decking"),  # 05 31 00
+
+    # Roof Specialties - copings, flashings
+    (["coping", "flashing", "roof edge", "parapet cap"], 17, "Roof Specialties"),  # 07 71 00
+
+    # Joint Protection / Sealants
+    (["sealant", "caulk", "joint seal", "expansion joint", "control joint"],
+     20, "Joint Protection"),  # 07 90 00
+
+    # Door Hardware
+    (["hardware", "lockset", "door closer", "hinge"], 23, "Door Hardware"),  # 08 71 00
+
+    # Acoustical Ceilings
+    (["acoustical ceiling", "ceiling tile", "ceiling grid", "act ceiling", "drop ceiling"],
+     27, "Acoustical Ceilings"),  # 09 51 00
+
+    # Resilient Flooring
+    (["vct", "resilient floor", "vinyl tile", "rubber floor"], 28, "Resilient Flooring"),  # 09 65 00
+
+    # Sound/Vibration Control
+    (["vibration", "acoustic", "sound control", "noise control"],
+     32, "Sound and Vibration Control"),  # 13 48 00
+
+    # HVAC Ducts
+    (["ductwork", "hvac duct", "duct install", "spiral duct"], 41, "HVAC Ducts"),  # 23 31 00
+
+    # Electrical Conductors/Cables
+    (["wire pull", "cable pull", "conductor"], 45, "Electrical Conductors"),  # 26 05 19
+
+    # Site Clearing/Demolition
+    (["demolition", "demo ", "site clearing"], 50, "Site Clearing"),  # 31 10 00
+]
 
 # P6 sub_trade/scope codes to CSI section ID mapping
 # These codes come from task_taxonomy extraction (e.g., CIP, STL, DRY)
@@ -155,13 +224,49 @@ TRADE_ID_TO_DEFAULT_CSI = {
 }
 
 
-def infer_csi_from_taxonomy(sub_trade: str, scope: str, trade_id) -> Tuple[Optional[int], Optional[str], str]:
+def infer_csi_from_keywords(task_name: str) -> Tuple[Optional[int], Optional[str], str]:
+    """
+    Infer CSI section from task name keywords.
+
+    This catches specific work types that sub_trade codes miss, especially
+    fire-related work where FIR is used as a catch-all.
+
+    Args:
+        task_name: Raw task name string
+
+    Returns:
+        Tuple of (csi_section_id, csi_section_code, inference_source)
+    """
+    if pd.isna(task_name):
+        return None, None, "none"
+
+    name_lower = str(task_name).lower()
+
+    for keywords, csi_id, description in TASK_NAME_KEYWORDS:
+        for keyword in keywords:
+            if keyword in name_lower:
+                csi_code, _ = CSI_SECTIONS[csi_id]
+                return csi_id, csi_code, "keyword"
+
+    return None, None, "none"
+
+
+def infer_csi_from_taxonomy(
+    task_name: str,
+    sub_trade: str,
+    scope: str,
+    trade_id
+) -> Tuple[Optional[int], Optional[str], str]:
     """
     Infer CSI section from task taxonomy fields.
 
-    Priority: sub_trade → scope → trade_id fallback
+    Priority: task_name keywords → sub_trade → scope → trade_id fallback
+
+    The keyword check is critical for fire-related work where FIR sub_trade
+    is used as a catch-all but contains firestopping, fire suppression, etc.
 
     Args:
+        task_name: Raw task name for keyword matching
         sub_trade: Detailed scope code (e.g., 'CIP', 'STL', 'DRY')
         scope: Broader scope code
         trade_id: dim_trade trade_id (1-13)
@@ -169,7 +274,13 @@ def infer_csi_from_taxonomy(sub_trade: str, scope: str, trade_id) -> Tuple[Optio
     Returns:
         Tuple of (csi_section_id, csi_section_code, inference_source)
     """
-    # Try sub_trade first (most specific)
+    # Try task_name keywords first (most specific for ambiguous sub_trades)
+    if pd.notna(task_name):
+        csi_id, csi_code, source = infer_csi_from_keywords(task_name)
+        if csi_id is not None:
+            return csi_id, csi_code, source
+
+    # Try sub_trade codes
     if pd.notna(sub_trade):
         sub_trade_upper = str(sub_trade).strip().upper()
         if sub_trade_upper in SUB_TRADE_TO_CSI:
@@ -203,6 +314,7 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
     """Add CSI section IDs to P6 task taxonomy (appends to original file)."""
 
     input_path = settings.PRIMAVERA_PROCESSED_DIR / "p6_task_taxonomy.csv"
+    task_path = settings.PRIMAVERA_PROCESSED_DIR / "task.csv"
     # Write back to the same file (append columns to original)
     output_path = input_path
 
@@ -214,10 +326,28 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
     df = pd.read_csv(input_path, low_memory=False)
     print(f"Loaded {len(df):,} records")
 
-    # Apply CSI inference
-    print("Inferring CSI sections...")
+    # Load task names for keyword-based inference
+    task_names = None
+    if task_path.exists():
+        print(f"Loading task names from: {task_path}")
+        tasks_df = pd.read_csv(task_path, low_memory=False, usecols=['task_id', 'task_name'])
+        task_names = tasks_df.set_index('task_id')['task_name'].to_dict()
+        print(f"Loaded {len(task_names):,} task names")
+    else:
+        print("Warning: task.csv not found, keyword-based inference disabled")
+
+    # Apply CSI inference with task_name lookup
+    print("Inferring CSI sections (with keyword matching)...")
+
+    def get_task_name(task_id):
+        """Look up task name from task.csv."""
+        if task_names is None:
+            return None
+        return task_names.get(task_id)
+
     results = df.apply(
         lambda row: infer_csi_from_taxonomy(
+            get_task_name(row.get('task_id')),
             row.get('sub_trade'),
             row.get('scope'),
             row.get('trade_id')
@@ -236,16 +366,26 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
 
     # Calculate coverage
     coverage = df['dim_csi_section_id'].notna().mean() * 100
+    keyword_count = (df['csi_inference_source'] == 'keyword').sum()
     sub_trade_count = (df['csi_inference_source'] == 'sub_trade').sum()
     scope_count = (df['csi_inference_source'] == 'scope').sum()
     trade_id_count = (df['csi_inference_source'] == 'trade_id').sum()
     none_count = (df['csi_inference_source'] == 'none').sum()
 
     print(f"\nCSI Section Coverage: {coverage:.1f}%")
+    print(f"  From keyword:   {keyword_count:,} ({keyword_count/len(df)*100:.1f}%)")
     print(f"  From sub_trade: {sub_trade_count:,} ({sub_trade_count/len(df)*100:.1f}%)")
-    print(f"  From scope: {scope_count:,} ({scope_count/len(df)*100:.1f}%)")
-    print(f"  From trade_id: {trade_id_count:,} ({trade_id_count/len(df)*100:.1f}%)")
-    print(f"  No match: {none_count:,} ({none_count/len(df)*100:.1f}%)")
+    print(f"  From scope:     {scope_count:,} ({scope_count/len(df)*100:.1f}%)")
+    print(f"  From trade_id:  {trade_id_count:,} ({trade_id_count/len(df)*100:.1f}%)")
+    print(f"  No match:       {none_count:,} ({none_count/len(df)*100:.1f}%)")
+
+    # Show keyword matches by CSI section
+    if keyword_count > 0:
+        print("\nKeyword-matched CSI sections:")
+        keyword_df = df[df['csi_inference_source'] == 'keyword']
+        keyword_dist = keyword_df.groupby(['csi_section', 'csi_title']).size().sort_values(ascending=False)
+        for (section, title), count in keyword_dist.items():
+            print(f"  {section} {title}: {count:,}")
 
     # Show distribution by CSI section
     print("\nTop 15 CSI Sections:")
