@@ -151,7 +151,7 @@ def compute_in_drawings(location_type: str, location_code: str, drawing_codes: d
         return None
 
     # Aggregate types are always "in drawings" conceptually
-    if location_type in ['LEVEL', 'BUILDING', 'AREA', 'GRIDLINE', 'SITE']:
+    if location_type in ['LEVEL', 'BUILDING', 'AREA', 'GRIDLINE', 'SITE', 'UNDEFINED']:
         return True
 
     code_upper = str(location_code).upper()
@@ -380,6 +380,15 @@ SITE_ENTRY = {
     'room_name': 'Site-Wide',
 }
 
+# Undefined entry (for activities that are not building-wide but can't determine location)
+UNDEFINED_ENTRY = {
+    'location_code': 'UNDEFINED',
+    'location_type': 'UNDEFINED',
+    'building': None,
+    'level': None,
+    'room_name': 'Undefined Location',
+}
+
 # MULTI-level gridline entries (for grid-based matching when no room coverage exists)
 # These span all rows (A-N) for each column and work across all floor levels
 MULTI_GRIDLINE_COLUMNS = list(range(1, 34))  # Columns 1-33
@@ -470,7 +479,11 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
         }
 
         # Build building_level key
-        if pd.notna(row['Building']) and pd.notna(row['Level']):
+        # For LEVEL type, building is NULL so just use level
+        # For others, combine building-level if both present
+        if loc_type == 'LEVEL':
+            entry['building_level'] = row['Level'] if pd.notna(row['Level']) else None
+        elif pd.notna(row['Building']) and pd.notna(row['Level']):
             entry['building_level'] = f"{row['Building']}-{row['Level']}"
         else:
             entry['building_level'] = None
@@ -529,6 +542,30 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
     rows.append(entry)
     location_id += 1
     print(f"  + SITE")
+
+    # Add undefined entry
+    print(f"\nAdding undefined entry...")
+    entry = {
+        'location_id': location_id,
+        'location_code': UNDEFINED_ENTRY['location_code'],
+        'p6_alias': None,
+        'location_type': UNDEFINED_ENTRY['location_type'],
+        'room_name': UNDEFINED_ENTRY['room_name'],
+        'building': UNDEFINED_ENTRY['building'],
+        'level': UNDEFINED_ENTRY['level'],
+        'grid_row_min': None,
+        'grid_row_max': None,
+        'grid_col_min': None,
+        'grid_col_max': None,
+        'grid_inferred_from': None,
+        'status': 'UNDEFINED',
+        'task_count': 0,
+        'building_level': 'UNDEFINED',
+        'in_drawings': True,
+    }
+    rows.append(entry)
+    location_id += 1
+    print(f"  + UNDEFINED")
 
     # Add MULTI-level gridlines for columns that don't already have them
     # These provide fallback location matching for grid coordinates without room coverage

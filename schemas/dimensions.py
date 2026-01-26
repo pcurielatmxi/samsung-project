@@ -32,7 +32,7 @@ class DimLocation(BaseModel):
     location_id: int = Field(description="Primary key (auto-generated)")
     location_code: str = Field(description="Location code (FAB112345, FAB1-ST05, FAB1-EL02)")
     p6_alias: Optional[str] = Field(default=None, description="Original P6 code if converted (e.g., STR-05 when location_code is FAB1-ST05)")
-    location_type: str = Field(description="Type: ROOM, ELEVATOR, STAIR, GRIDLINE, LEVEL, BUILDING, AREA, SITE")
+    location_type: str = Field(description="Type: ROOM, ELEVATOR, STAIR, GRIDLINE, LEVEL, BUILDING, AREA, SITE, UNDEFINED")
     room_name: Optional[float] = Field(default=None, description="Human-readable room name (often empty)")
     building: Optional[str] = Field(default=None, description="Building code: FAB, SUE, SUW, FIZ, SITE")
     level: Optional[str] = Field(default=None, description="Level: 1F, 2F, B1, ROOF, etc.")
