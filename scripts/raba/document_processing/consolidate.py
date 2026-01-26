@@ -177,14 +177,86 @@ def validate_record(record: Dict[str, Any]) -> List[str]:
     return issues
 
 
+def extract_companies_from_text(text: str) -> List[str]:
+    """
+    Extract company names from narrative text using pattern matching.
+
+    Looks for patterns like:
+    - "X with Company was notified"
+    - "Company was present"
+    - "Contractor/Subcontractor: Company1; Company2"
+
+    Returns:
+        List of company names found (excluding Samsung E&C)
+    """
+    import re
+
+    if not text:
+        return []
+
+    companies = []
+
+    # Pattern 1: "X with COMPANY" (e.g., "Fernando Urbina with YATES")
+    pattern1 = r'(?:with|from)\s+([A-Z][A-Za-z\s&\.\-]+?)(?:\s+(?:was|were|represented)|\.|,)'
+    matches1 = re.findall(pattern1, text)
+    companies.extend(matches1)
+
+    # Pattern 2: "Contractor/Subcontractor: ... ; COMPANY"
+    pattern2 = r'Contractor/Subcontractor:.*?;\s*([A-Z][A-Za-z\s&\.\-]+?)(?:\.|;|$)'
+    matches2 = re.findall(pattern2, text)
+    companies.extend(matches2)
+
+    # Pattern 3: "Contractor/Subcontractor: ... and COMPANY"
+    pattern3 = r'Contractor/Subcontractor:.*?\s+and\s+([A-Z][A-Za-z\s&\.\-]+?)(?:\.|$)'
+    matches3 = re.findall(pattern3, text)
+    companies.extend(matches3)
+
+    # Pattern 4: "Representatives from COMPANY & COMPANY"
+    pattern4 = r'Representatives from\s+([A-Z][A-Za-z\s&\.\-]+?)(?:\s+&|\s+and|were|\.|$)'
+    matches4 = re.findall(pattern4, text)
+    companies.extend(matches4)
+
+    # Pattern 5: "COMPANY was present" or "COMPANY were present"
+    pattern5 = r'([A-Z][A-Z\-]+)\s+(?:was|were)\s+present'
+    matches5 = re.findall(pattern5, text)
+    companies.extend(matches5)
+
+    # Clean up companies
+    cleaned = []
+    for company in companies:
+        company = company.strip()
+        # Skip Samsung E&C variations
+        if 'samsung' in company.lower() and 'e&c' in company.lower():
+            continue
+        # Skip very short names (likely false positives)
+        if len(company) < 3:
+            continue
+        # Skip common false positives
+        if company.upper() in ['TO', 'INC', 'LLC', 'AMERICA', 'PROJECT']:
+            continue
+        cleaned.append(company)
+
+    # Remove duplicates while preserving order
+    seen = set()
+    unique = []
+    for company in cleaned:
+        company_lower = company.lower()
+        if company_lower not in seen:
+            seen.add(company_lower)
+            unique.append(company)
+
+    return unique
+
+
 def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     """
     Flatten a record for CSV output.
 
     Handles nested structures:
-    - parties_involved: Extracts first inspector, contractor, testing_company
+    - parties_involved: Extracts first inspector, contractor, testing_company, subcontractor
     - test_counts: Flattens to individual columns
     - issues: Concatenates descriptions into single field
+    - Postprocessing: Extracts companies from narrative text if not in structured parties
     """
     # Handle nested content structure from pipeline
     content = record.get('content', {})
@@ -214,6 +286,46 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
                 testing_company = name
             elif role == 'engineer' and not engineer:
                 engineer = name
+
+    # Postprocessing: Extract companies from narrative if subcontractor not in structured parties
+    # The extract stage captures company mentions in narrative text - parse them here
+    narrative_companies = []
+    is_multi_party = False
+
+    if not subcontractor:
+        # Look for extract content - try to load from extract.json file
+        extract_content = None
+
+        # Get the source file path from metadata
+        source_file = record.get('_source_file', '')
+        if source_file and source_file.endswith('.clean.json'):
+            # Try to find corresponding extract file
+            from pathlib import Path
+            clean_path = Path(record['metadata']['source_file']).parent.parent / '1.extract' / source_file.replace('.clean.json', '.extract.json')
+
+            if clean_path.exists():
+                try:
+                    with open(clean_path, 'r', encoding='utf-8') as f:
+                        extract_data = json.load(f)
+                        extract_content = extract_data.get('content', '')
+                except Exception:
+                    pass  # Silently fall back to summary
+
+        # Fallback: use summary field from current content
+        if not extract_content:
+            extract_content = content.get('summary', '')
+
+        # Extract companies from narrative
+        if extract_content and isinstance(extract_content, str):
+            narrative_companies = extract_companies_from_text(extract_content)
+
+            if narrative_companies:
+                # Use first company as subcontractor
+                subcontractor = narrative_companies[0]
+
+                # Flag if multiple companies found (multi-party inspection)
+                if len(narrative_companies) > 1:
+                    is_multi_party = True
 
     # Extract test counts
     test_counts = content.get('test_counts') or {}
@@ -410,6 +522,10 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         # Issues (flattened)
         'issues': issues_text,
         'issue_count': len(issues_list) if issues_list else 0,
+
+        # Multi-party inspection flag
+        'is_multi_party': is_multi_party,
+        'narrative_companies': '|'.join(narrative_companies) if narrative_companies else None,
 
         # Dimension IDs (for integration)
         'dim_location_id': dim_location_id,
