@@ -197,6 +197,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     inspector = None
     contractor = None
     testing_company = None
+    subcontractor = None
     engineer = None
 
     for party in parties:
@@ -207,6 +208,8 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
                 inspector = name
             elif role == 'contractor' and not contractor:
                 contractor = name
+            elif role == 'subcontractor' and not subcontractor:
+                subcontractor = name
             elif role == 'testing_company' and not testing_company:
                 testing_company = name
             elif role == 'engineer' and not engineer:
@@ -236,6 +239,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     # Apply company standardization
     inspector_std = standardize_inspector(inspector)
     contractor_std = standardize_company(contractor)
+    subcontractor_std = standardize_company(subcontractor)
     testing_company_std = standardize_company(testing_company)
 
     # Apply test type categorization (same as inspection type)
@@ -392,7 +396,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'inspector_raw': inspector,
         'contractor_raw': contractor,
         'testing_company_raw': testing_company,
-        'subcontractor_raw': None,  # PSI-specific
+        'subcontractor_raw': subcontractor,
         'trade_raw': None,  # PSI-specific
         'engineer': engineer,
 
@@ -400,7 +404,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'inspector': inspector_std,
         'contractor': contractor_std,
         'testing_company': testing_company_std,
-        'subcontractor': None,  # PSI-specific
+        'subcontractor': subcontractor_std,
         'trade': None,  # PSI-specific
 
         # Issues (flattened)

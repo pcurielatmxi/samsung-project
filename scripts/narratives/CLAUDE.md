@@ -1,6 +1,6 @@
 # Narratives Processing
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-26
 
 ## Purpose
 
@@ -54,12 +54,64 @@ python -m scripts.narratives.embeddings sync
 **Backup:** Auto-synced to OneDrive at `{WINDOWS_DATA_DIR}/backup/embeddings/documents/`
 
 **Metadata Enrichment:**
-Chunks can be enriched with structured metadata extracted from text:
-- **Document-level** (propagated to all chunks): Companies, locations, CSI codes mentioned anywhere in document
-- **Chunk-level** (specific mentions): Data extracted from each chunk's text
-- **No re-embedding**: Updates metadata only, preserves existing embeddings
+Chunks can be enriched with structured metadata extracted from text to enable unified cross-dataset queries.
+
+**What's Extracted:**
+- **Locations**: FAB codes (FAB116101), buildings (SUE), levels (1F)
+- **CSI Codes**: 6-digit codes (033053) and sections (03), plus keyword-based inference
+- **Companies**: Resolved to company IDs from `dim_company.csv`
+
+**Two-Level Extraction** (solves "context spread" problem):
+- **Document-level** (propagated to ALL chunks): If "Yates" mentioned in chunk 2, all chunks get `doc_company_ids=[1]`
+- **Chunk-level** (specific mentions): Only data extracted from THIS chunk's text
+
+**Properties:**
+- **No re-embedding**: Updates metadata only, preserves existing embeddings (fast: ~10 files/sec)
 - **Versioned**: Tracks enrichment version in manifest (`metadata_version`)
 - **Idempotent**: Safe to run multiple times, only processes unenriched files
+- **Auto-sync**: Syncs to OneDrive after successful enrichment
+
+**Complete Workflow:**
+```bash
+# Step 1: Build dimension table (if not already done)
+python -m scripts.integrated_analysis.dimensions.build_dim_company
+
+# Step 2: Test enrichment on small batch
+python -m scripts.narratives.embeddings enrich --source narratives --limit 10
+
+# Step 3: Verify metadata
+python -m scripts.narratives.embeddings search "FAB116101" --limit 1
+# (inspect metadata in results)
+
+# Step 4: Enrich all sources
+python -m scripts.narratives.embeddings enrich --source narratives
+python -m scripts.narratives.embeddings enrich --source raba
+python -m scripts.narratives.embeddings enrich --source psi
+
+# Step 5: Check status
+python -m scripts.narratives.embeddings status
+```
+
+**Metadata Schema** (stored as pipe-separated strings):
+```
+doc_locations: "FAB116101|FAB116102"
+doc_buildings: "SUE"
+doc_levels: "1F|2F"
+doc_csi_codes: "033053"
+doc_csi_sections: "03|09|23"
+doc_company_ids: "1|5"
+doc_company_names: "Yates|Berg"
+
+chunk_locations: ""
+chunk_buildings: ""
+chunk_levels: ""
+chunk_csi_codes: ""
+chunk_csi_sections: ""
+chunk_company_ids: ""
+chunk_company_names: ""
+```
+
+**See:** `scripts/narratives/embeddings/ENRICHMENT.md` for full architecture and implementation details
 
 ### Robustness Features
 

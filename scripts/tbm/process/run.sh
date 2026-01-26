@@ -3,11 +3,13 @@
 # Usage: ./run.sh <command> [options]
 #
 # Pipeline stages:
-#   1. parse    - Parse Excel files -> work_entries.csv
-#   2. enrich   - Add dimension IDs (location, company, trade)
-#   3. csi      - Add CSI section inference from activity descriptions
+#   0. extract-eml - Extract Excel attachments from EML files (one-time)
+#   1. parse       - Parse Excel files -> work_entries.csv
+#   2. enrich      - Add dimension IDs (location, company, trade)
+#   3. csi         - Add CSI section inference from activity descriptions
+#   4. dedup       - Flag duplicate company+date combinations
 #
-# The 'all' command runs stages 1-3 in sequence.
+# The 'all' command runs stages 1-4 in sequence.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
@@ -16,35 +18,41 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$PROJECT_ROOT/.venv/bin/activate"
 
 case "${1:-help}" in
+    extract-eml)
+        # Extract Excel attachments from EML files
+        shift
+        echo "=== Extracting Excel from EML Files ==="
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.extract_eml_attachments "$@"
+        ;;
     sync)
         # Sync files from field team's folder
         shift
         echo "=== Syncing Field TBM Files ==="
-        python -m scripts.tbm.process.sync_field_tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.sync_field_tbm "$@"
         ;;
     parse)
         # Stage 1: Parse TBM Excel files
         shift
         echo "=== Stage 1: Parsing TBM Daily Plans ==="
-        python -m scripts.tbm.process.parse_tbm_daily_plans "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.parse_tbm_daily_plans "$@"
         ;;
     enrich)
         # Stage 2: Add dimension IDs
         shift
         echo "=== Stage 2: Enriching with Dimension IDs ==="
-        python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm "$@"
         ;;
     csi)
         # Stage 3: Add CSI section inference
         shift
         echo "=== Stage 3: Adding CSI Section IDs ==="
-        python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
         ;;
     dedup)
         # Stage 4: Flag duplicate company+date combinations
         shift
         echo "=== Stage 4: Flagging Duplicates ==="
-        python -m scripts.tbm.process.deduplicate_tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.deduplicate_tbm "$@"
         ;;
     all)
         # Run full pipeline
@@ -55,7 +63,7 @@ case "${1:-help}" in
         echo ""
 
         echo "=== Stage 1: Parsing TBM Daily Plans ==="
-        python -m scripts.tbm.process.parse_tbm_daily_plans "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.parse_tbm_daily_plans "$@"
         if [ $? -ne 0 ]; then
             echo "ERROR: Parse stage failed"
             exit 1
@@ -63,7 +71,7 @@ case "${1:-help}" in
         echo ""
 
         echo "=== Stage 2: Enriching with Dimension IDs ==="
-        python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm "$@"
         if [ $? -ne 0 ]; then
             echo "ERROR: Enrich stage failed"
             exit 1
@@ -71,7 +79,7 @@ case "${1:-help}" in
         echo ""
 
         echo "=== Stage 3: Adding CSI Section IDs ==="
-        python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
         if [ $? -ne 0 ]; then
             echo "ERROR: CSI stage failed"
             exit 1
@@ -79,7 +87,7 @@ case "${1:-help}" in
         echo ""
 
         echo "=== Stage 4: Flagging Duplicates ==="
-        python -m scripts.tbm.process.deduplicate_tbm "$@"
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.deduplicate_tbm "$@"
         if [ $? -ne 0 ]; then
             echo "ERROR: Dedup stage failed"
             exit 1
@@ -126,23 +134,26 @@ case "${1:-help}" in
         echo "Usage: ./run.sh <command> [options]"
         echo ""
         echo "Commands:"
-        echo "  sync      Sync files from field team's OneDrive folder"
-        echo "  parse     Stage 1: Parse TBM Excel files -> work_entries.csv"
-        echo "  enrich    Stage 2: Add dimension IDs (location, company, trade)"
-        echo "  csi       Stage 3: Add CSI section inference from activities"
-        echo "  dedup     Stage 4: Flag duplicate company+date combinations"
-        echo "  all       Run full pipeline (parse -> enrich -> csi -> dedup)"
-        echo "  status    Show pipeline status and file counts"
+        echo "  extract-eml  Extract Excel from EML files (one-time historical data)"
+        echo "  sync         Sync files from field team's OneDrive folder"
+        echo "  parse        Stage 1: Parse TBM Excel files -> work_entries.csv"
+        echo "  enrich       Stage 2: Add dimension IDs (location, company, trade)"
+        echo "  csi          Stage 3: Add CSI section inference from activities"
+        echo "  dedup        Stage 4: Flag duplicate company+date combinations"
+        echo "  all          Run full pipeline (parse -> enrich -> csi -> dedup)"
+        echo "  status       Show pipeline status and file counts"
         echo ""
         echo "Output:"
         echo "  processed/tbm/work_entries.csv          - Raw parsed data"
         echo "  processed/tbm/work_entries_enriched.csv - With dims + CSI"
         echo ""
         echo "Examples:"
-        echo "  ./run.sh sync --dry-run   # Preview sync from field folder"
-        echo "  ./run.sh sync             # Sync new files from field"
-        echo "  ./run.sh status           # Check current state"
-        echo "  ./run.sh all              # Run full pipeline"
-        echo "  ./run.sh parse            # Re-parse Excel files only"
+        echo "  ./run.sh extract-eml --dry-run  # Preview EML extraction"
+        echo "  ./run.sh extract-eml            # Extract Excel from EML files"
+        echo "  ./run.sh sync --dry-run         # Preview sync from field folder"
+        echo "  ./run.sh sync                   # Sync new files from field"
+        echo "  ./run.sh status                 # Check current state"
+        echo "  ./run.sh all                    # Run full pipeline"
+        echo "  ./run.sh parse                  # Re-parse Excel files only"
         ;;
 esac

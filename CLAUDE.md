@@ -894,12 +894,43 @@ for r in results:
     Source: 2025.04.30 - OFFICIAL NOTICE - Yates Response to LT-0793.pdf (page 1) [chunk 7/30]
 ```
 
-**Metadata Fields:**
-- `source_type`: narratives (future: raba, psi)
+**Metadata Enrichment for Cross-Dataset Integration:**
+
+Chunks can be enriched with structured metadata to enable unified queries across P6, quality data, and narratives:
+
+```bash
+# Enrich all sources with location/CSI/company metadata
+python -m scripts.narratives.embeddings enrich --source narratives
+python -m scripts.narratives.embeddings enrich --source raba
+python -m scripts.narratives.embeddings enrich --source psi
+```
+
+**Extracted Metadata:**
+- **Locations**: FAB codes, buildings, levels
+- **CSI Codes**: 6-digit codes + sections (with keyword inference)
+- **Companies**: Resolved to company IDs from `dim_company.csv`
+
+**Benefits:**
+- Links narrative chunks to P6 tasks by location/date
+- Links to quality inspections by location/CSI/company
+- Enables "show me all data for room X during period Y" queries
+- **Fast**: ~10 files/sec, no re-embedding required
+
+**See:** `scripts/narratives/embeddings/ENRICHMENT.md` for full details
+
+**Standard Metadata Fields:**
+- `source_type`: narratives, raba, psi
 - `document_type`: schedule_narrative, weekly_report, expert_report, meeting_notes, eot_claim, etc.
 - `author`: Yates, SECAI, BRG, Samsung
 - `file_date`: Extracted from filename (YYYY-MM-DD)
 - `subfolder`: Relative path within source directory
+
+**Enrichment Metadata Fields** (after enrichment):
+- `doc_locations`, `chunk_locations`: Pipe-separated location codes
+- `doc_buildings`, `chunk_buildings`: Pipe-separated building codes
+- `doc_levels`, `chunk_levels`: Pipe-separated level codes
+- `doc_csi_sections`, `chunk_csi_sections`: Pipe-separated CSI sections
+- `doc_company_ids`, `chunk_company_ids`: Pipe-separated company IDs
 
 **Robustness:**
 - Content-based change detection (SHA-256, not mtime)

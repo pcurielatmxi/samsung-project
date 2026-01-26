@@ -67,13 +67,17 @@ Validates dim_company_id assignments:
 
 ```
 data_quality/
-├── __init__.py              # Package exports
-├── __main__.py              # Entry point for python -m
-├── run_all_checks.py        # Run all checks, generate report
-├── check_csi_coverage.py    # CSI section coverage check
-├── check_location_coverage.py # Location dimension coverage
-├── check_company_coverage.py  # Company dimension coverage
-└── CLAUDE.md                # This file
+├── __init__.py                      # Package exports
+├── __main__.py                      # Entry point for python -m
+├── run_all_checks.py                # Run all checks, generate report
+├── check_csi_coverage.py            # CSI section coverage check
+├── check_location_coverage.py       # Location dimension coverage
+├── check_company_coverage.py        # Company dimension coverage
+├── investigate_company_scope.py     # Samsung contractor investigation
+├── analyze_samsung_scope.py         # Samsung CSI scope analysis
+├── CLAUDE.md                        # This file
+├── COMPANY_SCOPE_FINDINGS.md        # Company scope investigation
+└── CONTRACTOR_INFERENCE_RESULTS.md  # Contractor inference solution
 ```
 
 ## Key Findings (as of 2026-01-25)
@@ -101,6 +105,28 @@ The 2 remaining CSI gaps (102 records, 0.65%) are **not Yates scope**:
 - **09 51 00 Acoustical Ceilings** (101 PSI): 48.5% AMTS, 23.8% Austin Bridge, 4.0% Yates
 - **09 65 00 Resilient Flooring** (1 RABA): 100% Samsung E&C
 
-**Key Insight:** P6 schedule is Yates-centric, while RABA/PSI capture all contractors. Use `dim_company_id` filtering to isolate Yates scope for performance analysis.
+**Key Insight:** P6 schedule is Yates-centric, while RABA/PSI capture all contractors.
 
-See [COMPANY_SCOPE_FINDINGS.md](COMPANY_SCOPE_FINDINGS.md) for detailed analysis.
+**✅ SOLUTION IMPLEMENTED (v2):** Contractor inference with subcontractor priority:
+
+**Inference Priority:**
+1. **Subcontractor field** from source document (most reliable) - 32.6% of RABA, 20.1% of PSI
+2. **Specific contractor** listed (not Samsung/blank)
+3. **CSI-based inference** (Samsung/blank + CSI in P6 → Yates) - 45.9% of RABA, 1.4% of PSI
+4. **Keep original** (otherwise)
+
+**Key Results:**
+- **RABA:** 5,936 inspections (63.2%) now attributed to Yates or Yates subs
+  - 3,060 from subcontractor field (Cherry Coatings, Rolling Plains, Baker Concrete, etc.)
+  - 4,312 from CSI-based inference
+- **PSI:** 2,682 inspections (42.5%) attributed to Yates
+  - 1,267 from subcontractor field
+  - 87 from CSI-based inference
+
+**Data Quality Improvement:** 52.7% of quality data (4,327 records) now uses document-based subcontractor attribution instead of CSI inference, significantly improving accuracy.
+
+**Usage:** Use `inferred_contractor_id` for all Yates performance analysis instead of `dim_company_id`.
+
+See:
+- [COMPANY_SCOPE_FINDINGS.md](COMPANY_SCOPE_FINDINGS.md) - Original investigation
+- [CONTRACTOR_INFERENCE_RESULTS.md](CONTRACTOR_INFERENCE_RESULTS.md) - Solution implementation (v2)

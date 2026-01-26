@@ -234,7 +234,8 @@ def load_company_labels_from_dim() -> Dict[str, str]:
     import pandas as pd
     from src.config.settings import settings
 
-    dim_company_path = settings.INTEGRATED_PROCESSED_DIR / 'dimensions' / 'dim_company.csv'
+    # Note: Using integrated_analysis (not integrated) - see CLAUDE.md folder structure
+    dim_company_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv'
 
     if not dim_company_path.exists():
         print(f"Warning: dim_company.csv not found at {dim_company_path}")
