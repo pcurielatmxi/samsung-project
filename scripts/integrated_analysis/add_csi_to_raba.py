@@ -139,10 +139,14 @@ KEYWORD_TO_CSI = [
     # Masonry - avoid bare "block" (matches "blocking", "blocked")
     (["masonry", "cmu", "cmu block", "concrete block", "brick", "mortar"], 5),  # 04 20 00 Unit Masonry
 
-    # Finishes
-    (["paint", "painting", "primer", "topcoat", "coating"], 29),  # 09 91 26 Painting - Building
-    (["epoxy coating", "chemical resistant", "floor coating"], 25),  # 09 06 65 Chemical-Resistant Coatings
-    (["flooring", "resilient", "vct", "tile floor"], 28),  # 09 65 00 Resilient Flooring
+    # Finishes - Chemical-Resistant Coatings must come BEFORE both painting and flooring
+    # All epoxy/coating work on floors is 09 06 65, not painting or resilient flooring
+    (["flooring surface prep", "flooring csp", "flooring coat", "flooring intermediate", "flooring top coat", "flooring final coat",
+      "coating inspection – flooring", "coating visual inspection", "coatings inspection", "surface prep", "surface preparation",
+      "epoxy coating", "chemical resistant", "floor coating", "csp2", "csp3", "csp-", "csp/", "nace",
+      "fiberglass coat", "sealer inspection"], 25),  # 09 06 65 Chemical-Resistant Coatings
+    (["paint", "painting", "primer", "topcoat"], 29),  # 09 91 26 Painting - Building
+    (["flooring", "resilient", "vct", "tile floor", "vinyl tile", "rubber floor"], 28),  # 09 65 00 Resilient Flooring
     (["sealant", "caulk", "joint seal"], 20),  # 07 90 00 Joint Protection
 
     # Openings - use "door frame" instead of bare "frame" (matches framing)
@@ -150,6 +154,9 @@ KEYWORD_TO_CSI = [
     (["coiling door", "roll-up", "overhead door"], 22),  # 08 33 23 Overhead Coiling Doors
     (["hardware", "lockset", "hinge", "closer"], 23),  # 08 71 00 Door Hardware
     (["glazing", "glass", "curtain wall", "storefront"], 24),  # 08 80 00 Glazing
+
+    # Specialties - check BEFORE electrical wire/cable patterns
+    (["wire mesh partition", "wire mesh wall", "acorn wire mesh"], 9),  # 05 50 00 Metal Fabrications (security partitions)
 
     # MEP - Fire Suppression
     (["sprinkler", "fire suppression", "fire protection piping"], 34),  # 21 10 00 Fire Suppression

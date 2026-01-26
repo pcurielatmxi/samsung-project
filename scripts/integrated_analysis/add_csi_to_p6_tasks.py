@@ -80,12 +80,17 @@ TASK_NAME_KEYWORDS = [
     # Door Hardware
     (["hardware", "lockset", "door closer", "hinge"], 23, "Door Hardware"),  # 08 71 00
 
+    # Chemical-Resistant Coatings (epoxy floor coatings)
+    (["epoxy coating", "chemical resistant", "floor coating", "coating inspection", "floor coat"],
+     25, "Chemical-Resistant Coatings"),  # 09 06 65
+
     # Acoustical Ceilings
     (["acoustical ceiling", "ceiling tile", "ceiling grid", "act ceiling", "drop ceiling"],
      27, "Acoustical Ceilings"),  # 09 51 00
 
     # Resilient Flooring
-    (["vct", "resilient floor", "vinyl tile", "rubber floor"], 28, "Resilient Flooring"),  # 09 65 00
+    (["vct", "resilient floor", "vinyl tile", "rubber floor", "vinyl composition"],
+     28, "Resilient Flooring"),  # 09 65 00
 
     # Sound/Vibration Control
     (["vibration", "acoustic", "sound control", "noise control"],
