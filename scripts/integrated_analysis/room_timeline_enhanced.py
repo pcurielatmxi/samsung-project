@@ -80,59 +80,60 @@ def search_narratives_for_room(
     location_code: str,
     start_date: datetime,
     end_date: datetime,
-    limit: int = 50
+    limit: int = 50,
+    semantic_threshold: float = 0.70
 ) -> List[Dict[str, Any]]:
     """
     Search narrative documents for mentions of a specific room.
 
-    Uses enriched metadata to filter by location, then returns matching chunks.
+    Search strategy:
+    1. Exact match: Location code in metadata or text
+    2. Room name match: Descriptive name (e.g., "MCC RM 1") in text
+    3. Semantic search: Use location code + context as query
+    4. Relevance filtering: Only return results above threshold
 
     Args:
         location_code: Room code (e.g., 'FAB116406')
         start_date: Start of time window
         end_date: End of time window
         limit: Max chunks to return
+        semantic_threshold: Minimum similarity score for semantic results (0.0-1.0)
 
     Returns:
-        List of dicts with chunk info
+        List of dicts with chunk info, sorted by relevance
     """
     store = get_store()
     collection = store.get_chunks_collection()
 
-    # Parse location for metadata filtering
+    # Parse location for context
     loc_info = parse_location_code(location_code)
 
-    # Build ChromaDB where filter
-    where_conditions = {'source_type': 'narratives'}
-
-    # Add date filter if available
-    # Note: file_date is stored as string in YYYY-MM-DD format
-    start_str = start_date.strftime('%Y-%m-%d')
-    end_str = end_date.strftime('%Y-%m-%d')
-
-    # Search strategy:
-    # 1. Exact location code match (doc_locations or chunk_locations contains code)
-    # 2. Building + level match (doc_buildings + doc_levels)
-    # 3. Semantic search with location code as query
+    # Look up room name from dim_location
+    room_name = None
+    try:
+        dim_location_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+        if dim_location_path.exists():
+            import pandas as pd
+            df = pd.read_csv(dim_location_path)
+            match = df[df['location_code'] == location_code]
+            if not match.empty and pd.notna(match.iloc[0].get('room_name')):
+                room_name = match.iloc[0]['room_name']
+    except Exception:
+        pass
 
     results = []
+    seen_chunks = set()
 
-    # Strategy 1: Query for chunks with this exact location code
-    # ChromaDB doesn't support "contains" well, so we'll query all narratives
-    # and filter in Python
+    # Strategy 1: Exact location code OR room name match
     query_results = collection.get(
-        where=where_conditions,
-        limit=10000,  # Get many to filter
+        where={'source_type': 'narratives'},
+        limit=10000,
         include=['documents', 'metadatas']
     )
 
     for i, chunk_id in enumerate(query_results['ids']):
         meta = query_results['metadatas'][i]
         text = query_results['documents'][i]
-
-        # Check if location code appears in metadata or text
-        doc_locations = meta.get('doc_locations', '')
-        chunk_locations = meta.get('chunk_locations', '')
 
         # Check date range
         file_date_str = meta.get('file_date', '')
@@ -144,10 +145,22 @@ def search_narratives_for_room(
             except:
                 pass
 
-        # Check if location code is in metadata or text
-        if (location_code in doc_locations or
-            location_code in chunk_locations or
-            location_code in text):
+        # Check if location code appears in metadata or text
+        doc_locations = meta.get('doc_locations', '')
+        chunk_locations = meta.get('chunk_locations', '')
+
+        # Check for code match
+        code_match = (location_code in doc_locations or
+                      location_code in chunk_locations or
+                      location_code in text)
+
+        # Check for room name match (case-insensitive)
+        name_match = False
+        if room_name and room_name.lower() in text.lower():
+            name_match = True
+
+        if code_match or name_match:
+            match_type = 'exact_code' if code_match else 'exact_name'
 
             results.append({
                 'chunk_id': chunk_id,
@@ -155,36 +168,52 @@ def search_narratives_for_room(
                 'document_type': meta.get('document_type', ''),
                 'file_date': file_date_str,
                 'author': meta.get('author', ''),
-                'text': text[:500],  # First 500 chars
+                'text': text[:500],
                 'page_number': meta.get('page_number', 0),
                 'doc_buildings': meta.get('doc_buildings', ''),
                 'doc_levels': meta.get('doc_levels', ''),
                 'doc_locations': doc_locations,
                 'doc_csi_sections': meta.get('doc_csi_sections', ''),
                 'chunk_locations': chunk_locations,
+                'relevance': 1.0,  # Exact match
+                'match_type': match_type,
+                'room_name': room_name
             })
+            seen_chunks.add(chunk_id)
 
             if len(results) >= limit:
                 break
 
-    # Strategy 2: If few results, also search by building + level
-    if len(results) < 20 and loc_info:
-        building = loc_info.get('building', '')
-        level = loc_info.get('level', '')
+    # Strategy 2: Semantic search if few exact matches
+    if len(results) < 5:
+        # Build semantic query with context
+        query_parts = [location_code]
+        if room_name:
+            query_parts.append(room_name)
+        if loc_info:
+            building = loc_info.get('building', '')
+            level = loc_info.get('level', '')
+            room_num = loc_info.get('room_num', '')
+            if building and level:
+                query_parts.append(f"{building} building {level} level")
+            if room_num:
+                query_parts.append(f"room {room_num}")
 
-        for i, chunk_id in enumerate(query_results['ids']):
-            if len(results) >= limit:
-                break
+        query_text = ' '.join(query_parts)
 
-            meta = query_results['metadatas'][i]
-            text = query_results['documents'][i]
+        # Use the embeddings search API which properly uses Gemini embeddings
+        semantic_results = search_chunks(
+            query=query_text,
+            source_type='narratives',
+            limit=min(50, limit * 2)
+        )
 
-            # Skip if already added
-            if chunk_id in [r['chunk_id'] for r in results]:
+        for result in semantic_results:
+            if result.id in seen_chunks:
                 continue
 
-            # Check date
-            file_date_str = meta.get('file_date', '')
+            # Check date range
+            file_date_str = result.file_date or ''
             if file_date_str:
                 try:
                     file_date = datetime.strptime(file_date_str, '%Y-%m-%d')
@@ -193,27 +222,34 @@ def search_narratives_for_room(
                 except:
                     pass
 
-            # Check building + level match
-            doc_buildings = meta.get('doc_buildings', '')
-            doc_levels = meta.get('doc_levels', '')
-
-            if building in doc_buildings and level in doc_levels:
+            # Only include if above threshold
+            similarity = result.score
+            if similarity >= semantic_threshold:
                 results.append({
-                    'chunk_id': chunk_id,
-                    'source_file': meta.get('source_file', ''),
-                    'document_type': meta.get('document_type', ''),
+                    'chunk_id': result.id,
+                    'source_file': result.source_file,
+                    'document_type': result.document_type,
                     'file_date': file_date_str,
-                    'author': meta.get('author', ''),
-                    'text': text[:500],
-                    'page_number': meta.get('page_number', 0),
-                    'doc_buildings': doc_buildings,
-                    'doc_levels': doc_levels,
-                    'doc_locations': meta.get('doc_locations', ''),
-                    'doc_csi_sections': meta.get('doc_csi_sections', ''),
-                    'chunk_locations': meta.get('chunk_locations', ''),
+                    'author': result.author,
+                    'text': result.text[:500],
+                    'page_number': result.page_number,
+                    'doc_buildings': result.metadata.get('doc_buildings', ''),
+                    'doc_levels': result.metadata.get('doc_levels', ''),
+                    'doc_locations': result.metadata.get('doc_locations', ''),
+                    'doc_csi_sections': result.metadata.get('doc_csi_sections', ''),
+                    'chunk_locations': result.metadata.get('chunk_locations', ''),
+                    'relevance': similarity,
+                    'match_type': 'semantic'
                 })
+                seen_chunks.add(result.id)
 
-    return sorted(results, key=lambda x: x['file_date'])
+            if len(results) >= limit:
+                break
+
+    # Sort by relevance (exact matches first, then by similarity), then by date
+    results.sort(key=lambda x: (-x['relevance'], x['file_date']))
+
+    return results[:limit]
 
 
 def load_quality_and_tbm_data(
@@ -342,6 +378,17 @@ def main():
         action='store_true',
         help='Include full chunk text in output'
     )
+    parser.add_argument(
+        '--semantic-threshold',
+        type=float,
+        default=0.70,
+        help='Minimum similarity score for semantic matches (0.0-1.0, default: 0.70)'
+    )
+    parser.add_argument(
+        '--no-semantic',
+        action='store_true',
+        help='Disable semantic search fallback (only exact matches)'
+    )
 
     args = parser.parse_args()
 
@@ -357,17 +404,42 @@ def main():
     print(f"Date Range: {args.start} to {args.end}")
     print("=" * 70)
 
-    # Parse location
+    # Parse location and look up room name
     loc_info = parse_location_code(args.location_code)
+    room_name_display = None
+    try:
+        dim_location_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+        if dim_location_path.exists():
+            df = pd.read_csv(dim_location_path)
+            match = df[df['location_code'] == args.location_code]
+            if not match.empty and pd.notna(match.iloc[0].get('room_name')):
+                room_name_display = match.iloc[0]['room_name']
+    except Exception:
+        pass
+
     if loc_info:
         print(f"\nLocation Details:")
         print(f"  Building: {loc_info.get('building', 'Unknown')}")
         print(f"  Level: {loc_info.get('level', 'Unknown')}")
         print(f"  Room: {loc_info.get('room_num', 'Unknown')}")
+        if room_name_display:
+            print(f"  Name: {room_name_display}")
 
     # Search narratives
     print(f"\n[1/2] Searching narrative documents...")
-    narratives = search_narratives_for_room(args.location_code, start_date, end_date)
+    if args.no_semantic:
+        print(f"    Mode: Exact matches only")
+        semantic_threshold = 1.01  # Disable semantic search
+    else:
+        print(f"    Mode: Exact + semantic (threshold ≥{args.semantic_threshold:.2f})")
+        semantic_threshold = args.semantic_threshold
+
+    narratives = search_narratives_for_room(
+        args.location_code,
+        start_date,
+        end_date,
+        semantic_threshold=semantic_threshold
+    )
     print(f"  Found {len(narratives)} relevant narrative chunks")
 
     # Load quality + TBM data
@@ -382,11 +454,32 @@ def main():
 
     # Narratives
     if narratives:
+        # Count match types
+        exact_code_matches = sum(1 for c in narratives if c.get('match_type') == 'exact_code')
+        exact_name_matches = sum(1 for c in narratives if c.get('match_type') == 'exact_name')
+        semantic_matches = sum(1 for c in narratives if c.get('match_type') == 'semantic')
+
         print(f"\n📄 NARRATIVE DOCUMENTS ({len(narratives)} chunks):")
+        if exact_code_matches > 0:
+            print(f"    ✓ {exact_code_matches} exact code matches")
+        if exact_name_matches > 0:
+            print(f"    ✓ {exact_name_matches} exact name matches")
+        if semantic_matches > 0:
+            print(f"    ~ {semantic_matches} semantic matches (relevance ≥0.70)")
         print("-" * 70)
 
         for i, chunk in enumerate(narratives, 1):
-            print(f"\n[{i}] {chunk['file_date']} | {chunk['document_type']}")
+            # Show relevance indicator
+            relevance = chunk.get('relevance', 0.0)
+            match_type = chunk.get('match_type', 'unknown')
+            if match_type == 'exact_code':
+                relevance_str = "[CODE]"
+            elif match_type == 'exact_name':
+                relevance_str = "[NAME]"
+            else:
+                relevance_str = f"[{relevance:.2f}]"
+
+            print(f"\n[{i}] {relevance_str} {chunk['file_date']} | {chunk['document_type']}")
             print(f"    File: {chunk['source_file']}")
             if chunk.get('author'):
                 print(f"    Author: {chunk['author']}")
@@ -400,6 +493,7 @@ def main():
                 print(f"\n    {chunk['text'][:300]}...")
     else:
         print("\n📄 No narrative documents found.")
+        print("    (No exact matches or semantic matches above 0.70 threshold)")
 
     # Quality/TBM
     if len(quality_tbm) > 0:
