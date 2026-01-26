@@ -321,33 +321,42 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
     if cols['num_employees'] is None and first_employee_col is not None:
         cols['num_employees'] = first_employee_col
 
-    # Find location sub-columns from sub-header row
+    # Find location sub-columns from sub-header row (only for SECAI format)
+    # EML format has single "Work Location" column, no sub-columns
+    has_location_subheaders = False
     for i, sub_header in enumerate(sub_headers):
         if 'lv.1' in sub_header or 'building' in sub_header:
             cols['location_building'] = i
+            has_location_subheaders = True
         elif 'lv.2' in sub_header or 'level' in sub_header and 'lv' in sub_header:
             cols['location_level'] = i
+            has_location_subheaders = True
         elif 'lv.3' in sub_header or 'row' in sub_header:
             cols['location_row'] = i
+            has_location_subheaders = True
 
     # Validate we found the critical columns
-    required = ['num_employees', 'work_activities', 'start_time', 'end_time']
+    required = ['num_employees', 'work_activities', 'start_time']
     missing = [k for k in required if cols.get(k) is None]
 
     if missing:
-        # Try fallback: if we found work_activities, location should be next
+        # Try fallback: if we found work_activities, guess nearby columns
         if cols['work_activities'] is not None:
             wa_idx = cols['work_activities']
             if cols['location_building'] is None:
                 cols['location_building'] = wa_idx + 1
-            if cols['location_level'] is None:
-                cols['location_level'] = wa_idx + 2
-            if cols['location_row'] is None:
-                cols['location_row'] = wa_idx + 3
+            # Don't populate location sub-columns for EML format (single column)
+            # Only populate if we detected sub-headers in SECAI format
+            if has_location_subheaders:
+                if cols['location_level'] is None:
+                    cols['location_level'] = wa_idx + 2
+                if cols['location_row'] is None:
+                    cols['location_row'] = wa_idx + 3
             if cols['start_time'] is None:
-                cols['start_time'] = wa_idx + 4
+                # For EML: work_activities + 6 columns = start_time
+                cols['start_time'] = wa_idx + 6
             if cols['end_time'] is None:
-                cols['end_time'] = wa_idx + 5
+                cols['end_time'] = wa_idx + 7
 
     # If no row numbers in data, apply offset to ALL column positions
     # The headers still have "No." column but data is shifted left by 1
