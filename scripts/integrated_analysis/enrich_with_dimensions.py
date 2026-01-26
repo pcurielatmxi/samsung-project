@@ -1066,8 +1066,9 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     df = pd.read_csv(input_path)
     original_count = len(df)
 
-    # TBM already has file_id and row_num from parsing - these form the composite key
-    # for joining with the bridge table in Power BI
+    # Create composite key ID for joining with bridge table
+    # This ID is used as the primary key for TBM records
+    df['tbm_work_entry_id'] = 'TBM-' + df['file_id'].astype(str) + '-' + df['row_num'].astype(str)
 
     # Normalize building codes
     building_map = {'FAB': 'FAB', 'SUP': 'SUE', 'Fab': 'FAB', 'OFFICE': None, 'Laydown': None}

@@ -11,7 +11,10 @@ This enables Power BI to:
 
 Output Schema:
     source              - Data source (RABA, PSI, TBM)
-    source_id           - Primary key in source table
+    source_id           - Primary key for joining to fact tables
+                          RABA: inspection_id (e.g., "A22-016970")
+                          PSI: inspection_id (e.g., "DFR_0306103-15-O2")
+                          TBM: tbm_work_entry_id (e.g., "TBM-302-23")
     event_date          - Date of the event
     location_id         - FK to dim_location (integer)
     location_code       - Room code (e.g., FAB116101)
@@ -23,6 +26,11 @@ Output Schema:
     match_quality       - Summary of match types: PRECISE, MIXED, PARTIAL, NONE
     location_review_flag - Boolean suggesting human review needed
 
+Power BI Join Patterns:
+    RABA: bridge.source_id = fact_raba.inspection_id
+    PSI:  bridge.source_id = fact_psi.inspection_id
+    TBM:  bridge.source_id = fact_tbm.tbm_work_entry_id
+
 Usage:
     python -m scripts.integrated_analysis.generate_affected_rooms_bridge
 """
@@ -30,7 +38,6 @@ Usage:
 import json
 import pandas as pd
 from pathlib import Path
-from typing import Optional
 
 from src.config.settings import Settings
 
@@ -61,7 +68,7 @@ def explode_source(
     Args:
         df: Source DataFrame with affected_rooms column
         source: Source identifier (RABA, PSI, TBM)
-        id_col: Column name for source primary key
+        id_col: Column name for source primary key (inspection_id or tbm_work_entry_id)
         date_col: Column name for event date
 
     Returns:
@@ -76,7 +83,7 @@ def explode_source(
         if room_count == 0:
             continue
 
-        source_id = row.get(id_col)
+        source_id = str(row.get(id_col))
         event_date = row.get(date_col)
 
         # Get location quality columns from source record
@@ -87,7 +94,7 @@ def explode_source(
         for room in rooms:
             records.append({
                 'source': source,
-                'source_id': str(source_id),
+                'source_id': source_id,
                 'event_date': event_date,
                 'location_id': room.get('location_id'),
                 'location_code': room.get('location_code'),
@@ -148,20 +155,16 @@ def generate_bridge_table() -> pd.DataFrame:
         print(f"Loading TBM from {tbm_path}...")
         tbm = pd.read_csv(tbm_path)
 
-        # TBM doesn't have a single ID column - create composite key
-        # Using file_id + row index within file
-        if 'file_id' in tbm.columns:
-            tbm['_tbm_id'] = tbm.apply(
-                lambda r: f"TBM-{r.get('file_id', 'UNK')}-{r.name}",
-                axis=1
-            )
-        else:
-            tbm['_tbm_id'] = tbm.index.map(lambda i: f"TBM-{i}")
+        # TBM uses tbm_work_entry_id (TBM-{file_id}-{row_num}) generated during enrichment
+        if 'tbm_work_entry_id' not in tbm.columns:
+            print("  WARNING: tbm_work_entry_id column missing - regenerate TBM enriched data")
+            print("  Run: python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm")
+            return pd.DataFrame()
 
         tbm_bridge = explode_source(
             tbm,
             source='TBM',
-            id_col='_tbm_id',
+            id_col='tbm_work_entry_id',
             date_col='report_date',
         )
         print(f"  TBM: {len(tbm)} records → {len(tbm_bridge)} bridge rows")
