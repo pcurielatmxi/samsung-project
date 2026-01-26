@@ -467,3 +467,51 @@ categories = analyzer.generate_category_reports(result)
 3. **Parallel path approximation** - Uses float-based detection, not full network analysis
 4. **No resource constraints** - Doesn't account for resource leveling effects
 5. **Calendar days** - Date differences use calendar days, not working days
+
+---
+
+## Analysis Tools
+
+### Enhanced Room Timeline with Narrative Search
+
+**Location:** `room_timeline_enhanced.py`
+
+Timeline analysis tool that combines quality inspections, TBM work entries, AND narrative documents for comprehensive room-level investigation.
+
+**Key Features:**
+- 🔍 Searches narrative chunks using enriched location/CSI/date metadata
+- 📄 Shows relevant schedule narratives, weekly reports, and claims
+- ✅ Combines with RABA, PSI, and TBM data
+- 📅 Chronological timeline with all evidence
+
+**Usage:**
+```bash
+# Basic timeline
+python -m scripts.integrated_analysis.room_timeline_enhanced FAB116406 \
+  --start 2024-01-01 --end 2024-03-31
+
+# With full text context
+python -m scripts.integrated_analysis.room_timeline_enhanced FAB116406 \
+  --start 2024-01-01 --end 2024-03-31 --with-context
+
+# Export to CSV
+python -m scripts.integrated_analysis.room_timeline_enhanced FAB116406 \
+  --start 2024-01-01 --end 2024-03-31 --output timeline.csv
+```
+
+**Search Strategy:**
+1. Exact room code match in narrative metadata
+2. Building + level match for broader context  
+3. Date range filtering
+4. Combined with quality/TBM data
+
+**Example Results:**
+- Room FAB116101 in 2023: 23 narrative chunks + 65 quality/TBM entries
+- Narratives filtered by: FAB building, 1F level, date range
+- Quality/TBM filtered by: affected_rooms JSON containing room code
+
+**Use Cases:**
+- Investigate specific room delays or quality issues
+- Correlate schedule narratives with inspection failures
+- Find documentary evidence for forensic analysis
+- Cross-reference claims with actual work events
