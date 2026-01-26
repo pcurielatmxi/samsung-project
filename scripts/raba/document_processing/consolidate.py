@@ -225,15 +225,32 @@ def extract_companies_from_text(text: str) -> List[str]:
     cleaned = []
     for company in companies:
         company = company.strip()
+
         # Skip Samsung E&C variations
         if 'samsung' in company.lower() and 'e&c' in company.lower():
             continue
+
+        # Skip testing/inspection companies (they're not subcontractors doing work)
+        testing_companies = ['raba kistner', 'raba-kistner']
+        if any(tc in company.lower() for tc in testing_companies):
+            continue
+
+        # Truncate verbose captures (e.g., "Austin Global to discuss...")
+        # Keep only the company name before common trailing phrases
+        truncate_patterns = [' to ', ' and briefly', ' was ', ' were ', ' for ']
+        for pattern in truncate_patterns:
+            if pattern in company.lower():
+                company = company[:company.lower().index(pattern)]
+                break
+
         # Skip very short names (likely false positives)
         if len(company) < 3:
             continue
+
         # Skip common false positives
-        if company.upper() in ['TO', 'INC', 'LLC', 'AMERICA', 'PROJECT']:
+        if company.upper() in ['TO', 'INC', 'LLC', 'AMERICA', 'PROJECT', 'CWI']:
             continue
+
         cleaned.append(company)
 
     # Remove duplicates while preserving order
@@ -299,13 +316,15 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         # Get the source file path from metadata
         source_file = record.get('_source_file', '')
         if source_file and source_file.endswith('.clean.json'):
-            # Try to find corresponding extract file
+            # The extract files are in processed/raba/1.extract/
+            # Current working directory should be the repo root
             from pathlib import Path
-            clean_path = Path(record['metadata']['source_file']).parent.parent / '1.extract' / source_file.replace('.clean.json', '.extract.json')
+            extract_file = source_file.replace('.clean.json', '.extract.json')
+            extract_path = settings.RABA_PROCESSED_DIR / '1.extract' / extract_file
 
-            if clean_path.exists():
+            if extract_path.exists():
                 try:
-                    with open(clean_path, 'r', encoding='utf-8') as f:
+                    with open(extract_path, 'r', encoding='utf-8') as f:
                         extract_data = json.load(f)
                         extract_content = extract_data.get('content', '')
                 except Exception:

@@ -127,17 +127,17 @@ def infer_company_role(canonical_name: str, primary_trade: str = None) -> str:
     name_lower = canonical_name.lower()
     trade_lower = (primary_trade or '').lower()
 
-    # Check for inspection companies
+    # Check for inspection companies (highest priority - most specific)
     if any(kw in name_lower for kw in ['raba', 'psi', 'intertek', 'testing', 'inspection']):
         return 'inspection_company'
 
-    # Check for owner/client
-    if any(kw in name_lower for kw in ['samsung', 'sec', 'owner']):
-        return 'owner'
-
-    # Check for GCs
-    if any(kw in name_lower for kw in ['yates', 'secai']):
+    # Check for GCs (before owner check, since Samsung E&C acts as both)
+    if any(kw in name_lower for kw in ['yates', 'secai', 'samsung']):
         return 'general_contractor'
+
+    # Check for owner/client (after GC check)
+    if any(kw in name_lower for kw in ['sec', 'owner']):
+        return 'owner'
 
     # Check for engineers
     if any(kw in name_lower for kw in ['engineer', 'architecture', 'design']):

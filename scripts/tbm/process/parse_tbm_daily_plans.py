@@ -70,6 +70,12 @@ def extract_date_from_filename(filename: str) -> str:
     """Extract date from filename as fallback."""
     name = Path(filename).stem
 
+    # Pattern: eml_YYYYMMDD_NN (EML archive format)
+    match = re.match(r'eml_(\d{4})(\d{2})(\d{2})_\d+', name)
+    if match:
+        year, month, day = match.groups()
+        return f'{year}-{month}-{day}'
+
     # Pattern: MM.DD.YY or MM-DD-YY at start
     match = re.match(r'(\d{2})[.-](\d{2})[.-](\d{2})', name)
     if match:
@@ -248,15 +254,14 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
                 # Not a number - likely division data
                 pass
 
-    # Find key columns by header text patterns
-    # Fixed positions are based on header row (before any data offset)
+    # Find key columns by header text patterns (dynamic detection)
     cols = {
         'header_row_idx': header_row_idx,  # Store for data row calculation
         'has_row_num': has_row_num,
         'row_num': 0 if has_row_num else None,  # No row_num column in shifted files
-        'division': 1,     # Column 1 ("Division")
-        'tier1_gc': 2,     # Column 2 (Company / Tier 1)
-        'tier2_sc': 3,     # Column 3 (Tier 2)
+        'division': None,
+        'tier1_gc': None,
+        'tier2_sc': None,
         'foreman': None,
         'contact_number': None,
         'num_employees': None,
@@ -273,9 +278,21 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
     # We track the first generic match but prioritize "planned" if found
     first_employee_col = None
     for i, header in enumerate(headers):
-        if 'foreman' in header:
+        if 'division' in header:
+            cols['division'] = i
+        elif 'company' in header and 'tier 2' in sub_headers[i]:
+            # SECAI format: Tier 2 (SC) - subcontractor column
+            cols['tier2_sc'] = i
+        elif 'company' in header and ('tier 1' in sub_headers[i] or 'gc' in sub_headers[i]):
+            # SECAI format: Tier 1 (GC) - general contractor column
+            cols['tier1_gc'] = i
+        elif 'company name' in header:
+            # EML format: Single company column (treat as tier2_sc for subcontractor)
+            cols['tier2_sc'] = i
+            cols['tier1_gc'] = None  # EML doesn't have separate GC column
+        elif 'foreman' in header or 'supervisor' in header:
             cols['foreman'] = i
-        elif 'contact' in header and 'number' in header:
+        elif 'contact' in header and ('number' in header or 'supervisor' in header):
             cols['contact_number'] = i
         elif 'employee' in header and 'no' in header:
             # Prioritize "planned" column over other employee columns (absent, on site)
@@ -283,15 +300,21 @@ def detect_column_indices(df: pd.DataFrame) -> dict:
                 cols['num_employees'] = i
             elif first_employee_col is None:
                 first_employee_col = i
+        elif 'activity' in header and ('task' in header or 'work' in header):
+            # Matches "Activity / Task" (EML) or "Work Activities/Tasks" (SECAI)
+            cols['work_activities'] = i
         elif 'work activities' in header or 'activities/tasks' in header:
             cols['work_activities'] = i
-        elif header == 'location' or 'location' in header and len(header) < 15:
-            # Found the Location header - look for sub-headers
+        elif 'work location' in header:
+            # EML format: "Work Location" (single column)
+            cols['location_building'] = i
+        elif header == 'location' or ('location' in header and len(header) < 15):
+            # SECAI format: "Location" header - look for sub-headers
             # Location typically spans 3 columns (building, level, row)
             cols['location_building'] = i
         elif 'start' in header and 'time' in header:
             cols['start_time'] = i
-        elif 'end' in header and 'time' in header:
+        elif 'end' in header and ('time' in header or 'finish' in header):
             cols['end_time'] = i
 
     # Use first employee column as fallback if no "planned" column found
