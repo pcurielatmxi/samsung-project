@@ -34,12 +34,20 @@ Semantic search across narratives using Gemini embeddings + ChromaDB.
 
 **Usage:**
 ```bash
+# Build index (auto-syncs to OneDrive on success)
 python -m scripts.narratives.embeddings build --source narratives
+python -m scripts.narratives.embeddings build --source narratives --no-sync  # Skip auto-sync
+
+# Search
 python -m scripts.narratives.embeddings search "HVAC delay" --author Yates
 python -m scripts.narratives.embeddings status
+
+# Manual sync
+python -m scripts.narratives.embeddings sync
 ```
 
 **Index:** `~/.local/share/samsung-embeddings/documents/`
+**Backup:** Auto-synced to OneDrive at `{WINDOWS_DATA_DIR}/backup/embeddings/documents/`
 
 ### Robustness Features
 

@@ -834,19 +834,19 @@ Semantic search tool for project documents using Gemini embeddings and ChromaDB.
     ├── chroma.sqlite3                         # SQLite metadata
     └── {uuid}/                                # HNSW vector index
 
-{WINDOWS_DATA_DIR}/backup/embeddings/documents/  # OneDrive backup (sync)
+{WINDOWS_DATA_DIR}/backup/embeddings/documents/  # OneDrive backup (auto-sync)
 ```
 
 - **Primary:** WSL local path for fast queries
-- **Backup:** OneDrive for cross-computer sync
+- **Backup:** OneDrive for cross-computer sync (auto-synced after successful builds)
 - **Auto-restore:** If WSL folder is empty, automatically copies from OneDrive on first use
 
 **Usage:**
 ```bash
-# Build index (--source required)
+# Build index (--source required, auto-syncs to OneDrive on success)
 python -m scripts.narratives.embeddings build --source narratives
-python -m scripts.narratives.embeddings build --source narratives --force   # Rebuild all
-python -m scripts.narratives.embeddings build --source narratives --sync    # Sync to OneDrive after
+python -m scripts.narratives.embeddings build --source narratives --force    # Rebuild all
+python -m scripts.narratives.embeddings build --source narratives --no-sync  # Skip auto-sync
 
 # Search all sources
 python -m scripts.narratives.embeddings search "HVAC delays"

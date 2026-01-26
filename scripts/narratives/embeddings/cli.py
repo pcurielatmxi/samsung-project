@@ -30,8 +30,8 @@ def cmd_build(args):
         if result.errors:
             sys.exit(1)
 
-        # Optionally sync to OneDrive after successful build
-        if args.sync and not result.errors:
+        # Auto-sync to OneDrive after successful build (unless --no-sync)
+        if not args.no_sync and not result.errors:
             print()
             config.sync_to_onedrive()
 
@@ -344,10 +344,13 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 Examples:
-  # Build the index (requires --source)
+  # Build the index (requires --source, auto-syncs to OneDrive on success)
   python -m scripts.narratives.embeddings build --source narratives
   python -m scripts.narratives.embeddings build --source raba --limit 100
   python -m scripts.narratives.embeddings build --source narratives --force
+
+  # Build without syncing to OneDrive
+  python -m scripts.narratives.embeddings build --source narratives --no-sync
 
   # Search all sources
   python -m scripts.narratives.embeddings search "HVAC delays"
@@ -391,9 +394,9 @@ Valid sources: {valid_sources}
         help="Limit number of files to process (for testing)"
     )
     build_parser.add_argument(
-        "--sync",
+        "--no-sync",
         action="store_true",
-        help="Sync to OneDrive after successful build"
+        help="Skip automatic sync to OneDrive after successful build"
     )
     build_parser.add_argument(
         "--cleanup-deleted",
