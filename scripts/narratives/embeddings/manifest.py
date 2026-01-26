@@ -28,6 +28,8 @@ class FileEntry:
     chunk_count: int
     chunk_ids: List[str]
     indexed_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    metadata_version: Optional[str] = None  # e.g., "v1" for enrichment tracking
+    enriched_at: Optional[str] = None  # Timestamp of last metadata enrichment
 
     def to_dict(self) -> Dict:
         return asdict(self)
@@ -39,7 +41,9 @@ class FileEntry:
             file_size=data["file_size"],
             chunk_count=data["chunk_count"],
             chunk_ids=data["chunk_ids"],
-            indexed_at=data.get("indexed_at", "")
+            indexed_at=data.get("indexed_at", ""),
+            metadata_version=data.get("metadata_version"),
+            enriched_at=data.get("enriched_at")
         )
 
 
@@ -152,6 +156,36 @@ class Manifest:
     def get_chunk_count(self, source: str) -> int:
         """Get total number of chunks for a source."""
         return len(self.get_all_chunk_ids(source))
+
+    def mark_enriched(self, source: str, relative_path: str, metadata_version: str) -> None:
+        """Mark a file as enriched with the specified metadata version.
+
+        Args:
+            source: Source type (narratives, raba, psi)
+            relative_path: Relative path to the file
+            metadata_version: Metadata version identifier (e.g., "v1")
+        """
+        entry = self.get_file(source, relative_path)
+        if entry:
+            entry.metadata_version = metadata_version
+            entry.enriched_at = datetime.now(timezone.utc).isoformat()
+            self.add_file(source, relative_path, entry)
+
+    def get_unenriched_files(self, source: str, metadata_version: str) -> List[str]:
+        """Get list of files that haven't been enriched with the specified version.
+
+        Args:
+            source: Source type
+            metadata_version: Target metadata version
+
+        Returns:
+            List of relative paths that need enrichment
+        """
+        unenriched = []
+        for rel_path, entry in self.get_all_files(source).items():
+            if entry.metadata_version != metadata_version:
+                unenriched.append(rel_path)
+        return unenriched
 
 
 def compute_content_hash(filepath: Path) -> str:

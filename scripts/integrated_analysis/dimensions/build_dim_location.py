@@ -380,6 +380,10 @@ SITE_ENTRY = {
     'room_name': 'Site-Wide',
 }
 
+# MULTI-level gridline entries (for grid-based matching when no room coverage exists)
+# These span all rows (A-N) for each column and work across all floor levels
+MULTI_GRIDLINE_COLUMNS = list(range(1, 34))  # Columns 1-33
+
 
 def load_location_master() -> pd.DataFrame:
     """Load location_master.csv from raw data."""
@@ -525,6 +529,38 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
     rows.append(entry)
     location_id += 1
     print(f"  + SITE")
+
+    # Add MULTI-level gridlines for columns that don't already have them
+    # These provide fallback location matching for grid coordinates without room coverage
+    existing_gridline_codes = {r['location_code'] for r in rows if r['location_type'] == 'GRIDLINE' and r['level'] == 'MULTI'}
+    new_gridlines = 0
+    for col in MULTI_GRIDLINE_COLUMNS:
+        gridline_code = str(col)
+        if gridline_code not in existing_gridline_codes:
+            entry = {
+                'location_id': location_id,
+                'location_code': gridline_code,
+                'p6_alias': None,
+                'location_type': 'GRIDLINE',
+                'room_name': f'Gridline {col}',
+                'building': None,
+                'level': 'MULTI',
+                'grid_row_min': 'A',
+                'grid_row_max': 'N',
+                'grid_col_min': float(col),
+                'grid_col_max': float(col),
+                'grid_inferred_from': None,
+                'status': 'GENERATED',
+                'task_count': 0,
+                'building_level': None,
+                'in_drawings': True,  # Gridlines are always "in drawings" conceptually
+            }
+            rows.append(entry)
+            location_id += 1
+            new_gridlines += 1
+
+    if new_gridlines > 0:
+        print(f"\nAdded {new_gridlines} MULTI-level gridlines (columns 1-33)")
 
     # Preserve extra entries from existing dim_location if requested
     if preserve_extra:

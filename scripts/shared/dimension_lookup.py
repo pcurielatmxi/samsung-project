@@ -461,6 +461,42 @@ def get_affected_rooms(
         except (TypeError, ValueError):
             continue
 
+    # If no room/elevator/stair matches, fall back to GRIDLINE locations
+    # GRIDLINE entries span full row range (A-N) for a single column
+    # Match at the specific level first, then MULTI level for remaining columns
+    if not results and has_col:
+        # Prefer level-specific gridlines, then fall back to MULTI
+        gridline_candidates = _dim_location[
+            (_dim_location['level'].isin([level, 'MULTI'])) &
+            (_dim_location['location_type'] == 'GRIDLINE') &
+            (_dim_location['grid_col_min'].notna())
+        ]
+
+        # Track which columns we've already matched to avoid duplicates
+        matched_cols = set()
+
+        for _, loc in gridline_candidates.iterrows():
+            try:
+                loc_col_min = float(loc['grid_col_min'])
+                loc_col_max = float(loc['grid_col_max'])
+                col_key = int(loc_col_min)
+
+                # Skip if we already have a match for this column
+                if col_key in matched_cols:
+                    continue
+
+                if _cols_overlap(col_min, col_max, loc_col_min, loc_col_max):
+                    results.append({
+                        'location_id': int(loc['location_id']),
+                        'location_code': loc['location_code'],
+                        'building': loc['building'],
+                        'room_name': loc['room_name'],
+                        'match_type': 'GRIDLINE',
+                    })
+                    matched_cols.add(col_key)
+            except (TypeError, ValueError):
+                continue
+
     return results
 
 

@@ -38,6 +38,10 @@ Semantic search across narratives using Gemini embeddings + ChromaDB.
 python -m scripts.narratives.embeddings build --source narratives
 python -m scripts.narratives.embeddings build --source narratives --no-sync  # Skip auto-sync
 
+# Enrich with structured metadata (locations, CSI, companies)
+python -m scripts.narratives.embeddings enrich --source narratives
+python -m scripts.narratives.embeddings enrich --source narratives --limit 10  # Test first
+
 # Search
 python -m scripts.narratives.embeddings search "HVAC delay" --author Yates
 python -m scripts.narratives.embeddings status
@@ -48,6 +52,14 @@ python -m scripts.narratives.embeddings sync
 
 **Index:** `~/.local/share/samsung-embeddings/documents/`
 **Backup:** Auto-synced to OneDrive at `{WINDOWS_DATA_DIR}/backup/embeddings/documents/`
+
+**Metadata Enrichment:**
+Chunks can be enriched with structured metadata extracted from text:
+- **Document-level** (propagated to all chunks): Companies, locations, CSI codes mentioned anywhere in document
+- **Chunk-level** (specific mentions): Data extracted from each chunk's text
+- **No re-embedding**: Updates metadata only, preserves existing embeddings
+- **Versioned**: Tracks enrichment version in manifest (`metadata_version`)
+- **Idempotent**: Safe to run multiple times, only processes unenriched files
 
 ### Robustness Features
 

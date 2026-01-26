@@ -45,6 +45,177 @@ def cmd_sync(args):
     config.sync_to_onedrive()
 
 
+def cmd_enrich(args):
+    """Enrich existing chunks with structured metadata (locations, CSI, companies)."""
+    import time
+    from pathlib import Path
+    from .manifest import Manifest
+    from .metadata_enrichment import (
+        extract_document_metadata,
+        extract_chunk_metadata,
+        load_company_aliases
+    )
+    from src.config.settings import settings
+
+    METADATA_VERSION = "v1"  # Increment when enrichment logic changes
+
+    source = args.source
+    force = args.force
+    limit = args.limit
+
+    print(f"Enriching {source} chunks with structured metadata...")
+    print(f"Metadata version: {METADATA_VERSION}")
+    if force:
+        print("Force mode: Re-enriching all files")
+    if limit:
+        print(f"Limit: Processing max {limit} files")
+    print()
+
+    # Load company aliases
+    print("Loading company aliases from dim_company.csv...")
+    company_aliases = load_company_aliases()
+    if company_aliases:
+        print(f"  Loaded {len(company_aliases)} company aliases")
+    else:
+        print("  Warning: No company aliases loaded. Company extraction will be skipped.")
+    print()
+
+    # Get source directory
+    source_dir = config.SOURCE_DIRS.get(source)
+    if not source_dir:
+        print(f"Error: Unknown source '{source}'")
+        sys.exit(1)
+
+    # Load manifest and store
+    manifest = Manifest(config.MANIFEST_PATH)
+    store = get_store()
+
+    # Determine which files need enrichment
+    if force:
+        # Re-enrich all indexed files
+        files_to_enrich = list(manifest.get_all_files(source).keys())
+    else:
+        # Only enrich files not at current metadata version
+        files_to_enrich = manifest.get_unenriched_files(source, METADATA_VERSION)
+
+    if not files_to_enrich:
+        print(f"All {source} files already enriched with {METADATA_VERSION}")
+        return
+
+    print(f"Files to enrich: {len(files_to_enrich)}")
+    if limit:
+        files_to_enrich = files_to_enrich[:limit]
+        print(f"Processing first {len(files_to_enrich)} files (--limit {limit})")
+    print()
+
+    # Enrich files
+    start_time = time.time()
+    files_processed = 0
+    files_errors = 0
+    chunks_enriched = 0
+
+    for i, relative_path in enumerate(files_to_enrich, 1):
+        # Get full file path
+        file_path = source_dir / relative_path
+
+        if not file_path.exists():
+            print(f"[{i}/{len(files_to_enrich)}] Skipped (file not found): {relative_path}")
+            files_errors += 1
+            continue
+
+        try:
+            # Read full document text for document-level extraction
+            # Get all chunks and concatenate their text
+            from .chunker import chunk_document
+            chunks_list = list(chunk_document(file_path))
+
+            if not chunks_list:
+                print(f"[{i}/{len(files_to_enrich)}] Skipped (no chunks): {relative_path}")
+                continue
+
+            # Concatenate all chunk text for document-level extraction
+            full_text = "\n".join(chunk.text for chunk in chunks_list)
+
+            if not full_text:
+                print(f"[{i}/{len(files_to_enrich)}] Skipped (no text): {relative_path}")
+                continue
+
+            # Extract document-level metadata
+            doc_metadata = extract_document_metadata(
+                full_text,
+                company_aliases,
+                include_csi_keywords=True
+            )
+
+            # Get existing chunks for this file
+            # Use the base filename without full path for source_file lookup
+            source_file = relative_path
+            existing_chunks = store.get_chunks_by_file(source_file)
+
+            if not existing_chunks:
+                print(f"[{i}/{len(files_to_enrich)}] Skipped (no chunks in DB): {relative_path}")
+                continue
+
+            # Enrich each chunk
+            chunk_updates = []
+            for chunk in existing_chunks:
+                # Extract chunk-level metadata
+                chunk_metadata = extract_chunk_metadata(
+                    chunk.text,
+                    company_aliases,
+                    include_csi_keywords=False  # More conservative for chunks
+                )
+
+                # Merge doc + chunk metadata
+                enriched_metadata = {**doc_metadata, **chunk_metadata}
+
+                # Add to batch
+                chunk_updates.append((chunk.id, enriched_metadata))
+
+            # Batch update all chunks for this file
+            if chunk_updates:
+                store.update_chunks_metadata_batch(chunk_updates)
+                chunks_enriched += len(chunk_updates)
+
+            # Mark as enriched in manifest
+            manifest.mark_enriched(source, relative_path, METADATA_VERSION)
+
+            files_processed += 1
+
+            # Progress update
+            if i % 10 == 0 or i == len(files_to_enrich):
+                elapsed = time.time() - start_time
+                rate = files_processed / elapsed if elapsed > 0 else 0
+                print(f"[{i}/{len(files_to_enrich)}] {relative_path}")
+                print(f"  Progress: {files_processed} processed, {chunks_enriched} chunks enriched ({rate:.1f} files/sec)")
+
+        except Exception as e:
+            print(f"[{i}/{len(files_to_enrich)}] Error: {relative_path}")
+            print(f"  {type(e).__name__}: {e}")
+            files_errors += 1
+
+    # Save manifest
+    manifest.save()
+
+    # Summary
+    elapsed = time.time() - start_time
+    print()
+    print("=" * 70)
+    print(f"Enrichment Complete - {source}")
+    print("=" * 70)
+    print(f"Files processed: {files_processed}")
+    print(f"Files errors: {files_errors}")
+    print(f"Chunks enriched: {chunks_enriched}")
+    print(f"Time elapsed: {int(elapsed)}s")
+    print(f"Metadata version: {METADATA_VERSION}")
+    print("=" * 70)
+
+    # Auto-sync to OneDrive (unless --no-sync)
+    if not args.no_sync:
+        print()
+        config.sync_to_onedrive()
+
+
 def cmd_search(args):
     """Search the embeddings index."""
     query = " ".join(args.query)
@@ -349,8 +520,9 @@ Examples:
   python -m scripts.narratives.embeddings build --source raba --limit 100
   python -m scripts.narratives.embeddings build --source narratives --force
 
-  # Build without syncing to OneDrive
-  python -m scripts.narratives.embeddings build --source narratives --no-sync
+  # Enrich existing chunks with structured metadata (locations, CSI, companies)
+  python -m scripts.narratives.embeddings enrich --source narratives
+  python -m scripts.narratives.embeddings enrich --source narratives --limit 10
 
   # Search all sources
   python -m scripts.narratives.embeddings search "HVAC delays"
@@ -404,6 +576,57 @@ Valid sources: {valid_sources}
         help="Delete chunks for files that no longer exist in source (only for full runs without --limit)"
     )
     build_parser.set_defaults(func=cmd_build)
+
+    # Enrich command
+    enrich_parser = subparsers.add_parser(
+        "enrich",
+        help="Enrich existing chunks with structured metadata (locations, CSI, companies)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Enrich all narratives with metadata (auto-syncs on success)
+  python -m scripts.narratives.embeddings enrich --source narratives
+
+  # Test on subset
+  python -m scripts.narratives.embeddings enrich --source narratives --limit 10
+
+  # Force re-enrichment
+  python -m scripts.narratives.embeddings enrich --source narratives --force
+
+  # Enrich without syncing to OneDrive
+  python -m scripts.narratives.embeddings enrich --source narratives --no-sync
+
+Metadata extracted:
+  - Location codes (FAB116101), buildings (SUE), levels (1F)
+  - CSI codes (033053) and sections (03)
+  - Company IDs (from dim_company.csv)
+
+Note: Enrichment does NOT re-embed. It only updates metadata on existing chunks.
+"""
+    )
+    enrich_parser.add_argument(
+        "--source", "-s",
+        required=True,
+        choices=list(config.SOURCE_DIRS.keys()),
+        help="Source to enrich (required): narratives, raba, or psi"
+    )
+    enrich_parser.add_argument(
+        "--force", "-f",
+        action="store_true",
+        help="Force re-enrichment of all files (ignore metadata version)"
+    )
+    enrich_parser.add_argument(
+        "--limit", "-n",
+        type=int,
+        default=None,
+        help="Limit number of files to process (for testing)"
+    )
+    enrich_parser.add_argument(
+        "--no-sync",
+        action="store_true",
+        help="Skip automatic sync to OneDrive after successful enrichment"
+    )
+    enrich_parser.set_defaults(func=cmd_enrich)
 
     # Search command
     search_parser = subparsers.add_parser("search", help="Search document chunks")

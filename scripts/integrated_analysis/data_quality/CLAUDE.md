@@ -89,7 +89,18 @@ data_quality/
 
 ### Recommendations
 
-1. **CRITICAL:** Add keyword-based Firestopping detection to P6 CSI inference
-2. Update `add_csi_to_p6_tasks.py` to check task_name keywords (like RABA/PSI scripts)
-3. Improve location coverage for RABA (33.6%) and PSI (46.9%)
-4. Add location linkage to ProjectSight labor entries
+1. ✅ **COMPLETED:** Added keyword-based CSI detection to P6 (commit c2cbfc3)
+2. ✅ **COMPLETED:** Fixed RABA/PSI CSI misclassifications (commit 25ea41e)
+3. **Company Filtering:** Apply company-based scope filtering when analyzing Yates performance
+4. Improve location coverage for RABA (33.6%) and PSI (46.9%)
+5. Add location linkage to ProjectSight labor entries
+
+### Company Scope Findings (2026-01-26)
+
+The 2 remaining CSI gaps (102 records, 0.65%) are **not Yates scope**:
+- **09 51 00 Acoustical Ceilings** (101 PSI): 48.5% AMTS, 23.8% Austin Bridge, 4.0% Yates
+- **09 65 00 Resilient Flooring** (1 RABA): 100% Samsung E&C
+
+**Key Insight:** P6 schedule is Yates-centric, while RABA/PSI capture all contractors. Use `dim_company_id` filtering to isolate Yates scope for performance analysis.
+
+See [COMPANY_SCOPE_FINDINGS.md](COMPANY_SCOPE_FINDINGS.md) for detailed analysis.

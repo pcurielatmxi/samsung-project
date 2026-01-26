@@ -35,12 +35,18 @@ def run_command(cmd: list[str], description: str, dry_run: bool = False, verbose
     if verbose:
         print(f"  Command: {' '.join(cmd)}")
 
+    # Set PYTHONPATH to project root for module imports
+    import os
+    env = os.environ.copy()
+    env['PYTHONPATH'] = str(project_root)
+
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            cwd=str(project_root)
+            cwd=str(project_root),
+            env=env
         )
 
         if result.returncode == 0:
@@ -129,6 +135,73 @@ def main():
         results.append(("PSI Scraper", success))
     else:
         print("\n[SKIPPED] Web scrapers (--skip-scrapers flag)")
+
+    # =========================================================================
+    # INTEGRATION LAYER - Build dimensions and consolidate data
+    # =========================================================================
+
+    # 6. Build dim_location (idempotent - preserves existing entries)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.dimensions.build_dim_location"],
+        "Build dim_location dimension table",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("dim_location", success))
+
+    # 7. Generate p6_task_taxonomy (idempotent - overwrites with latest data)
+    success, _ = run_command(
+        [python, "-m", "scripts.primavera.derive.generate_task_taxonomy"],
+        "Generate P6 task taxonomy",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("p6_task_taxonomy", success))
+
+    # 8. Add CSI sections to p6_task_taxonomy (idempotent - appends columns)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.add_csi_to_p6_tasks"],
+        "Add CSI sections to P6 tasks",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("p6_task_taxonomy CSI", success))
+
+    # 9. Consolidate RABA quality inspections (idempotent - uses processed stage 3)
+    success, _ = run_command(
+        [python, "-m", "scripts.raba.document_processing.consolidate"],
+        "Consolidate RABA inspections",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("RABA consolidated", success))
+
+    # 10. Consolidate PSI quality inspections (idempotent - uses processed stage 3)
+    success, _ = run_command(
+        [python, "-m", "scripts.psi.document_processing.consolidate"],
+        "Consolidate PSI inspections",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("PSI consolidated", success))
+
+    # 11. Enrich TBM with dimension IDs (idempotent - overwrites enriched file)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.enrich_with_dimensions", "--source", "tbm"],
+        "Enrich TBM with dimensions",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("TBM enriched", success))
+
+    # 12. Generate affected_rooms_bridge (idempotent - overwrites bridge table)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.generate_affected_rooms_bridge"],
+        "Generate affected_rooms_bridge",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("affected_rooms_bridge", success))
 
     # =========================================================================
     # PROJECTSIGHT DAILY REPORTS - NOT READY

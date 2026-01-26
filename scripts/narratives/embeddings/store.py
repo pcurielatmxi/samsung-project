@@ -236,6 +236,117 @@ class EmbeddingStore:
         chunks.sort(key=lambda c: c.metadata.get("chunk_index", 0))
         return chunks
 
+    def get_chunks_by_file(self, source_file: str) -> List[ChunkResult]:
+        """Get all chunks for a specific source file.
+
+        Args:
+            source_file: The source filename to retrieve chunks for.
+
+        Returns:
+            List of ChunkResult objects, sorted by chunk_index.
+        """
+        collection = self.get_chunks_collection()
+
+        # Query by source_file metadata
+        result = collection.get(
+            where={"source_file": source_file},
+            include=["documents", "metadatas"]
+        )
+
+        if not result["ids"]:
+            return []
+
+        # Parse results
+        chunks = []
+        for i, id_ in enumerate(result["ids"]):
+            chunks.append(ChunkResult(
+                id=id_,
+                text=result["documents"][i] if result["documents"] else "",
+                score=0,
+                metadata=result["metadatas"][i] if result["metadatas"] else {}
+            ))
+
+        # Sort by chunk_index
+        chunks.sort(key=lambda c: c.metadata.get("chunk_index", 0))
+        return chunks
+
+    def update_chunk_metadata(self, chunk_id: str, metadata: Dict[str, Any]):
+        """Update metadata for a single chunk without re-embedding.
+
+        Args:
+            chunk_id: The chunk ID to update.
+            metadata: New metadata dict (will be merged with existing).
+        """
+        collection = self.get_chunks_collection()
+
+        # Get existing chunk data
+        result = collection.get(
+            ids=[chunk_id],
+            include=["documents", "embeddings", "metadatas"]
+        )
+
+        if not result["ids"]:
+            return  # Chunk doesn't exist
+
+        # Merge metadata (preserve existing, update with new)
+        existing_metadata = result["metadatas"][0] if result["metadatas"] else {}
+        merged_metadata = {**existing_metadata, **metadata}
+
+        # Update (upsert with same ID)
+        collection.upsert(
+            ids=[chunk_id],
+            documents=[result["documents"][0]] if result["documents"] else None,
+            embeddings=[result["embeddings"][0]] if result["embeddings"] else None,
+            metadatas=[merged_metadata]
+        )
+
+    def update_chunks_metadata_batch(self, updates: List[tuple[str, Dict[str, Any]]]):
+        """Update metadata for multiple chunks in batch.
+
+        Args:
+            updates: List of (chunk_id, metadata_updates) tuples.
+        """
+        collection = self.get_chunks_collection()
+
+        # Get all existing chunks
+        chunk_ids = [chunk_id for chunk_id, _ in updates]
+        result = collection.get(
+            ids=chunk_ids,
+            include=["documents", "embeddings", "metadatas"]
+        )
+
+        if not result["ids"]:
+            return
+
+        # Build update lists
+        ids_to_update = []
+        documents_to_update = []
+        embeddings_to_update = []
+        metadatas_to_update = []
+
+        # Create lookup for updates
+        updates_dict = {chunk_id: metadata for chunk_id, metadata in updates}
+
+        for i, chunk_id in enumerate(result["ids"]):
+            if chunk_id in updates_dict:
+                # Merge metadata
+                existing_metadata = result["metadatas"][i] if result["metadatas"] else {}
+                merged_metadata = {**existing_metadata, **updates_dict[chunk_id]}
+
+                ids_to_update.append(chunk_id)
+                documents_to_update.append(result["documents"][i] if result.get("documents") else "")
+                embeddings_to_update.append(result["embeddings"][i] if result.get("embeddings") is not None else [])
+                metadatas_to_update.append(merged_metadata)
+
+        # Batch upsert
+        if ids_to_update:
+            self.upsert_chunks(
+                ids=ids_to_update,
+                texts=documents_to_update,
+                embeddings=embeddings_to_update,
+                metadatas=metadatas_to_update
+            )
+
     # --- Legacy operations (for backward compatibility) ---
 
     def get_documents_collection(self):
