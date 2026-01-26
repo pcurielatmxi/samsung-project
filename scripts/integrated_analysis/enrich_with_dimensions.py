@@ -27,6 +27,7 @@ from src.config.settings import Settings
 from schemas.validator import validated_df_to_csv
 from scripts.shared.dimension_lookup import (
     get_location_id,
+    get_location_id_by_code,
     get_company_id,
     get_trade_id,
     get_trade_code,
@@ -1065,6 +1066,9 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     df = pd.read_csv(input_path)
     original_count = len(df)
 
+    # TBM already has file_id and row_num from parsing - these form the composite key
+    # for joining with the bridge table in Power BI
+
     # Normalize building codes
     building_map = {'FAB': 'FAB', 'SUP': 'SUE', 'Fab': 'FAB', 'OFFICE': None, 'Laydown': None}
     df['building_normalized'] = df['location_building'].map(
@@ -1074,11 +1078,36 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     # Normalize level codes (e.g., "1F" -> "1F", "RF" -> "ROOF")
     df['level_normalized'] = df['location_level'].apply(normalize_level_value)
 
-    # Add dimension IDs
-    df['dim_location_id'] = df.apply(
-        lambda row: get_location_id(row['building_normalized'], row['level_normalized']),
-        axis=1
-    )
+    # Extract room codes from location_row (will be refined later with grid-based matching)
+    def extract_room_code(row):
+        """Extract room code from location_row field if present."""
+        location_row = row.get('location_row')
+        if pd.isna(location_row):
+            return None
+
+        val = str(location_row).strip().upper()
+
+        # Room code patterns: FAB1XXXXX (6+ digits after FAB1)
+        m = re.match(r'^(FAB1\d{5,})', val)
+        if m:
+            return m.group(1)
+
+        # Stair patterns: STR-XX, FAB1-STXX
+        m = re.match(r'^(?:FAB1-)?ST[R]?[-]?(\d+)', val)
+        if m:
+            return f"STR-{m.group(1).zfill(2)}"
+
+        # Elevator patterns: ELV-XX, FAB1-ELXX
+        m = re.match(r'^(?:FAB1-)?EL[V]?[-]?(\d+)', val)
+        if m:
+            return f"ELV-{m.group(1).zfill(2)}"
+
+        return None
+
+    df['room_code_extracted'] = df.apply(extract_room_code, axis=1)
+
+    # Placeholder for dim_location_id (will be set after grid analysis)
+    df['dim_location_id'] = None
     # Company lookup - try tier2_sc first, then tier1_gc, then subcontractor_file
     def get_company_from_row(row):
         # Try tier2_sc (subcontractor) first
@@ -1319,6 +1348,86 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
 
     df['location_review_flag'] = df.apply(needs_location_review, axis=1)
 
+    # Apply location hierarchy to set dim_location_id
+    print("  Applying location hierarchy (room → gridline → level → fallback)...")
+
+    def apply_location_hierarchy(row):
+        """
+        Apply location hierarchy to determine most specific location_id.
+
+        Hierarchy (most specific → least specific):
+        1. Room code extracted directly from location_row
+        2. Single room match from grid-based spatial inference
+        3. Level (building + level)
+        4. Building
+        5. Site (fallback)
+        """
+        # Priority 1: Directly extracted room code
+        room_code = row.get('room_code_extracted')
+        if pd.notna(room_code):
+            location_id = get_location_id_by_code(room_code)
+            if location_id:
+                return location_id, 'ROOM_DIRECT'
+
+        # Priority 2: Single specific location from grid-based matching
+        affected_rooms_json = row.get('affected_rooms')
+        if pd.notna(affected_rooms_json):
+            try:
+                rooms = json.loads(affected_rooms_json)
+                if len(rooms) == 1:
+                    room_data = rooms[0]
+                    location_code = room_data['location_code']
+                    match_type = room_data.get('match_type', '')
+
+                    # FULL/PARTIAL = actual room/stair/elevator locations
+                    if match_type in ('FULL', 'PARTIAL'):
+                        room_location_id = get_location_id_by_code(location_code)
+                        if room_location_id:
+                            return room_location_id, 'ROOM_GRID_SINGLE'
+                    elif match_type == 'GRIDLINE':
+                        # Single gridline match - use it (more specific than level)
+                        gridline_location_id = get_location_id_by_code(location_code)
+                        if gridline_location_id:
+                            return gridline_location_id, 'GRIDLINE'
+                elif len(rooms) > 1:
+                    # Multiple locations matched - filter to actual rooms (FULL/PARTIAL matches)
+                    room_locations = [r for r in rooms if r.get('match_type') in ('FULL', 'PARTIAL')]
+
+                    # If only 1 actual room (rest are gridlines), use that room
+                    if len(room_locations) == 1:
+                        location_code = room_locations[0]['location_code']
+                        room_location_id = get_location_id_by_code(location_code)
+                        if room_location_id:
+                            return room_location_id, 'ROOM_GRID_SINGLE'
+                    # Otherwise fall through to level
+            except (json.JSONDecodeError, TypeError, KeyError):
+                pass
+
+        # Priority 3: Level (building + level)
+        building = row.get('building_normalized')
+        level = row.get('level_normalized')
+        if pd.notna(building) and pd.notna(level):
+            location_id = get_location_id(building, level)
+            if location_id:
+                return location_id, 'LEVEL'
+
+        # Priority 4: Building only
+        if pd.notna(building):
+            location_id = get_location_id(building, None)
+            if location_id:
+                return location_id, 'BUILDING'
+
+        # Priority 5: Site fallback
+        location_id = get_location_id('SITE', None)
+        if location_id:
+            return location_id, 'SITE'
+
+        return None, None
+
+    location_results = df.apply(apply_location_hierarchy, axis=1).apply(pd.Series)
+    df['dim_location_id'] = location_results[0]
+    df['location_source'] = location_results[1]
+
     # Calculate coverage
     has_grid_row = df['grid_row_min'].notna()
     has_grid_col = df['grid_col_min'].notna()
@@ -1333,6 +1442,9 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         'affected_rooms': has_affected_rooms.mean() * 100,
     }
 
+    # Location source distribution
+    location_source_dist = df['location_source'].value_counts().to_dict()
+
     # Grid type distribution for reporting
     grid_type_dist = df['grid_type'].value_counts().to_dict()
 
@@ -1343,6 +1455,7 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         'status': 'success',
         'records': original_count,
         'coverage': coverage,
+        'location_sources': location_source_dist,
         'grid_types': grid_type_dist,
         'output': str(output_path) if not dry_run else 'DRY RUN (validated)',
     }
@@ -1559,6 +1672,12 @@ def main():
             print(f"  Coverage:")
             for dim, pct in result['coverage'].items():
                 print(f"    {dim}: {pct:.1f}%")
+            # Show location source distribution if present (TBM only)
+            if 'location_sources' in result:
+                print(f"  Location sources:")
+                for source, count in sorted(result['location_sources'].items(), key=lambda x: -x[1]):
+                    pct = count / result['records'] * 100
+                    print(f"    {source}: {count:,} ({pct:.1f}%)")
             # Show grid type distribution if present (TBM only)
             if 'grid_types' in result:
                 print(f"  Grid types:")
