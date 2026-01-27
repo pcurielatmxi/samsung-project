@@ -26,13 +26,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from src.config.settings import settings
 from scripts.shared.dimension_lookup import (
-    get_location_id,
-    get_building_level,
     get_company_id,
     get_trade_id,
     get_trade_code,
 )
-from scripts.shared.company_standardization import standardize_company, standardize_level
+from scripts.shared.company_standardization import standardize_company
+from scripts.integrated_analysis.location import enrich_location
 
 
 # Fieldwire category to trade mapping
@@ -48,66 +47,6 @@ CATEGORY_TO_TRADE = {
     'Control Joints': 'drywall',
     'Cleaning': 'general',
 }
-
-
-def normalize_building(building) -> Optional[str]:
-    """Normalize building names from Fieldwire to standard codes."""
-    if not building or pd.isna(building):
-        return None
-
-    building = str(building).strip().upper()
-
-    # Map Fieldwire building names to standard codes
-    building_map = {
-        'FAB': 'FAB',
-        'FAB1': 'FAB',
-        'MAIN FAB': 'FAB',
-        'MAIN FAB1': 'FAB',
-        'T1 FAB': 'FAB',
-        'T1 FAB1': 'FAB',
-        'T1': 'FAB',
-        'SUP': 'SUP',
-        'SUE': 'SUE',
-        'SUW': 'SUW',
-        'FIZ': 'FIZ',
-        'CUB': 'CUB',
-        'OB1': 'OB1',
-        'GCS': 'GCS',
-    }
-
-    return building_map.get(building, building)
-
-
-def normalize_level(level) -> Optional[str]:
-    """Normalize level values from Fieldwire to standard codes."""
-    if level is None or pd.isna(level):
-        return None
-
-    level_str = str(level).strip()
-
-    # Handle float levels like "3.0" -> "3"
-    try:
-        level_float = float(level_str)
-        if level_float == int(level_float):
-            level_str = str(int(level_float))
-    except ValueError:
-        pass
-
-    # Map numeric levels to standard format
-    level_map = {
-        '1': '1F',
-        '2': '2F',
-        '3': '3F',
-        '4': '4F',
-        '5': '5F',
-        '1F': '1F',
-        '2F': '2F',
-        '3F': '3F',
-        '4F': '4F',
-        '5F': '5F',
-    }
-
-    return level_map.get(level_str, standardize_level(level_str))
 
 
 def get_trade_from_category(category) -> Optional[str]:
@@ -129,9 +68,6 @@ def enrich_record(record: dict) -> dict:
     """
     enriched = record.copy()
 
-    # Normalize building and level
-    building = normalize_building(record.get('building'))
-    level = normalize_level(record.get('level'))
     company = record.get('company')
     category = record.get('category')
 
@@ -148,13 +84,15 @@ def enrich_record(record: dict) -> dict:
         company_std = None
         enriched['company_standardized'] = None
 
-    # Get location dimension
-    if building and level:
-        enriched['dim_location_id'] = get_location_id(building, level)
-        enriched['building_level'] = get_building_level(building, level)
-    else:
-        enriched['dim_location_id'] = None
-        enriched['building_level'] = None
+    # Centralized location enrichment
+    loc = enrich_location(
+        building=record.get('building'),
+        level=record.get('level'),
+        grid=None,  # Fieldwire TBM doesn't have grid in this format
+        source='FIELDWIRE_TBM'
+    )
+    enriched['dim_location_id'] = loc.dim_location_id
+    enriched['building_level'] = loc.building_level
 
     # Get company dimension
     if company_std:

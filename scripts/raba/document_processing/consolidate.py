@@ -32,17 +32,13 @@ from scripts.shared.company_standardization import (
     categorize_failure_reason,
 )
 from scripts.shared.dimension_lookup import (
-    get_location_id,
-    get_building_level,
     get_company_id,
     get_trade_id,
     get_trade_code,
-    get_affected_rooms,
-    parse_grid_field,
-    normalize_grid,
     get_company_primary_trade_id,
     get_performing_company_id,
 )
+from scripts.integrated_analysis.location import enrich_location
 from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
 from schemas.validator import validated_df_to_csv
 from scripts.integrated_analysis.add_csi_to_raba import (
@@ -389,10 +385,15 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     failure_reason = content.get('failure_reason')
     failure_category = categorize_failure_reason(failure_reason) if failure_reason else None
 
-    # Dimension lookups for integration
-    building = content.get('building')
-    dim_location_id = get_location_id(building, level_std)
-    building_level = get_building_level(building, level_std)
+    # Centralized location enrichment
+    loc = enrich_location(
+        building=content.get('building'),
+        level=level_std,
+        grid=content.get('grid'),
+        source='RABA'
+    )
+
+    # Dimension lookups for integration (non-location)
     dim_company_id = get_company_id(contractor_std)
     dim_subcontractor_id = get_company_id(subcontractor_std)
     dim_trade_id = get_trade_id(test_category)
@@ -405,71 +406,6 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
 
     # Determine performing company (who actually did the work)
     performing_company_id = get_performing_company_id(dim_company_id, dim_subcontractor_id)
-
-    # Parse and normalize grid coordinates
-    grid_raw = content.get('grid')
-    grid_normalized = normalize_grid(grid_raw)
-    grid_parsed = parse_grid_field(grid_raw)
-
-    # Compute affected_rooms based on grid overlap
-    # NOTE: Building is ignored - FAB1 uses unified grid system across all buildings
-    affected_rooms = None
-    if level_std:
-        has_row = grid_parsed['grid_row_min'] is not None
-        has_col = grid_parsed['grid_col_min'] is not None
-        if has_row or has_col:
-            rooms = get_affected_rooms(
-                level_std,
-                grid_parsed['grid_row_min'] if has_row else None,
-                grid_parsed['grid_row_max'] if has_row else None,
-                grid_parsed['grid_col_min'] if has_col else None,
-                grid_parsed['grid_col_max'] if has_col else None,
-            )
-            if rooms:
-                affected_rooms = json.dumps(rooms)
-    affected_rooms_count = len(json.loads(affected_rooms)) if affected_rooms else None
-
-    # Compute location quality diagnostics for Power BI filtering
-    # grid_completeness: what grid info was available in the source
-    has_row = grid_parsed['grid_row_min'] is not None
-    has_col = grid_parsed['grid_col_min'] is not None
-    if has_row and has_col:
-        grid_completeness = 'FULL'
-    elif has_row:
-        grid_completeness = 'ROW_ONLY'
-    elif has_col:
-        grid_completeness = 'COL_ONLY'
-    elif level_std:
-        grid_completeness = 'LEVEL_ONLY'
-    else:
-        grid_completeness = 'NONE'
-
-    # match_quality: summary of how rooms were matched
-    if affected_rooms:
-        rooms_list = json.loads(affected_rooms)
-        match_types = [r.get('match_type') for r in rooms_list]
-        full_count = sum(1 for m in match_types if m == 'FULL')
-        partial_count = sum(1 for m in match_types if m == 'PARTIAL')
-        if partial_count == 0:
-            match_quality = 'PRECISE'
-        elif full_count == 0:
-            match_quality = 'PARTIAL'
-        else:
-            match_quality = 'MIXED'
-    else:
-        match_quality = 'NONE'
-
-    # location_review_flag: suggests whether human review is needed
-    location_review_flag = False
-    if affected_rooms_count:
-        if affected_rooms_count > 10 and match_quality != 'PRECISE':
-            location_review_flag = True
-        elif match_quality == 'PARTIAL' and affected_rooms_count > 5:
-            location_review_flag = True
-        elif match_quality == 'MIXED' and affected_rooms_count > 8:
-            location_review_flag = True
-        elif grid_completeness == 'LEVEL_ONLY':
-            location_review_flag = True
 
     # Detect and reclassify measurement-only records
     # These were forced into PARTIAL by LLM because schema didn't allow null
@@ -501,13 +437,13 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'location_raw': location_raw,
         'building': content.get('building'),
         'level_raw': level_raw,
-        'level': level_std,
+        'level': loc.level_normalized,
         'area': content.get('area'),
-        'grid': grid_normalized,
-        'grid_row_min': grid_parsed['grid_row_min'],
-        'grid_row_max': grid_parsed['grid_row_max'],
-        'grid_col_min': grid_parsed['grid_col_min'],
-        'grid_col_max': grid_parsed['grid_col_max'],
+        'grid': loc.grid_normalized,
+        'grid_row_min': loc.grid_row_min,
+        'grid_row_max': loc.grid_row_max,
+        'grid_col_min': loc.grid_col_min,
+        'grid_col_max': loc.grid_col_max,
         'location_id': content.get('location_id'),
 
         # Results
@@ -552,8 +488,8 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'narrative_companies': '|'.join(narrative_companies) if narrative_companies else None,
 
         # Dimension IDs (for integration)
-        'dim_location_id': dim_location_id,
-        'building_level': building_level,
+        'dim_location_id': loc.dim_location_id,
+        'building_level': loc.building_level,
         'dim_company_id': dim_company_id,
         'dim_subcontractor_id': dim_subcontractor_id,
         'performing_company_id': performing_company_id,
@@ -567,13 +503,13 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'csi_title': csi_title,
 
         # Affected rooms (JSON array of rooms whose grid bounds overlap)
-        'affected_rooms': affected_rooms,
-        'affected_rooms_count': affected_rooms_count,
+        'affected_rooms': loc.affected_rooms,
+        'affected_rooms_count': loc.affected_rooms_count,
 
         # Location quality diagnostics (for Power BI filtering)
-        'grid_completeness': grid_completeness,
-        'match_quality': match_quality,
-        'location_review_flag': location_review_flag,
+        'grid_completeness': loc.grid_completeness,
+        'match_quality': loc.match_quality,
+        'location_review_flag': loc.location_review_flag,
     }
 
 
