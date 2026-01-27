@@ -147,6 +147,15 @@ def extract_unique_locations(taxonomy: pd.DataFrame) -> pd.DataFrame:
     has_loc = taxonomy['location_type'].notna() & taxonomy['location_code'].notna()
     loc_df = taxonomy[has_loc][loc_cols].copy()
 
+    # Consolidate all BUILDING types to FAB1 (project-wide)
+    # Individual buildings (FAB, SUE, SUW, FIZ, SUP) all map to FAB1
+    building_mask = loc_df['location_type'] == 'BUILDING'
+    if building_mask.any():
+        building_count = building_mask.sum()
+        loc_df.loc[building_mask, 'location_code'] = 'FAB1'
+        loc_df.loc[building_mask, 'building'] = 'FAB1'
+        print(f"\nConsolidated {building_count} BUILDING tasks to FAB1")
+
     # Count tasks per location
     task_counts = loc_df.groupby(['location_type', 'location_code']).size().reset_index(name='task_count')
 
