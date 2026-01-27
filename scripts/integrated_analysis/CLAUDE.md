@@ -33,7 +33,7 @@ Create dimension tables and mapping tables that enable joining data across the 6
 
 ### Location Model
 
-The location dimension is powered by the **grid-based spatial model** in `scripts/shared/`:
+The location dimension is powered by the **grid-based spatial model**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -50,10 +50,35 @@ The location dimension is powered by the **grid-based spatial model** in `script
 - **Reverse:** Grid coordinate → Room(s) (for quality data with grids like "G/10")
 
 **Supporting Files:**
-- `scripts/shared/location_model.py` - High-level API
-- `scripts/shared/gridline_mapping.py` - Low-level grid lookup
 - `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Source mapping
 - `raw/location_mappings/location_master.csv` - Working location master
+
+### Location as Primary Integration Key
+
+**Location is the primary link between datasets.** While company and trade provide useful filters, location is what enables the core analysis question: *"What happened at this place?"*
+
+| Source | Location Data | Integration Path |
+|--------|---------------|------------------|
+| P6 Schedule | Room codes in task names | Room → Grid bounds |
+| RABA/PSI Quality | Grid coordinates (G/10) | Grid → Affected rooms |
+| TBM Daily Plans | Building + Level + Grid | Grid → Affected rooms |
+| QC Workbooks | Grid coordinates | Grid → Affected rooms |
+| ProjectSight | None (inferred from company) | Company → Typical locations |
+
+**CRITICAL: All location processing MUST use the centralized module.**
+
+```python
+# CORRECT - use centralized module
+from scripts.integrated_analysis.location import enrich_location
+
+loc = enrich_location(building='FAB', level='2F', grid='G/10', source='RABA')
+
+# WRONG - do not duplicate location logic in source scripts
+grid_parsed = parse_grid_field(grid_raw)  # Don't do this in source scripts
+affected_rooms = get_affected_rooms(...)   # Use enrich_location() instead
+```
+
+See `scripts/integrated_analysis/location/CLAUDE.md` for full documentation.
 
 ## Mapping Tables
 
@@ -69,6 +94,12 @@ The location dimension is powered by the **grid-based spatial model** in `script
 scripts/integrated_analysis/
 ├── PLAN.md              # Detailed specification
 ├── CLAUDE.md            # This file
+├── location/            # ** CENTRALIZED LOCATION PROCESSING **
+│   ├── CLAUDE.md        # Location module documentation
+│   ├── core/            # Normalizers, grid parsing
+│   ├── enrichment/      # enrich_location() function
+│   ├── dimension/       # dim_location builders
+│   └── validation/      # Coverage checks
 ├── context/             # Free-form context documents
 │   ├── README.md        # Organization and traceability guidelines
 │   ├── claims/          # CO and EOT claims

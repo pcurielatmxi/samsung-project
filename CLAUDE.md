@@ -73,6 +73,9 @@ Location dimension table with **grid bounds** enables spatial joins:
 - `scripts/shared/location_model.py` - High-level location API
 - `scripts/shared/dimension_lookup.py` - Dimension ID lookups
 
+**⚠️ CRITICAL: Centralized Location Processing**
+All location enrichment (grid parsing, room matching, dim_location_id lookup) MUST use `scripts/integrated_analysis/location/`. Do NOT duplicate location logic in source scripts. Import `enrich_location()` from that module. See `scripts/integrated_analysis/location/CLAUDE.md` for details.
+
 #### Monthly Reports (In Development)
 
 Consolidates all sources monthly for MXI analysis. Sections: Schedule Progress, Labor Hours, Quality Metrics, Narratives, Cross-Reference Analysis.
