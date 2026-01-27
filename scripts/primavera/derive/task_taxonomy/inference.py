@@ -325,7 +325,7 @@ def infer_phase(row: pd.Series) -> tuple[str | None, str | None, str | None]:
     return (None, None, None)
 
 
-def infer_location_type(row: pd.Series, building: str | None = None, level: str | None = None, area: str | None = None, room: str | None = None) -> tuple[str | None, str | None]:
+def infer_location_type(row: pd.Series, building: str | None = None, level: str | None = None, area: str | None = None, room: str | None = None) -> tuple[str | None, str | None, str | None, str | None]:
     """
     Infer generalized location type and code from task context.
 
@@ -340,11 +340,13 @@ def infer_location_type(row: pd.Series, building: str | None = None, level: str 
         room: Inferred room (optional, passed for efficiency)
 
     Returns:
-        Tuple of (location_type, location_code)
+        Tuple of (location_type, location_code, row_min, row_max)
+        row_min/row_max are only populated for GRIDLINE type when bounds are
+        extracted from task names (e.g., "GL 33 - D-F" -> row_min=D, row_max=F)
     """
     # If room is already known, return ROOM type directly (optimization)
     if room and pd.notna(room):
-        return ('ROOM', str(room))
+        return ('ROOM', str(room), None, None)
 
     # Use centralized extraction for full location type determination
     result = extract_p6_location(
@@ -360,7 +362,7 @@ def infer_location_type(row: pd.Series, building: str | None = None, level: str 
         area=area,
     )
 
-    return (result.location_type, result.location_code)
+    return (result.location_type, result.location_code, result.row_min, result.row_max)
 
 
 def infer_impact(row: pd.Series) -> dict:
@@ -434,15 +436,19 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
     sub_trade, sub_trade_desc, sub_trade_source = infer_sub_trade(row)
     phase, phase_desc, phase_source = infer_phase(row)
     # Pass inferred location fields to location_type inference
-    location_type, location_code = infer_location_type(row, building=building, level=level, area=area, room=room)
+    # Now also returns row_min/row_max for GRIDLINE types with specific row bounds
+    location_type, location_code, row_min, row_max = infer_location_type(row, building=building, level=level, area=area, room=room)
     impact = infer_impact(row)
 
     # Get gridline bounds based on location type and building
+    # For GRIDLINE type, row_min/row_max override the default A-N span if extracted from task name
     gridline_bounds = get_gridline_bounds(
         location_type=location_type,
         location_code=location_code,
         building=building,
-        mapping=gridline_mapping
+        mapping=gridline_mapping,
+        row_min_override=row_min,
+        row_max_override=row_max,
     )
 
     return {
@@ -495,6 +501,15 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         'grid_row_max': gridline_bounds['grid_row_max'],
         'grid_col_min': gridline_bounds['grid_col_min'],
         'grid_col_max': gridline_bounds['grid_col_max'],
+        # Grid source: where grid bounds came from
+        # RECORD = from task name parsing (gridlines, row bounds)
+        # DIM_LOCATION = from dim_location lookup (rooms, stairs, elevators)
+        # NONE = no grid bounds available
+        'grid_source': (
+            'RECORD' if location_type == 'GRIDLINE' and gridline_bounds['grid_col_min'] is not None
+            else 'DIM_LOCATION' if location_type in ('ROOM', 'STAIR', 'ELEVATOR') and gridline_bounds['grid_row_min'] is not None
+            else 'NONE'
+        ),
         # Label (combined classification)
         'label': row.get('label'),
         # Impact tracking (inferred only, sparse)

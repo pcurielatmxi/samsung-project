@@ -230,9 +230,146 @@ def normalize_elevator_code(raw: str) -> str:
 # Gridline Extraction
 # =============================================================================
 
+from dataclasses import dataclass
+
+
+@dataclass
+class GridlineExtraction:
+    """Result of gridline extraction with optional row bounds."""
+
+    gridline: Optional[str]  # Column number as string (e.g., "33")
+    row_min: Optional[str]   # Row letter min (e.g., "D") - None means full span (A)
+    row_max: Optional[str]   # Row letter max (e.g., "F") - None means full span (N)
+    source: Optional[str]    # Source of extraction: task_name, area, tier_4
+
+
+def extract_gridline_with_bounds(task_name: str, area: str = None, tier_4: str = None) -> GridlineExtraction:
+    """
+    Extract gridline number AND row bounds from task name, area, or tier_4.
+
+    Gridline patterns with row bounds:
+    - "GL 33 - D-F" -> gridline=33, row_min=D, row_max=F
+    - "GL 33 - D/F" -> gridline=33, row_min=D, row_max=F
+    - "D-F/33" -> gridline=33, row_min=D, row_max=F
+    - "D LINE" -> gridline=None, row_min=D, row_max=D (row-only, no column)
+    - "GL-5" -> gridline=5, row_min=None, row_max=None (full span)
+
+    Row bounds are used to override the default A-N span in get_gridline_bounds().
+
+    Args:
+        task_name: Task name text
+        area: Area code (SEA-5, etc.)
+        tier_4: WBS tier 4 value
+
+    Returns:
+        GridlineExtraction with gridline, row_min, row_max, and source
+    """
+    empty = GridlineExtraction(gridline=None, row_min=None, row_max=None, source=None)
+
+    # Pattern 1: Direct gridline reference in task name (with optional row bounds)
+    if task_name and pd.notna(task_name):
+        task_name_upper = safe_upper(task_name)
+
+        # Pattern 1a: "GL 33 - D-F" or "GL 33 - D/F" (gridline + row range)
+        # Also handles "GL33 - D-F", "GL-33 - D-F"
+        gl_with_rows = re.search(
+            r'(?:GRIDLINE|GRID|GL)\s*[:-]?\s*(\d+)\s*-\s*([A-N])\s*[-/]\s*([A-N])',
+            task_name_upper
+        )
+        if gl_with_rows:
+            return GridlineExtraction(
+                gridline=gl_with_rows.group(1),
+                row_min=gl_with_rows.group(2),
+                row_max=gl_with_rows.group(3),
+                source='task_name'
+            )
+
+        # Pattern 1b: "D-F/33" or "D/F - 33" (row range + gridline, alternate order)
+        rows_then_gl = re.search(
+            r'\b([A-N])\s*[-/]\s*([A-N])\s*[/-]\s*(\d+)\b',
+            task_name_upper
+        )
+        if rows_then_gl:
+            return GridlineExtraction(
+                gridline=rows_then_gl.group(3),
+                row_min=rows_then_gl.group(1),
+                row_max=rows_then_gl.group(2),
+                source='task_name'
+            )
+
+        # Pattern 1c: "[A-N]/33" or "A/33" (single row with gridline)
+        single_row_gl = re.search(
+            r'\b([A-N])\s*/\s*(\d+)\b',
+            task_name_upper
+        )
+        if single_row_gl:
+            row = single_row_gl.group(1)
+            return GridlineExtraction(
+                gridline=single_row_gl.group(2),
+                row_min=row,
+                row_max=row,
+                source='task_name'
+            )
+
+        # Pattern 1d: Direct gridline without row bounds (full span)
+        # Matches: "GL 33", "GL-33", "GRIDLINE 5"
+        gridline_match = re.search(
+            r'(?:GRIDLINE|GRID|GL)\s*[:-]?\s*(\d+)(?:\s|$|[,\.\-])',
+            task_name_upper
+        )
+        if gridline_match:
+            return GridlineExtraction(
+                gridline=gridline_match.group(1),
+                row_min=None,
+                row_max=None,
+                source='task_name'
+            )
+
+        # Pattern 1e: "[A-N] LINE" (row letter only, no column)
+        # This indicates a row-only location, handled at GRIDLINE level
+        line_match = re.search(r'\b([A-N])\s*LINE\b', task_name_upper)
+        if line_match:
+            row = line_match.group(1)
+            return GridlineExtraction(
+                gridline=None,  # No column - this is a row line
+                row_min=row,
+                row_max=row,
+                source='task_name'
+            )
+
+    # Pattern 2: Extract from area code (SEA-5, SWA-3, etc.) - no row bounds
+    if area and pd.notna(area):
+        area_upper = safe_upper(area)
+        area_digit = re.search(r'[-_](\d+)$', area_upper)
+        if area_digit:
+            return GridlineExtraction(
+                gridline=area_digit.group(1),
+                row_min=None,
+                row_max=None,
+                source='area'
+            )
+
+    # Pattern 3: Extract from tier_4 area pattern - no row bounds
+    if tier_4 and pd.notna(tier_4):
+        tier_4_upper = safe_upper(tier_4)
+        tier4_area = re.search(r'(?:SE[AB]|SW[AB]|AREA)\s*[-_]?\s*(\d+)', tier_4_upper)
+        if tier4_area:
+            return GridlineExtraction(
+                gridline=tier4_area.group(1),
+                row_min=None,
+                row_max=None,
+                source='tier_4'
+            )
+
+    return empty
+
+
 def extract_gridline(task_name: str, area: str, tier_4: str) -> Optional[str]:
     """
     Extract gridline number from task name, area, or tier_4.
+
+    This is the backward-compatible wrapper around extract_gridline_with_bounds().
+    For new code, prefer extract_gridline_with_bounds() to also get row bounds.
 
     Gridline patterns:
     - Direct: "Gridline 5", "Grid 5", "GL-5"
@@ -247,28 +384,8 @@ def extract_gridline(task_name: str, area: str, tier_4: str) -> Optional[str]:
     Returns:
         Gridline number as string (e.g., "5") or None
     """
-    # Pattern 1: Direct gridline reference in task name
-    if task_name and pd.notna(task_name):
-        task_name_upper = safe_upper(task_name)
-        gridline_match = re.search(r'(?:GRIDLINE|GRID|GL)\s*[:-]?\s*(\d+)', task_name_upper)
-        if gridline_match:
-            return gridline_match.group(1)
-
-    # Pattern 2: Extract from area code (SEA-5, SWA-3, etc.)
-    if area and pd.notna(area):
-        area_upper = safe_upper(area)
-        area_digit = re.search(r'[-_](\d+)$', area_upper)
-        if area_digit:
-            return area_digit.group(1)
-
-    # Pattern 3: Extract from tier_4 area pattern
-    if tier_4 and pd.notna(tier_4):
-        tier_4_upper = safe_upper(tier_4)
-        tier4_area = re.search(r'(?:SE[AB]|SW[AB]|AREA)\s*[-_]?\s*(\d+)', tier_4_upper)
-        if tier4_area:
-            return tier4_area.group(1)
-
-    return None
+    result = extract_gridline_with_bounds(task_name, area, tier_4)
+    return result.gridline
 
 
 # =============================================================================

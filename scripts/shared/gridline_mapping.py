@@ -237,7 +237,9 @@ def get_gridline_bounds(
     location_type: str,
     location_code: str,
     building: str = None,
-    mapping: GridlineMapping = None
+    mapping: GridlineMapping = None,
+    row_min_override: str = None,
+    row_max_override: str = None,
 ) -> dict:
     """
     Get gridline bounds for any location type.
@@ -257,6 +259,8 @@ def get_gridline_bounds(
         location_code: The location code/identifier
         building: Building code (not used for inference, kept for API compatibility)
         mapping: GridlineMapping instance (creates default if None)
+        row_min_override: Optional row letter to override default (for GRIDLINE type)
+        row_max_override: Optional row letter to override default (for GRIDLINE type)
 
     Returns:
         Dict with row_min, row_max, col_min, col_max (all may be None if not in mapping)
@@ -310,14 +314,22 @@ def get_gridline_bounds(
                 return result
 
     elif location_type == 'GRIDLINE':
-        # GRIDLINE tasks span the full row range (A-N) at a specific column
-        # The location_code is the column number
+        # GRIDLINE tasks span the full row range (A-N) at a specific column,
+        # unless row_min/row_max overrides are provided from task name parsing
+        # (e.g., "GL 33 - D-F" limits to rows D-F instead of full A-N)
         try:
-            col = float(location_code)  # float to handle 32.5
+            # Strip GL- prefix if present (location_code may be "GL-33" or "33")
+            col_str = str(location_code)
+            if col_str.upper().startswith('GL-'):
+                col_str = col_str[3:]
+            elif col_str.upper().startswith('GL'):
+                col_str = col_str[2:]
+            col = float(col_str)  # float to handle 32.5
             result['grid_col_min'] = col
             result['grid_col_max'] = col
-            result['grid_row_min'] = GRIDLINE_ROW_MIN  # A
-            result['grid_row_max'] = GRIDLINE_ROW_MAX  # N
+            # Use overrides if provided, otherwise default to full span
+            result['grid_row_min'] = row_min_override if row_min_override else GRIDLINE_ROW_MIN
+            result['grid_row_max'] = row_max_override if row_max_override else GRIDLINE_ROW_MAX
         except (ValueError, TypeError):
             pass
 

@@ -17,6 +17,8 @@ from scripts.integrated_analysis.location.core.extractors import (
     normalize_elevator_code,
     # Gridline extraction
     extract_gridline,
+    extract_gridline_with_bounds,
+    GridlineExtraction,
     # Building extraction
     extract_building_from_wbs,
     extract_building_from_task_code,
@@ -43,6 +45,8 @@ __all__ = [
     'normalize_elevator_code',
     # Gridline
     'extract_gridline',
+    'extract_gridline_with_bounds',
+    'GridlineExtraction',
     # Building
     'extract_building_from_wbs',
     'extract_building_from_task_code',

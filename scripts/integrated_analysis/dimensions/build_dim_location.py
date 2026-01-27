@@ -441,6 +441,10 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
         drawing_code = get_drawing_code(loc_type, p6_code, drawing_codes)
         loc_code = drawing_code if drawing_code else p6_code
 
+        # Add GL- prefix for GRIDLINE type to match P6 taxonomy convention
+        if loc_type == 'GRIDLINE' and not str(loc_code).startswith('GL-'):
+            loc_code = f"GL-{loc_code}"
+
         # Check if we have grid bounds from location_master
         has_grid = pd.notna(row['Row_Min'])
         grid_inferred_from = None
@@ -572,7 +576,7 @@ def build_dim_location(location_master: pd.DataFrame, drawing_codes: dict | None
     existing_gridline_codes = {r['location_code'] for r in rows if r['location_type'] == 'GRIDLINE' and r['level'] == 'MULTI'}
     new_gridlines = 0
     for col in MULTI_GRIDLINE_COLUMNS:
-        gridline_code = str(col)
+        gridline_code = f"GL-{col}"  # Use GL- prefix to match P6 taxonomy convention
         if gridline_code not in existing_gridline_codes:
             entry = {
                 'location_id': location_id,

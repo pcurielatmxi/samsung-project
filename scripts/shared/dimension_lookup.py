@@ -74,9 +74,14 @@ def _load_dimensions():
         _dim_location = pd.read_csv(_dimensions_dir / 'dim_location.csv')
 
         # Build building_level -> location_id lookup
-        # For building_levels with multiple entries, prefer LEVEL type, then lowest ID
+        # Only include LEVEL and BUILDING types - these are the aggregate/fallback entries
+        # ROOM/STAIR/ELEVATOR/AREA should be looked up by location_code, not building_level
         _building_level_to_id = {}
-        for _, row in _dim_location.sort_values(['location_type', 'location_id']).iterrows():
+        aggregate_types = {'LEVEL', 'BUILDING'}
+        for _, row in _dim_location.iterrows():
+            loc_type = row.get('location_type')
+            if loc_type not in aggregate_types:
+                continue
             bl = row.get('building_level')
             if bl and pd.notna(bl) and bl not in _building_level_to_id:
                 _building_level_to_id[bl] = int(row['location_id'])
@@ -87,6 +92,11 @@ def _load_dimensions():
             code = row.get('location_code')
             if code and pd.notna(code):
                 _location_code_to_id[str(code).upper()] = int(row['location_id'])
+
+        # Add FAB1 as alias for project-wide building (maps to FAB building entry)
+        # This handles P6 taxonomy's FAB1 location_code for tasks without specific locations
+        if 'FAB' in _location_code_to_id and 'FAB1' not in _location_code_to_id:
+            _location_code_to_id['FAB1'] = _location_code_to_id['FAB']
 
         # Build p6_alias -> location_id lookup (for STR-XX, ELV-XX codes)
         _p6_alias_to_id = {}
@@ -113,9 +123,10 @@ def get_location_id(building: str, level: str, allow_fallback: bool = True) -> O
     Prefers LEVEL type entries over ROOM/STAIR/etc for building-level aggregation.
 
     Fallback behavior (when allow_fallback=True):
-    1. Try building + level first (e.g., "FAB-1F")
-    2. If level is missing, try FAB1 (project-wide building)
-    3. If nothing matches, try UNDEFINED
+    1. Try building + level first (e.g., "SUE-1F" for building-specific levels)
+    2. Try level-only (e.g., "1F" for LEVEL entries that span all buildings)
+    3. If level is missing, try FAB1 (project-wide building)
+    4. If nothing matches, try UNDEFINED
 
     Args:
         building: Building code (FAB, SUE, SUW, FIZ, OB1, GCS)
@@ -130,22 +141,32 @@ def get_location_id(building: str, level: str, allow_fallback: bool = True) -> O
     has_building = building and pd.notna(building) and str(building).strip()
     has_level = level and pd.notna(level) and str(level).strip()
 
-    # Case 1: Have both building and level - try exact match
+    # Normalize level if provided
+    normalized_level = None
+    if has_level:
+        normalized_level = _normalize_level(str(level).upper().strip())
+
+    # Case 1: Have both building and level - try exact building-level match
     if has_building and has_level:
-        building = str(building).upper().strip()
-        level = _normalize_level(str(level).upper().strip())
-        building_level = f"{building}-{level}"
+        building_str = str(building).upper().strip()
+        building_level = f"{building_str}-{normalized_level}"
         loc_id = _building_level_to_id.get(building_level)
         if loc_id is not None:
             return loc_id
 
-    # Case 2: Have building but no level - try FAB1 (project-wide building)
+    # Case 2: Have level - try level-only match (LEVEL entries span all buildings)
+    if allow_fallback and has_level:
+        loc_id = _building_level_to_id.get(normalized_level)
+        if loc_id is not None:
+            return loc_id
+
+    # Case 3: Have building but no level - try FAB1 (project-wide building)
     if allow_fallback and has_building and not has_level:
         loc_id = _location_code_to_id.get('FAB1')
         if loc_id is not None:
             return loc_id
 
-    # Case 3: No building or no match - try UNDEFINED
+    # Case 4: No match - try UNDEFINED
     if allow_fallback:
         loc_id = _location_code_to_id.get('UNDEFINED')
         if loc_id is not None:
@@ -1291,7 +1312,8 @@ def parse_grid_field(grid_str: str) -> Dict[str, Optional[str]]:
     Parse a grid field which may contain multiple coordinates.
 
     Args:
-        grid_str: Grid string like "G/10", "F.6/18,F.8/18,E.8/18", "N/5"
+        grid_str: Grid string like "G/10", "F.6/18,F.8/18,E.8/18", "N/5",
+                  "C/11 - C/22" (TBM range format)
 
     Returns:
         Dict with:
@@ -1316,6 +1338,11 @@ def parse_grid_field(grid_str: str) -> Dict[str, Optional[str]]:
 
     grid_str = str(grid_str).strip()
 
+    # Handle TBM range format "C/11 - C/22" by splitting on " - " first
+    # This converts "C/11 - C/22" to ["C/11", "C/22"]
+    if ' - ' in grid_str:
+        grid_str = grid_str.replace(' - ', ',')
+
     # Split by comma to handle multiple coordinates
     parts = [p.strip() for p in grid_str.split(',')]
 
@@ -1323,9 +1350,39 @@ def parse_grid_field(grid_str: str) -> Dict[str, Optional[str]]:
     cols = []
 
     for part in parts:
-        # Skip non-grid parts (e.g., "B-150" is a lab address, not a grid)
-        if part.startswith('B-') and len(part) > 3:
+        # Skip lab addresses like "B-150" (letter + hyphen + 3+ digits)
+        # But NOT row-range patterns like "B-D/8-12" which have a letter after the hyphen
+        lab_address_pattern = re.match(r'^[A-Z]-\d{3,}$', part, re.IGNORECASE)
+        if lab_address_pattern:
             continue
+
+        # Try to parse row-range patterns first (e.g., "A-N/1-3", "J-K/33")
+        # Pattern: LETTER-LETTER/COL or LETTER-LETTER/COL-COL
+        row_range_match = re.match(
+            r'^([A-S])\s*-\s*([A-S])\s*/\s*(\d+)(?:\s*-\s*(\d+))?$',
+            part,
+            re.IGNORECASE
+        )
+        if row_range_match:
+            row_min = row_range_match.group(1).upper()
+            row_max = row_range_match.group(2).upper()
+            col_min = float(row_range_match.group(3))
+            col_max = float(row_range_match.group(4)) if row_range_match.group(4) else col_min
+
+            # Expand rows in the range (A-N becomes A, B, C, ..., N)
+            if row_min in VALID_GRID_ROWS and row_max in VALID_GRID_ROWS:
+                # Get all letters between min and max
+                start_idx = ord(row_min)
+                end_idx = ord(row_max)
+                for i in range(start_idx, end_idx + 1):
+                    letter = chr(i)
+                    if letter in VALID_GRID_ROWS:
+                        rows.append(letter)
+                # Add columns
+                cols.append(col_min)
+                if col_max != col_min:
+                    cols.append(col_max)
+                continue
 
         parsed = parse_single_grid(part)
         if parsed:

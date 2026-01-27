@@ -2,24 +2,33 @@
 Location Processing Module
 
 Centralized location processing for all data sources. Consolidates grid parsing,
-spatial matching, and location enrichment logic that was previously duplicated
-across RABA, PSI, TBM, and other consolidation scripts.
+spatial matching, and location enrichment logic.
 
-Usage (Quality data - RABA/PSI/TBM):
-    from scripts.integrated_analysis.location import enrich_location, LocationEnrichmentResult
+Usage (Fact tables - TBM/RABA/PSI/QC Workbooks):
+    from scripts.integrated_analysis.location import enrich_location, enrich_dataframe
 
+    # Single record
     result = enrich_location(
         building='FAB',
         level='2F',
         grid='G/10-12',
+        room_code='FAB126401',  # Optional - if provided, grid inferred from room
         source='RABA'
     )
 
     # Access results
-    result.dim_location_id      # Integer FK or None
-    result.affected_rooms       # JSON string of overlapping rooms
-    result.grid_completeness    # FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE
-    result.match_quality        # PRECISE, MIXED, PARTIAL, NONE
+    result.dim_location_id      # Integer FK to dim_location
+    result.location_type        # ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED
+    result.location_code        # FAB126401, STR-21, ELV-01, etc.
+    result.level                # 1F, 2F, ROOF, B1, etc.
+    result.grid_row_min/max     # Grid row bounds (A-N)
+    result.grid_col_min/max     # Grid column bounds (numeric)
+    result.affected_rooms       # JSON array of rooms with grid overlap
+    result.affected_rooms_count # Integer count
+    result.match_type           # ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED
+
+    # Entire DataFrame
+    df = enrich_dataframe(df, building_col='building', level_col='level', grid_col='grid', source='RABA')
 
 Usage (P6 schedule data):
     from scripts.integrated_analysis.location import extract_p6_location, P6LocationResult
@@ -33,26 +42,22 @@ Usage (P6 schedule data):
         tier_5='FAB116406',
     )
 
-    # Access results
-    result.location_type        # ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING
-    result.location_code        # FAB116406, STR-10, ELV-01, GL-5, FAB-2F, FAB
-    result.building             # FAB, SUE, SUW, FIZ
-    result.level                # 1F, 2F, ROOF, B1
-
 Module Structure:
     location/
     ├── __init__.py              # Public API (this file)
     ├── core/                    # Core location logic
-    │   ├── extractors.py        # P6 extraction patterns (room, stair, elevator, etc.)
+    │   ├── extractors.py        # P6 extraction patterns
     │   └── normalizers.py       # Building/level normalization
     ├── enrichment/              # Location enrichment
-    │   ├── location_enricher.py # Quality data enrichment (RABA/PSI/TBM)
+    │   ├── location_enricher.py # Fact table enrichment (TBM/RABA/PSI/QC)
     │   └── p6_location.py       # P6 schedule location extraction
     └── validation/              # Coverage and quality checks
 """
 
 from scripts.integrated_analysis.location.enrichment.location_enricher import (
     enrich_location,
+    enrich_dataframe,
+    enrich_location_row,
     LocationEnrichmentResult,
 )
 from scripts.integrated_analysis.location.enrichment.p6_location import (
@@ -61,8 +66,10 @@ from scripts.integrated_analysis.location.enrichment.p6_location import (
 )
 
 __all__ = [
-    # Quality data enrichment (RABA/PSI/TBM)
+    # Fact table enrichment (TBM/RABA/PSI/QC Workbooks)
     'enrich_location',
+    'enrich_dataframe',
+    'enrich_location_row',
     'LocationEnrichmentResult',
     # P6 schedule location extraction
     'extract_p6_location',

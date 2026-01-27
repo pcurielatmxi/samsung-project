@@ -16,7 +16,7 @@ from scripts.integrated_analysis.location.core.extractors import (
     extract_room,
     extract_stair,
     extract_elevator,
-    extract_gridline,
+    extract_gridline_with_bounds,
     extract_building_from_wbs,
     extract_building_from_task_code,
     extract_building_from_z_area,
@@ -50,6 +50,11 @@ class P6LocationResult:
     # Source tracking (for debugging/audit)
     location_source: str  # wbs, task_name, activity_code, task_code, default
 
+    # Row bounds for GRIDLINE type (override default A-N span)
+    # Extracted from task names like "GL 33 - D-F" where D-F are the row bounds
+    row_min: Optional[str] = None  # e.g., "D" - None means use default (A)
+    row_max: Optional[str] = None  # e.g., "F" - None means use default (N)
+
     def to_dict(self) -> dict:
         """Convert to dictionary for DataFrame integration."""
         return {
@@ -59,6 +64,8 @@ class P6LocationResult:
             'level': self.level,
             'area': self.area,
             'location_source': self.location_source,
+            'row_min': self.row_min,
+            'row_max': self.row_max,
         }
 
 
@@ -162,16 +169,18 @@ def extract_p6_location(
                 location_source=source,
             )
 
-    # Priority 4: GRIDLINE - specific gridline number
-    gridline = extract_gridline(task_name, area, tier_4)
-    if gridline:
+    # Priority 4: GRIDLINE - specific gridline number with optional row bounds
+    gridline_result = extract_gridline_with_bounds(task_name, area, tier_4)
+    if gridline_result.gridline:
         return P6LocationResult(
             location_type='GRIDLINE',
-            location_code=f"GL-{gridline}",
+            location_code=f"GL-{gridline_result.gridline}",
             building=building,
             level=level,
             area=area,
-            location_source='wbs' if area else 'task_name',
+            location_source=gridline_result.source or ('wbs' if area else 'task_name'),
+            row_min=gridline_result.row_min,
+            row_max=gridline_result.row_max,
         )
 
     # Priority 5: LEVEL - floor level (if we have building + level)
