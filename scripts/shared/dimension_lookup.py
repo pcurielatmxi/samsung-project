@@ -604,6 +604,78 @@ def get_company_primary_trade_id(company_id: int) -> Optional[int]:
     return None
 
 
+# Cached sets for performing company lookup
+_yates_sub_ids: Optional[set] = None
+_yates_self_ids: Optional[set] = None
+
+
+def _load_yates_sets():
+    """Load Yates company ID sets for performing company lookup."""
+    global _yates_sub_ids, _yates_self_ids
+
+    if _yates_sub_ids is None:
+        _load_dimensions()
+        _yates_sub_ids = set(
+            _dim_company[_dim_company['company_type'] == 'yates_sub']['company_id'].tolist()
+        )
+        _yates_self_ids = set(
+            _dim_company[_dim_company['company_type'] == 'yates_self']['company_id'].tolist()
+        )
+
+
+def get_performing_company_id(
+    dim_company_id: Optional[int],
+    dim_subcontractor_id: Optional[int]
+) -> Optional[int]:
+    """
+    Determine the company that actually performed the work.
+
+    Priority logic:
+    1. Yates subcontractor (from either field) - they did the work
+    2. Yates self-perform - Yates did the work themselves
+    3. Subcontractor (non-Yates) - they did the work
+    4. Contractor (fallback) - if nothing else, use this
+
+    This resolves the ambiguity where 'contractor' often means who requested
+    the inspection (GC level), while 'subcontractor' is who did the work.
+
+    Args:
+        dim_company_id: Company ID from contractor field
+        dim_subcontractor_id: Company ID from subcontractor field
+
+    Returns:
+        Company ID of the performing company, or None if both inputs are None
+    """
+    _load_yates_sets()
+
+    # Convert to int if not None/NaN
+    company_id = int(dim_company_id) if dim_company_id is not None and pd.notna(dim_company_id) else None
+    sub_id = int(dim_subcontractor_id) if dim_subcontractor_id is not None and pd.notna(dim_subcontractor_id) else None
+
+    # Priority 1: Yates sub in subcontractor field
+    if sub_id is not None and sub_id in _yates_sub_ids:
+        return sub_id
+
+    # Priority 2: Yates sub in contractor field
+    if company_id is not None and company_id in _yates_sub_ids:
+        return company_id
+
+    # Priority 3: Yates self in subcontractor field
+    if sub_id is not None and sub_id in _yates_self_ids:
+        return sub_id
+
+    # Priority 4: Yates self in contractor field
+    if company_id is not None and company_id in _yates_self_ids:
+        return company_id
+
+    # Priority 5: Use subcontractor if present (non-Yates performer)
+    if sub_id is not None:
+        return sub_id
+
+    # Priority 6: Fall back to contractor
+    return company_id
+
+
 # Trade name to trade_id mapping
 # Maps various names used in quality data to dim_trade trade_id
 TRADE_NAME_TO_ID: Dict[str, int] = {
@@ -941,6 +1013,7 @@ def get_company_info(company_name: str) -> Optional[Dict]:
 # ============================================================================
 # Cached CSI section data
 _dim_csi_section: Optional[pd.DataFrame] = None
+_dim_csi_division: Optional[pd.DataFrame] = None
 
 
 def _load_csi_sections():
@@ -1010,6 +1083,42 @@ def get_csi_section_title(csi_section_id: int) -> Optional[str]:
     match = _dim_csi_section[_dim_csi_section['csi_section_id'] == int(csi_section_id)]
     if len(match) > 0:
         return match.iloc[0]['csi_title']
+    return None
+
+
+def _load_csi_divisions():
+    """Load CSI division dimension table if not already loaded."""
+    global _dim_csi_division
+    if _dim_csi_division is None:
+        csi_div_path = _dimensions_dir / 'dim_csi_division.csv'
+        if csi_div_path.exists():
+            _dim_csi_division = pd.read_csv(csi_div_path)
+        else:
+            _dim_csi_division = pd.DataFrame()
+
+
+def get_csi_division(csi_section: str) -> Optional[str]:
+    """
+    Get CSI division code from CSI section code.
+
+    Args:
+        csi_section: CSI section code like "03 30 00" or "07 84 00"
+
+    Returns:
+        Division code like "03" or "07", or None if invalid
+    """
+    if not csi_section or pd.isna(csi_section):
+        return None
+
+    # Extract division from section code (first 2 digits)
+    code = str(csi_section).strip()
+
+    # Match pattern: "XX ..." where XX is the division
+    import re
+    match = re.match(r'^(\d{2})', code)
+    if match:
+        return match.group(1)
+
     return None
 
 
@@ -1097,6 +1206,7 @@ def reset_cache():
     """Reset cached dimension data (useful for testing)."""
     global _dim_location, _dim_company, _dim_trade, _map_company_aliases
     global _building_level_to_id, _location_code_to_id, _p6_alias_to_id, _dim_csi_section
+    global _yates_sub_ids, _yates_self_ids
     _dim_location = None
     _dim_company = None
     _dim_trade = None
@@ -1105,6 +1215,8 @@ def reset_cache():
     _location_code_to_id = None
     _p6_alias_to_id = None
     _dim_csi_section = None
+    _yates_sub_ids = None
+    _yates_self_ids = None
 
 
 # =============================================================================

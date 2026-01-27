@@ -41,6 +41,7 @@ from scripts.shared.dimension_lookup import (
     parse_grid_field,
     normalize_grid,
     get_company_primary_trade_id,
+    get_performing_company_id,
 )
 from scripts.shared.qc_inspection_schema import UNIFIED_COLUMNS, apply_unified_schema
 from schemas.validator import validated_df_to_csv
@@ -393,6 +394,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     dim_location_id = get_location_id(building, level_std)
     building_level = get_building_level(building, level_std)
     dim_company_id = get_company_id(contractor_std)
+    dim_subcontractor_id = get_company_id(subcontractor_std)
     dim_trade_id = get_trade_id(test_category)
 
     # Fallback: if trade not found from inspection type, use company's primary trade
@@ -400,6 +402,9 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         dim_trade_id = get_company_primary_trade_id(dim_company_id)
 
     dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
+
+    # Determine performing company (who actually did the work)
+    performing_company_id = get_performing_company_id(dim_company_id, dim_subcontractor_id)
 
     # Parse and normalize grid coordinates
     grid_raw = content.get('grid')
@@ -550,6 +555,8 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'dim_location_id': dim_location_id,
         'building_level': building_level,
         'dim_company_id': dim_company_id,
+        'dim_subcontractor_id': dim_subcontractor_id,
+        'performing_company_id': performing_company_id,
         'dim_trade_id': dim_trade_id,
         'dim_trade_code': dim_trade_code,
 

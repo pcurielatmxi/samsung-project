@@ -86,7 +86,9 @@ UNIFIED_COLUMNS = [
     # Dimension keys (for integration)
     'dim_location_id',           # Location dimension ID (integer FK)
     'building_level',            # Building-level string for display (e.g., "FAB-1F")
-    'dim_company_id',            # Company dimension ID
+    'dim_company_id',            # Company dimension ID (from contractor field)
+    'dim_subcontractor_id',      # Company dimension ID (from subcontractor field)
+    'performing_company_id',     # Company that actually performed the work (for joins)
     'dim_trade_id',              # Trade dimension ID
     'dim_trade_code',            # Trade code
 

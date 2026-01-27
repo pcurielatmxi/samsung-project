@@ -97,7 +97,7 @@ CSI_SECTIONS = {
 KEYWORD_TO_CSI = [
     # Fireproofing vs Firestopping (both in Division 07)
     (["sfrm", "ifrm", "intumescent", "fireproofing", "applied fire"], 18),  # 07 81 00 Applied Fireproofing
-    (["firestop", "fire stop", "penetration seal", "fire caulk", "firestopping"], 19),  # 07 84 00 Firestopping
+    (["firestop", "fire stop", "fire-stop", "penetration seal", "fire caulk", "firestopping"], 19),  # 07 84 00 Firestopping
 
     # Concrete specifics
     (["precast", "waffle", "double t", "double-t", "spandrel", "precast column"], 3),  # 03 41 00 Structural Precast
@@ -108,17 +108,19 @@ KEYWORD_TO_CSI = [
 
     # Steel specifics
     (["steel deck", "decking", "floor deck", "roof deck"], 7),  # 05 31 00 Steel Decking
-    (["structural steel", "steel erection", "steel connection", "high strength bolt"], 6),  # 05 12 00 Structural Steel
+    (["structural steel", "steel erection", "steel connection", "high strength bolt", "steel inspection", "base-plate", "baseplate"], 6),  # 05 12 00 Structural Steel
     (["metal stud", "cold-formed", "cold formed", "light gauge"], 8),  # 05 40 00 Cold-Formed Metal Framing
     (["misc steel", "miscellaneous steel", "stair", "railing", "handrail", "ladder", "grating"], 9),  # 05 50 00 Metal Fabrications
     (["weld", "welding", "vt inspection", "aws"], 6),  # 05 12 00 - welding is structural steel
-    (["anchor", "post-installed", "epoxy dowel", "dowel", "embed", "coupler"], 6),  # 05 12 00 - anchors are steel
+    (["anchor", "post-installed", "epoxy dowel", "dowel", "embed", "coupler", "drill and epoxy"], 6),  # 05 12 00 - anchors are steel
 
     # Drywall/Framing
-    (["drywall", "gypsum", "gyp board", "sheetrock", "layer inspection", "1st layer", "2nd layer", "3rd layer"], 26),  # 09 21 16 Gypsum Board
+    (["drywall", "gypsum", "gyp board", "sheetrock", "layer inspection", "1st layer", "2nd layer", "3rd layer",
+      "1 layer", "2 layer", "3 layer", "final layer", "tape & float", "tape float", "tape and float",
+      "layer catch up", "layer catch-up", "layer remediation", "sheathing", "1st/2nd"], 26),  # 09 21 16 Gypsum Board
     (["framing", "frame inspection", "bottom plate", "top plate", "sliptrack", "t-bar", "tee bar"], 8),  # 05 40 00 Cold-Formed Metal Framing
     (["shaft wall", "shaft liner", "shaftliner"], 26),  # 09 21 16 Gypsum Board
-    (["control joint", "cj inspection"], 26),  # 09 21 16 - control joints in drywall
+    (["control joint", "cj inspection", "cj insp"], 26),  # 09 21 16 - control joints in drywall
     (["ceiling", "acoustical ceiling", "ceiling grid", "ceiling tile"], 27),  # 09 51 00 Acoustical Ceilings
     (["screw inspection", "fastener"], 26),  # 09 21 16 - drywall screws
 
@@ -129,7 +131,7 @@ KEYWORD_TO_CSI = [
     (["coping", "flashing", "expansion joint", "roof edge"], 17),  # 07 71 00 Roof Specialties
 
     # Insulation
-    (["insulation", "mineral wool", "batt insulation", "blanket"], 13),  # 07 21 16 Blanket Insulation
+    (["insulation", "mineral wool", "batt insulation", "blanket", "column wrap"], 13),  # 07 21 16 Blanket Insulation
     (["rigid insulation", "board insulation", "foam board"], 12),  # 07 21 13 Board Insulation
     (["vapor barrier", "vapor retarder"], 14),  # 07 26 00 Vapor Retarders
 
@@ -145,15 +147,15 @@ KEYWORD_TO_CSI = [
       "coating inspection – flooring", "coating visual inspection", "coatings inspection", "surface prep", "surface preparation",
       "epoxy coating", "chemical resistant", "floor coating", "csp2", "csp3", "csp-", "csp/", "nace",
       "fiberglass coat", "sealer inspection"], 25),  # 09 06 65 Chemical-Resistant Coatings
-    (["paint", "painting", "primer", "topcoat"], 29),  # 09 91 26 Painting - Building
+    (["paint", "painting", "primer", "topcoat", "touchup", "touch-up", "touch up"], 29),  # 09 91 26 Painting - Building
     (["flooring", "resilient", "vct", "tile floor", "vinyl tile", "rubber floor"], 28),  # 09 65 00 Resilient Flooring
-    (["sealant", "caulk", "joint seal"], 20),  # 07 90 00 Joint Protection
+    (["sealant", "caulk", "joint seal", "joint inspection"], 20),  # 07 90 00 Joint Protection
 
     # Openings - use "door frame" instead of bare "frame" (matches framing)
     (["door", "hollow metal", "hm door", "door frame"], 21),  # 08 11 13 Hollow Metal Doors
     (["coiling door", "roll-up", "overhead door"], 22),  # 08 33 23 Overhead Coiling Doors
     (["hardware", "lockset", "hinge", "closer"], 23),  # 08 71 00 Door Hardware
-    (["glazing", "glass", "curtain wall", "storefront"], 24),  # 08 80 00 Glazing
+    (["glazing", "glass", "curtain wall", "storefront", "window wall"], 24),  # 08 80 00 Glazing
 
     # Specialties - check BEFORE electrical wire/cable patterns
     (["wire mesh partition", "wire mesh wall", "acorn wire mesh"], 9),  # 05 50 00 Metal Fabrications (security partitions)
