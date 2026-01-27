@@ -114,13 +114,13 @@ def get_location_id(building: str, level: str, allow_fallback: bool = True) -> O
 
     Fallback behavior (when allow_fallback=True):
     1. Try building + level first (e.g., "FAB-1F")
-    2. If level is missing, try building + ALL (e.g., "FAB-ALL")
-    3. If building is also missing, try "SITE"
+    2. If level is missing, try FAB1 (project-wide building)
+    3. If nothing matches, try UNDEFINED
 
     Args:
         building: Building code (FAB, SUE, SUW, FIZ, OB1, GCS)
         level: Level code (1F, 2F, B1, ROOF, etc.)
-        allow_fallback: If True, fall back to building-wide or site-wide entries
+        allow_fallback: If True, fall back to project-wide or UNDEFINED entries
 
     Returns:
         Integer location_id or None if not found in dim_location
@@ -139,17 +139,15 @@ def get_location_id(building: str, level: str, allow_fallback: bool = True) -> O
         if loc_id is not None:
             return loc_id
 
-    # Case 2: Have building but no level - try building-wide
+    # Case 2: Have building but no level - try FAB1 (project-wide building)
     if allow_fallback and has_building and not has_level:
-        building = str(building).upper().strip()
-        building_wide = f"{building}-ALL"
-        loc_id = _building_level_to_id.get(building_wide)
+        loc_id = _location_code_to_id.get('FAB1')
         if loc_id is not None:
             return loc_id
 
-    # Case 3: No building - try site-wide
-    if allow_fallback and not has_building:
-        loc_id = _building_level_to_id.get('SITE')
+    # Case 3: No building or no match - try UNDEFINED
+    if allow_fallback:
+        loc_id = _location_code_to_id.get('UNDEFINED')
         if loc_id is not None:
             return loc_id
 
