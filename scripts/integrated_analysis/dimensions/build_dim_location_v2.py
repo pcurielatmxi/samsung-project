@@ -9,7 +9,7 @@ Key differences from v1:
 - Extracts locations directly from P6 taxonomy (not location_master.csv)
 - Uses standardized naming: STR-xx for stairs, ELV-xx for elevators
 - No *-ALL aggregate codes - uses FAB1 as project-wide BUILDING
-- No SITE or UNDEFINED types - everything categorizes to BUILDING minimum
+- Includes UNDEFINED as fallback for fact table records without valid location
 
 Source: processed/primavera/p6_task_taxonomy.csv
 Grid lookup: raw/location_mappings/location_master.csv
@@ -297,6 +297,26 @@ def build_dim_location(
             'building_level': 'FAB1',
         })
         location_id += 1
+
+    # Add UNDEFINED as fallback for fact table records without valid location
+    print("Adding UNDEFINED as fallback location entry...")
+    rows.append({
+        'location_id': location_id,
+        'location_code': 'UNDEFINED',
+        'location_type': 'UNDEFINED',
+        'room_name': 'Unknown/Unassigned Location',
+        'building': None,
+        'level': None,
+        'grid_row_min': None,
+        'grid_row_max': None,
+        'grid_col_min': None,
+        'grid_col_max': None,
+        'grid_inferred_from': None,
+        'status': 'FALLBACK',
+        'task_count': 0,
+        'building_level': None,
+    })
+    location_id += 1
 
     df = pd.DataFrame(rows)
 
