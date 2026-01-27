@@ -3,6 +3,11 @@ Low-level Extraction Helpers for Task Taxonomy
 
 Extract building, level, trade, area, and room from WBS tiers and activity codes.
 
+NOTE: Location extraction functions now route to the centralized module at:
+    scripts/integrated_analysis/location/core/extractors.py
+
+This file maintains backward compatibility for existing code that imports from here.
+
 WBS Hierarchy Structure:
 ------------------------
 tier_1: Project root (e.g., "SAMSUNG-TFAB1-10-31-25- Live-3")
@@ -40,7 +45,27 @@ import re
 import pandas as pd
 from .mappings import WBS_TRADE_PATTERNS, TASK_NAME_TRADE_PATTERNS
 
+# Import centralized location extraction functions
+# These are the single source of truth for location extraction
+from scripts.integrated_analysis.location.core.extractors import (
+    extract_room as _extract_room,
+    extract_stair as _extract_stair,
+    extract_elevator as _extract_elevator,
+    extract_gridline as _extract_gridline,
+    extract_building_from_wbs as _extract_building_from_wbs,
+    extract_building_from_task_code as _extract_building_from_task_code,
+    extract_building_from_z_area as _extract_building_from_z_area,
+    extract_building_from_z_level as _extract_building_from_z_level,
+    extract_level_from_wbs as _extract_level_from_wbs,
+    extract_level_from_z_level as _extract_level_from_z_level,
+    safe_upper,
+)
+from scripts.integrated_analysis.location.core.normalizers import (
+    normalize_level as _normalize_level,
+)
+
 # Level code normalization: map raw codes to dim_location format
+# Kept for backward compatibility - actual normalization uses centralized module
 LEVEL_NORMALIZATION = {
     '1': '1F', '2': '2F', '3': '3F', '4': '4F', '5': '5F', '6': '6F',
     'L1': '1F', 'L2': '2F', 'L3': '3F', 'L4': '4F', 'L5': '5F', 'L6': '6F',
@@ -55,17 +80,13 @@ def normalize_level(level: str | None) -> str | None:
     Normalize level codes to dim_location format.
 
     Converts: '1' -> '1F', 'L2' -> '2F', 'ROOF' -> 'ROOF', etc.
+
+    Routes to centralized module.
     """
     if level is None:
         return None
-    return LEVEL_NORMALIZATION.get(str(level).upper().strip(), level)
-
-
-def safe_upper(val) -> str:
-    """Convert value to uppercase string, handling None/NaN."""
-    if val is None or (isinstance(val, float) and pd.isna(val)):
-        return ''
-    return str(val).upper().strip()
+    # Use centralized normalizer
+    return _normalize_level(str(level))
 
 
 def extract_building_from_wbs(tier_3: str, tier_4: str) -> str | None:
@@ -73,43 +94,10 @@ def extract_building_from_wbs(tier_3: str, tier_4: str) -> str | None:
     Extract building code from WBS tier_3 and tier_4.
 
     Returns: Building code (FAB, SUE, SUW, FIZ, CUB, GCS) or None
+
+    Routes to centralized module.
     """
-    tier_3 = safe_upper(tier_3)
-    tier_4 = safe_upper(tier_4)
-
-    # Pattern 1: tier_4 has "L1 FAB", "L2 SUE" pattern (Building+Level combined)
-    tier4_bldg_level = re.match(r'^L(\d)\s+(FAB|SUE|SUW|FIZ|CUB|GCS)', tier_4)
-    if tier4_bldg_level:
-        return tier4_bldg_level.group(2)
-
-    # Pattern 2: tier_4 has "SUE - CONCRETE" pattern (Building prefix + Trade)
-    tier4_bldg_prefix = re.match(r'^(SUE|SUW|FAB|FIZ|CUB|GCS)\s*-', tier_4)
-    if tier4_bldg_prefix:
-        return tier4_bldg_prefix.group(1)
-
-    # Pattern 3: tier_3 has building name
-    tier3_building_patterns = [
-        (r'FAB\s*BUILDING', 'FAB'),
-        (r'SUPPORT\s*BUILDING\s*-\s*EAST', 'SUE'),
-        (r'SUPPORT\s*BUILDING\s*-\s*WEST', 'SUW'),
-        (r'DATA\s*CENTER', 'FIZ'),
-        (r'CENTRAL\s*UTILITIES', 'CUB'),
-    ]
-    for pattern, bldg in tier3_building_patterns:
-        if re.search(pattern, tier_3):
-            return bldg
-
-    # Pattern 4: tier_4 has grid areas that imply building
-    # SEA/SEB = Support East Area A/B -> SUE
-    # SWA/SWB = Support West Area A/B -> SUW
-    if re.match(r'^SE[AB]\s*-\s*\d', tier_4):
-        return 'SUE'
-    elif re.match(r'^SW[AB]\s*-\s*\d', tier_4):
-        return 'SUW'
-    elif re.match(r'^AREA\s*FIZ', tier_4):
-        return 'FIZ'
-
-    return None
+    return _extract_building_from_wbs(tier_3, tier_4)
 
 
 def extract_level_from_wbs(tier_3: str, tier_4: str, tier_5: str, wbs_name: str) -> str | None:
@@ -117,41 +105,10 @@ def extract_level_from_wbs(tier_3: str, tier_4: str, tier_5: str, wbs_name: str)
     Extract floor level from WBS tiers.
 
     Returns: Level ('1'-'6', 'ROOF', 'B1') or None
+
+    Routes to centralized module.
     """
-    tier_3 = safe_upper(tier_3)
-    tier_4 = safe_upper(tier_4)
-    tier_5 = safe_upper(tier_5)
-    wbs_name = safe_upper(wbs_name)
-
-    # Pattern 1: tier_4 has "L1 FAB", "L2 SUE" pattern
-    tier4_bldg_level = re.match(r'^L(\d)\s+(FAB|SUE|SUW|FIZ|CUB|GCS)', tier_4)
-    if tier4_bldg_level:
-        return tier4_bldg_level.group(1)
-
-    # Pattern 2: tier_3 has "LEVEL X" pattern
-    tier3_level = re.search(r'LEVEL\s*(\d)', tier_3)
-    if tier3_level:
-        return tier3_level.group(1)
-
-    # Pattern 3: tier_4 has standalone "L1", "L2" etc.
-    tier4_level = re.match(r'^L(\d)\b', tier_4)
-    if tier4_level:
-        return tier4_level.group(1)
-
-    # Pattern 4: Extract level from room codes (FAB1xxxxx = Level 1)
-    for text in [tier_5, wbs_name]:
-        room_match = re.search(r'FAB(\d)\d{5}', text)
-        if room_match:
-            return room_match.group(1)
-
-    # Pattern 5: Check for ROOF or UNDERGROUND keywords
-    all_text = f"{tier_4} {tier_5} {wbs_name}"
-    if 'ROOF' in all_text:
-        return 'ROOF'
-    elif re.search(r'\bUNDERGROUND\b|\bUG\b', all_text):
-        return 'B1'
-
-    return None
+    return _extract_level_from_wbs(tier_3, tier_4, tier_5, wbs_name)
 
 
 def extract_trade_from_wbs(tier_4: str) -> int | None:
@@ -195,17 +152,10 @@ def extract_room_from_wbs(tier_5: str, wbs_name: str) -> str | None:
     Extract room code from WBS tier_5 or wbs_name.
 
     Returns: Room code (FAB112155) or None
+
+    Routes to centralized module.
     """
-    tier_5 = safe_upper(tier_5)
-    wbs_name = safe_upper(wbs_name)
-
-    # Room code pattern: FAB + digit + 5 digits (e.g., FAB112155)
-    for text in [tier_5, wbs_name]:
-        room_match = re.search(r'(FAB\d{6})', text)
-        if room_match:
-            return room_match.group(1)
-
-    return None
+    return _extract_room(tier_5, wbs_name)
 
 
 def extract_trade_from_task_name(task_name: str) -> int | None:
@@ -235,133 +185,33 @@ def extract_building_from_task_code(task_code: str) -> str | None:
 
     Task code format: PREFIX.AREA.NUMBER (e.g., CN.SWA5.1580)
 
-    Area patterns:
-    - SEA*, SEB* -> SUE (Support East)
-    - SWA*, SWB* -> SUW (Support West)
-    - FIZ* -> FIZ (Data Center)
-    - BB* -> FAB (FAB basement)
-    - FAB* -> FAB
-
     Returns: Building code (FAB, SUE, SUW, FIZ) or None
+
+    Routes to centralized module.
     """
-    if not task_code or pd.isna(task_code):
-        return None
-
-    parts = str(task_code).upper().split('.')
-    if len(parts) < 2:
-        return None
-
-    # Check prefix first (for FIZ.EAST, FIZ.WEST patterns)
-    prefix = parts[0]
-    if prefix == 'FIZ':
-        return 'FIZ'
-
-    # Check area segment
-    area = parts[1]
-
-    # Support East patterns
-    if area.startswith('SEA') or area.startswith('SEB'):
-        return 'SUE'
-
-    # Support West patterns
-    if area.startswith('SWA') or area.startswith('SWB'):
-        return 'SUW'
-
-    # FIZ patterns
-    if area.startswith('FIZ'):
-        return 'FIZ'
-
-    # FAB basement patterns (BB = basement block)
-    if area.startswith('BB'):
-        return 'FAB'
-
-    # FAB patterns
-    if area.startswith('FAB'):
-        return 'FAB'
-
-    return None
+    return _extract_building_from_task_code(task_code)
 
 
 def extract_building_from_z_area(z_area_value: str) -> str | None:
     """
     Extract building code from Z-AREA activity code value.
 
-    Z-AREA patterns:
-    - SUES-*, SUEN-* -> SUE (Support East South/North)
-    - SUWS-*, SUWN-* -> SUW (Support West South/North)
-    - SUE - *, SUW - * -> SUE/SUW
-    - FIZ*, Area FIZ* -> FIZ
-    - Fab A*, Fab B* -> FAB
-    - PENTHOUSE -> infer from direction (NORTH EAST -> SUE, etc.)
-
     Returns: Building code (FAB, SUE, SUW, FIZ) or None
+
+    Routes to centralized module.
     """
-    if not z_area_value or pd.isna(z_area_value):
-        return None
-
-    val = str(z_area_value).upper().strip()
-
-    # Support East patterns
-    if re.search(r'^SUES|^SUEN|^SUE\s*-|SUPPORT.*EAST', val):
-        return 'SUE'
-
-    # Support West patterns
-    if re.search(r'^SUWS|^SUWN|^SUW\s*-|SUPPORT.*WEST', val):
-        return 'SUW'
-
-    # FIZ patterns
-    if re.search(r'^FIZ|AREA\s*FIZ|DATA\s*CENTER', val):
-        return 'FIZ'
-
-    # FAB patterns
-    if re.search(r'^FAB\s*[AB]|FAB\s*BUILDING|^A[1-5]\s*-|^B[1-5]\s*-', val):
-        return 'FAB'
-
-    # Penthouse patterns - infer building from direction
-    if 'PENTHOUSE' in val:
-        if 'EAST' in val:
-            return 'SUE'
-        elif 'WEST' in val:
-            return 'SUW'
-
-    return None
+    return _extract_building_from_z_area(z_area_value)
 
 
 def extract_building_from_z_level(z_level_value: str) -> str | None:
     """
     Extract building code from Z-LEVEL activity code value based on cardinal directions.
 
-    Z-LEVEL sometimes contains cardinal direction indicators:
-    - (WEST), WEST, W -> SUW (Support West)
-    - (EAST), EAST, E -> SUE (Support East)
-    - (NORTH), NORTH, N -> SUE/SUW depending on context
-    - (SOUTH), SOUTH, S -> SUE/SUW depending on context
-
     Returns: Building code (SUE, SUW) or None
+
+    Routes to centralized module.
     """
-    if not z_level_value or pd.isna(z_level_value):
-        return None
-
-    val = str(z_level_value).upper().strip()
-
-    # Check for cardinal directions in parentheses or as separate words
-    # WEST patterns
-    if re.search(r'\(WEST\)|\bWEST\b|\s+W\s*$|\s+W\)', val):
-        return 'SUW'
-
-    # EAST patterns
-    if re.search(r'\(EAST\)|\bEAST\b|\s+E\s*$|\s+E\)', val):
-        return 'SUE'
-
-    # NORTH patterns (default to SUE for Support East North)
-    if re.search(r'\(NORTH\)|\bNORTH\b|\s+N\s*$|\s+N\)', val):
-        return 'SUE'
-
-    # SOUTH patterns (default to SUE for Support East South)
-    if re.search(r'\(SOUTH\)|\bSOUTH\b|\s+S\s*$|\s+S\)', val):
-        return 'SUE'
-
-    return None
+    return _extract_building_from_z_level(z_level_value)
 
 
 def extract_level_from_z_level(z_level_value) -> str | None:
@@ -372,146 +222,45 @@ def extract_level_from_z_level(z_level_value) -> str | None:
     "FIREPROOFING"), so this function validates the value is actually a level.
 
     Returns: Level ('1'-'6', 'ROOF', 'B1', 'MULTI') or None
+
+    Routes to centralized module.
     """
-    if not z_level_value or pd.isna(z_level_value):
-        return None
-
-    val = str(z_level_value).upper().strip()
-
-    # Direct level matches
-    level_patterns = [
-        (r'^L1\b|^LEVEL\s*1\b|^L1\s*-', '1'),
-        (r'^L2\b|^LEVEL\s*2\b|^L2\s*-|SUBFAB', '2'),
-        (r'^L3\b|^LEVEL\s*3\b|^L3\s*-|WAFFLE', '3'),
-        (r'^L4\b|^LEVEL\s*4\b|^L4\s*-', '4'),
-        (r'^L5\b|^LEVEL\s*5\b|^L5\s*-', '5'),
-        (r'^L6\b|^LEVEL\s*6\b|^L6\s*-|PENTHOUSE', '6'),
-        (r'^LU1|UNDERGROUND', 'B1'),
-        (r'ROOF\s*LEVEL|^ROOF\b', 'ROOF'),
-        (r'ALL\s*LEVELS', 'MULTI'),
-    ]
-
-    for pattern, level in level_patterns:
-        if re.search(pattern, val):
-            return level
-
-    return None
+    return _extract_level_from_z_level(z_level_value)
 
 
 def extract_elevator_from_task_name(task_name: str) -> str | None:
     """
     Extract elevator code from task_name.
 
-    Elevator code patterns:
-    - Numeric: "Elevator 01", "Elevator #1", "Elevator 1A", "ELEVATOR-5"
-    - Explicit: "ELV-01", "ELV 01A"
-
-    NOTE: Does NOT match single letters like "Elevator A" as these are always
-    false positives from words like "ELEVATOR ACCESS", "ELEVATOR HALL", etc.
-
     Returns: Elevator code (ELV-01, ELV-01A, ELV-22, etc.) or None
+
+    Routes to centralized module.
     """
-    if not task_name or pd.isna(task_name):
-        return None
-
-    task_name_upper = str(task_name).upper()
-
-    # Pattern 1: Explicit ELV-XX format (ELV-01, ELV-01A, ELV 22)
-    elv_explicit = re.search(r'\bELV\s*[-_]?\s*(\d+[A-Z]?)\b', task_name_upper)
-    if elv_explicit:
-        elv_num = elv_explicit.group(1)
-        # Normalize: pad single digit numbers (5 -> 05, but 01A stays 01A)
-        if len(elv_num) == 1:
-            elv_num = f"0{elv_num}"
-        elif len(elv_num) == 2 and elv_num[0].isdigit() and elv_num[1].isalpha():
-            elv_num = f"0{elv_num}"  # 1A -> 01A
-        return f"ELV-{elv_num}"
-
-    # Pattern 2: Numeric elevators (Elevator #01, Elevator 1, Elevator 1A, ELEVATOR-5)
-    # Must have a number, optionally followed by a letter suffix (A, B)
-    numeric_elv = re.search(r'(?:ELEVATOR|ELEV)[-\s]*[#]?(\d+)([A-B])?(?:\s|$|[,\.\-])', task_name_upper)
-    if numeric_elv:
-        elv_num = numeric_elv.group(1)
-        suffix = numeric_elv.group(2) or ''
-        # Pad single digits to 2 digits for consistency (1 -> 01)
-        if len(elv_num) == 1:
-            elv_num = f"0{elv_num}"
-        return f"ELV-{elv_num}{suffix}"
-
-    return None
+    return _extract_elevator(task_name)
 
 
 def extract_stair_from_task_name(task_name: str) -> str | None:
     """
     Extract stairwell code from task_name.
 
-    Stair code patterns:
-    - Numeric: "Stair 01", "Stair #50", "STAIR-21", "STAIRWELL 27"
-    - Explicit: "STR-01", "STR 50"
+    Now handles enhanced patterns including:
+    - STAIR #R10 (R-prefix for roof stairs)
+    - RAMP #5, RAMP #5-L
+    - STAIR/RAMP #2B
 
-    NOTE: Does NOT match single letters like "Stair A" as these are always
-    false positives from words like "STAIR TURNOVER", "STAIR SHUTDOWN", etc.
+    Returns: Stair code (STR-01, STR-R10, STR-21, etc.) or None
 
-    Returns: Stair code (STR-01, STR-21, STR-50, etc.) or None
+    Routes to centralized module.
     """
-    if not task_name or pd.isna(task_name):
-        return None
-
-    task_name_upper = str(task_name).upper()
-
-    # Pattern 1: Explicit STR-XX format (STR-01, STR-50, STR 21)
-    str_explicit = re.search(r'\bSTR\s*[-_]?\s*(\d+)\b', task_name_upper)
-    if str_explicit:
-        stair_num = str_explicit.group(1)
-        # Pad single digits to 2 digits for consistency (5 -> 05)
-        if len(stair_num) == 1:
-            stair_num = f"0{stair_num}"
-        return f"STR-{stair_num}"
-
-    # Pattern 2: Numeric stairs (STAIR #01, STAIR 50, STAIRWELL 21, STAIRS-27)
-    # Must have a number
-    numeric_stair = re.search(r'(?:STAIR|STAIRWELL|STAIRS)[-\s]*[#]?(\d+)(?:\s|$|[,\.\-])', task_name_upper)
-    if numeric_stair:
-        stair_num = numeric_stair.group(1)
-        # Pad single digits to 2 digits for consistency (3 -> 03)
-        if len(stair_num) == 1:
-            stair_num = f"0{stair_num}"
-        return f"STR-{stair_num}"
-
-    return None
+    return _extract_stair(task_name)
 
 
 def extract_gridline_from_task_name_and_area(task_name: str, area: str, tier_4: str) -> str | None:
     """
     Extract gridline number from task_name and area context.
 
-    Gridline patterns:
-    - Direct: "Gridline 5", "Grid 5", "GL-5"
-    - From area patterns: SEA-5, SWA-3, SEB-2 (rightmost digit)
-    - From tier_4 area codes: "SEA - 1", "SWB - 4"
-
     Returns: Gridline number (1-33) or None
+
+    Routes to centralized module.
     """
-    if task_name:
-        task_name_upper = str(task_name).upper()
-
-        # Pattern 1: Direct gridline reference
-        gridline_match = re.search(r'(?:GRIDLINE|GRID|GL)\s*[:-]?\s*(\d+)', task_name_upper)
-        if gridline_match:
-            return gridline_match.group(1)
-
-    # Pattern 2: Extract from area code (SEA-5, SWA-3, etc.)
-    if area and pd.notna(area):
-        area_upper = str(area).upper()
-        area_digit = re.search(r'[-_](\d+)$', area_upper)
-        if area_digit:
-            return area_digit.group(1)
-
-    # Pattern 3: Extract from tier_4 area pattern
-    if tier_4 and pd.notna(tier_4):
-        tier_4_upper = str(tier_4).upper()
-        tier4_area = re.search(r'(?:SE[AB]|SW[AB]|AREA)\s*[-_]?\s*(\d+)', tier_4_upper)
-        if tier4_area:
-            return tier4_area.group(1)
-
-    return None
+    return _extract_gridline(task_name, area, tier_4)

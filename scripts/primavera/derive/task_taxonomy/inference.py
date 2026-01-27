@@ -8,6 +8,9 @@ Data source priority:
 1. Activity codes (Z-TRADE, Z-BLDG, Z-LEVEL, Z-SUB) - highest priority
 2. WBS hierarchy context - intermediate fallback
 3. Task name inference (TaskClassifier) - last resort
+
+Location extraction now uses the centralized module at:
+    scripts/integrated_analysis/location/
 """
 
 import sys
@@ -44,6 +47,9 @@ from .extractors import (
     extract_gridline_from_task_name_and_area,
     normalize_level,
 )
+
+# Import centralized P6 location extraction
+from scripts.integrated_analysis.location import extract_p6_location
 
 
 def infer_trade(row: pd.Series) -> tuple[int | None, str | None, str | None, str | None]:
@@ -323,77 +329,38 @@ def infer_location_type(row: pd.Series, building: str | None = None, level: str 
     """
     Infer generalized location type and code from task context.
 
-    Uses precedence system to determine most specific location:
-    1. ROOM - specific room (FAB112155)
-    2. ELEVATOR - specific elevator (ELV-A-1)
-    3. STAIR - specific stairwell (STR-B-2)
-    4. GRIDLINE - specific gridline/area grid (5, SEA-5)
-    5. AREA - grid area (SEA-5, SWA-1, FIZ1)
-    6. LEVEL - floor level (1, 2, 3, ROOF)
-    7. BUILDING - entire building (FAB, SUE, SUW)
-    8. MULTI - multi-level or multi-location
-    9. None - could not determine
+    Uses centralized extract_p6_location() with priority:
+    ROOM > STAIR > ELEVATOR > GRIDLINE > LEVEL > BUILDING
 
     Args:
         row: Combined task context row
-        building: Inferred building code (optional, can be passed directly)
-        level: Inferred level (optional, can be passed directly)
-        area: Inferred area (optional, can be passed directly)
-        room: Inferred room (optional, can be passed directly)
+        building: Inferred building code (optional, passed for efficiency)
+        level: Inferred level (optional, passed for efficiency)
+        area: Inferred area (optional, passed for efficiency)
+        room: Inferred room (optional, passed for efficiency)
 
     Returns:
         Tuple of (location_type, location_code)
     """
-    task_name = row.get('task_name')
-
-    # Use passed-in values or try to get from row
-    if room is None:
-        room = row.get('room')
-    if building is None:
-        building = row.get('building')
-    if level is None:
-        level = row.get('level')
-    if area is None:
-        area = row.get('area')
-
-    # Priority 1: ROOM - specific room code (FAB112155)
+    # If room is already known, return ROOM type directly (optimization)
     if room and pd.notna(room):
         return ('ROOM', str(room))
 
-    # Priority 2: ELEVATOR - specific elevator code
-    elevator = extract_elevator_from_task_name(task_name)
-    if elevator:
-        return ('ELEVATOR', elevator)
+    # Use centralized extraction for full location type determination
+    result = extract_p6_location(
+        task_name=row.get('task_name'),
+        task_code=row.get('task_code'),
+        wbs_name=row.get('wbs_name'),
+        tier_3=row.get('tier_3'),
+        tier_4=row.get('tier_4'),
+        tier_5=row.get('tier_5'),
+        z_bldg=row.get('z_bldg'),
+        z_level=row.get('z_level'),
+        z_area=row.get('z_area'),
+        area=area,
+    )
 
-    # Priority 3: STAIR - specific stairwell code
-    stair = extract_stair_from_task_name(task_name)
-    if stair:
-        return ('STAIR', stair)
-
-    # Priority 4: GRIDLINE - specific gridline number
-    tier_4 = row.get('tier_4')
-    gridline = extract_gridline_from_task_name_and_area(task_name, area, tier_4)
-    if gridline:
-        return ('GRIDLINE', str(gridline))
-
-    # Priority 5: AREA - grid area (SEA-5, SWA-1, FIZ1)
-    if area and pd.notna(area):
-        return ('AREA', str(area))
-
-    # Priority 6: LEVEL - floor level
-    if level and pd.notna(level):
-        return ('LEVEL', str(level))
-
-    # Priority 7: BUILDING - entire building
-    if building and pd.notna(building):
-        return ('BUILDING', str(building))
-
-    # Priority 8: MULTI - multi-level task (check for "ALL LEVELS" patterns)
-    if task_name and pd.notna(task_name):
-        if 'ALL LEVEL' in str(task_name).upper():
-            return ('MULTI', 'ALL_LEVELS')
-
-    return (None, None)
+    return (result.location_type, result.location_code)
 
 
 def infer_impact(row: pd.Series) -> dict:
