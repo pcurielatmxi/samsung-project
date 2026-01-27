@@ -147,15 +147,25 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
     file_stats = df.groupby('file_id').agg({
         'report_date': 'first',
         'subcontractor_file': 'first',
+        'tier2_sc': lambda x: x.mode().iloc[0] if len(x.mode()) > 0 else None,  # Dominant tier2_sc from workbook
         'row_num': 'count'
     }).reset_index()
-    file_stats.columns = ['file_id', 'report_date', 'subcontractor_raw', 'record_count']
+    file_stats.columns = ['file_id', 'report_date', 'subcontractor_raw', 'tier2_sc_dominant', 'record_count']
 
     # Merge with filenames
     file_stats = file_stats.merge(tbm_files[['file_id', 'filename']], on='file_id')
 
     # Normalize subcontractor from filename (for deduplication grouping)
-    file_stats['subcontractor_file_normalized'] = file_stats['subcontractor_raw'].apply(normalize_subcontractor_from_filename)
+    file_stats['subcontractor_for_dedup'] = file_stats['subcontractor_raw'].apply(normalize_subcontractor_from_filename)
+
+    # For EML files (subcontractor_file='eml'), use tier2_sc from workbook instead
+    # This ensures each actual subcontractor is grouped correctly
+    file_stats['subcontractor_for_dedup'] = file_stats.apply(
+        lambda row: normalize_tier2_sc(row['tier2_sc_dominant']) or row['subcontractor_for_dedup']
+        if row['subcontractor_raw'] == 'eml' or row['subcontractor_for_dedup'] == 'eml'
+        else row['subcontractor_for_dedup'],
+        axis=1
+    )
 
     # Extract date from filename
     file_stats['filename_date'] = file_stats['filename'].apply(extract_date_from_filename)
@@ -167,15 +177,15 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
     file_stats['date_mismatch'] = (file_stats['filename_date'].notna()) & (~file_stats['date_matches'])
 
     # Find duplicate groups (same file subcontractor + report_date)
-    dup_counts = file_stats.groupby(['subcontractor_file_normalized', 'report_date']).size().reset_index(name='group_size')
-    file_stats = file_stats.merge(dup_counts, on=['subcontractor_file_normalized', 'report_date'])
+    dup_counts = file_stats.groupby(['subcontractor_for_dedup', 'report_date']).size().reset_index(name='group_size')
+    file_stats = file_stats.merge(dup_counts, on=['subcontractor_for_dedup', 'report_date'])
 
     # Mark duplicates
     file_stats['is_duplicate'] = file_stats['group_size'] > 1
 
     # Assign duplicate group IDs
     file_stats['duplicate_group_id'] = None
-    dup_groups = file_stats[file_stats['is_duplicate']].groupby(['subcontractor_file_normalized', 'report_date'])
+    dup_groups = file_stats[file_stats['is_duplicate']].groupby(['subcontractor_for_dedup', 'report_date'])
 
     group_id = 0
     for (sub, date), group in dup_groups:
@@ -245,19 +255,34 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
             if len(mp_values) >= 2 and abs(mp_values[0] - mp_values[1]) < 50:  # Similar MP
                 print(f"  {tier2} | {date}:")
 
-                # Prefer the file where filename matches tier2_sc
-                for _, row in group.iterrows():
-                    fname_upper = row['filename'].upper()
-                    tier2_upper = str(tier2).upper() if tier2 else ''
-                    matches_filename = tier2_upper in fname_upper
+                # Check which files have filename matching tier2_sc
+                tier2_upper = str(tier2).upper() if tier2 else ''
+                group = group.copy()
+                group['matches_filename'] = group['filename'].str.upper().str.contains(tier2_upper, regex=False)
 
-                    # Mark non-matching files as not preferred for this content group
-                    if not matches_filename and row['is_preferred']:
-                        df.loc[df['file_id'] == row['file_id'], 'is_preferred'] = False
-                        df.loc[df['file_id'] == row['file_id'], 'is_duplicate'] = True
-                        print(f"    [SKIP] {row['filename'][:55]} ({row['total_mp']:.0f} MP) - wrong folder")
-                    else:
-                        print(f"    [KEEP] {row['filename'][:55]} ({row['total_mp']:.0f} MP)")
+                # If ANY file has matching filename, mark non-matching as duplicates
+                # If NO files match (e.g., EML files), keep the one with most records
+                has_matching_file = group['matches_filename'].any()
+
+                if has_matching_file:
+                    # Standard case: prefer files where filename matches content
+                    for _, row in group.iterrows():
+                        if not row['matches_filename'] and row['is_preferred']:
+                            df.loc[df['file_id'] == row['file_id'], 'is_preferred'] = False
+                            df.loc[df['file_id'] == row['file_id'], 'is_duplicate'] = True
+                            print(f"    [SKIP] {row['filename'][:55]} ({row['total_mp']:.0f} MP) - wrong folder")
+                        else:
+                            print(f"    [KEEP] {row['filename'][:55]} ({row['total_mp']:.0f} MP)")
+                else:
+                    # EML case: no filename matches, keep file with most records
+                    best_idx = group['record_count'].idxmax()
+                    for idx, row in group.iterrows():
+                        if idx != best_idx and row['is_preferred']:
+                            df.loc[df['file_id'] == row['file_id'], 'is_preferred'] = False
+                            df.loc[df['file_id'] == row['file_id'], 'is_duplicate'] = True
+                            print(f"    [SKIP] {row['filename'][:55]} ({row['total_mp']:.0f} MP) - duplicate")
+                        else:
+                            print(f"    [KEEP] {row['filename'][:55]} ({row['total_mp']:.0f} MP)")
 
     # Summary stats
     dup_files = file_stats[file_stats['is_duplicate']]
@@ -276,7 +301,7 @@ def deduplicate_tbm(entries_path: Path, files_path: Path) -> pd.DataFrame:
         print(f"\nDuplicate Groups:")
         for gid in sorted(dup_files['duplicate_group_id'].unique()):
             group = dup_files[dup_files['duplicate_group_id'] == gid]
-            sub = group['subcontractor_file_normalized'].iloc[0]
+            sub = group['subcontractor_for_dedup'].iloc[0]
             date = group['report_date'].iloc[0]
             print(f"\n  Group {gid}: {sub} | {date}")
             for _, row in group.iterrows():

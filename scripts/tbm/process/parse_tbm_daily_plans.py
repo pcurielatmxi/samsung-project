@@ -435,7 +435,6 @@ def parse_tbm_file(filepath: Path) -> tuple:
 
     work_entries = []
     has_row_num = cols.get('has_row_num', True)
-    synthetic_row_num = 0
 
     for idx in range(data_start_row, len(df)):
         row = df.iloc[idx]
@@ -447,7 +446,7 @@ def parse_tbm_file(filepath: Path) -> tuple:
             if row_num is None:
                 continue
             try:
-                row_num = int(row_num)
+                int(row_num)  # Validate it's a number, but we don't use it
             except (ValueError, TypeError):
                 continue
         else:
@@ -455,15 +454,15 @@ def parse_tbm_file(filepath: Path) -> tuple:
             division = get_cell(row, 'division')
             if division is None:
                 continue
-            # Generate synthetic row number
-            synthetic_row_num += 1
-            row_num = synthetic_row_num
+
+        # Use absolute Excel row number (idx + 1 for 1-based) to guarantee uniqueness
+        excel_row_num = idx + 1
 
         # Extract fields using detected column positions
         entry = {
             'report_date': report_date,
             'subcontractor_file': subcontractor,
-            'row_num': row_num,
+            'row_num': excel_row_num,
             'division': get_str(row, 'division'),
             'tier1_gc': get_str(row, 'tier1_gc'),
             'tier2_sc': get_str(row, 'tier2_sc'),
