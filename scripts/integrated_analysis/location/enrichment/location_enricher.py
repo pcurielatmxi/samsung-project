@@ -4,13 +4,47 @@ Centralized Location Enrichment
 This module is the SINGLE SOURCE OF TRUTH for location enrichment logic.
 It consolidates duplicated code from RABA, PSI, TBM, QC Workbooks consolidation scripts.
 
-Usage:
+================================================================================
+APPROACH: Instance-Level Grid Bounds vs Dimension Table Grid Bounds
+================================================================================
+
+The grid coordinate system (rows A-N, columns 1-33) is used to spatially locate
+work activities. Grid bounds can come from TWO sources:
+
+1. INSTANCE LEVEL (grid_source='RECORD')
+   - Grid coordinates extracted directly from the source record
+   - Examples: RABA grid field "G/10", TBM grid_raw "B-D/8-12", P6 task name "GL 33 - D-F"
+   - These represent the ACTUAL location where work occurred
+   - May be more specific than dim_location (e.g., "GL 33 - D-F" is rows D-F only)
+
+2. DIMENSION TABLE (grid_source='DIM_LOCATION')
+   - Grid bounds looked up from dim_location based on room/stair/elevator code
+   - Used when a specific location code is provided (e.g., FAB116201, STR-21)
+   - Represents the FULL extent of that location in the grid system
+   - Useful for joining but may be less precise than instance-level
+
+WHY THIS MATTERS:
+- A gridline in dim_location spans the FULL row range (A-N) by default
+- But a P6 task like "GL 33 - D-F" only affects rows D-F on gridline 33
+- The instance-level bounds enable more precise spatial matching
+- The grid_source field tells analysts which source was used
+
+PRIORITY ORDER:
+1. If source record has grid coordinates → use them (grid_source='RECORD')
+2. If room_code provided → look up from dim_location (grid_source='DIM_LOCATION')
+3. Otherwise → no grid bounds (grid_source='NONE')
+
+================================================================================
+Usage
+================================================================================
+
     from scripts.integrated_analysis.location import enrich_location
 
     result = enrich_location(
         building='FAB',
         level='2F',
-        grid='G/10-12',
+        grid='G/10-12',      # Instance-level grid (takes priority)
+        room_code=None,       # Or provide room code for dim_location lookup
         source='RABA'
     )
 
@@ -18,16 +52,31 @@ Usage:
     record['dim_location_id'] = result.dim_location_id
     record['location_type'] = result.location_type
     record['affected_rooms'] = result.affected_rooms
+    record['grid_source'] = result.grid_source  # 'RECORD', 'DIM_LOCATION', or 'NONE'
 
-Output Schema:
-    - dim_location_id: FK to dim_location
+================================================================================
+Output Schema
+================================================================================
+
+    - dim_location_id: FK to dim_location (always populated)
     - location_type: ROOM/STAIR/ELEVATOR/GRIDLINE/LEVEL/BUILDING/UNDEFINED
     - location_code: Matched code (e.g., FAB112345, STR-21, ELV-01)
     - level: Normalized level (1F, 2F, ROOF, etc.)
-    - grid_row_min, grid_row_max, grid_col_min, grid_col_max: Grid bounds
+    - grid_row_min, grid_row_max: Grid row bounds (letters A-N)
+    - grid_col_min, grid_col_max: Grid column bounds (numbers 1-33)
+    - grid_source: Where grid bounds came from ('RECORD', 'DIM_LOCATION', 'NONE')
     - affected_rooms: JSON array of rooms with grid overlap
     - affected_rooms_count: Integer count
-    - match_type: How the location was determined
+    - match_type: How the location was determined (see below)
+
+Match Types:
+    - ROOM_DIRECT: Room code provided directly and found in dim_location
+    - ROOM_FROM_GRID: Single room matched via grid overlap
+    - GRID_MULTI: Multiple rooms matched via grid overlap (uses first)
+    - GRIDLINE: Gridline location (no specific room match)
+    - LEVEL: Building + level fallback (no grid info)
+    - BUILDING: Project-wide FAB1 fallback
+    - UNDEFINED: No location could be determined
 """
 
 import json
@@ -142,10 +191,28 @@ def enrich_location(
     """
     Enrich a record with location information.
 
-    This is the SINGLE FUNCTION for all location enrichment across fact tables.
+    This is the SINGLE FUNCTION for all location enrichment across fact tables
+    (RABA, PSI, TBM, QC Workbooks).
 
-    Priority order for matching:
-    1. ROOM_DIRECT: Direct room/stair/elevator code provided
+    Grid Bounds Strategy:
+    ---------------------
+    Grid bounds can come from two sources, tracked via grid_source field:
+
+    1. RECORD (instance-level): When the source record contains grid coordinates
+       (e.g., RABA grid="G/10", TBM grid_raw="B-D/8-12"). These are the ACTUAL
+       coordinates where work occurred and take priority.
+
+    2. DIM_LOCATION (dimension table): When a room_code is provided, grid bounds
+       are looked up from dim_location. This represents the FULL extent of that
+       room/stair/elevator in the grid system.
+
+    Why this matters: A gridline in dim_location defaults to the full A-N row span,
+    but an instance like "GL 33 - D-F" only affects rows D-F. Using instance-level
+    bounds enables more precise spatial matching for affected_rooms calculation.
+
+    Priority order for location matching:
+    -------------------------------------
+    1. ROOM_DIRECT: Direct room/stair/elevator code provided and found
     2. ROOM_FROM_GRID: Single room matched from grid coordinates
     3. GRID_MULTI: Multiple rooms matched from grid (uses first room's location)
     4. GRIDLINE: Gridline location when grid provided but no room match
@@ -157,11 +224,20 @@ def enrich_location(
         building: Raw building name (e.g., "FAB", "SUE", "Main FAB")
         level: Raw level value (e.g., "1F", "2nd Floor", "Basement")
         grid: Raw grid coordinates (e.g., "G/10", "B-D/8-12", "F.5/17")
+               Supports formats: single coord "G/10", ranges "B-D/8-12",
+               fractional "F.5/17", TBM format "C/11 - C/22"
         room_code: Extracted room code if available (e.g., "FAB116201", "STR-21")
+                   When provided and found, grid bounds come from dim_location
         source: Source identifier for diagnostics (e.g., "RABA", "PSI", "TBM")
 
     Returns:
-        LocationEnrichmentResult with all location fields populated
+        LocationEnrichmentResult with:
+        - dim_location_id: FK to dim_location (always populated)
+        - location_type, location_code: What was matched
+        - grid_row_min/max, grid_col_min/max: Grid bounds
+        - grid_source: 'RECORD', 'DIM_LOCATION', or 'NONE'
+        - affected_rooms: JSON array of overlapping rooms
+        - match_type: How location was determined
     """
     result = LocationEnrichmentResult()
 

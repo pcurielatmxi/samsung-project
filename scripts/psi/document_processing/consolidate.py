@@ -248,13 +248,14 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'location_raw': location_raw,
         'building': content.get('building'),
         'level_raw': level_raw,
-        'level': loc.level_normalized,
+        'level': loc.level,  # Normalized level from enrichment
         'area': content.get('area'),
-        'grid': loc.grid_normalized,
+        'grid': content.get('grid'),  # Original grid from source
         'grid_row_min': loc.grid_row_min,
         'grid_row_max': loc.grid_row_max,
         'grid_col_min': loc.grid_col_min,
         'grid_col_max': loc.grid_col_max,
+        'grid_source': loc.grid_source,  # RECORD, DIM_LOCATION, or NONE
         'location_id': content.get('location_id'),
 
         # Results
@@ -296,7 +297,9 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
 
         # Dimension IDs (for integration)
         'dim_location_id': loc.dim_location_id,
-        'building_level': loc.building_level,
+        'location_type': loc.location_type,  # ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, etc.
+        'location_code': loc.location_code,  # Matched location code
+        'match_type': loc.match_type,  # How location was determined
         'dim_company_id': dim_company_id,
         'dim_subcontractor_id': dim_subcontractor_id,
         'performing_company_id': performing_company_id,
@@ -312,11 +315,6 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         # Affected rooms (JSON array of rooms whose grid bounds overlap)
         'affected_rooms': loc.affected_rooms,
         'affected_rooms_count': loc.affected_rooms_count,
-
-        # Location quality diagnostics (for Power BI filtering)
-        'grid_completeness': loc.grid_completeness,
-        'match_quality': loc.match_quality,
-        'location_review_flag': loc.location_review_flag,
     }
 
 

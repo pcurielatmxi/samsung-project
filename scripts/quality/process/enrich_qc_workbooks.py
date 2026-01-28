@@ -62,15 +62,17 @@ def enrich_qc_inspections(dry_run: bool = False):
         )
         return pd.Series({
             'dim_location_id_new': loc.dim_location_id,
-            'building_level': loc.building_level,
-            'grid_row': loc.grid_row_min,
-            'grid_col': loc.grid_col_min,
-            'grid_normalized': loc.grid_normalized,
+            'location_type': loc.location_type,
+            'location_code': loc.location_code,
+            'level_normalized': loc.level,
+            'grid_row_min': loc.grid_row_min,
+            'grid_row_max': loc.grid_row_max,
+            'grid_col_min': loc.grid_col_min,
+            'grid_col_max': loc.grid_col_max,
+            'grid_source': loc.grid_source,
             'affected_rooms': loc.affected_rooms,
             'affected_rooms_count': loc.affected_rooms_count,
-            'grid_completeness': loc.grid_completeness,
-            'match_quality': loc.match_quality,
-            'location_review_flag': loc.location_review_flag,
+            'match_type': loc.match_type,
         })
 
     # Apply location enrichment
@@ -78,25 +80,26 @@ def enrich_qc_inspections(dry_run: bool = False):
 
     # Update dim_location_id with new values (preserving original if new is None)
     df['dim_location_id'] = location_cols['dim_location_id_new'].combine_first(df.get('dim_location_id'))
-    df['building_level'] = location_cols['building_level']
-    df['grid_row'] = location_cols['grid_row']
-    df['grid_col'] = location_cols['grid_col']
+    df['location_type'] = location_cols['location_type']
+    df['location_code'] = location_cols['location_code']
+    df['level'] = location_cols['level_normalized']  # Normalized level
+    df['grid_row_min'] = location_cols['grid_row_min']
+    df['grid_row_max'] = location_cols['grid_row_max']
+    df['grid_col_min'] = location_cols['grid_col_min']
+    df['grid_col_max'] = location_cols['grid_col_max']
+    df['grid_source'] = location_cols['grid_source']
     df['affected_rooms'] = location_cols['affected_rooms']
     df['affected_rooms_count'] = location_cols['affected_rooms_count']
-    df['grid_completeness'] = location_cols['grid_completeness']
-    df['match_quality'] = location_cols['match_quality']
-    df['location_review_flag'] = location_cols['location_review_flag']
+    df['match_type'] = location_cols['match_type']
 
     # Coverage stats
-    has_grid = (df['grid_row'].notna() & df['grid_col'].notna()).sum()
+    has_grid = (df['grid_row_min'].notna() & df['grid_col_min'].notna()).sum()
     has_affected_rooms = df['affected_rooms'].notna().sum()
-    review_count = df['location_review_flag'].sum()
     location_coverage = df['dim_location_id'].notna().sum()
 
     print(f"   Grid coordinates: {has_grid:,} / {original_count:,} ({has_grid/original_count*100:.1f}%)")
     print(f"   Affected rooms: {has_affected_rooms:,} / {original_count:,} ({has_affected_rooms/original_count*100:.1f}%)")
     print(f"   Location ID coverage: {location_coverage:,} / {original_count:,} ({location_coverage/original_count*100:.1f}%)")
-    print(f"   Location review needed: {review_count:,} / {original_count:,} ({review_count/original_count*100:.1f}%)")
 
     # 3. Improve trade coverage using CSI section
     print("\n3. Improving trade coverage using CSI sections...")
@@ -137,8 +140,6 @@ def enrich_qc_inspections(dry_run: bool = False):
         print(f"  Trade ID:            {df['dim_trade_id'].notna().sum():,} ({df['dim_trade_id'].notna().mean()*100:.1f}%)")
     print(f"  Grid coordinates:    {has_grid:,} ({has_grid/original_count*100:.1f}%)")
     print(f"  Affected rooms:      {has_affected_rooms:,} ({has_affected_rooms/original_count*100:.1f}%)")
-    print(f"\nData Quality:")
-    print(f"  Needs review:        {review_count:,} ({review_count/original_count*100:.1f}%)")
 
     if not dry_run:
         print(f"\nSaving to {output_path}...")

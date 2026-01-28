@@ -82,6 +82,7 @@ LOCATION_COLUMNS = [
     'grid_row_max',
     'grid_col_min',
     'grid_col_max',
+    'grid_source',
     'affected_rooms',
     'affected_rooms_count',
     'match_type',
