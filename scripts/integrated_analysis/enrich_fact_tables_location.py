@@ -61,6 +61,7 @@ FACT_TABLES = {
         'level_col': 'location_level',
         'grid_col': 'grid_raw',
         'room_code_col': None,
+        'location_text_col': 'work_activities',  # Contains "Stair 19", "Elevator 20" patterns
     },
     'qc_workbooks': {
         'input': Settings.PROCESSED_DATA_DIR / 'quality' / 'qc_inspections_enriched.csv',
@@ -147,6 +148,7 @@ def enrich_fact_table(
     level_col = config['level_col']
     grid_col = config['grid_col']
     room_code_col = config.get('room_code_col')
+    location_text_col = config.get('location_text_col')
 
     for idx, row in df.iterrows():
         result = enrich_location(
@@ -154,6 +156,7 @@ def enrich_fact_table(
             level=row.get(level_col) if level_col in df.columns else None,
             grid=row.get(grid_col) if grid_col in df.columns else None,
             room_code=row.get(room_code_col) if room_code_col and room_code_col in df.columns else None,
+            location_text=row.get(location_text_col) if location_text_col and location_text_col in df.columns else None,
             source=source_name.upper(),
         )
         results.append(result.to_dict())
