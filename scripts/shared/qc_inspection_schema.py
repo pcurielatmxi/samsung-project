@@ -105,7 +105,7 @@ UNIFIED_COLUMNS = [
     # Location enrichment fields (centralized schema)
     'location_type',             # ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED
     'location_code',             # Matched location code (e.g., FAB116201, STR-21, ELV-01)
-    'match_type',                # How location was determined: ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED
+    'match_type',                # How location was determined: ROOM_DIRECT, GRID_SINGLE, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED
     'grid_source',               # Where grid bounds came from: RECORD, DIM_LOCATION, NONE
 
     # Validation

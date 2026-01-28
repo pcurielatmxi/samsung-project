@@ -59,21 +59,26 @@ Output Schema
 ================================================================================
 
     - dim_location_id: FK to dim_location (always populated)
-    - location_type: ROOM/STAIR/ELEVATOR/GRIDLINE/LEVEL/BUILDING/UNDEFINED
-    - location_code: Matched code (e.g., FAB112345, STR-21, ELV-01)
+    - location_type: What location info we HAVE (not what we inferred):
+        - ROOM/STAIR/ELEVATOR: Direct room code found (from text or room_code param)
+        - GRIDLINE: Only grid coordinates available (rooms inferred via affected_rooms)
+        - LEVEL: Only building + level available
+        - BUILDING: Only building available
+        - UNDEFINED: No usable location info
+    - location_code: Matched code (e.g., FAB112345, STR-21, G/10)
     - level: Normalized level (1F, 2F, ROOF, etc.)
     - grid_row_min, grid_row_max: Grid row bounds (letters A-N)
     - grid_col_min, grid_col_max: Grid column bounds (numbers 1-33)
     - grid_source: Where grid bounds came from ('RECORD', 'DIM_LOCATION', 'NONE')
     - affected_rooms: JSON array of rooms with grid overlap
-    - affected_rooms_count: Integer count
+    - affected_rooms_count: Integer count (1 = single room match, use for filtering)
     - match_type: How the location was determined (see below)
 
 Match Types:
-    - ROOM_DIRECT: Room code provided directly and found in dim_location
-    - ROOM_FROM_GRID: Single room matched via grid overlap
-    - GRID_MULTI: Multiple rooms matched via grid overlap (uses first)
-    - GRIDLINE: Gridline location (no specific room match)
+    - ROOM_DIRECT: Room/stair/elevator code found and matched in dim_location
+    - GRID_SINGLE: Grid coordinates overlap exactly one room (see affected_rooms)
+    - GRID_MULTI: Grid coordinates overlap multiple rooms (see affected_rooms)
+    - GRIDLINE: Grid coordinates but no room overlap found
     - LEVEL: Building + level fallback (no grid info)
     - BUILDING: Project-wide FAB1 fallback
     - UNDEFINED: No location could be determined
@@ -145,7 +150,7 @@ class LocationEnrichmentResult:
     affected_rooms_count: int = 0
 
     # Match type - how location was determined
-    match_type: Optional[str] = None  # ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED
+    match_type: Optional[str] = None  # ROOM_DIRECT, GRID_SINGLE, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for easy DataFrame assignment."""
@@ -216,13 +221,13 @@ def enrich_location(
 
     Priority order for location matching:
     -------------------------------------
-    1. ROOM_DIRECT: Direct room/stair/elevator code provided and found
-    2. ROOM_FROM_GRID: Single room matched from grid coordinates
-    3. GRID_MULTI: Multiple rooms matched from grid (uses first room's location)
-    4. GRIDLINE: Gridline location when grid provided but no room match
-    5. LEVEL: Building + level fallback
-    6. BUILDING: FAB1 (project-wide) fallback
-    7. UNDEFINED: Final fallback
+    1. ROOM_DIRECT: Direct room/stair/elevator code found (location_type=ROOM/STAIR/ELEVATOR)
+    2. GRID_SINGLE: Grid coordinates overlap one room (location_type=GRIDLINE, affected_rooms_count=1)
+    3. GRID_MULTI: Grid coordinates overlap multiple rooms (location_type=GRIDLINE, affected_rooms_count>1)
+    4. GRIDLINE: Grid provided but no room overlap found (location_type=GRIDLINE)
+    5. LEVEL: Building + level fallback (location_type=LEVEL)
+    6. BUILDING: FAB1 (project-wide) fallback (location_type=BUILDING)
+    7. UNDEFINED: Final fallback (location_type=UNDEFINED)
 
     Args:
         building: Raw building name (e.g., "FAB", "SUE", "Main FAB")
@@ -348,21 +353,15 @@ def enrich_location(
             result.dim_location_id = first_room['location_id']
             result.location_code = first_room['location_code']
 
-            # Get location_type from the match
-            # GRIDLINE matches return location_type in the result
-            if first_room.get('match_type') == 'GRIDLINE':
-                result.location_type = 'GRIDLINE'
-                result.match_type = 'GRIDLINE'
-            else:
-                # Look up the actual location_type from dim_location
-                loc_info = _get_location_with_grid(first_room['location_code'])
-                if loc_info:
-                    result.location_type = loc_info['location_type']
+            # location_type reflects what info we HAVE (grid coordinates = GRIDLINE)
+            # NOT what we inferred (room from grid overlap)
+            # The affected_rooms array shows which rooms the grid overlaps
+            result.location_type = 'GRIDLINE'
 
-                if len(rooms) == 1:
-                    result.match_type = 'ROOM_FROM_GRID'
-                else:
-                    result.match_type = 'GRID_MULTI'
+            if len(rooms) == 1:
+                result.match_type = 'GRID_SINGLE'  # Single room inferred from grid
+            else:
+                result.match_type = 'GRID_MULTI'   # Multiple rooms inferred from grid
 
             return result
 

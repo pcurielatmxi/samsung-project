@@ -118,7 +118,49 @@ class QCInspectionConsolidated(BaseModel):
         description="Count of rooms in affected_rooms (1=single match, >1=multiple)"
     )
 
-    # Location enrichment fields (centralized schema)
+    # NOTE: Data quality columns moved to separate *_data_quality.csv tables
+    # See RabaPsiDataQuality schema below
+
+
+# RABA-specific schema (full columns including CSI)
+RabaConsolidated = QCInspectionConsolidated
+
+
+class RabaPsiDataQuality(BaseModel):
+    """
+    Data quality columns extracted from RABA/PSI consolidated files.
+
+    Files:
+      - raba_data_quality.csv
+      - psi_data_quality.csv
+
+    Join to main tables via inspection_id.
+    These tables can be hidden in Power BI to reduce column clutter.
+    """
+
+    model_config = {'populate_by_name': True}
+
+    # Primary key for joining
+    inspection_id: str = Field(description="FK to raba/psi_consolidated")
+
+    # Validation
+    validation_issues: Optional[str] = Field(
+        default=None,
+        alias='_validation_issues',
+        description="Pipe-delimited validation issues"
+    )
+
+    # Multi-party inspection tracking
+    is_multi_party: Optional[bool] = Field(
+        default=None,
+        description="True if multiple companies involved in inspection"
+    )
+    narrative_companies: Optional[str] = Field(
+        default=None,
+        description="Raw company text before parsing"
+    )
+
+    # Location matching metadata
     location_type: Optional[str] = Field(
         default=None,
         description="Location type: ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
@@ -129,23 +171,8 @@ class QCInspectionConsolidated(BaseModel):
     )
     match_type: Optional[str] = Field(
         default=None,
-        description="How location was determined: ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
+        description="How location was determined: ROOM_DIRECT, GRID_SINGLE, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
     )
-    grid_source: Optional[str] = Field(
-        default=None,
-        description="Where grid bounds came from: RECORD, DIM_LOCATION, NONE"
-    )
-
-    # Validation (note: field uses alias for CSV column name with underscore prefix)
-    validation_issues: Optional[str] = Field(
-        default=None,
-        alias='_validation_issues',
-        description="Pipe-delimited validation issues"
-    )
-
-
-# RABA-specific schema (full columns including CSI)
-RabaConsolidated = QCInspectionConsolidated
 
 
 class PsiConsolidated(BaseModel):
@@ -249,27 +276,121 @@ class PsiConsolidated(BaseModel):
         description="Count of rooms in affected_rooms (1=single match, >1=multiple)"
     )
 
-    # Location enrichment fields (centralized schema)
+    # NOTE: Data quality columns moved to psi_data_quality.csv
+    # See RabaPsiDataQuality schema
+
+
+class QCInspectionsEnriched(BaseModel):
+    """
+    Unified QC inspection log from Yates WIR and SECAI inspection systems.
+
+    File: processed/quality/qc_inspections_enriched.csv
+
+    Combines both Yates (WIR) and SECAI (IR) inspections into a single
+    enriched table with dimension lookups and location matching.
+    """
+
+    model_config = {'populate_by_name': True}
+
+    # Source identification
+    source: str = Field(description="Source: 'YATES' or 'SECAI'")
+    inspection_id: str = Field(description="Primary key (WIR# or IR#)")
+
+    # Dates
+    inspection_date: Optional[str] = Field(default=None, description="Inspection date (YYYY-MM-DD)")
+    year: Optional[int] = Field(default=None, description="Year")
+    month: Optional[int] = Field(default=None, description="Month (1-12)")
+    week: Optional[int] = Field(default=None, description="ISO week number")
+    day_of_week: Optional[str] = Field(default=None, description="Day of week")
+
+    # Inspection type
+    template: Optional[str] = Field(default=None, description="Inspection template/type")
+    inspection_category: Optional[str] = Field(default=None, description="Inspection category")
+
+    # Status
+    status: Optional[str] = Field(default=None, description="Raw status")
+    status_normalized: Optional[str] = Field(default=None, description="Normalized status")
+
+    # Location
+    location_raw: Optional[str] = Field(default=None, description="Original location text")
+    building: Optional[str] = Field(default=None, description="Building code")
+    level: Optional[str] = Field(default=None, description="Level (1F, 2F, etc.)")
+    area: Optional[str] = Field(default=None, description="Area within building")
+    grid: Optional[str] = Field(default=None, description="Grid coordinate")
+
+    # Parties
+    contractor_raw: Optional[str] = Field(default=None, description="Raw contractor name")
+    contractor: Optional[str] = Field(default=None, description="Standardized contractor")
+    failure_reason: Optional[str] = Field(default=None, description="Failure reason if failed")
+
+    # Dimension keys
+    dim_location_id: Optional[float] = Field(default=None, description="FK to dim_location")
+    dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company")
+    dim_trade_id: Optional[float] = Field(default=None, description="FK to dim_trade")
+    dim_trade_code: Optional[str] = Field(default=None, description="Trade code")
+    dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
+    csi_section: Optional[str] = Field(default=None, description="CSI code")
+    csi_title: Optional[str] = Field(default=None, description="CSI section title")
+    csi_division: Optional[str] = Field(default=None, description="CSI division")
+
+    # Yates-specific columns (blank for SECAI)
+    yates_time: Optional[str] = Field(default=None, description="Inspection time")
+    yates_wir_number: Optional[str] = Field(default=None, description="WIR number")
+    yates_rep: Optional[str] = Field(default=None, description="Yates representative")
+    yates_3rd_party: Optional[str] = Field(default=None, description="Third party inspector")
+    yates_secai_cm: Optional[str] = Field(default=None, description="SECAI CM")
+    yates_inspection_comment: Optional[str] = Field(default=None, description="Inspection comment")
+    yates_category: Optional[str] = Field(default=None, description="Yates category")
+
+    # SECAI-specific columns (blank for Yates)
+    secai_discipline: Optional[str] = Field(default=None, description="SECAI discipline")
+    secai_number: Optional[str] = Field(default=None, description="SECAI IR number")
+    secai_request_date: Optional[str] = Field(default=None, description="Request date")
+    secai_revision: Optional[str] = Field(default=None, description="Revision number")
+    secai_building_type: Optional[str] = Field(default=None, description="Building type")
+    secai_module: Optional[str] = Field(default=None, description="Module")
+
+    # Room matching
+    affected_rooms: Optional[str] = Field(default=None, description="JSON array of affected rooms")
+    affected_rooms_count: Optional[int] = Field(default=None, description="Count of affected rooms")
+
+    # Grid bounds
+    grid_row_min: Optional[str] = Field(default=None, description="Grid row minimum")
+    grid_row_max: Optional[str] = Field(default=None, description="Grid row maximum")
+    grid_col_min: Optional[float] = Field(default=None, description="Grid column minimum")
+    grid_col_max: Optional[float] = Field(default=None, description="Grid column maximum")
+
+    # NOTE: Data quality columns moved to qc_inspections_data_quality.csv
+    # See QCInspectionsDataQuality schema
+
+
+class QCInspectionsDataQuality(BaseModel):
+    """
+    Data quality columns extracted from QC Inspections Enriched.
+
+    File: processed/quality/qc_inspections_data_quality.csv
+
+    Join to qc_inspections_enriched.csv via inspection_id.
+    This table can be hidden in Power BI to reduce column clutter.
+    """
+
+    # Primary key for joining
+    inspection_id: str = Field(description="FK to qc_inspections_enriched")
+
+    # Parsed grid coordinates (intermediate)
+    grid_row: Optional[str] = Field(default=None, description="Parsed grid row")
+    grid_col: Optional[str] = Field(default=None, description="Parsed grid column")
+
+    # Location matching metadata
     location_type: Optional[str] = Field(
         default=None,
         description="Location type: ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
     )
     location_code: Optional[str] = Field(
         default=None,
-        description="Matched location code (e.g., FAB116201, STR-21, ELV-01)"
+        description="Matched location code"
     )
     match_type: Optional[str] = Field(
         default=None,
-        description="How location was determined: ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
-    )
-    grid_source: Optional[str] = Field(
-        default=None,
-        description="Where grid bounds came from: RECORD, DIM_LOCATION, NONE"
-    )
-
-    # Validation
-    validation_issues: Optional[str] = Field(
-        default=None,
-        alias='_validation_issues',
-        description="Pipe-delimited validation issues"
+        description="How location was determined"
     )

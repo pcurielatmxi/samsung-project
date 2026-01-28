@@ -106,7 +106,28 @@ class TbmWorkEntriesEnriched(BaseModel):
     affected_rooms: Optional[str] = Field(default=None, description="JSON array of affected rooms")
     affected_rooms_count: Optional[int] = Field(default=None, description="Count of rooms (1=single match, >1=multiple)")
 
-    # Location quality diagnostics (for Power BI filtering)
+    # NOTE: Data quality columns moved to tbm_data_quality.csv
+    # See TbmDataQuality schema below
+
+
+# Alias for the enriched version with CSI
+TbmWithCSI = TbmWorkEntriesEnriched
+
+
+class TbmDataQuality(BaseModel):
+    """
+    Data quality columns extracted from TBM work entries.
+
+    File: tbm_data_quality.csv
+
+    Join to work_entries_enriched.csv via tbm_work_entry_id.
+    This table can be hidden in Power BI to reduce column clutter.
+    """
+
+    # Primary key for joining
+    tbm_work_entry_id: int = Field(description="FK to work_entries_enriched")
+
+    # Location quality diagnostics
     grid_completeness: Optional[str] = Field(
         default=None,
         description="What grid info was available: FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE"
@@ -119,7 +140,37 @@ class TbmWorkEntriesEnriched(BaseModel):
         default=None,
         description="True if location needs human investigation"
     )
+    location_source: Optional[str] = Field(
+        default=None,
+        description="How location was determined"
+    )
 
+    # Duplicate detection
+    is_duplicate: Optional[bool] = Field(
+        default=None,
+        description="True if this is a duplicate entry"
+    )
+    duplicate_group_id: Optional[str] = Field(
+        default=None,
+        description="Group ID for duplicate entries"
+    )
+    is_preferred: Optional[bool] = Field(
+        default=None,
+        description="True if this is the preferred record in a duplicate group"
+    )
 
-# Alias for the enriched version with CSI
-TbmWithCSI = TbmWorkEntriesEnriched
+    # Validation
+    date_mismatch: Optional[bool] = Field(
+        default=None,
+        description="True if file date doesn't match report date"
+    )
+
+    # Intermediate extraction values
+    room_code_extracted: Optional[str] = Field(
+        default=None,
+        description="Room code extracted from location text"
+    )
+    subcontractor_normalized: Optional[str] = Field(
+        default=None,
+        description="Normalized subcontractor name"
+    )
