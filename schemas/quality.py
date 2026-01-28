@@ -118,18 +118,22 @@ class QCInspectionConsolidated(BaseModel):
         description="Count of rooms in affected_rooms (1=single match, >1=multiple)"
     )
 
-    # Location quality diagnostics (for Power BI filtering)
-    grid_completeness: Optional[str] = Field(
+    # Location enrichment fields (centralized schema)
+    location_type: Optional[str] = Field(
         default=None,
-        description="What grid info was available: FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE"
+        description="Location type: ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
     )
-    match_quality: Optional[str] = Field(
+    location_code: Optional[str] = Field(
         default=None,
-        description="Summary of match types: PRECISE, MIXED, PARTIAL, NONE"
+        description="Matched location code (e.g., FAB116201, STR-21, ELV-01)"
     )
-    location_review_flag: Optional[bool] = Field(
+    match_type: Optional[str] = Field(
         default=None,
-        description="True if location needs human investigation"
+        description="How location was determined: ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
+    )
+    grid_source: Optional[str] = Field(
+        default=None,
+        description="Where grid bounds came from: RECORD, DIM_LOCATION, NONE"
     )
 
     # Validation (note: field uses alias for CSV column name with underscore prefix)
@@ -245,18 +249,22 @@ class PsiConsolidated(BaseModel):
         description="Count of rooms in affected_rooms (1=single match, >1=multiple)"
     )
 
-    # Location quality diagnostics (for Power BI filtering)
-    grid_completeness: Optional[str] = Field(
+    # Location enrichment fields (centralized schema)
+    location_type: Optional[str] = Field(
         default=None,
-        description="What grid info was available: FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE"
+        description="Location type: ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
     )
-    match_quality: Optional[str] = Field(
+    location_code: Optional[str] = Field(
         default=None,
-        description="Summary of match types: PRECISE, MIXED, PARTIAL, NONE"
+        description="Matched location code (e.g., FAB116201, STR-21, ELV-01)"
     )
-    location_review_flag: Optional[bool] = Field(
+    match_type: Optional[str] = Field(
         default=None,
-        description="True if location needs human investigation"
+        description="How location was determined: ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
+    )
+    grid_source: Optional[str] = Field(
+        default=None,
+        description="Where grid bounds came from: RECORD, DIM_LOCATION, NONE"
     )
 
     # Validation

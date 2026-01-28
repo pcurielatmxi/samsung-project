@@ -102,10 +102,11 @@ UNIFIED_COLUMNS = [
     'affected_rooms',            # JSON: [{"location_code": "FAB1xxx", "room_name": "...", "match_type": "FULL|PARTIAL"}, ...]
     'affected_rooms_count',      # Count of rooms (1=single match, >1=multiple)
 
-    # Location quality diagnostics (for Power BI filtering)
-    'grid_completeness',         # FULL, ROW_ONLY, COL_ONLY, LEVEL_ONLY, NONE - what grid info was available
-    'match_quality',             # PRECISE, MIXED, PARTIAL, NONE - summary of match types
-    'location_review_flag',      # Boolean - True if location needs human investigation
+    # Location enrichment fields (centralized schema)
+    'location_type',             # ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED
+    'location_code',             # Matched location code (e.g., FAB116201, STR-21, ELV-01)
+    'match_type',                # How location was determined: ROOM_DIRECT, ROOM_FROM_GRID, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED
+    'grid_source',               # Where grid bounds came from: RECORD, DIM_LOCATION, NONE
 
     # Validation
     '_validation_issues',        # Pipe-delimited validation issues
