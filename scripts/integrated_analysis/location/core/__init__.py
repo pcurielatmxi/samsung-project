@@ -4,6 +4,12 @@ from scripts.integrated_analysis.location.core.normalizers import (
     normalize_level,
     normalize_building,
 )
+from scripts.integrated_analysis.location.core.pattern_extractor import (
+    extract_location_codes,
+    extract_location_codes_for_lookup,
+    extract_primary_location_code,
+    ExtractedLocationCodes,
+)
 from scripts.integrated_analysis.location.core.extractors import (
     # Room extraction
     extract_room,
@@ -33,6 +39,11 @@ __all__ = [
     # Normalizers
     'normalize_level',
     'normalize_building',
+    # Pattern extraction (from free text)
+    'extract_location_codes',
+    'extract_location_codes_for_lookup',
+    'extract_primary_location_code',
+    'ExtractedLocationCodes',
     # Room
     'extract_room',
     'infer_building_from_room',

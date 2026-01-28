@@ -198,10 +198,15 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     failure_category = categorize_failure_reason(failure_reason) if failure_reason else None
 
     # Centralized location enrichment
+    # Combine location_raw and summary for pattern extraction (finds FAB room codes, Stair/Elevator numbers)
+    location_text_parts = [str(x) for x in [location_raw, content.get('summary')] if x]
+    location_text = ' '.join(location_text_parts) if location_text_parts else None
+
     loc = enrich_location(
         building=content.get('building'),
         level=level_std,
         grid=content.get('grid'),
+        location_text=location_text,
         source='PSI'
     )
 

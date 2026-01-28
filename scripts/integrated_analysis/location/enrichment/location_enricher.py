@@ -95,6 +95,9 @@ from scripts.integrated_analysis.location.core.normalizers import (
     normalize_level,
     normalize_building,
 )
+from scripts.integrated_analysis.location.core.pattern_extractor import (
+    extract_location_codes_for_lookup,
+)
 from scripts.shared.dimension_lookup import (
     get_location_id,
     get_location_id_by_code,
@@ -186,6 +189,7 @@ def enrich_location(
     level: Optional[str] = None,
     grid: Optional[str] = None,
     room_code: Optional[str] = None,
+    location_text: Optional[str] = None,
     source: str = 'UNKNOWN',
 ) -> LocationEnrichmentResult:
     """
@@ -228,6 +232,9 @@ def enrich_location(
                fractional "F.5/17", TBM format "C/11 - C/22"
         room_code: Extracted room code if available (e.g., "FAB116201", "STR-21")
                    When provided and found, grid bounds come from dim_location
+        location_text: Free text containing location info (e.g., location_raw, summary)
+                       Pattern extraction will find room codes like "FAB116109A",
+                       "Stair 21", "Elevator 22" for ROOM_DIRECT matching
         source: Source identifier for diagnostics (e.g., "RABA", "PSI", "TBM")
 
     Returns:
@@ -271,6 +278,37 @@ def enrich_location(
                 result.level = loc_info['level']
 
             return result
+
+    # Step 2b: Extract room/stair/elevator codes from free text
+    # This enables ROOM_DIRECT matching for RABA/PSI which have location_raw/summary
+    # Returns multiple possible codes (e.g., FAB116109A, FAB116109) to try
+    if location_text and pd.notna(location_text):
+        extracted_codes = extract_location_codes_for_lookup(str(location_text))
+
+        for extracted_code, extracted_type in extracted_codes:
+            loc_info = _get_location_with_grid(extracted_code)
+
+            if loc_info:
+                result.dim_location_id = loc_info['location_id']
+                result.location_type = loc_info['location_type']
+                result.location_code = loc_info['location_code']
+                result.match_type = 'ROOM_DIRECT'
+
+                # Get grid bounds from dim_location
+                if loc_info.get('grid_row_min') and pd.notna(loc_info.get('grid_row_min')):
+                    result.grid_row_min = loc_info['grid_row_min']
+                    result.grid_row_max = loc_info['grid_row_max']
+                    result.grid_col_min = loc_info['grid_col_min']
+                    result.grid_col_max = loc_info['grid_col_max']
+                    result.grid_source = 'DIM_LOCATION'
+                else:
+                    result.grid_source = 'NONE'
+
+                # Use level from dim_location if not provided
+                if not result.level and loc_info.get('level'):
+                    result.level = loc_info['level']
+
+                return result
 
     # Step 3: Parse grid coordinates if provided
     grid_parsed = parse_grid_field(grid)
