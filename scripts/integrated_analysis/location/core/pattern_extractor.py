@@ -62,8 +62,9 @@ class ExtractedLocationCodes:
 
 # FAB Room Code patterns
 # Matches: FAB116109A, FAB130311A, FAB1XXXXX, FABXXXXX
+# Also handles: "FAB 16101" (space), "Fab116310" (mixed case)
 FAB_ROOM_PATTERN = re.compile(
-    r'FAB1?(\d{5,6}[A-Z]?)\b',
+    r'FAB\s*1?\s*(\d{5,6}[A-Z]*)\b',
     re.IGNORECASE
 )
 
@@ -92,18 +93,49 @@ def _normalize_fab_code(match: str) -> list:
     """
     Normalize FAB room code to possible formats for lookup.
 
-    Input: "16109A" (captured group without FAB prefix)
+    Input: "16109A" or "116109A" (captured group without FAB prefix)
     Output: ["FAB116109A", "FAB116109"] - with and without suffix letter
+
+    Handles both 5-digit (16109) and 6-digit (116109) captures.
+    The dim_location format is FAB1XXXXX where XXXXX is 5 digits.
 
     Returns list of possible codes to try during lookup.
     """
-    code = match.upper()
-    base_code = f"FAB1{code}"
-    results = [base_code]
+    code = match.upper().strip()
+    results = []
+
+    # Extract digits and optional letter suffix
+    digits = ''.join(c for c in code if c.isdigit())
+    suffix = ''.join(c for c in code if c.isalpha())
+
+    # Determine the 5-digit room portion
+    # If 6 digits and starts with "1", the first "1" is likely the building number
+    # (already captured in the regex), so use last 5 digits
+    if len(digits) == 6 and digits[0] == '1':
+        room_digits = digits[1:]  # Drop the leading 1 (building number)
+    elif len(digits) == 5:
+        room_digits = digits
+    else:
+        # Unexpected length - try as-is
+        room_digits = digits
+
+    # Build FAB1 + 5 digits + optional suffix
+    base_code = f"FAB1{room_digits}{suffix}"
+    results.append(base_code)
 
     # Also try without trailing letter suffix (A, B, C, etc.)
-    if code and code[-1].isalpha():
-        results.append(f"FAB1{code[:-1]}")
+    if suffix:
+        results.append(f"FAB1{room_digits}")
+
+    # Also try with the full original digits (in case our logic is wrong)
+    if len(digits) != len(room_digits):
+        alt_code = f"FAB1{digits}{suffix}"
+        if alt_code not in results:
+            results.append(alt_code)
+        if suffix:
+            alt_code_no_suffix = f"FAB1{digits}"
+            if alt_code_no_suffix not in results:
+                results.append(alt_code_no_suffix)
 
     return results
 
