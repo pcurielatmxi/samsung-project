@@ -8,16 +8,25 @@ Inputs:
 Outputs:
     - secai_inspection_log.csv
     - yates_all_inspections.csv (with Category column: INTERNAL/OFFICIAL)
+
+Usage:
+    python -m scripts.quality.process.process_quality_inspections
 """
 
-import pandas as pd
-import os
+import sys
 from pathlib import Path
 
-# Paths - Windows data folder (OneDrive)
-DATA_ROOT = Path("/mnt/c/Users/pcuri/OneDrive - MXI/Desktop/Samsung Dashboard/Data")
-RAW_DIR = DATA_ROOT / "raw" / "quality"
-OUTPUT_DIR = DATA_ROOT / "processed" / "quality"
+import pandas as pd
+
+# Add project root to path for imports
+_project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(_project_root))
+
+from src.config.settings import settings
+
+# Paths - use settings for proper path resolution
+RAW_DIR = settings.RAW_DATA_DIR / "quality"
+OUTPUT_DIR = settings.PROCESSED_DATA_DIR / "quality"
 
 SECAI_FILE = RAW_DIR / "05282025_USA T1 Project_Inspection and Test Log.xlsx"
 YATES_FILE = RAW_DIR / "Yates- WORK INSPECTION REQUEST FAB1 LOG 6.25 REFINED.xlsx"

@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-Add CSI Section IDs to Quality Workbook Files.
+CSI Section Inference for Quality Workbooks.
 
-Processes both Yates WIR and SECAI inspection logs to add CSI section mapping.
+Provides keyword-based CSI section inference for Yates/SECAI inspection data.
 - Yates: Uses 'Inspection Description' field for keyword matching
 - SECAI: Uses 'Template' field which contains inspection type
 
-Appends CSI columns to the original files (does not create separate files).
-New columns added: dim_csi_section_id, csi_section, csi_title
+IMPORTANT: This module is primarily used as a LIBRARY by:
+    scripts/quality/document_processing/consolidate.py
 
-Input/Output:
-    {WINDOWS_DATA_DIR}/processed/quality/yates_all_inspections.csv
-    {WINDOWS_DATA_DIR}/processed/quality/secai_inspection_log.csv
+The exported items are:
+    - infer_csi_from_keywords() - Main inference function
+    - YATES_KEYWORD_TO_CSI - Keyword mappings for Yates
+    - SECAI_KEYWORD_TO_CSI - Keyword mappings for SECAI
 
-Usage:
-    python -m scripts.integrated_analysis.add_csi_to_quality_workbook
-    python -m scripts.integrated_analysis.add_csi_to_quality_workbook --dry-run
+The standalone main() function below is kept for debugging/testing but is
+NOT part of the standard pipeline. Use consolidate.py instead.
 """
 
 import argparse

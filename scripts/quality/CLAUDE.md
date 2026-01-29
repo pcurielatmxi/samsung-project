@@ -6,47 +6,53 @@
 
 Process QC inspection data from Yates and SECAI Excel exports with dimension ID enrichment.
 
-## Data Flow
+## Pipeline (3 Stages)
 
-| Stage | Script | Output |
-|-------|--------|--------|
-| 1 | `process_quality_inspections.py` | yates_all_inspections.csv, secai_inspection_log.csv |
-| 2 | `derive_quality_taxonomy.py` | yates_taxonomy.csv, secai_taxonomy.csv (optional) |
-| 3 | `consolidate.py` | combined_qc_inspections.csv (with dimension IDs) |
+| Stage | Script | Input | Output |
+|-------|--------|-------|--------|
+| 1 | `process/process_quality_inspections.py` | Excel workbooks | `processed/quality/{yates,secai}_*.csv` |
+| 2 | `document_processing/consolidate.py` | Stage 1 CSVs | `processed/quality/enriched/combined_qc_inspections.csv` |
+| 3 | `process/enrich_qc_workbooks.py` | Stage 2 output | `processed/quality/qc_inspections_enriched.csv` |
+
+## Usage
+
+```bash
+# Stage 1: Extract from Excel (manual - run when source files update)
+python -m scripts.quality.process.process_quality_inspections
+
+# Stage 2: Consolidate with dimension IDs
+cd scripts/quality/document_processing
+./run.sh
+
+# Stage 3: Enrich with grid/affected_rooms
+python -m scripts.quality.process.enrich_qc_workbooks
+```
 
 ## Structure
 
 ```
 quality/
-├── process/           # Excel parsing
-│   └── process_quality_inspections.py
-├── derive/            # Taxonomy extraction (optional)
-│   └── derive_quality_taxonomy.py
+├── process/
+│   ├── process_quality_inspections.py  # Stage 1: Excel → CSV
+│   └── enrich_qc_workbooks.py          # Stage 3: Location enrichment
 └── document_processing/
-    ├── consolidate.py # Dimension enrichment
-    └── run.sh
+    ├── consolidate.py                   # Stage 2: Dimension IDs + CSI
+    └── run.sh                           # Convenience wrapper
 ```
 
-## Usage
+## Data Sources
 
-```bash
-cd scripts/quality/document_processing
-./run.sh              # Run consolidation
-./run.sh status       # Show dimension coverage
-```
-
-## Key Data
-
-- **Yates:** ~4,000 inspections (WIR - Work Inspection Request)
-- **SECAI:** ~2,000 inspections (IR - Inspection Request)
-- **Coverage:** Location 95%+, Company 99%+
+- **Yates:** WIR (Work Inspection Request) log - ~4,000 inspections
+- **SECAI:** IR (Inspection Request) log - ~2,000 inspections
 
 ## Output Location
 
-- **Raw extracts:** `processed/quality/`
-- **Enriched:** `processed/quality/enriched/combined_qc_inspections.csv`
+- **Stage 1:** `processed/quality/{yates_all_inspections,secai_inspection_log}.csv`
+- **Stage 2:** `processed/quality/enriched/combined_qc_inspections.csv`
+- **Stage 3:** `processed/quality/qc_inspections_enriched.csv` (Power BI source)
 
 ## Notes
 
-- Shared utilities (location_parser, company_matcher) in `scripts/shared/`
-- Quality data complements RABA/PSI third-party inspection reports
+- CSI inference uses keyword mappings from `scripts/integrated_analysis/add_csi_to_quality_workbook.py`
+- Location enrichment uses centralized `scripts/integrated_analysis/location/` module
+- NOT in daily_refresh.py (source Excel files update infrequently)
