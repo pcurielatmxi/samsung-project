@@ -10,6 +10,16 @@
       "env": {
         "DISPLAY": ":0"
       }
+    },
+    "powerbi-modeling-mcp": {
+      "type": "stdio",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "C:\\MCPServers\\PowerBIModelingMCP\\extension\\server\\powerbi-modeling-mcp.exe",
+        "--start"
+      ],
+      "env": {}
     }
   }
 }
