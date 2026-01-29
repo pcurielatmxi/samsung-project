@@ -191,7 +191,16 @@ def main():
     )
     results.append(("p6_task_taxonomy CSI", success))
 
-    # 10. Consolidate RABA + PSI quality inspections (combined output)
+    # 10. Generate Fieldwire Power BI tables (idempotent - regenerates from raw exports)
+    success, _ = run_command(
+        [python, "-m", "scripts.fieldwire.process.generate_powerbi_tables"],
+        "Generate Fieldwire Power BI tables",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("Fieldwire tables", success))
+
+    # 11. Consolidate RABA + PSI quality inspections (combined output)
     success, _ = run_command(
         [python, "-m", "scripts.raba.document_processing.consolidate"],
         "Consolidate RABA + PSI inspections",
@@ -305,6 +314,10 @@ def main():
     print("    - projectsight/labor_entries.csv")
     print("    - projectsight/ncr_consolidated.csv")
     print("    - primavera/p6_task_taxonomy.csv")
+    print("    - fieldwire/fieldwire_combined.csv")
+    print("    - fieldwire/fieldwire_comments.csv")
+    print("    - fieldwire/fieldwire_checklists.csv")
+    print("    - fieldwire/fieldwire_related_tasks.csv")
     print("  Dimensions:")
     print("    - integrated_analysis/dimensions/dim_*.csv")
     print("  Bridge Tables:")
