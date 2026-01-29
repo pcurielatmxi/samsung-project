@@ -7,22 +7,25 @@ that can be hidden in Power BI while keeping the main tables clean.
 
 Each QC table includes the primary key for joining back to the main table.
 
-Input Files:
-    - processed/raba/raba_consolidated.csv
-    - processed/psi/psi_consolidated.csv
-    - processed/tbm/work_entries_enriched.csv
-    - processed/quality/qc_inspections_enriched.csv
+Input/Output Files:
+    - processed/raba/raba_consolidated.csv → raba_data_quality.csv
+    - processed/psi/psi_consolidated.csv → psi_data_quality.csv
+    - processed/tbm/work_entries_enriched.csv → tbm_data_quality.csv
+    - processed/quality/qc_inspections_enriched.csv → qc_inspections_data_quality.csv
+    - processed/primavera/p6_task_taxonomy.csv → p6_task_taxonomy_data_quality.csv
 
-Output Files:
-    - processed/raba/raba_data_quality.csv
-    - processed/psi/psi_data_quality.csv
-    - processed/tbm/tbm_data_quality.csv
-    - processed/quality/qc_inspections_data_quality.csv
+Columns moved to data quality tables:
+    - Raw/unnormalized values (*_raw)
+    - Grid bounds (grid_row_min, grid_col_min, etc.)
+    - Inference source tracking (*_source)
+    - Affected rooms JSON
+    - Validation flags
 
 Usage:
     python -m scripts.integrated_analysis.extract_data_quality_columns
     python -m scripts.integrated_analysis.extract_data_quality_columns --dry-run
     python -m scripts.integrated_analysis.extract_data_quality_columns --keep-originals
+    python -m scripts.integrated_analysis.extract_data_quality_columns --table p6_taxonomy
 """
 
 import argparse
@@ -52,80 +55,36 @@ class TableConfig(NamedTuple):
 # Define QC columns for each table
 # These columns are moved to separate QC tables to keep main fact tables user-friendly
 # Main tables focus on: source document data (cleaned) + dimension FKs + IDs
+#
+# NOTE: RABA, PSI, and TBM schemas have already been simplified.
+# The QC column lists below define what WOULD be moved if those columns existed.
+# Currently only QC Inspections and P6 Task Taxonomy have QC columns to extract.
 
 RABA_PSI_QC_COLUMNS = [
-    # === Raw data (keep only normalized in main table) ===
-    'report_date',           # Keep report_date_normalized
-    'inspection_type',       # Keep inspection_type_normalized
-    'location_raw',
-    'level_raw',
-    'inspector_raw',
-    'contractor_raw',
-    'testing_company_raw',
-    'subcontractor_raw',
-    'trade_raw',
-
-    # === Grid bounds (technical) ===
+    # Currently RABA/PSI consolidated files are already clean.
+    # These columns would be extracted if they existed:
     'grid_row_min',
     'grid_row_max',
     'grid_col_min',
     'grid_col_max',
     'grid_source',
-
-    # === Room matching ===
     'affected_rooms',
     'affected_rooms_count',
-
-    # === Location inference metadata ===
-    'location_id',
     'location_type',
     'location_code',
     'match_type',
-
-    # === Validation/parsing metadata ===
-    '_validation_issues',
-    'is_multi_party',
-    'narrative_companies',
     'csi_inference_source',
 ]
 
 TBM_QC_COLUMNS = [
-    # === Raw location data ===
-    'location_building',     # Keep building_normalized as 'building'
-    'location_level',        # Keep level_normalized as 'level'
-    'location_row',
-    'subcontractor_file',    # Source tracing (file_id is sufficient)
-
-    # === PII ===
-    'contact_number',        # Move to QC for privacy
-
-    # === Grid bounds (technical) ===
+    # Currently TBM work_entries_enriched is already clean.
+    # These columns would be extracted if they existed:
     'grid_row_min',
     'grid_row_max',
     'grid_col_min',
     'grid_col_max',
-    'grid_raw',
-    'grid_type',
-
-    # === Room matching ===
     'affected_rooms',
     'affected_rooms_count',
-
-    # === Location quality diagnostics ===
-    'grid_completeness',
-    'match_quality',
-    'location_review_flag',
-    'location_source',
-
-    # === Duplicate detection ===
-    'is_duplicate',
-    'duplicate_group_id',
-    'is_preferred',
-
-    # === Validation ===
-    'date_mismatch',
-    'room_code_extracted',
-    'subcontractor_normalized',
     'csi_inference_source',
 ]
 
@@ -163,21 +122,53 @@ QC_INSPECTIONS_QC_COLUMNS = [
     'csi_inference_source',
 ]
 
+P6_TASK_TAXONOMY_QC_COLUMNS = [
+    # === Source tracking columns (how each field was derived) ===
+    'trade_source',
+    'sub_trade_source',
+    'building_source',
+    'level_source',
+    'area_source',
+    'room_source',
+    'sub_source',
+    'phase_source',
+    'work_phase_source',
+    'impact_source',
+    'csi_inference_source',
+    'grid_source',
+
+    # === Grid bounds (technical) ===
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+
+    # === Intermediate/redundant location fields ===
+    'loc_type',              # Keep location_type
+    'loc_type_desc',
+    'loc_id',                # Keep dim_location_id
+    'Building Code Desc',    # Keep building_desc
+    'location',              # Composite field
+
+    # === Legacy trade fields (keep CSI instead) ===
+    'trade_id',
+    'trade_code',
+    'trade_name',
+
+    # === Description fields (verbose, derive from codes in Power BI) ===
+    'scope_desc',
+    'building_desc',
+    'level_desc',
+    'phase_desc',
+    'impact_type_desc',
+    'attributed_to_desc',
+    'root_cause_desc',
+]
+
 # Column renames to apply after extraction (for user-friendliness)
 # Format: {table_description: {old_name: new_name}}
+# NOTE: Most tables have already been simplified and don't need renames.
 COLUMN_RENAMES = {
-    'TBM Work Entries': {
-        'building_normalized': 'building',
-        'level_normalized': 'level',
-    },
-    'RABA Consolidated': {
-        'report_date_normalized': 'report_date',
-        'inspection_type_normalized': 'inspection_type',
-    },
-    'PSI Consolidated': {
-        'report_date_normalized': 'report_date',
-        'inspection_type_normalized': 'inspection_type',
-    },
     'QC Inspections Enriched': {
         'status_normalized': 'status',
     },
@@ -218,6 +209,14 @@ def get_table_configs() -> list[TableConfig]:
             primary_key='inspection_id',
             qc_columns=QC_INSPECTIONS_QC_COLUMNS,
             description='QC Inspections Enriched',
+        ),
+        TableConfig(
+            source_path=settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv',
+            output_main_path=settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy.csv',
+            output_qc_path=settings.PRIMAVERA_PROCESSED_DIR / 'p6_task_taxonomy_data_quality.csv',
+            primary_key='task_id',
+            qc_columns=P6_TASK_TAXONOMY_QC_COLUMNS,
+            description='P6 Task Taxonomy',
         ),
     ]
 
@@ -369,7 +368,7 @@ def main():
     )
     parser.add_argument(
         '--table',
-        choices=['raba', 'psi', 'tbm', 'qc_inspections', 'all'],
+        choices=['raba', 'psi', 'tbm', 'qc_inspections', 'p6_taxonomy', 'all'],
         default='all',
         help='Which table(s) to process (default: all)'
     )
@@ -397,6 +396,7 @@ def main():
             'psi': 'PSI Consolidated',
             'tbm': 'TBM Work Entries',
             'qc_inspections': 'QC Inspections Enriched',
+            'p6_taxonomy': 'P6 Task Taxonomy',
         }
         target = table_map[args.table]
         configs = [c for c in configs if c.description == target]

@@ -227,6 +227,15 @@ def main():
     )
     results.append(("affected_rooms_bridge", success))
 
+    # 16. Extract data quality columns (idempotent - creates/updates *_data_quality.csv)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.extract_data_quality_columns"],
+        "Extract data quality columns to separate tables",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("Data Quality Tables", success))
+
     # =========================================================================
     # PROJECTSIGHT DAILY REPORTS - NOT READY
     # =========================================================================
@@ -287,10 +296,13 @@ def main():
     print("    - psi/psi_consolidated.csv")
     print("    - projectsight/labor_entries.csv")
     print("    - projectsight/ncr_consolidated.csv")
+    print("    - primavera/p6_task_taxonomy.csv")
     print("  Dimensions:")
     print("    - integrated_analysis/dimensions/dim_*.csv")
     print("  Bridge Tables:")
     print("    - integrated_analysis/bridge_tables/affected_rooms_bridge.csv")
+    print("  Data Quality (hide in Power BI):")
+    print("    - *_data_quality.csv (1:1 with fact tables)")
 
     return 0
 
