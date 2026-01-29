@@ -55,7 +55,7 @@ def find_duplicates() -> pd.DataFrame:
     Returns:
         DataFrame with duplicate aliases and their mappings
     """
-    aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings' / 'map_company_aliases.csv'
+    aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_aliases.csv'
     aliases = pd.read_csv(aliases_path)
 
     # Find aliases mapping to multiple companies
@@ -78,7 +78,7 @@ def fix_duplicates(dry_run: bool = True) -> int:
     Returns:
         Number of rows removed
     """
-    aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings' / 'map_company_aliases.csv'
+    aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_aliases.csv'
     aliases = pd.read_csv(aliases_path)
 
     original_count = len(aliases)

@@ -56,8 +56,8 @@ def _load_company_aliases():
     _COMPANY_ALIASES = {}
 
     # Paths to generated files
-    dim_company_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv'
-    map_aliases_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings' / 'map_company_aliases.csv'
+    dim_company_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_company.csv'
+    map_aliases_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_aliases.csv'
 
     # Check if files exist
     if not dim_company_path.exists() or not map_aliases_path.exists():

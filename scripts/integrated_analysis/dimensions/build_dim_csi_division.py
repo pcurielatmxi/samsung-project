@@ -5,7 +5,7 @@ Build dim_csi_division dimension table.
 Creates a dimension table for 2-digit CSI divisions that can be linked
 to narrative chunks which extract divisions (not full 6-digit codes).
 
-Output: processed/integrated_analysis/dimensions/dim_csi_division.csv
+Output: processed/integrated_analysis/dim_csi_division.csv
 """
 
 import sys
@@ -97,8 +97,8 @@ def build_dim_csi_division():
     df.loc[df['division_name'].str.contains('deprecated'), 'notes'] = 'Deprecated in MasterFormat 2016'
     df.loc[df['division_name'].str.contains('Reserved'), 'notes'] = 'Reserved for future use'
 
-    # Output path
-    output_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions'
+    # Output path (flattened - all in integrated_analysis root)
+    output_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis'
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / 'dim_csi_division.csv'
 

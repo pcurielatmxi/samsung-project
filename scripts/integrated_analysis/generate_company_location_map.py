@@ -27,7 +27,7 @@ from src.config.settings import Settings
 
 def load_company_aliases() -> dict:
     """Load P6 company aliases and return mapping to company_id."""
-    aliases_path = project_root / 'scripts/integrated_analysis/mappings/map_company_aliases.csv'
+    aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_aliases.csv'
     aliases = pd.read_csv(aliases_path)
 
     # Filter to P6 source
@@ -141,7 +141,7 @@ def extract_from_tbm(alias_map: dict) -> pd.DataFrame:
     df['location_id'] = df['location_building'].str.upper() + '-' + df['level_norm']
 
     # Load TBM aliases for company mapping
-    aliases_path = project_root / 'scripts/integrated_analysis/mappings/map_company_aliases.csv'
+    aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_aliases.csv'
     aliases = pd.read_csv(aliases_path)
     tbm_aliases = aliases[aliases['source'] == 'TBM']
     tbm_alias_map = dict(zip(tbm_aliases['alias'].str.upper(), tbm_aliases['company_id']))
@@ -238,7 +238,7 @@ def extract_from_quality(alias_map: dict) -> pd.DataFrame:
             df['location_id'] = df['building'] + '-' + df['level']
 
             # Load Quality aliases
-            aliases_path = project_root / 'scripts/integrated_analysis/mappings/map_company_aliases.csv'
+            aliases_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_aliases.csv'
             aliases = pd.read_csv(aliases_path)
             quality_aliases = aliases[aliases['source'] == 'QUALITY']
             quality_alias_map = dict(zip(quality_aliases['alias'].str.upper(), quality_aliases['company_id']))
@@ -355,7 +355,7 @@ def main():
         print(f"  {src}: {count:,}")
 
     # Save output
-    output_path = project_root / 'scripts/integrated_analysis/mappings/map_company_location.csv'
+    output_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'map_company_location.csv'
     quarterly.to_csv(output_path, index=False)
     print(f"\nSaved to: {output_path}")
     print(f"Records: {len(quarterly):,}")

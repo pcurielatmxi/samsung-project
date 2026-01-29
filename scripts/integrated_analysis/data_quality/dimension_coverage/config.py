@@ -42,7 +42,7 @@ SOURCE_CONFIGS: Dict[str, Dict[str, Any]] = {
             'location': 'scripts/raba/document_processing/consolidate.py',
             'company': 'scripts/raba/document_processing/consolidate.py',
             'csi': 'scripts/raba/document_processing/consolidate.py',
-            'company_aliases': 'data/processed/integrated_analysis/mappings/map_company_aliases.csv',
+            'company_aliases': 'data/processed/integrated_analysis/map_company_aliases.csv',
         },
     },
     'PSI': {
@@ -56,7 +56,7 @@ SOURCE_CONFIGS: Dict[str, Dict[str, Any]] = {
             'location': 'scripts/psi/document_processing/consolidate.py',
             'company': 'scripts/psi/document_processing/consolidate.py',
             'csi': 'scripts/psi/document_processing/consolidate.py',
-            'company_aliases': 'data/processed/integrated_analysis/mappings/map_company_aliases.csv',
+            'company_aliases': 'data/processed/integrated_analysis/map_company_aliases.csv',
         },
     },
     'TBM': {

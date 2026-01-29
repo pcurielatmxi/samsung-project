@@ -32,13 +32,13 @@ def load_psi() -> pd.DataFrame:
 
 def load_dim_company() -> pd.DataFrame:
     """Load company dimension."""
-    path = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions" / "dim_company.csv"
+    path = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dim_company.csv"
     return pd.read_csv(path)
 
 
 def load_dim_csi() -> pd.DataFrame:
     """Load CSI dimension."""
-    path = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions" / "dim_csi_section.csv"
+    path = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dim_csi_section.csv"
     return pd.read_csv(path)
 
 

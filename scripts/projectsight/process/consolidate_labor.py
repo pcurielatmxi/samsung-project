@@ -297,7 +297,7 @@ def consolidate_labor(dry_run: bool = False) -> Dict[str, Any]:
     # Get company's primary_trade_id for CSI inference
     # Company's known trade is more reliable than ProjectSight's billing category
     print("  Loading company trade info for CSI inference...")
-    dim_company = pd.read_csv(Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_company.csv')
+    dim_company = pd.read_csv(Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_company.csv')
     company_primary_trade = dict(zip(dim_company['company_id'], dim_company['primary_trade_id']))
     df['company_primary_trade_id'] = df['dim_company_id'].map(company_primary_trade)
 

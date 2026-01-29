@@ -44,7 +44,7 @@ def load_p6_csi_sections():
 def load_dim_company():
     """Load company dimension to get Yates company_id."""
     dim_company = pd.read_csv(
-        settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions" / "dim_company.csv"
+        settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dim_company.csv"
     )
     return dim_company
 

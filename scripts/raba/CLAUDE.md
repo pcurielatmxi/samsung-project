@@ -1,10 +1,17 @@
 # RABA Quality Inspections
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
 Scrape and process quality inspection reports from RKCI Celvis system (third-party QC firm).
+
+## Output
+
+**Combined RABA + PSI output:** `processed/raba/raba_psi_consolidated.csv`
+
+The consolidation script in this folder combines both RABA and PSI clean records
+into a single file for Power BI.
 
 ## Data Flow
 
@@ -16,8 +23,8 @@ raw/raba/individual/*.pdf (9,397 reports)
 2.format/*.format.json
     ↓ [Stage 3: Python Clean]
 3.clean/*.clean.json
-    ↓ [Stage 4: Consolidate]
-raba_consolidated.csv + validation report
+    ↓ [Stage 4: Consolidate - includes PSI]
+raba_psi_consolidated.csv + validation report
 ```
 
 ## Structure

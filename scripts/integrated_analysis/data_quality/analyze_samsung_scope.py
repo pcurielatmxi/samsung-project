@@ -32,10 +32,10 @@ def load_data():
         low_memory=False
     )
     dim_company = pd.read_csv(
-        settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions" / "dim_company.csv"
+        settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dim_company.csv"
     )
     dim_csi = pd.read_csv(
-        settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions" / "dim_csi_section.csv"
+        settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dim_csi_section.csv"
     )
     p6_taxonomy = pd.read_csv(
         settings.PROCESSED_DATA_DIR / "primavera" / "p6_task_taxonomy.csv",

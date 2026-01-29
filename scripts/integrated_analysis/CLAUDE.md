@@ -31,8 +31,8 @@ scripts/integrated_analysis/
 |-------|---------|------------|
 | `dim_company` | Master company list | company_id, canonical_name, aliases |
 | `dim_location` | Building + Level + Grid bounds | location_id, building, level, grid_* |
-| `dim_trade` | Trade/work type classification | trade_id, trade_code, trade_name |
-| `dim_time` | Calendar dimension | date_id, year, month, week |
+| `dim_csi_section` | CSI MasterFormat section codes | csi_section_id, csi_section, csi_title |
+| `dim_csi_division` | CSI division (2-digit) | csi_division_id, csi_division, division_name |
 
 ## Mapping Tables
 
@@ -40,7 +40,6 @@ scripts/integrated_analysis/
 |-------|---------|
 | `map_company_aliases` | Source-specific names -> company_id |
 | `map_company_location` | Company -> typical locations by period |
-| `map_location_codes` | Source formats -> location_id |
 
 ## Location Processing
 
@@ -57,10 +56,16 @@ result = enrich_location(building='FAB', level='2F', grid='G/10', source='RABA')
 
 ## Output Location
 
+All dimension and mapping files are output to a **flattened structure**:
+
 ```
 data/processed/integrated_analysis/
-├── dimensions/    # dim_*.csv files
-├── mappings/      # map_*.csv files
+├── dim_company.csv
+├── dim_location.csv
+├── dim_csi_section.csv
+├── dim_csi_division.csv
+├── map_company_aliases.csv
+├── map_company_location.csv
 └── validation/    # Coverage reports
 ```
 

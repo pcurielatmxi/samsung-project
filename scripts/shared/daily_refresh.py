@@ -155,6 +155,24 @@ def main():
     )
     results.append(("dim_location", success))
 
+    # 7b. Build dim_company (idempotent - from company aliases)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.dimensions.build_company_dimension"],
+        "Build dim_company dimension table",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("dim_company", success))
+
+    # 7c. Build dim_csi_section (idempotent - static reference data)
+    success, _ = run_command(
+        [python, "-m", "scripts.integrated_analysis.dimensions.build_dim_csi_section"],
+        "Build dim_csi_section dimension table",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("dim_csi_section", success))
+
     # 8. Generate p6_task_taxonomy (idempotent - overwrites with latest data)
     success, _ = run_command(
         [python, "-m", "scripts.primavera.derive.generate_task_taxonomy"],
@@ -173,25 +191,16 @@ def main():
     )
     results.append(("p6_task_taxonomy CSI", success))
 
-    # 10. Consolidate RABA quality inspections (idempotent - uses processed stage 3)
+    # 10. Consolidate RABA + PSI quality inspections (combined output)
     success, _ = run_command(
         [python, "-m", "scripts.raba.document_processing.consolidate"],
-        "Consolidate RABA inspections",
+        "Consolidate RABA + PSI inspections",
         dry_run=args.dry_run,
         verbose=args.verbose
     )
-    results.append(("RABA consolidated", success))
+    results.append(("RABA+PSI consolidated", success))
 
-    # 11. Consolidate PSI quality inspections (idempotent - uses processed stage 3)
-    success, _ = run_command(
-        [python, "-m", "scripts.psi.document_processing.consolidate"],
-        "Consolidate PSI inspections",
-        dry_run=args.dry_run,
-        verbose=args.verbose
-    )
-    results.append(("PSI consolidated", success))
-
-    # 12. Consolidate TBM with dimension IDs + CSI (idempotent - overwrites file)
+    # 11. Consolidate TBM with dimension IDs + CSI (idempotent - overwrites file)
     success, _ = run_command(
         [python, "-m", "scripts.tbm.process.consolidate_tbm"],
         "Consolidate TBM with dimensions + CSI",
@@ -200,7 +209,7 @@ def main():
     )
     results.append(("TBM consolidated", success))
 
-    # 13. Consolidate ProjectSight Labor with dimensions + CSI (idempotent - overwrites file)
+    # 12. Consolidate ProjectSight Labor with dimensions + CSI (idempotent - overwrites file)
     success, _ = run_command(
         [python, "-m", "scripts.projectsight.process.consolidate_labor"],
         "Consolidate ProjectSight Labor with dimensions + CSI",
@@ -209,7 +218,7 @@ def main():
     )
     results.append(("ProjectSight Labor consolidated", success))
 
-    # 14. Consolidate NCR with dimensions + CSI (idempotent - overwrites file)
+    # 13. Consolidate NCR with dimensions + CSI (idempotent - overwrites file)
     success, _ = run_command(
         [python, "-m", "scripts.projectsight.process.consolidate_ncr"],
         "Consolidate NCR with dimensions + CSI",
@@ -218,7 +227,7 @@ def main():
     )
     results.append(("NCR consolidated", success))
 
-    # 15. Generate affected_rooms_bridge (idempotent - overwrites bridge table)
+    # 14. Generate affected_rooms_bridge (idempotent - overwrites bridge table)
     success, _ = run_command(
         [python, "-m", "scripts.integrated_analysis.generate_affected_rooms_bridge"],
         "Generate affected_rooms_bridge",
@@ -292,8 +301,7 @@ def main():
     print("-" * 60)
     print("  Fact Tables:")
     print("    - tbm/work_entries_enriched.csv")
-    print("    - raba/raba_consolidated.csv")
-    print("    - psi/psi_consolidated.csv")
+    print("    - raba/raba_psi_consolidated.csv")
     print("    - projectsight/labor_entries.csv")
     print("    - projectsight/ncr_consolidated.csv")
     print("    - primavera/p6_task_taxonomy.csv")

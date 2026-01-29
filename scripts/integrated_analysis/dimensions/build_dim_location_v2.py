@@ -13,7 +13,7 @@ Key differences from v1:
 
 Source: processed/primavera/p6_task_taxonomy.csv
 Grid lookup: raw/location_mappings/location_master.csv
-Output: processed/integrated_analysis/dimensions/dim_location.csv
+Output: processed/integrated_analysis/dim_location.csv
 
 Usage:
     python scripts/integrated_analysis/dimensions/build_dim_location_v2.py
@@ -391,7 +391,7 @@ def main():
         '--output',
         type=str,
         default=None,
-        help='Output path (default: processed/integrated_analysis/dimensions/dim_location.csv)'
+        help='Output path (default: processed/integrated_analysis/dim_location.csv)'
     )
     args = parser.parse_args()
 
@@ -423,7 +423,7 @@ def main():
     if args.output:
         output_path = Path(args.output)
     else:
-        output_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+        output_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
 
     if args.dry_run:
         print(f"\n[DRY RUN] Would write {len(dim_location)} rows to:")

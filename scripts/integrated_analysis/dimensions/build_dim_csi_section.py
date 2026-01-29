@@ -28,8 +28,8 @@ import csv
 from pathlib import Path
 from src.config.settings import settings
 
-# Output location
-OUTPUT_DIR = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions"
+# Output location (flattened - all in integrated_analysis root)
+OUTPUT_DIR = settings.PROCESSED_DATA_DIR / "integrated_analysis"
 OUTPUT_FILE = OUTPUT_DIR / "dim_csi_section.csv"
 
 # CSI Division definitions (MasterFormat 2020)

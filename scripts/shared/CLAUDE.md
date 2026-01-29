@@ -11,7 +11,7 @@ Cross-source utility modules for entity standardization, location mapping, and d
 | Module | Purpose | Used By |
 |--------|---------|---------|
 | `company_standardization.py` | Canonical names for companies, trades, inspectors, levels | All sources |
-| `dimension_lookup.py` | Map raw values → dimension IDs (location, company, trade) | RABA, PSI |
+| `dimension_lookup.py` | Map raw values → dimension IDs (location, company, CSI) | RABA, PSI |
 | `location_model.py` | High-level location API: room ↔ grid conversions | P6, Quality |
 | `gridline_mapping.py` | Low-level grid coordinate lookup from Excel mapping | location_model |
 | `qc_inspection_schema.py` | Unified column schema for RABA + PSI Power BI output | RABA, PSI |
@@ -23,9 +23,10 @@ Cross-source utility modules for entity standardization, location mapping, and d
 
 ```python
 # Dimension lookups
-from scripts.shared.dimension_lookup import get_location_id, get_company_id, get_trade_id
+from scripts.shared.dimension_lookup import get_location_id, get_company_id, get_csi_section_id
 loc_id = get_location_id('SUE', '1F')  # → 'SUE-1F'
 company_id = get_company_id('Berg')    # → 4 (fuzzy match)
+csi_id = get_csi_section_id('03 30 00')  # → 3
 
 # Location model
 from scripts.shared.location_model import get_grid_bounds, get_locations_at_grid
@@ -70,7 +71,7 @@ Fixes common LLM extraction errors in `parties_involved` arrays during postproce
 ## Data Dependencies
 
 - `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Grid coordinate source
-- `processed/integrated_analysis/dimensions/` - Dimension tables (dim_location, dim_company, dim_trade)
+- `processed/integrated_analysis/` - Dimension tables (dim_location, dim_company, dim_csi_section)
 
 ## Quality Data Audit Tool
 

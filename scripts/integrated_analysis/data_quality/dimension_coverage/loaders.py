@@ -51,7 +51,7 @@ def load_dimensions() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     global _dim_location_df, _dim_company_df, _dim_csi_df
 
-    dim_path = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions"
+    dim_path = settings.PROCESSED_DATA_DIR / "integrated_analysis"
 
     if _dim_location_df is None:
         _dim_location_df = pd.read_csv(dim_path / "dim_location.csv")

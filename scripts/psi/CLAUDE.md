@@ -1,10 +1,16 @@
 # PSI Quality Inspections
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
 Scrape and process quality inspection reports from Construction Hive (third-party QC firm).
+
+## Output Location
+
+**Combined output with RABA:** `processed/raba/raba_psi_consolidated.csv`
+
+See `scripts/psi/document_processing/README.md` for details.
 
 ## Data Flow
 
@@ -16,8 +22,8 @@ raw/psi/individual/*.pdf (6,309 reports)
 2.format/*.format.json
     ↓ [Stage 3: Python Clean]
 3.clean/*.clean.json
-    ↓ [Stage 4: Consolidate]
-psi_consolidated.csv + validation report
+    ↓ [Stage 4: Consolidate - combined with RABA]
+processed/raba/raba_psi_consolidated.csv
 ```
 
 ## Structure

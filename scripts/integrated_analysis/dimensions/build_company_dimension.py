@@ -56,11 +56,10 @@ sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
 
-# Output locations
-DIM_OUTPUT_DIR = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "dimensions"
-MAP_OUTPUT_DIR = settings.PROCESSED_DATA_DIR / "integrated_analysis" / "mappings"
-DIM_OUTPUT_FILE = DIM_OUTPUT_DIR / "dim_company.csv"
-MAP_OUTPUT_FILE = MAP_OUTPUT_DIR / "map_company_aliases.csv"
+# Output locations (flattened - all in integrated_analysis root)
+OUTPUT_DIR = settings.PROCESSED_DATA_DIR / "integrated_analysis"
+DIM_OUTPUT_FILE = OUTPUT_DIR / "dim_company.csv"
+MAP_OUTPUT_FILE = OUTPUT_DIR / "map_company_aliases.csv"
 
 
 # =============================================================================
@@ -1749,7 +1748,7 @@ def build_map_company_aliases() -> List[dict]:
 
 def write_dim_company(records: List[dict]):
     """Write dim_company.csv."""
-    DIM_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Column order matches existing schema
     fieldnames = [
@@ -1770,7 +1769,7 @@ def write_dim_company(records: List[dict]):
 
 def write_map_company_aliases(records: List[dict]):
     """Write map_company_aliases.csv."""
-    MAP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     fieldnames = ["company_id", "alias", "source"]
 

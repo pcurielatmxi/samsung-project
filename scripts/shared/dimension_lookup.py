@@ -40,9 +40,9 @@ sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
 
-# Dimension tables are stored in processed data folder (external)
-_dimensions_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions'
-_mappings_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings'
+# Dimension and mapping tables are stored in integrated_analysis folder (flattened)
+_dimensions_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis'
+_mappings_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis'
 
 
 # Cached dimension data

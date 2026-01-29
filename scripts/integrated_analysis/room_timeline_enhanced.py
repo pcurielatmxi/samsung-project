@@ -111,7 +111,7 @@ def search_narratives_for_room(
     # Look up room name from dim_location
     room_name = None
     try:
-        dim_location_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+        dim_location_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
         if dim_location_path.exists():
             import pandas as pd
             df = pd.read_csv(dim_location_path)
@@ -408,7 +408,7 @@ def main():
     loc_info = parse_location_code(args.location_code)
     room_name_display = None
     try:
-        dim_location_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+        dim_location_path = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
         if dim_location_path.exists():
             df = pd.read_csv(dim_location_path)
             match = df[df['location_code'] == args.location_code]

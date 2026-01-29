@@ -32,8 +32,8 @@ def find_missing_building_levels() -> pd.DataFrame:
     Returns:
         DataFrame with columns: building, level, count
     """
-    # Load dim_location
-    dim_loc_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+    # Load dim_location (flattened - all in integrated_analysis root)
+    dim_loc_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
     dim_location = pd.read_csv(dim_loc_path)
 
     # Get existing building_level values
@@ -79,7 +79,7 @@ def add_missing_entries(missing_combos: pd.DataFrame, dry_run: bool = True) -> i
         print("No missing building-levels to add.")
         return 0
 
-    dim_loc_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+    dim_loc_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
     dim_location = pd.read_csv(dim_loc_path)
 
     print(f"\nCurrent dim_location: {len(dim_location)} rows")

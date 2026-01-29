@@ -46,7 +46,7 @@ case "${1:-help}" in
         python -m src.document_processor "$CONFIG_DIR" --limit "${1:-5}" --dry-run
         ;;
     consolidate)
-        # Consolidate clean JSON files into CSV
+        # Consolidate RABA + PSI clean JSON files into single CSV
         shift
         python "$CONFIG_DIR/consolidate.py" "$@"
         ;;
@@ -60,7 +60,7 @@ case "${1:-help}" in
         echo "  format      Run format stage only (Gemini JSON formatting)"
         echo "  clean       Run clean stage only (Python postprocessing)"
         echo "  run         Run all stages"
-        echo "  consolidate Combine all clean JSON into CSV with validation"
+        echo "  consolidate Combine RABA + PSI into raba_psi_consolidated.csv"
         echo "  status      Show pipeline status"
         echo "  retry       Retry failed files"
         echo "  test [n]    Dry run with n files (default: 5)"

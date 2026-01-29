@@ -140,4 +140,4 @@ Shows unresolved company names that need to be added to `map_company_aliases.csv
 
 - `scripts/integrated_analysis/location/` - Centralized location enrichment
 - `scripts/integrated_analysis/dimensions/` - Dimension table builders
-- `data/processed/integrated_analysis/dimensions/` - Dimension CSV files
+- `data/processed/integrated_analysis/` - Dimension and mapping CSV files (flattened)

@@ -407,7 +407,7 @@ def load_location_master() -> pd.DataFrame:
 
 def load_existing_dim_location() -> pd.DataFrame:
     """Load existing dim_location.csv if it exists."""
-    dim_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+    dim_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
     if dim_path.exists():
         return pd.read_csv(dim_path)
     return None
@@ -777,8 +777,8 @@ def main():
     if not args.skip_drawings:
         drawing_codes = extract_codes_from_drawings()
 
-    # Output always goes to processed/
-    output_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dimensions' / 'dim_location.csv'
+    # Output always goes to processed/integrated_analysis/
+    output_path = Settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'dim_location.csv'
 
     if args.rebuild:
         # Rebuild from existing processed dim_location (preserves rooms and other entries)
