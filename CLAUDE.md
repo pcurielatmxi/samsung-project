@@ -345,3 +345,19 @@ pytest tests/unit/test_schemas.py -v
 | `scripts/shared/dimension_lookup.py` | Get dimension IDs |
 | `scripts/integrated_analysis/location/` | Centralized location enrichment |
 | `scripts/integrated_analysis/dimensions/build_dim_location.py` | Build location dimension |
+| `scripts/integrated_analysis/data_quality/dimension_coverage/` | **Dimension coverage report** |
+
+### Data Quality Report
+
+Check dimension coverage across all sources:
+
+```bash
+python -m scripts.integrated_analysis.data_quality.dimension_coverage
+```
+
+This generates a comprehensive report showing:
+- Coverage matrix (Source × Dimension)
+- Location granularity breakdown (ROOM vs GRIDLINE vs BUILDING)
+- CSI section joinability between sources
+- Unresolved company names
+- Actionable recommendations with file paths

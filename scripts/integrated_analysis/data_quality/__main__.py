@@ -2,16 +2,12 @@
 """
 Data Quality Check Framework - Entry Point.
 
-Run all checks:
+Run comprehensive dimension coverage report:
     python -m scripts.integrated_analysis.data_quality
-
-Run specific check:
-    python -m scripts.integrated_analysis.data_quality.check_csi_coverage
-    python -m scripts.integrated_analysis.data_quality.check_location_coverage
-    python -m scripts.integrated_analysis.data_quality.check_company_coverage
+    python -m scripts.integrated_analysis.data_quality.dimension_coverage
 """
 
-from scripts.integrated_analysis.data_quality.run_all_checks import main
+from scripts.integrated_analysis.data_quality.dimension_coverage.__main__ import main
 
 if __name__ == "__main__":
     main()
