@@ -64,6 +64,11 @@ from scripts.integrated_analysis.location.enrichment.p6_location import (
     extract_p6_location,
     P6LocationResult,
 )
+from scripts.integrated_analysis.location.core.grid_parser import (
+    parse_grid,
+    parse_grid_to_dict,
+    GridParseResult,
+)
 
 __all__ = [
     # Fact table enrichment (TBM/RABA/PSI/QC Workbooks)
@@ -74,4 +79,8 @@ __all__ = [
     # P6 schedule location extraction
     'extract_p6_location',
     'P6LocationResult',
+    # Grid parsing (used by sources before calling enrich_location)
+    'parse_grid',
+    'parse_grid_to_dict',
+    'GridParseResult',
 ]

@@ -35,6 +35,10 @@ from scripts.shared.dimension_lookup import (
     get_affected_rooms,
     reset_cache,
 )
+from scripts.integrated_analysis.location import (
+    enrich_location,
+    parse_grid,
+)
 from scripts.integrated_analysis.add_csi_to_tbm import (
     infer_csi_from_activity,
     CSI_SECTIONS as TBM_CSI_SECTIONS,
@@ -1188,7 +1192,7 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
         lambda x: TBM_CSI_SECTIONS[x][1] if pd.notna(x) and x in TBM_CSI_SECTIONS else None
     )
 
-    # Parse grid from location_row
+    # Parse grid from location_row using TBM-specific parser (103 patterns)
     print("  Parsing grid coordinates...")
     grid_parsed = df['location_row'].apply(parse_tbm_grid).apply(pd.Series)
     df['grid_row_min'] = grid_parsed['grid_row_min']
@@ -1198,54 +1202,35 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
     df['grid_raw'] = grid_parsed['grid_raw']
     df['grid_type'] = grid_parsed['grid_type']
 
-    # Compute affected_rooms for records with grid coordinates
-    print("  Computing affected rooms...")
+    # Use centralized location enrichment with pre-parsed grid bounds
+    # This computes affected_rooms, location hierarchy, and sets dim_location_id
+    print("  Enriching locations (centralized module)...")
 
-    def compute_affected_rooms(row):
-        """Find rooms that overlap with the record's grid bounds."""
-        # Need level and some grid info (building ignored - unified grid system)
-        level = row.get('level_normalized')
-        if pd.isna(level):
-            return None
-
-        # Get grid bounds (may be partial)
-        row_min = row.get('grid_row_min')
-        row_max = row.get('grid_row_max')
-        col_min = row.get('grid_col_min')
-        col_max = row.get('grid_col_max')
-
-        # Need at least some grid info
-        has_row = pd.notna(row_min)
-        has_col = pd.notna(col_min)
-        if not has_row and not has_col:
-            return None
-
-        rooms = get_affected_rooms(
-            level,
-            row_min if has_row else None,
-            row_max if has_row else None,
-            col_min if has_col else None,
-            col_max if has_col else None,
+    def enrich_location_row(row):
+        """Enrich a row using centralized location module with pre-parsed grid."""
+        result = enrich_location(
+            building=row.get('building_normalized'),
+            level=row.get('level_normalized'),
+            room_code=row.get('room_code_extracted'),
+            location_text=row.get('location_row'),  # For room/stair/elevator extraction
+            source='TBM',
+            # Pre-parsed grid bounds from TBM parser
+            grid_row_min=row.get('grid_row_min'),
+            grid_row_max=row.get('grid_row_max'),
+            grid_col_min=row.get('grid_col_min'),
+            grid_col_max=row.get('grid_col_max'),
+            grid_type=row.get('grid_type'),
         )
+        return result.to_dict()
 
-        if not rooms:
-            return None
+    # Apply enrichment to all rows
+    location_enriched = df.apply(enrich_location_row, axis=1).apply(pd.Series)
 
-        # Return as JSON string for CSV storage
-        return json.dumps(rooms)
-
-    df['affected_rooms'] = df.apply(compute_affected_rooms, axis=1)
-
-    # Add affected_rooms_count for easy filtering (1 = single room, >1 = multiple)
-    def count_rooms(json_str):
-        if pd.isna(json_str):
-            return None
-        try:
-            return len(json.loads(json_str))
-        except (json.JSONDecodeError, TypeError):
-            return None
-
-    df['affected_rooms_count'] = df['affected_rooms'].apply(count_rooms)
+    # Copy enriched columns to dataframe
+    df['dim_location_id'] = location_enriched['dim_location_id']
+    df['affected_rooms'] = location_enriched['affected_rooms']
+    df['affected_rooms_count'] = location_enriched['affected_rooms_count']
+    df['location_source'] = location_enriched['match_type']  # map to existing column name
 
     # Add grid_completeness - describes what location info was available in source
     def get_grid_completeness(row):
@@ -1325,85 +1310,8 @@ def enrich_tbm(dry_run: bool = False) -> Dict[str, Any]:
 
     df['location_review_flag'] = df.apply(needs_location_review, axis=1)
 
-    # Apply location hierarchy to set dim_location_id
-    print("  Applying location hierarchy (room → gridline → level → fallback)...")
-
-    def apply_location_hierarchy(row):
-        """
-        Apply location hierarchy to determine most specific location_id.
-
-        Hierarchy (most specific → least specific):
-        1. Room code extracted directly from location_row
-        2. Single room match from grid-based spatial inference
-        3. Level (building + level)
-        4. Building
-        5. Site (fallback)
-        """
-        # Priority 1: Directly extracted room code
-        room_code = row.get('room_code_extracted')
-        if pd.notna(room_code):
-            location_id = get_location_id_by_code(room_code)
-            if location_id:
-                return location_id, 'ROOM_DIRECT'
-
-        # Priority 2: Single specific location from grid-based matching
-        affected_rooms_json = row.get('affected_rooms')
-        if pd.notna(affected_rooms_json):
-            try:
-                rooms = json.loads(affected_rooms_json)
-                if len(rooms) == 1:
-                    room_data = rooms[0]
-                    location_code = room_data['location_code']
-                    match_type = room_data.get('match_type', '')
-
-                    # FULL/PARTIAL = actual room/stair/elevator locations
-                    if match_type in ('FULL', 'PARTIAL'):
-                        room_location_id = get_location_id_by_code(location_code)
-                        if room_location_id:
-                            return room_location_id, 'ROOM_GRID_SINGLE'
-                    elif match_type == 'GRIDLINE':
-                        # Single gridline match - use it (more specific than level)
-                        gridline_location_id = get_location_id_by_code(location_code)
-                        if gridline_location_id:
-                            return gridline_location_id, 'GRIDLINE'
-                elif len(rooms) > 1:
-                    # Multiple locations matched - filter to actual rooms (FULL/PARTIAL matches)
-                    room_locations = [r for r in rooms if r.get('match_type') in ('FULL', 'PARTIAL')]
-
-                    # If only 1 actual room (rest are gridlines), use that room
-                    if len(room_locations) == 1:
-                        location_code = room_locations[0]['location_code']
-                        room_location_id = get_location_id_by_code(location_code)
-                        if room_location_id:
-                            return room_location_id, 'ROOM_GRID_SINGLE'
-                    # Otherwise fall through to level
-            except (json.JSONDecodeError, TypeError, KeyError):
-                pass
-
-        # Priority 3: Level (building + level)
-        building = row.get('building_normalized')
-        level = row.get('level_normalized')
-        if pd.notna(building) and pd.notna(level):
-            location_id = get_location_id(building, level)
-            if location_id:
-                return location_id, 'LEVEL'
-
-        # Priority 4: Building only
-        if pd.notna(building):
-            location_id = get_location_id(building, None)
-            if location_id:
-                return location_id, 'BUILDING'
-
-        # Priority 5: Site fallback
-        location_id = get_location_id('SITE', None)
-        if location_id:
-            return location_id, 'SITE'
-
-        return None, None
-
-    location_results = df.apply(apply_location_hierarchy, axis=1).apply(pd.Series)
-    df['dim_location_id'] = location_results[0]
-    df['location_source'] = location_results[1]
+    # NOTE: Location hierarchy and dim_location_id assignment is now done by
+    # enrich_location() above. The location_source column maps from match_type.
 
     # Calculate coverage
     has_grid_row = df['grid_row_min'].notna()

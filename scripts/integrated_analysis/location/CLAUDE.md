@@ -1,6 +1,6 @@
 # Location Processing Module
 
-**Last Updated:** 2026-01-27
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -26,7 +26,7 @@ This caused:
 
 ## Usage
 
-### Basic Usage
+### Basic Usage (RABA/PSI/QC)
 
 ```python
 from scripts.integrated_analysis.location import enrich_location
@@ -40,13 +40,37 @@ result = enrich_location(
 
 # Access results
 result.dim_location_id       # Integer FK to dim_location
-result.building_level        # "FAB-2F"
+result.location_type         # ROOM, STAIR, ELEVATOR, GRIDLINE, LEVEL, BUILDING, UNDEFINED
 result.affected_rooms        # JSON string: [{"location_id": 47, ...}, ...]
 result.affected_rooms_count  # 3
-result.grid_completeness     # "FULL"
-result.match_quality         # "PRECISE"
-result.location_review_flag  # False
-result.location_source       # "GRID_SINGLE_FULL"
+result.match_type            # ROOM_DIRECT, GRID_SINGLE, GRID_MULTI, GRIDLINE, LEVEL, etc.
+```
+
+### TBM Usage (with pre-parsed grid bounds)
+
+TBM has complex grid patterns (103 regex patterns) that are parsed by `parse_tbm_grid()`.
+Pass pre-parsed bounds to `enrich_location()` for affected rooms and hierarchy:
+
+```python
+from scripts.integrated_analysis.location import enrich_location
+from scripts.integrated_analysis.enrich_with_dimensions import parse_tbm_grid
+
+# Parse grid using TBM-specific parser
+grid_parsed = parse_tbm_grid(location_row)
+
+# Use centralized enrichment with pre-parsed bounds
+result = enrich_location(
+    building='FAB',
+    level='2F',
+    location_text=location_row,  # For room/stair/elevator extraction
+    source='TBM',
+    # Pre-parsed grid bounds
+    grid_row_min=grid_parsed['grid_row_min'],
+    grid_row_max=grid_parsed['grid_row_max'],
+    grid_col_min=grid_parsed['grid_col_min'],
+    grid_col_max=grid_parsed['grid_col_max'],
+    grid_type=grid_parsed['grid_type'],
+)
 ```
 
 ### DataFrame Usage
@@ -54,7 +78,6 @@ result.location_source       # "GRID_SINGLE_FULL"
 ```python
 from scripts.integrated_analysis.location import enrich_location
 
-# Option 1: Apply to each row
 def enrich_row(row):
     result = enrich_location(
         building=row['building'],
@@ -66,14 +89,6 @@ def enrich_row(row):
 
 enriched = df.apply(enrich_row, axis=1).apply(pd.Series)
 df = pd.concat([df, enriched], axis=1)
-
-# Option 2: Use helper function
-from scripts.integrated_analysis.location.enrichment import enrich_location_row
-
-enriched = df.apply(
-    lambda row: enrich_location_row(row, source='RABA'),
-    axis=1
-).apply(pd.Series)
 ```
 
 ## Module Structure
@@ -84,118 +99,105 @@ location/
 ├── CLAUDE.md                      # This file
 ├── core/
 │   ├── __init__.py
-│   └── normalizers.py             # Building/level normalization
+│   ├── normalizers.py             # Building/level normalization
+│   ├── extractors.py              # P6 extraction patterns
+│   ├── pattern_extractor.py       # Room/stair/elevator from text
+│   └── grid_parser.py             # Centralized grid parsing
 ├── dimension/
 │   └── __init__.py                # (Future) Dimension table builders
 ├── enrichment/
 │   ├── __init__.py
-│   └── location_enricher.py       # Main enrichment function
+│   ├── location_enricher.py       # Main enrichment function
+│   └── p6_location.py             # P6 schedule location extraction
 └── validation/
-    └── __init__.py                # (Future) Coverage validation
+    └── __init__.py                # Coverage validation
 ```
+
+## Grid Parser
+
+The `parse_grid()` function in `core/grid_parser.py` handles common grid formats:
+
+```python
+from scripts.integrated_analysis.location import parse_grid
+
+result = parse_grid("G/10")           # POINT
+result = parse_grid("A-N/1-3")        # RANGE
+result = parse_grid("C/11 - C/22")    # TBM RANGE format
+result = parse_grid("J~K/8~15")       # TBM tilde format
+
+# Result contains:
+result.grid_row_min  # 'G'
+result.grid_row_max  # 'G'
+result.grid_col_min  # 10.0
+result.grid_col_max  # 10.0
+result.grid_type     # 'POINT', 'RANGE', 'ROW_ONLY', 'COL_ONLY', 'NAMED'
+```
+
+For TBM's 103+ complex patterns, use `parse_tbm_grid()` from `enrich_with_dimensions.py`.
 
 ## Key Concepts
 
-### Grid Completeness
+### Location Type
 
-Describes what location information was available in the source data:
-
-| Value | Meaning |
-|-------|---------|
-| `FULL` | Both grid row and column present |
-| `ROW_ONLY` | Only grid row (e.g., "Row G") |
-| `COL_ONLY` | Only grid column (e.g., "Line 10") |
-| `LEVEL_ONLY` | Only building/level, no grid |
-| `NONE` | No usable location info |
-
-### Match Quality
-
-Describes how confidently we matched to specific rooms:
+Describes what location information the record represents:
 
 | Value | Meaning |
 |-------|---------|
-| `PRECISE` | All matched rooms have FULL grid overlap |
-| `MIXED` | Some FULL matches, some PARTIAL |
-| `PARTIAL` | All matches are partial (row-only or col-only) |
-| `NONE` | No rooms matched |
+| `ROOM` | Direct room code (FAB116101) |
+| `STAIR` | Stair location (STR-21) |
+| `ELEVATOR` | Elevator location (ELV-03) |
+| `GRIDLINE` | Grid coordinates (rooms inferred via affected_rooms) |
+| `LEVEL` | Building + level only |
+| `BUILDING` | Building-wide |
+| `UNDEFINED` | No usable location info |
+
+### Match Type
+
+How the `dim_location_id` was determined:
+
+| Value | Meaning |
+|-------|---------|
+| `ROOM_DIRECT` | Room/stair/elevator code found in text |
+| `GRID_SINGLE` | Grid overlaps exactly one room |
+| `GRID_MULTI` | Grid overlaps multiple rooms (see affected_rooms) |
+| `GRIDLINE` | Grid but no room overlap found |
+| `LEVEL` | Building + level fallback |
+| `BUILDING` | FAB1 (project-wide) fallback |
+| `UNDEFINED` | Final fallback |
 
 ### Location Hierarchy
 
-When determining `dim_location_id`, we use this priority order:
+Priority order for `dim_location_id`:
 
-1. **ROOM_DIRECT**: Extracted room code (e.g., from P6 task name)
-2. **GRID_SINGLE_FULL**: Single room with full grid match
-3. **GRID_SINGLE_PARTIAL**: Single room with partial grid match
-4. **GRIDLINE**: Gridline location (when no rooms match)
+1. **ROOM_DIRECT**: Room/stair/elevator code found
+2. **GRID_SINGLE**: Single room from grid overlap
+3. **GRID_MULTI**: First room from grid overlap (use affected_rooms for all)
+4. **GRIDLINE**: Gridline location when no rooms match
 5. **LEVEL**: Building + level fallback
-6. **BUILDING**: Building-wide fallback
-7. **SITE**: Site-wide fallback
-
-### Location Review Flag
-
-`location_review_flag=True` suggests human review when:
-- Many rooms matched (>10) with non-precise matching
-- Many partial matches (>5 rooms)
-- Only level info available (very coarse)
+6. **BUILDING**: FAB1 fallback
+7. **UNDEFINED**: Final fallback
 
 ## Dependencies
 
 This module uses functions from:
-- `scripts.shared.dimension_lookup` - Grid parsing, affected rooms
-- Internal normalizers
+- `scripts.shared.dimension_lookup` - Affected rooms, location lookups
+- Internal normalizers and pattern extractors
 
 It does NOT depend on source-specific code (RABA, PSI, TBM).
 
-## Migration Guide
+## Migration Status
 
-### Before (in consolidate.py):
-
-```python
-# 80+ lines of location processing
-from scripts.shared.dimension_lookup import (
-    get_location_id, get_building_level, get_affected_rooms,
-    parse_grid_field, normalize_grid,
-)
-
-grid_raw = content.get('grid')
-grid_normalized = normalize_grid(grid_raw)
-grid_parsed = parse_grid_field(grid_raw)
-
-affected_rooms = None
-if level_std:
-    has_row = grid_parsed['grid_row_min'] is not None
-    has_col = grid_parsed['grid_col_min'] is not None
-    if has_row or has_col:
-        rooms = get_affected_rooms(...)
-        if rooms:
-            affected_rooms = json.dumps(rooms)
-affected_rooms_count = len(json.loads(affected_rooms)) if affected_rooms else None
-
-# ... 50 more lines for completeness, quality, review flag ...
-```
-
-### After:
-
-```python
-from scripts.integrated_analysis.location import enrich_location
-
-loc = enrich_location(
-    building=content.get('building'),
-    level=level_std,
-    grid=content.get('grid'),
-    source='RABA'
-)
-
-# Use results directly
-record['dim_location_id'] = loc.dim_location_id
-record['affected_rooms'] = loc.affected_rooms
-record['grid_completeness'] = loc.grid_completeness
-# ... etc
-```
+| Source | Centralized? | Notes |
+|--------|--------------|-------|
+| RABA | ✅ | Uses `enrich_location()` |
+| PSI | ✅ | Uses `enrich_location()` |
+| TBM | ✅ | Uses `enrich_location()` with pre-parsed bounds |
+| P6 | ✅ | Uses `extract_p6_location()` |
+| ProjectSight | ❌ | No location data in source |
+| NCR | ❌ | No location data in source |
 
 ## Future Work
 
-1. **Move grid parsing** from `dimension_lookup.py` to `location/core/grid_parser.py`
-2. **Move TBM grid parsing** from `enrich_with_dimensions.py` (400+ lines) to this module
-3. **Add grid coverage bridge** generator for Power BI heatmaps
-4. **Add validation scripts** for location coverage reporting
+1. **Move TBM grid parsing** to this module (currently 103 patterns in `enrich_with_dimensions.py`)
+2. **Add grid coverage bridge** generator for Power BI heatmaps
+3. **Add validation scripts** for location coverage reporting

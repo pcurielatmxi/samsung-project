@@ -10,6 +10,11 @@ from scripts.integrated_analysis.location.core.pattern_extractor import (
     extract_primary_location_code,
     ExtractedLocationCodes,
 )
+from scripts.integrated_analysis.location.core.grid_parser import (
+    parse_grid,
+    parse_grid_to_dict,
+    GridParseResult,
+)
 from scripts.integrated_analysis.location.core.extractors import (
     # Room extraction
     extract_room,
@@ -39,6 +44,10 @@ __all__ = [
     # Normalizers
     'normalize_level',
     'normalize_building',
+    # Grid parsing
+    'parse_grid',
+    'parse_grid_to_dict',
+    'GridParseResult',
     # Pattern extraction (from free text)
     'extract_location_codes',
     'extract_location_codes_for_lookup',

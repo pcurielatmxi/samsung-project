@@ -103,12 +103,14 @@ from scripts.integrated_analysis.location.core.normalizers import (
 from scripts.integrated_analysis.location.core.pattern_extractor import (
     extract_location_codes_for_lookup,
 )
+from scripts.integrated_analysis.location.core.grid_parser import (
+    parse_grid,
+)
 from scripts.shared.dimension_lookup import (
     get_location_id,
     get_location_id_by_code,
     get_affected_rooms,
     get_location_by_code,
-    parse_grid_field,
     reset_cache,
 )
 
@@ -196,6 +198,13 @@ def enrich_location(
     room_code: Optional[str] = None,
     location_text: Optional[str] = None,
     source: str = 'UNKNOWN',
+    # Pre-parsed grid bounds (alternative to raw grid string)
+    # Use when source has complex patterns already parsed (e.g., TBM)
+    grid_row_min: Optional[str] = None,
+    grid_row_max: Optional[str] = None,
+    grid_col_min: Optional[float] = None,
+    grid_col_max: Optional[float] = None,
+    grid_type: Optional[str] = None,
 ) -> LocationEnrichmentResult:
     """
     Enrich a record with location information.
@@ -241,6 +250,11 @@ def enrich_location(
                        Pattern extraction will find room codes like "FAB116109A",
                        "Stair 21", "Elevator 22" for ROOM_DIRECT matching
         source: Source identifier for diagnostics (e.g., "RABA", "PSI", "TBM")
+        grid_row_min, grid_row_max: Pre-parsed grid row bounds (letters A-N)
+        grid_col_min, grid_col_max: Pre-parsed grid column bounds (numbers 1-33)
+        grid_type: Pre-parsed grid type (POINT, RANGE, ROW_ONLY, COL_ONLY)
+                   Use pre-parsed bounds when source has complex patterns (e.g., TBM)
+                   that have already been parsed by a source-specific parser.
 
     Returns:
         LocationEnrichmentResult with:
@@ -316,14 +330,27 @@ def enrich_location(
                 return result
 
     # Step 3: Parse grid coordinates if provided
-    grid_parsed = parse_grid_field(grid)
+    # Option A: Use pre-parsed grid bounds (from source-specific parser like TBM)
+    # Option B: Parse raw grid string using centralized parser
+    if grid_row_min is not None or grid_col_min is not None:
+        # Pre-parsed bounds provided - use them directly
+        if grid_row_min is not None:
+            result.grid_row_min = grid_row_min
+            result.grid_row_max = grid_row_max or grid_row_min
+        if grid_col_min is not None:
+            result.grid_col_min = grid_col_min
+            result.grid_col_max = grid_col_max or grid_col_min
+    else:
+        # Parse raw grid string using centralized parser
+        # Handles RABA, PSI, TBM formats
+        grid_parsed = parse_grid(grid)
 
-    if grid_parsed.get('grid_row_min') is not None:
-        result.grid_row_min = grid_parsed['grid_row_min']
-        result.grid_row_max = grid_parsed['grid_row_max']
-    if grid_parsed.get('grid_col_min') is not None:
-        result.grid_col_min = grid_parsed['grid_col_min']
-        result.grid_col_max = grid_parsed['grid_col_max']
+        if grid_parsed.grid_row_min is not None:
+            result.grid_row_min = grid_parsed.grid_row_min
+            result.grid_row_max = grid_parsed.grid_row_max
+        if grid_parsed.grid_col_min is not None:
+            result.grid_col_min = grid_parsed.grid_col_min
+            result.grid_col_max = grid_parsed.grid_col_max
 
     has_row = result.grid_row_min is not None
     has_col = result.grid_col_min is not None
