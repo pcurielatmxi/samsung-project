@@ -1520,7 +1520,6 @@ def enrich_weekly_labor(dry_run: bool = False) -> Dict[str, Any]:
     coverage = {
         'location': 0.0,
         'company': df['dim_company_id'].notna().mean() * 100,
-        'trade': 0.0,
     }
 
     if not dry_run:
@@ -1597,15 +1596,16 @@ def main():
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
-    print(f"\n{'Source':<20} {'Records':>12} {'Location':>10} {'Company':>10} {'Trade':>10} {'Grid Row':>10} {'Grid Col':>10}")
+    print(f"\n{'Source':<20} {'Records':>12} {'Location':>10} {'Company':>10} {'CSI':>10} {'Grid Row':>10} {'Grid Col':>10}")
     print("-" * 90)
 
     for key, result in results.items():
         name = ENRICHMENT_TASKS[key][0]
         if result['status'] == 'success':
+            csi = result['coverage'].get('csi_section', 0.0)
             grid_row = result['coverage'].get('grid_row', 0.0)
             grid_col = result['coverage'].get('grid_col', 0.0)
-            print(f"{name:<20} {result['records']:>12,} {result['coverage']['location']:>9.1f}% {result['coverage']['company']:>9.1f}% {result['coverage']['trade']:>9.1f}% {grid_row:>9.1f}% {grid_col:>9.1f}%")
+            print(f"{name:<20} {result['records']:>12,} {result['coverage']['location']:>9.1f}% {result['coverage']['company']:>9.1f}% {csi:>9.1f}% {grid_row:>9.1f}% {grid_col:>9.1f}%")
         else:
             print(f"{name:<20} {'SKIPPED':>12}")
 
