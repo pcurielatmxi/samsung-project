@@ -43,7 +43,6 @@ Room codes like FAB112155 encode: FAB + [Level digit] + [5-digit room ID]
 
 import re
 import pandas as pd
-from .mappings import WBS_TRADE_PATTERNS, TASK_NAME_TRADE_PATTERNS
 
 # Import centralized location extraction functions
 # These are the single source of truth for location extraction
@@ -111,21 +110,6 @@ def extract_level_from_wbs(tier_3: str, tier_4: str, tier_5: str, wbs_name: str)
     return _extract_level_from_wbs(tier_3, tier_4, tier_5, wbs_name)
 
 
-def extract_trade_from_wbs(tier_4: str) -> int | None:
-    """
-    Extract trade_id from WBS tier_4.
-
-    Returns: trade_id (1-12) or None
-    """
-    tier_4 = safe_upper(tier_4)
-
-    for pattern, trade_id in WBS_TRADE_PATTERNS:
-        if re.search(pattern, tier_4, re.IGNORECASE):
-            return trade_id
-
-    return None
-
-
 def extract_area_from_wbs(tier_4: str) -> str | None:
     """
     Extract grid area from WBS tier_4.
@@ -156,27 +140,6 @@ def extract_room_from_wbs(tier_5: str, wbs_name: str) -> str | None:
     Routes to centralized module.
     """
     return _extract_room(tier_5, wbs_name)
-
-
-def extract_trade_from_task_name(task_name: str) -> int | None:
-    """
-    Extract trade_id from task_name using pattern matching.
-
-    This is a fallback for tasks where Z-TRADE and WBS don't provide trade info,
-    and the TaskClassifier scope didn't map to a trade.
-
-    Returns: trade_id (1-12) or None
-    """
-    if not task_name or pd.isna(task_name):
-        return None
-
-    task_name_upper = str(task_name).upper()
-
-    for pattern, trade_id in TASK_NAME_TRADE_PATTERNS:
-        if re.search(pattern, task_name_upper, re.IGNORECASE):
-            return trade_id
-
-    return None
 
 
 def extract_building_from_task_code(task_code: str) -> str | None:

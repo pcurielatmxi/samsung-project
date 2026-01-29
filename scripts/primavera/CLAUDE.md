@@ -63,8 +63,8 @@ The task taxonomy system infers business classifications (trade, building, level
 ### Output Columns
 
 **Classification Fields:**
-- `trade_id`, `trade_code`, `trade_name` - 12 trade categories (Concrete, Steel, Finishes, etc.)
-- `sub_trade`, `sub_trade_desc` - Detailed scope (CIP, CTG, DRYWALL, etc.)
+- `dim_csi_section_id`, `csi_section`, `csi_title` - 52 CSI MasterFormat sections (primary work type classification)
+- `sub_trade`, `sub_trade_desc` - Detailed scope codes (CIP, CTG, DRYWALL, etc.)
 - `building` - FAB, SUE, SUW, FIZ
 - `level` - 1-6, ROOF, B1, MULTI
 - `area` - Grid area (SEA-5, SWA-1, FIZ1)
@@ -72,6 +72,7 @@ The task taxonomy system infers business classifications (trade, building, level
 - `sub_contractor` - From Z-SUB activity code
 - `phase` - Project stage (PRE, STR, INT, COM)
 - `location_type`, `location_code` - Unified location classification (ROOM, ELEVATOR, STAIR, GRIDLINE, AREA, LEVEL, BUILDING, MULTI)
+- `dim_location_id` - FK to dim_location for Power BI integration
 
 **Source Tracking:**
 - `*_source` columns show derivation: activity_code | wbs | task_code | inferred | None
@@ -79,14 +80,12 @@ The task taxonomy system infers business classifications (trade, building, level
 **Impact Fields** (sparse, for IMPACT tasks only):
 - `impact_code`, `impact_type`, `attributed_to`, `root_cause`
 
+**Note:** `dim_trade` has been superseded by `dim_csi_section` for work type classification.
+Use `dim_csi_section_id` for analysis instead of trade_id.
+
 ### Coverage Statistics
 
 From latest YATES schedule (12,230 tasks):
-
-**Trade:** 96.8% coverage
-- 48.5% from activity codes (Z-TRADE)
-- 48.3% from task name inference
-- 3.2% unmapped
 
 **Building:** 97.3% coverage
 - 55.3% from activity codes (Z-BLDG)

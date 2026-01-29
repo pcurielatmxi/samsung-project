@@ -210,23 +210,8 @@ SUB_TRADE_TO_CSI = {
     'FND': 52,      # 31 63 00 Foundations
 }
 
-# Trade ID fallback mapping (when sub_trade is not specific enough)
-# Maps dim_trade trade_id to a default CSI section
-TRADE_ID_TO_DEFAULT_CSI = {
-    1: 2,    # Concrete → 03 30 00 Cast-in-Place Concrete
-    2: 6,    # Steel → 05 12 00 Structural Steel Framing
-    3: 16,   # Roofing → 07 52 00 Membrane Roofing
-    4: 26,   # Drywall → 09 21 16 Gypsum Board Assemblies
-    5: 29,   # Finishes → 09 91 26 Painting (most common finish)
-    6: 18,   # Fireproof → 07 81 00 Applied Fireproofing
-    7: 44,   # MEP → 26 05 00 Common Work Results for Electrical
-    8: 13,   # Insulation → 07 21 16 Blanket Insulation
-    9: 51,   # Earthwork → 31 23 00 Excavation and Fill
-    10: 3,   # Precast → 03 41 00 Structural Precast
-    11: 15,  # Panels → 07 42 43 Composite Wall Panels
-    12: 1,   # General → 01 10 00 Summary
-    13: 5,   # Masonry → 04 20 00 Unit Masonry
-}
+# Note: TRADE_ID_TO_DEFAULT_CSI removed - dim_trade has been superseded by dim_csi_section
+# CSI inference now relies solely on task_name keywords, sub_trade, and scope
 
 
 def infer_csi_from_keywords(task_name: str) -> Tuple[Optional[int], Optional[str], str]:
@@ -260,21 +245,22 @@ def infer_csi_from_taxonomy(
     task_name: str,
     sub_trade: str,
     scope: str,
-    trade_id
 ) -> Tuple[Optional[int], Optional[str], str]:
     """
     Infer CSI section from task taxonomy fields.
 
-    Priority: task_name keywords → sub_trade → scope → trade_id fallback
+    Priority: task_name keywords → sub_trade → scope
 
     The keyword check is critical for fire-related work where FIR sub_trade
     is used as a catch-all but contains firestopping, fire suppression, etc.
+
+    Note: dim_trade has been superseded by dim_csi_section. Trade-based
+    fallback has been removed.
 
     Args:
         task_name: Raw task name for keyword matching
         sub_trade: Detailed scope code (e.g., 'CIP', 'STL', 'DRY')
         scope: Broader scope code
-        trade_id: dim_trade trade_id (1-13)
 
     Returns:
         Tuple of (csi_section_id, csi_section_code, inference_source)
@@ -300,17 +286,6 @@ def infer_csi_from_taxonomy(
             csi_id = SUB_TRADE_TO_CSI[scope_upper]
             csi_code, _ = CSI_SECTIONS[csi_id]
             return csi_id, csi_code, "scope"
-
-    # Fall back to trade_id
-    if pd.notna(trade_id):
-        try:
-            tid = int(trade_id)
-            if tid in TRADE_ID_TO_DEFAULT_CSI:
-                csi_id = TRADE_ID_TO_DEFAULT_CSI[tid]
-                csi_code, _ = CSI_SECTIONS[csi_id]
-                return csi_id, csi_code, "trade_id"
-        except (ValueError, TypeError):
-            pass
 
     return None, None, "none"
 
@@ -355,7 +330,6 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
             get_task_name(row.get('task_id')),
             row.get('sub_trade'),
             row.get('scope'),
-            row.get('trade_id')
         ),
         axis=1
     )
@@ -374,14 +348,12 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
     keyword_count = (df['csi_inference_source'] == 'keyword').sum()
     sub_trade_count = (df['csi_inference_source'] == 'sub_trade').sum()
     scope_count = (df['csi_inference_source'] == 'scope').sum()
-    trade_id_count = (df['csi_inference_source'] == 'trade_id').sum()
     none_count = (df['csi_inference_source'] == 'none').sum()
 
     print(f"\nCSI Section Coverage: {coverage:.1f}%")
     print(f"  From keyword:   {keyword_count:,} ({keyword_count/len(df)*100:.1f}%)")
     print(f"  From sub_trade: {sub_trade_count:,} ({sub_trade_count/len(df)*100:.1f}%)")
     print(f"  From scope:     {scope_count:,} ({scope_count/len(df)*100:.1f}%)")
-    print(f"  From trade_id:  {trade_id_count:,} ({trade_id_count/len(df)*100:.1f}%)")
     print(f"  No match:       {none_count:,} ({none_count/len(df)*100:.1f}%)")
 
     # Show keyword matches by CSI section

@@ -104,8 +104,8 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
     total = len(context)
 
     # Track statistics for each field's source
+    # Note: trade stats removed - dim_trade superseded by dim_csi_section
     stats = {
-        'trade': {'activity_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
         'building': {'activity_code': 0, 'task_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
         'level': {'activity_code': 0, 'wbs': 0, 'inferred': 0, 'none': 0},
         'area': {'wbs': 0, 'none': 0},
@@ -115,7 +115,7 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
         'phase': {'inferred': 0, 'none': 0},
         'location_type': {'ROOM': 0, 'ELEVATOR': 0, 'STAIR': 0, 'GRIDLINE': 0, 'AREA': 0, 'LEVEL': 0, 'BUILDING': 0, 'MULTI': 0, 'none': 0},
         'impact': {'inferred': 0, 'none': 0},
-        'csi_section': {'keyword': 0, 'trade': 0, 'none': 0},
+        'csi_section': {'keyword': 0, 'none': 0},
     }
 
     for idx, (_, row) in enumerate(context.iterrows()):
@@ -126,7 +126,6 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
         results.append(result)
 
         # Update stats for each field
-        stats['trade'][result['trade_source'] or 'none'] += 1
         stats['building'][result['building_source'] or 'none'] += 1
         stats['level'][result['level_source'] or 'none'] += 1
         stats['area'][result['area_source'] or 'none'] += 1
@@ -168,16 +167,19 @@ def print_summary(df: pd.DataFrame) -> None:
     print("CLASSIFICATION SUMMARY")
     print("=" * 60)
 
-    # Trade distribution
-    print("\n--- Trade Distribution ---")
-    trade_dist = df.groupby(['trade_id', 'trade_code', 'trade_name']).size().sort_values(ascending=False)
-    for (tid, code, name), count in trade_dist.items():
-        if pd.notna(tid):
-            pct = count / len(df) * 100
-            print(f"  {int(tid):2d} {code:12s}: {count:,} ({pct:.1f}%)")
-    unmapped = df['trade_id'].isna().sum()
-    if unmapped > 0:
-        print(f"  -- UNMAPPED: {unmapped:,} ({unmapped/len(df)*100:.1f}%)")
+    # CSI Section distribution (replaces trade distribution)
+    print("\n--- CSI Section Distribution (Top 15) ---")
+    if 'dim_csi_section_id' in df.columns:
+        csi_dist = df.groupby(['dim_csi_section_id', 'csi_section', 'csi_title']).size().sort_values(ascending=False).head(15)
+        for (csi_id, section, title), count in csi_dist.items():
+            if pd.notna(csi_id):
+                pct = count / len(df) * 100
+                print(f"  {section} {title}: {count:,} ({pct:.1f}%)")
+        unmapped = df['dim_csi_section_id'].isna().sum()
+        if unmapped > 0:
+            print(f"  -- UNMAPPED: {unmapped:,} ({unmapped/len(df)*100:.1f}%)")
+    else:
+        print("  (CSI section columns not yet added - run add_csi_to_p6_tasks.py)")
 
     # Building distribution
     print("\n--- Building Distribution ---")

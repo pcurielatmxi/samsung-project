@@ -25,23 +25,17 @@ if str(_shared_dir) not in sys.path:
 
 from gridline_mapping import get_gridline_bounds, get_default_mapping
 from .mappings import (
-    Z_TRADE_TO_DIM_TRADE,
     Z_BLDG_TO_CODE,
-    SCOPE_TO_TRADE_ID,
-    DIM_TRADE,
-    get_trade_details,
 )
 from .extractors import (
     extract_building_from_wbs,
     extract_level_from_wbs,
-    extract_trade_from_wbs,
     extract_area_from_wbs,
     extract_room_from_wbs,
     extract_level_from_z_level,
     extract_building_from_z_level,
     extract_building_from_task_code,
     extract_building_from_z_area,
-    extract_trade_from_task_name,
     extract_elevator_from_task_name,
     extract_stair_from_task_name,
     extract_gridline_from_task_name_and_area,
@@ -57,62 +51,6 @@ from scripts.integrated_analysis.add_csi_to_raba import (
     KEYWORD_TO_CSI,
     CSI_SECTIONS,
 )
-
-
-def infer_trade(row: pd.Series) -> tuple[int | None, str | None, str | None, str | None]:
-    """
-    Infer trade classification from activity code, WBS, or task name.
-
-    Priority order:
-    1. Z-TRADE activity code (highest priority)
-    2. WBS tier_4 context
-    3. TaskClassifier scope code
-    4. Task name pattern matching (fallback)
-
-    Args:
-        row: Combined task context row with columns:
-            - z_trade: Z-TRADE activity code value
-            - tier_4: WBS tier_4 value
-            - scope: Inferred scope from TaskClassifier
-            - task_name: Task name for pattern matching
-
-    Returns:
-        Tuple of (trade_id, trade_code, trade_name, source)
-    """
-    # Priority 1: Activity code
-    z_trade = row.get('z_trade')
-    if z_trade and pd.notna(z_trade):
-        key = str(z_trade).lower().strip()
-        trade_id = Z_TRADE_TO_DIM_TRADE.get(key)
-        if trade_id:
-            details = get_trade_details(trade_id)
-            return (trade_id, details['trade_code'], details['trade_name'], 'activity_code')
-
-    # Priority 2: WBS context
-    tier_4 = row.get('tier_4')
-    if tier_4 and pd.notna(tier_4):
-        trade_id = extract_trade_from_wbs(tier_4)
-        if trade_id:
-            details = get_trade_details(trade_id)
-            return (trade_id, details['trade_code'], details['trade_name'], 'wbs')
-
-    # Priority 3: TaskClassifier scope
-    scope = row.get('scope')
-    if scope and pd.notna(scope):
-        trade_id = SCOPE_TO_TRADE_ID.get(scope)
-        if trade_id:
-            details = get_trade_details(trade_id)
-            return (trade_id, details['trade_code'], details['trade_name'], 'inferred')
-
-    # Priority 4: Task name pattern matching (fallback)
-    task_name = row.get('task_name')
-    if task_name and pd.notna(task_name):
-        trade_id = extract_trade_from_task_name(task_name)
-        if trade_id:
-            details = get_trade_details(trade_id)
-            return (trade_id, details['trade_code'], details['trade_name'], 'inferred')
-
-    return (None, None, None, None)
 
 
 def infer_building(row: pd.Series) -> tuple[str | None, str | None]:
@@ -706,26 +644,26 @@ def infer_work_phase(row: pd.Series) -> tuple[str | None, str | None]:
     return (None, None)
 
 
-def infer_csi_section(row: pd.Series, trade_code: str = None) -> tuple[int | None, str | None, str | None, str | None]:
+def infer_csi_section(row: pd.Series) -> tuple[int | None, str | None, str | None, str | None]:
     """
-    Infer CSI section from task name and trade classification.
+    Infer CSI section from task name keywords.
 
     Uses the same keyword patterns as quality data CSI inference for consistency.
-    Falls back to trade_code → CSI mapping if no keyword match.
+    Note: Full CSI inference with sub_trade/scope fallbacks is handled by
+    add_csi_to_p6_tasks.py as a post-processing step.
 
     Args:
         row: Task context row with task_name column
-        trade_code: Inferred trade code (CONCRETE, STEEL, etc.)
 
     Returns:
         Tuple of (csi_section_id, csi_section_code, csi_title, csi_source)
-        csi_source is 'keyword' or 'trade' or None
+        csi_source is 'keyword' or None
     """
     task_name = row.get('task_name', '')
     if not task_name or pd.isna(task_name):
         task_name = ''
 
-    # Try keyword matching first (same patterns as quality data)
+    # Try keyword matching (same patterns as quality data)
     name_lower = str(task_name).lower()
 
     for keywords, csi_id in KEYWORD_TO_CSI:
@@ -733,27 +671,6 @@ def infer_csi_section(row: pd.Series, trade_code: str = None) -> tuple[int | Non
             if keyword in name_lower:
                 csi_code, csi_title = CSI_SECTIONS[csi_id]
                 return (csi_id, csi_code, csi_title, 'keyword')
-
-    # Fall back to trade_code → CSI mapping
-    if trade_code:
-        trade_to_csi = {
-            'CONCRETE': (2, '03 30 00', 'Cast-in-Place Concrete'),
-            'PRECAST': (3, '03 41 00', 'Structural Precast Concrete'),
-            'STEEL': (6, '05 12 00', 'Structural Steel Framing'),
-            'MASONRY': (5, '04 20 00', 'Unit Masonry'),
-            'DRYWALL': (26, '09 21 16', 'Gypsum Board Assemblies'),
-            'FINISHES': (29, '09 91 26', 'Painting - Building'),
-            'FIREPROOF': (18, '07 81 00', 'Applied Fireproofing'),
-            'ROOFING': (16, '07 52 00', 'Modified Bituminous Membrane Roofing'),
-            'INSULATION': (13, '07 21 16', 'Blanket Insulation'),
-            'PANELS': (15, '07 42 43', 'Composite Wall Panels'),
-            'MEP': (44, '26 05 00', 'Common Work Results for Electrical'),
-            'EARTHWORK': (51, '31 23 00', 'Excavation and Fill'),
-            'GENERAL': (1, '01 10 00', 'Summary'),
-        }
-        if trade_code in trade_to_csi:
-            csi_id, csi_code, csi_title = trade_to_csi[trade_code]
-            return (csi_id, csi_code, csi_title, 'trade')
 
     return (None, None, None, None)
 
@@ -768,6 +685,10 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
     - 'inferred': From task name pattern matching
     - None: Could not be determined
 
+    Note: dim_trade has been superseded by dim_csi_section. Trade-related fields
+    (trade_id, trade_code, trade_name, trade_source) are no longer generated.
+    Use dim_csi_section_id for work type classification instead.
+
     Args:
         row: Combined task context row with all required columns
         gridline_mapping: Optional GridlineMapping instance for coordinate lookup
@@ -776,7 +697,6 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         Dict with all taxonomy fields and their sources
     """
     # Infer each field using dedicated functions
-    trade_id, trade_code, trade_name, trade_source = infer_trade(row)
     building, building_source = infer_building(row)
     level, level_source = infer_level(row)
     area, area_source = infer_area(row)
@@ -785,8 +705,9 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
     sub_trade, sub_trade_desc, sub_trade_source = infer_sub_trade(row)
     phase, phase_desc, phase_source = infer_phase(row)
     work_phase, work_phase_source = infer_work_phase(row)
-    # CSI section inference (uses task name keywords, falls back to trade)
-    csi_section_id, csi_section_code, csi_title, csi_source = infer_csi_section(row, trade_code=trade_code)
+    # CSI section inference (uses task name keywords)
+    # Note: Full CSI inference with sub_trade/scope fallbacks is in add_csi_to_p6_tasks.py
+    csi_section_id, csi_section_code, csi_title, csi_source = infer_csi_section(row)
     # Pass inferred location fields to location_type inference
     # Now also returns row_min/row_max for GRIDLINE types with specific row bounds
     location_type, location_code, row_min, row_max = infer_location_type(row, building=building, level=level, area=area, room=room)
@@ -805,12 +726,8 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
 
     return {
         'task_id': row.get('task_id'),
-        # Trade (from activity_code > wbs > inferred)
-        'trade_id': trade_id,
-        'trade_code': trade_code,
-        'trade_name': trade_name,
-        'trade_source': trade_source,
         # Sub-trade / detailed scope (inferred only)
+        # Note: Used by add_csi_to_p6_tasks.py for CSI inference fallback
         'sub_trade': sub_trade,
         'sub_trade_desc': sub_trade_desc,
         'sub_trade_source': sub_trade_source,
@@ -876,7 +793,9 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         'root_cause': impact['root_cause'],
         'root_cause_desc': impact['root_cause_desc'],
         'impact_source': impact['impact_source'],
-        # CSI Section (52-category classification, same as quality data)
+        # CSI Section (52-category classification - primary work type dimension)
+        # Note: Keyword-based inference only. Full inference with sub_trade/scope
+        # fallbacks is applied by add_csi_to_p6_tasks.py post-processing.
         'dim_csi_section_id': csi_section_id,
         'csi_section': csi_section_code,
         'csi_title': csi_title,
