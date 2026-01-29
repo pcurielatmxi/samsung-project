@@ -456,9 +456,11 @@ def process_qc_inspections(filepath: Path) -> pd.DataFrame:
 
 def process_progress_tracking(filepath: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Process Progress Tracking file.
+    Process Progress Tracking file (main Fieldwire data source).
 
-    Source: Samsung_-_Progress_Tracking_QC_Inspections_Data_Dump_*.csv
+    Source files (in order of preference):
+      - Samsung_-_Progress_Tracking_Power_BI_Data_Dump_*.csv (new, all data)
+      - Samsung_-_Progress_Tracking_QC_Inspections_Data_Dump_*.csv (legacy)
 
     Returns two DataFrames:
     1. TBM Current (Status="TBM", filtered to >= 2025-12-12)
@@ -542,11 +544,20 @@ def main():
     logger.info(f"Output directory: {output_dir}")
 
     # Find source files
+    # Legacy files (historical data)
     manpower_file = find_latest_file(input_dir, "Manpower_-_SECAI_Power_BI_Data_Dump_*.csv")
     qc_file = find_latest_file(input_dir, "QC_Inspections_Power_BI_Data_Dump_*.csv")
+
+    # Progress Tracking file - try new name first, fall back to legacy name
+    # New: Samsung_-_Progress_Tracking_Power_BI_Data_Dump_*.csv (all fieldwire data)
+    # Old: Samsung_-_Progress_Tracking_QC_Inspections_Data_Dump_*.csv (legacy, inspections only)
     progress_file = find_latest_file(
-        input_dir, "Samsung_-_Progress_Tracking_QC_Inspections_Data_Dump_*.csv"
+        input_dir, "Samsung_-_Progress_Tracking_Power_BI_Data_Dump_*.csv"
     )
+    if not progress_file:
+        progress_file = find_latest_file(
+            input_dir, "Samsung_-_Progress_Tracking_QC_Inspections_Data_Dump_*.csv"
+        )
 
     if not any([manpower_file, qc_file, progress_file]):
         logger.error("No source files found!")
