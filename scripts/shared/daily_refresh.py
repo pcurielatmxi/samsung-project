@@ -5,10 +5,16 @@ Daily Data Refresh Script
 Runs all incremental data pipelines to check for and process new data.
 Each pipeline is idempotent and will skip already-processed files.
 
+Pipeline Architecture:
+- PARSERS: File-based, incremental (skip already-processed files)
+- SCRAPERS: Web-based, manifest-tracked (skip already-downloaded)
+- CONSOLIDATION: Idempotent (re-enriches entire dataset with latest dimensions)
+
 Usage:
     python -m scripts.shared.daily_refresh
     python -m scripts.shared.daily_refresh --dry-run
     python -m scripts.shared.daily_refresh --verbose
+    python -m scripts.shared.daily_refresh --skip-scrapers  # Fast local refresh
 """
 
 import subprocess
@@ -102,21 +108,21 @@ def main():
     )
     results.append(("Primavera XER", success))
 
-    # 3. ProjectSight Labor - incremental parsing
+    # 3. ProjectSight Labor - incremental parsing (parse stage only)
     success, _ = run_command(
         [python, "-m", "scripts.projectsight.process.parse_labor_from_json", "--incremental"],
-        "ProjectSight Labor (incremental)",
+        "ProjectSight Labor Parse (incremental)",
         dry_run=args.dry_run,
         verbose=args.verbose
     )
-    results.append(("ProjectSight Labor", success))
+    results.append(("ProjectSight Labor Parse", success))
 
     # =========================================================================
     # SCRAPERS (web-based, manifest-tracked)
     # =========================================================================
 
     if not args.skip_scrapers:
-        # 4. RABA Individual Reports - manifest-based idempotency
+        # 5. RABA Individual Reports - manifest-based idempotency
         success, _ = run_command(
             [python, "-m", "scripts.raba.process.scrape_raba_individual", "--headless"],
             "RABA Reports (scraper)",
@@ -125,7 +131,7 @@ def main():
         )
         results.append(("RABA Scraper", success))
 
-        # 5. PSI Reports - manifest-based idempotency
+        # 6. PSI Reports - manifest-based idempotency
         success, _ = run_command(
             [python, "-m", "scripts.psi.process.scrape_psi_reports", "--headless"],
             "PSI Reports (scraper)",
@@ -140,7 +146,7 @@ def main():
     # INTEGRATION LAYER - Build dimensions and consolidate data
     # =========================================================================
 
-    # 6. Build dim_location (idempotent - preserves existing entries)
+    # 7. Build dim_location (idempotent - preserves existing entries)
     success, _ = run_command(
         [python, "-m", "scripts.integrated_analysis.dimensions.build_dim_location"],
         "Build dim_location dimension table",
@@ -149,7 +155,7 @@ def main():
     )
     results.append(("dim_location", success))
 
-    # 7. Generate p6_task_taxonomy (idempotent - overwrites with latest data)
+    # 8. Generate p6_task_taxonomy (idempotent - overwrites with latest data)
     success, _ = run_command(
         [python, "-m", "scripts.primavera.derive.generate_task_taxonomy"],
         "Generate P6 task taxonomy",
@@ -158,7 +164,7 @@ def main():
     )
     results.append(("p6_task_taxonomy", success))
 
-    # 8. Add CSI sections to p6_task_taxonomy (idempotent - appends columns)
+    # 9. Add CSI sections to p6_task_taxonomy (idempotent - appends columns)
     success, _ = run_command(
         [python, "-m", "scripts.integrated_analysis.add_csi_to_p6_tasks"],
         "Add CSI sections to P6 tasks",
@@ -167,7 +173,7 @@ def main():
     )
     results.append(("p6_task_taxonomy CSI", success))
 
-    # 9. Consolidate RABA quality inspections (idempotent - uses processed stage 3)
+    # 10. Consolidate RABA quality inspections (idempotent - uses processed stage 3)
     success, _ = run_command(
         [python, "-m", "scripts.raba.document_processing.consolidate"],
         "Consolidate RABA inspections",
@@ -176,7 +182,7 @@ def main():
     )
     results.append(("RABA consolidated", success))
 
-    # 10. Consolidate PSI quality inspections (idempotent - uses processed stage 3)
+    # 11. Consolidate PSI quality inspections (idempotent - uses processed stage 3)
     success, _ = run_command(
         [python, "-m", "scripts.psi.document_processing.consolidate"],
         "Consolidate PSI inspections",
@@ -185,7 +191,7 @@ def main():
     )
     results.append(("PSI consolidated", success))
 
-    # 11. Consolidate TBM with dimension IDs + CSI (idempotent - overwrites file)
+    # 12. Consolidate TBM with dimension IDs + CSI (idempotent - overwrites file)
     success, _ = run_command(
         [python, "-m", "scripts.tbm.process.consolidate_tbm"],
         "Consolidate TBM with dimensions + CSI",
@@ -194,7 +200,25 @@ def main():
     )
     results.append(("TBM consolidated", success))
 
-    # 12. Generate affected_rooms_bridge (idempotent - overwrites bridge table)
+    # 13. Consolidate ProjectSight Labor with dimensions + CSI (idempotent - overwrites file)
+    success, _ = run_command(
+        [python, "-m", "scripts.projectsight.process.consolidate_labor"],
+        "Consolidate ProjectSight Labor with dimensions + CSI",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("ProjectSight Labor consolidated", success))
+
+    # 14. Consolidate NCR with dimensions + CSI (idempotent - overwrites file)
+    success, _ = run_command(
+        [python, "-m", "scripts.projectsight.process.consolidate_ncr"],
+        "Consolidate NCR with dimensions + CSI",
+        dry_run=args.dry_run,
+        verbose=args.verbose
+    )
+    results.append(("NCR consolidated", success))
+
+    # 15. Generate affected_rooms_bridge (idempotent - overwrites bridge table)
     success, _ = run_command(
         [python, "-m", "scripts.integrated_analysis.generate_affected_rooms_bridge"],
         "Generate affected_rooms_bridge",
@@ -252,6 +276,21 @@ def main():
     if failed > 0:
         print("\nNote: Check sync_log.csv for detailed pipeline logs")
         sys.exit(1)
+
+    # Print Power BI output files summary
+    print("\n" + "-" * 60)
+    print("POWER BI DATA SOURCES (processed/)")
+    print("-" * 60)
+    print("  Fact Tables:")
+    print("    - tbm/work_entries_enriched.csv")
+    print("    - raba/raba_consolidated.csv")
+    print("    - psi/psi_consolidated.csv")
+    print("    - projectsight/labor_entries.csv")
+    print("    - projectsight/ncr_consolidated.csv")
+    print("  Dimensions:")
+    print("    - integrated_analysis/dimensions/dim_*.csv")
+    print("  Bridge Tables:")
+    print("    - integrated_analysis/bridge_tables/affected_rooms_bridge.csv")
 
     return 0
 

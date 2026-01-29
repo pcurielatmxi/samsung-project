@@ -14,11 +14,7 @@ from .mappings import MapCompanyAliases, MapCompanyLocation
 from .quality import QCInspectionConsolidated, PsiConsolidated, RabaConsolidated
 from .tbm import TbmFiles, TbmWorkEntries, TbmWorkEntriesEnriched
 from .ncr import NcrConsolidated
-from .weekly_reports import (
-    WeeklyReports, KeyIssues, WorkProgressing, Procurement,
-    LaborDetail, LaborDetailByCompany,
-    AddendumFiles, AddendumManpower, AddendumRfiLog, AddendumSubmittalLog,
-)
+from .projectsight import ProjectSightLaborEntries
 from .bridge_tables import AffectedRoomsBridge
 
 
@@ -47,19 +43,8 @@ SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
     # NCR data
     'ncr_consolidated.csv': NcrConsolidated,
 
-    # Weekly reports
-    'weekly_reports.csv': WeeklyReports,
-    'key_issues.csv': KeyIssues,
-    'work_progressing.csv': WorkProgressing,
-    'procurement.csv': Procurement,
-    'labor_detail.csv': LaborDetail,
-    'labor_detail_by_company.csv': LaborDetailByCompany,
-
-    # Addendum data
-    'addendum_files.csv': AddendumFiles,
-    'addendum_manpower.csv': AddendumManpower,
-    'addendum_rfi_log.csv': AddendumRfiLog,
-    'addendum_submittal_log.csv': AddendumSubmittalLog,
+    # ProjectSight labor
+    'labor_entries.csv': ProjectSightLaborEntries,
 
     # Bridge tables
     'affected_rooms_bridge.csv': AffectedRoomsBridge,
@@ -91,18 +76,7 @@ SOURCE_FILES: Dict[str, Dict[str, Type[BaseModel]]] = {
     },
     'projectsight': {
         'ncr_consolidated.csv': NcrConsolidated,
-    },
-    'weekly_reports': {
-        'weekly_reports.csv': WeeklyReports,
-        'key_issues.csv': KeyIssues,
-        'work_progressing.csv': WorkProgressing,
-        'procurement.csv': Procurement,
-        'labor_detail.csv': LaborDetail,
-        'labor_detail_by_company.csv': LaborDetailByCompany,
-        'addendum_files.csv': AddendumFiles,
-        'addendum_manpower.csv': AddendumManpower,
-        'addendum_rfi_log.csv': AddendumRfiLog,
-        'addendum_submittal_log.csv': AddendumSubmittalLog,
+        'labor_entries.csv': ProjectSightLaborEntries,
     },
     'integrated_analysis/bridge_tables': {
         'affected_rooms_bridge.csv': AffectedRoomsBridge,

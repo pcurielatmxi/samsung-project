@@ -90,12 +90,6 @@ class Settings:
     PRIMAVERA_PROCESSED_DIR = PROCESSED_DATA_DIR / 'primavera'
 
     # ============================================================================
-    # Source-specific paths: Weekly Reports (PDF reports)
-    # ============================================================================
-    WEEKLY_REPORTS_RAW_DIR = RAW_DATA_DIR / 'weekly_reports'
-    WEEKLY_REPORTS_PROCESSED_DIR = PROCESSED_DATA_DIR / 'weekly_reports'
-
-    # ============================================================================
     # Source-specific paths: TBM (Excel workbooks)
     # ============================================================================
     TBM_RAW_DIR = RAW_DATA_DIR / 'tbm'
@@ -206,7 +200,7 @@ class Settings:
         print("  processed = parsed/enriched data traceable to raw")
         print()
 
-        sources = ['primavera', 'weekly_reports', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi', 'narratives', 'integrated']
+        sources = ['primavera', 'tbm', 'fieldwire', 'projectsight', 'raba', 'psi', 'narratives', 'integrated']
         for source in sources:
             raw_attr = f"{source.upper()}_RAW_DIR"
             proc_attr = f"{source.upper()}_PROCESSED_DIR"
@@ -229,9 +223,6 @@ class Settings:
             # Primavera
             cls.PRIMAVERA_RAW_DIR,
             cls.PRIMAVERA_PROCESSED_DIR,
-            # Weekly Reports
-            cls.WEEKLY_REPORTS_RAW_DIR,
-            cls.WEEKLY_REPORTS_PROCESSED_DIR,
             # TBM
             cls.TBM_RAW_DIR,
             cls.TBM_PROCESSED_DIR,

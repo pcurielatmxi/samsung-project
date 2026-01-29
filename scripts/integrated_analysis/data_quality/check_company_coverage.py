@@ -163,7 +163,6 @@ def check_company_coverage(verbose: bool = False) -> Dict:
         ('PSI', processed / "psi" / "psi_consolidated.csv"),
         ('TBM', processed / "tbm" / "work_entries_enriched.csv"),
         ('ProjectSight', processed / "projectsight" / "labor_entries_enriched.csv"),
-        ('Weekly_Labor', processed / "weekly_reports" / "labor_detail_by_company_enriched.csv"),
         ('NCR', processed / "projectsight" / "ncr_consolidated.csv"),
     ]
 

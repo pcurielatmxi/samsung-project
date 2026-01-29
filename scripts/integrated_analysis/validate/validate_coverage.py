@@ -279,46 +279,10 @@ def validate_labor_coverage(lookups):
 
     results = {
         'source': 'LABOR',
-        'weekly_company_total': 0,
-        'weekly_company_matched': 0,
         'ps_company_total': 0,
         'ps_company_matched': 0,
-        'unmapped_weekly': set(),
         'unmapped_ps': set(),
     }
-
-    # Weekly Labor
-    weekly_processed = Settings.PROCESSED_DATA_DIR / "weekly_reports"
-    weekly_files = list(weekly_processed.glob("*labor*.csv"))
-
-    print(f"\n  Weekly Labor:")
-    if weekly_files:
-        print(f"    Found {len(weekly_files)} files")
-        for wfile in weekly_files:
-            try:
-                df = pd.read_csv(wfile, low_memory=False)
-                company_cols = [c for c in df.columns if 'company' in c.lower() or 'contractor' in c.lower() or 'subcontractor' in c.lower()]
-                for col in company_cols:
-                    for val in df[col].dropna().unique():
-                        val_upper = str(val).upper().strip()
-                        if val_upper and val_upper not in ['NAN', 'NONE', '']:
-                            results['weekly_company_total'] += 1
-                            if val_upper in lookups['company_aliases']['LABOR'] or val_upper in lookups['company_aliases']['ALL']:
-                                results['weekly_company_matched'] += 1
-                            else:
-                                results['unmapped_weekly'].add(val)
-            except Exception as e:
-                print(f"    Error reading {wfile.name}: {e}")
-    else:
-        print(f"    No labor files found in {weekly_processed}")
-
-    print(f"    Unique companies: {results['weekly_company_total']}")
-    print(f"    Matched: {results['weekly_company_matched']}")
-    if results['weekly_company_total'] > 0:
-        pct = results['weekly_company_matched'] / results['weekly_company_total'] * 100
-        print(f"    Coverage: {pct:.1f}%")
-    if results['unmapped_weekly']:
-        print(f"    Unmapped ({len(results['unmapped_weekly'])}): {sorted(results['unmapped_weekly'])[:10]}")
 
     # ProjectSight
     ps_processed = Settings.PROCESSED_DATA_DIR / "projectsight"

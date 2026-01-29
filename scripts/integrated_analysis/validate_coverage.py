@@ -431,70 +431,6 @@ def validate_projectsight(alias_lookup):
     return results, unmapped
 
 
-def validate_weekly_labor(alias_lookup):
-    """Validate Weekly Labor records coverage."""
-    print("\n--- Validating Weekly Labor ---")
-
-    labor_path = Settings.PROCESSED_DATA_DIR / 'weekly_reports' / 'weekly_labor_detail.csv'
-    if not labor_path.exists():
-        print("  WARNING: weekly_labor_detail.csv not found")
-        return None
-
-    labor = pd.read_csv(labor_path, low_memory=False)
-    total = len(labor)
-    print(f"  Total records: {total:,}")
-
-    results = {'source': 'WEEKLY_LABOR', 'total_records': total}
-    unmapped = []
-
-    # Find company column
-    company_col = None
-    for col in ['company', 'Company', 'contractor', 'Contractor', 'subcontractor']:
-        if col in labor.columns:
-            company_col = col
-            break
-
-    if company_col:
-        has_company = labor[company_col].notna()
-        results['has_company_field'] = has_company.sum()
-        results['pct_has_company_field'] = round(has_company.sum() / total * 100, 1)
-
-        # Map company
-        labor_lookup = alias_lookup.get('LABOR', {})
-        p6_lookup = alias_lookup.get('P6', {})
-
-        labor['company_upper'] = labor[company_col].fillna('').str.upper().str.strip()
-        labor['company_id'] = labor['company_upper'].map(labor_lookup)
-        unmapped_mask = labor['company_id'].isna()
-        labor.loc[unmapped_mask, 'company_id'] = labor.loc[unmapped_mask, 'company_upper'].map(p6_lookup)
-
-        mapped_company = labor['company_id'].notna() & has_company
-        results['company_mapped'] = mapped_company.sum()
-        results['pct_company_mapped'] = round(mapped_company.sum() / has_company.sum() * 100, 1) if has_company.sum() > 0 else 0
-
-        # Track unmapped
-        unmapped_companies = labor[has_company & ~mapped_company][company_col].dropna().unique()
-        for co in unmapped_companies:
-            unmapped.append({'source': 'WEEKLY_LABOR', 'entity_type': 'company', 'value': co})
-    else:
-        results['has_company_field'] = 0
-        results['pct_has_company_field'] = 0
-        results['company_mapped'] = 0
-        results['pct_company_mapped'] = 0
-
-    # Weekly Labor has no location
-    results['has_location_field'] = 0
-    results['pct_has_location_field'] = 0
-    results['location_valid'] = 'N/A'
-    results['pct_location_valid'] = 'N/A'
-
-    print(f"  Company field: {results['has_company_field']:,} ({results['pct_has_company_field']}%)")
-    print(f"  Company mapped: {results['company_mapped']:,} ({results['pct_company_mapped']}%)")
-    print(f"  Location field: N/A (not available in source)")
-
-    return results, unmapped
-
-
 def main():
     print("=" * 70)
     print("VALIDATING DIMENSION AND MAPPING TABLE COVERAGE")
@@ -536,11 +472,6 @@ def main():
         all_unmapped.extend(result[1])
 
     result = validate_projectsight(alias_lookup)
-    if result:
-        all_results.append(result[0])
-        all_unmapped.extend(result[1])
-
-    result = validate_weekly_labor(alias_lookup)
     if result:
         all_results.append(result[0])
         all_unmapped.extend(result[1])

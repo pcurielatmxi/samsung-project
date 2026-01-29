@@ -8,11 +8,10 @@ import pytest
 from pydantic import BaseModel
 
 from schemas.dimensions import DimLocation, DimCompany, DimTrade, DimCSISection
-from schemas.mappings import MapCompanyAliases, MapCompanyLocation, MapProjectSightTrade
+from schemas.mappings import MapCompanyAliases, MapCompanyLocation
 from schemas.quality import QCInspectionConsolidated
 from schemas.tbm import TbmFiles, TbmWorkEntries, TbmWorkEntriesEnriched
 from schemas.ncr import NcrConsolidated
-from schemas.weekly_reports import WeeklyReports, KeyIssues, LaborDetail
 from schemas.registry import SCHEMA_REGISTRY, get_schema_for_file, list_registered_files
 from schemas.validator import (
     validate_dataframe,
@@ -32,15 +31,11 @@ class TestSchemaDefinitions:
         DimCSISection,
         MapCompanyAliases,
         MapCompanyLocation,
-        MapProjectSightTrade,
         QCInspectionConsolidated,
         TbmFiles,
         TbmWorkEntries,
         TbmWorkEntriesEnriched,
         NcrConsolidated,
-        WeeklyReports,
-        KeyIssues,
-        LaborDetail,
     ])
     def test_schema_is_pydantic_model(self, schema):
         """Each schema should be a valid Pydantic BaseModel."""

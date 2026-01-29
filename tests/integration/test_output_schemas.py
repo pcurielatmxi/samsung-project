@@ -138,38 +138,6 @@ class TestNcrDataSchemas:
         assert len(errors) == 0, f"Schema validation errors: {errors}"
 
 
-class TestWeeklyReportSchemas:
-    """Test weekly report output files against schemas."""
-
-    @pytest.fixture
-    def wr_dir(self):
-        return settings.WEEKLY_REPORTS_PROCESSED_DIR
-
-    @pytest.mark.parametrize("filename", [
-        'weekly_reports.csv',
-        'key_issues.csv',
-        'work_progressing.csv',
-        'procurement.csv',
-        'labor_detail.csv',
-        'labor_detail_by_company.csv',
-        'addendum_files.csv',
-        'addendum_manpower.csv',
-        'addendum_rfi_log.csv',
-        'addendum_submittal_log.csv',
-    ])
-    def test_weekly_report_file_schema(self, wr_dir, filename):
-        """Validate weekly report files against their schemas."""
-        file_path = wr_dir / filename
-        if not file_path.exists():
-            pytest.skip(f"File not found: {file_path}")
-
-        schema = get_schema_for_file(filename)
-        assert schema is not None, f"No schema registered for {filename}"
-
-        errors = validate_output_file(file_path, schema)
-        assert len(errors) == 0, f"Schema validation errors for {filename}: {errors}"
-
-
 class TestAllRegisteredSchemas:
     """Test all registered schemas against their files."""
 
