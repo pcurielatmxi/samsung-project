@@ -50,35 +50,153 @@ class TableConfig(NamedTuple):
 
 
 # Define QC columns for each table
+# These columns are moved to separate QC tables to keep main fact tables user-friendly
+# Main tables focus on: source document data (cleaned) + dimension FKs + IDs
+
 RABA_PSI_QC_COLUMNS = [
-    '_validation_issues',
-    'is_multi_party',
-    'narrative_companies',
+    # === Raw data (keep only normalized in main table) ===
+    'report_date',           # Keep report_date_normalized
+    'inspection_type',       # Keep inspection_type_normalized
+    'location_raw',
+    'level_raw',
+    'inspector_raw',
+    'contractor_raw',
+    'testing_company_raw',
+    'subcontractor_raw',
+    'trade_raw',
+
+    # === Trade columns (replaced by CSI codes) ===
+    'trade',
+    'dim_trade_id',
+    'dim_trade_code',
+
+    # === Grid bounds (technical) ===
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    'grid_source',
+
+    # === Room matching ===
+    'affected_rooms',
+    'affected_rooms_count',
+
+    # === Location inference metadata ===
+    'location_id',
     'location_type',
     'location_code',
     'match_type',
+
+    # === Validation/parsing metadata ===
+    '_validation_issues',
+    'is_multi_party',
+    'narrative_companies',
+    'csi_inference_source',
 ]
 
 TBM_QC_COLUMNS = [
+    # === Raw location data ===
+    'location_building',     # Keep building_normalized as 'building'
+    'location_level',        # Keep level_normalized as 'level'
+    'location_row',
+    'subcontractor_file',    # Source tracing (file_id is sufficient)
+
+    # === PII ===
+    'contact_number',        # Move to QC for privacy
+
+    # === Trade columns (replaced by CSI codes) ===
+    'trade_inferred',
+    'dim_trade_id',
+    'dim_trade_code',
+    'trade_source',
+
+    # === Grid bounds (technical) ===
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    'grid_raw',
+    'grid_type',
+
+    # === Room matching ===
+    'affected_rooms',
+    'affected_rooms_count',
+
+    # === Location quality diagnostics ===
     'grid_completeness',
     'match_quality',
     'location_review_flag',
     'location_source',
+
+    # === Duplicate detection ===
     'is_duplicate',
     'duplicate_group_id',
     'is_preferred',
+
+    # === Validation ===
     'date_mismatch',
     'room_code_extracted',
     'subcontractor_normalized',
+    'csi_inference_source',
 ]
 
 QC_INSPECTIONS_QC_COLUMNS = [
+    # === Raw data ===
+    'location_raw',
+    'status',                # Keep status_normalized
+    'contractor_raw',
+
+    # === Date parts (compute in Power BI) ===
+    'year',
+    'month',
+    'week',
+    'day_of_week',
+
+    # === Trade columns (replaced by CSI codes) ===
+    'dim_trade_id',
+    'dim_trade_code',
+
+    # === Grid bounds (technical) ===
     'grid_row',
     'grid_col',
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    'grid_source',
+
+    # === Room matching ===
+    'affected_rooms',
+    'affected_rooms_count',
+
+    # === Location inference metadata ===
     'location_type',
     'location_code',
     'match_type',
+
+    # === CSI inference metadata ===
+    'csi_inference_source',
 ]
+
+# Column renames to apply after extraction (for user-friendliness)
+# Format: {table_description: {old_name: new_name}}
+COLUMN_RENAMES = {
+    'TBM Work Entries': {
+        'building_normalized': 'building',
+        'level_normalized': 'level',
+    },
+    'RABA Consolidated': {
+        'report_date_normalized': 'report_date',
+        'inspection_type_normalized': 'inspection_type',
+    },
+    'PSI Consolidated': {
+        'report_date_normalized': 'report_date',
+        'inspection_type_normalized': 'inspection_type',
+    },
+    'QC Inspections Enriched': {
+        'status_normalized': 'status',
+    },
+}
 
 
 def get_table_configs() -> list[TableConfig]:
@@ -127,6 +245,9 @@ def extract_qc_columns(
     """
     Extract QC columns from a table into a separate file.
 
+    If a QC file already exists, merges new columns with existing ones
+    to avoid data loss from incremental extractions.
+
     Args:
         config: Table configuration
         dry_run: If True, don't write files
@@ -163,6 +284,16 @@ def extract_qc_columns(
         print(f"    Note: {len(missing_qc_cols)} QC columns not in source: {missing_qc_cols}")
 
     if not existing_qc_cols:
+        # Even if no QC columns to extract, still apply renames
+        renames = COLUMN_RENAMES.get(config.description, {})
+        cols_to_rename = {k: v for k, v in renames.items() if k in df.columns}
+        if cols_to_rename and not dry_run:
+            df_renamed = df.rename(columns=cols_to_rename)
+            df_renamed.to_csv(config.output_main_path, index=False)
+            print(f"    Renamed {len(cols_to_rename)} columns: {cols_to_rename}")
+            result['status'] = 'renamed_only'
+            result['columns_remaining'] = len(df_renamed.columns)
+            return result
         result['status'] = 'no_qc_columns'
         print(f"    No QC columns found to extract")
         return result
@@ -177,6 +308,25 @@ def extract_qc_columns(
     qc_columns_with_pk = [config.primary_key] + existing_qc_cols
     df_qc = df[qc_columns_with_pk].copy()
 
+    # Check if QC file already exists - merge with existing data
+    if config.output_qc_path.exists():
+        print(f"    Found existing {config.output_qc_path.name}, merging...")
+        df_qc_existing = pd.read_csv(config.output_qc_path, low_memory=False)
+
+        # Get columns that exist in old file but not in new extraction
+        cols_to_keep = [col for col in df_qc_existing.columns
+                        if col not in df_qc.columns and col != config.primary_key]
+
+        if cols_to_keep:
+            print(f"    Preserving {len(cols_to_keep)} existing QC columns: {cols_to_keep}")
+            # Merge on primary key
+            df_qc = df_qc.merge(
+                df_qc_existing[[config.primary_key] + cols_to_keep],
+                on=config.primary_key,
+                how='left'
+            )
+            existing_qc_cols = existing_qc_cols + cols_to_keep
+
     # Main table without QC columns
     main_columns = [col for col in df.columns if col not in existing_qc_cols]
     df_main = df[main_columns].copy()
@@ -184,8 +334,16 @@ def extract_qc_columns(
     result['columns_extracted'] = len(existing_qc_cols)
     result['columns_remaining'] = len(main_columns)
 
-    print(f"    Extracted {len(existing_qc_cols)} QC columns: {existing_qc_cols}")
-    print(f"    Main table: {len(main_columns)} columns remaining")
+    # Apply column renames for user-friendliness
+    renames = COLUMN_RENAMES.get(config.description, {})
+    if renames:
+        cols_to_rename = {k: v for k, v in renames.items() if k in df_main.columns}
+        if cols_to_rename:
+            df_main = df_main.rename(columns=cols_to_rename)
+            print(f"    Renamed {len(cols_to_rename)} columns: {cols_to_rename}")
+
+    print(f"    Extracted {len(existing_qc_cols)} QC columns")
+    print(f"    Main table: {len(df_main.columns)} columns remaining")
 
     if dry_run:
         result['status'] = 'dry_run'
@@ -273,7 +431,7 @@ def main():
     print("Summary")
     print("=" * 70)
 
-    success_count = sum(1 for r in results if r['status'] == 'success')
+    success_count = sum(1 for r in results if r['status'] in ('success', 'renamed_only'))
     dry_run_count = sum(1 for r in results if r['status'] == 'dry_run')
     skip_count = sum(1 for r in results if r['status'] in ('missing', 'no_qc_columns', 'missing_pk'))
 
@@ -288,6 +446,7 @@ def main():
     for r in results:
         status_icon = {
             'success': '✓',
+            'renamed_only': '✓',
             'dry_run': '○',
             'missing': '⚠',
             'no_qc_columns': '○',

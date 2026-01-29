@@ -174,3 +174,13 @@ class TbmDataQuality(BaseModel):
         default=None,
         description="Normalized subcontractor name"
     )
+
+    # CSI/Trade inference metadata
+    csi_inference_source: Optional[str] = Field(
+        default=None,
+        description="How CSI section was determined"
+    )
+    trade_source: Optional[str] = Field(
+        default=None,
+        description="How trade was determined (e.g., COMPANY_LOOKUP, ACTIVITY_MATCH)"
+    )

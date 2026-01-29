@@ -30,6 +30,10 @@ import pandas as pd
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+# Add the derive directory to path for task_taxonomy package
+derive_dir = Path(__file__).parent
+sys.path.insert(0, str(derive_dir))
+
 from src.config.settings import Settings
 from task_taxonomy import build_task_context, infer_all_fields
 
@@ -111,6 +115,7 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
         'phase': {'inferred': 0, 'none': 0},
         'location_type': {'ROOM': 0, 'ELEVATOR': 0, 'STAIR': 0, 'GRIDLINE': 0, 'AREA': 0, 'LEVEL': 0, 'BUILDING': 0, 'MULTI': 0, 'none': 0},
         'impact': {'inferred': 0, 'none': 0},
+        'csi_section': {'keyword': 0, 'trade': 0, 'none': 0},
     }
 
     for idx, (_, row) in enumerate(context.iterrows()):
@@ -131,6 +136,7 @@ def generate_taxonomy(context: pd.DataFrame, verbose: bool = True) -> pd.DataFra
         stats['phase'][result['phase_source'] or 'none'] += 1
         stats['location_type'][result['location_type'] or 'none'] += 1
         stats['impact'][result['impact_source'] or 'none'] += 1
+        stats['csi_section'][result['csi_inference_source'] or 'none'] += 1
 
     if verbose:
         print(f"  Processed {total:,}/{total:,} (100%)")

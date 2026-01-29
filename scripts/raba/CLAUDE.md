@@ -63,35 +63,37 @@ Requires `.env` with `RABA_USERNAME`, `RABA_PASSWORD`
 
 ### Outcome Misclassification (2026-01-21)
 
-**Status:** Prompts updated, awaiting re-extraction
+**Status:** ✅ Fixed and integrated into pipeline (2026-01-28)
 
-**Problem:** ~40% of records have incorrect outcome classifications:
-- **FAIL → CANCELLED**: Trip charge reports where inspection was cancelled (~50+ records)
-- **PARTIAL → MEASUREMENT**: Observation/pickup reports without pass/fail criteria (~100+ records)
-- **PARTIAL → PASS**: Reports with no deficiencies noted (~50+ records)
+**Problem:** ~6% of records (601/9391) had incorrect outcome classifications:
+- **FAIL → CANCELLED**: 57 trip charge reports where inspection was cancelled
+- **PARTIAL → CANCELLED**: 214 inspections that were actually cancelled
+- **PARTIAL → MEASUREMENT**: 191 observation/pickup reports without pass/fail criteria
+- **PARTIAL → PASS**: 139 reports with "no deficiencies noted"
 
 **Root Cause:** Extract prompt and format schema only allowed PASS/FAIL/PARTIAL. Trip charges and observation reports were forced into wrong categories.
 
 **Fix Applied:**
 - `extract_prompt.txt`: Added CANCELLED and N/A as outcome options
 - `schema.json`: Added CANCELLED and MEASUREMENT to outcome enum
-- `format_prompt.txt`: Added guidance for CANCELLED and MEASUREMENT cases
+- `consolidate.py`: **Now auto-corrects outcomes during consolidation** using detection functions from `fix_raba_outcomes.py`
+- Pattern-based fix applied to existing data (2026-01-28)
 
-**Pending:** Full re-extraction required to apply fixes.
+**Outcome Distribution (after fix):**
+- PASS: 7,425 (79%)
+- PARTIAL: 1,028 (11%)
+- FAIL: 390 (4%)
+- MEASUREMENT: 277 (3%)
+- CANCELLED: 271 (3%)
 
-**Interim Fix Script:**
+**Manual Fix Script (for one-time corrections):**
 ```bash
 # Dry run - see what would change
 python -m scripts.raba.document_processing.fix_raba_outcomes --dry-run
 
 # Apply pattern-based fixes (creates backup)
 python -m scripts.raba.document_processing.fix_raba_outcomes --apply
-
-# Use embeddings for additional detection
-python -m scripts.raba.document_processing.fix_raba_outcomes --dry-run --use-embeddings
 ```
-
-**Spot-check tool:** `python -m scripts.shared.spotcheck_quality_data raba --samples 5`
 
 ### Party Parsing Issues (2026-01-25)
 

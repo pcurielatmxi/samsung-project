@@ -174,6 +174,12 @@ class RabaPsiDataQuality(BaseModel):
         description="How location was determined: ROOM_DIRECT, GRID_SINGLE, GRID_MULTI, GRIDLINE, LEVEL, BUILDING, UNDEFINED"
     )
 
+    # CSI inference metadata
+    csi_inference_source: Optional[str] = Field(
+        default=None,
+        description="How CSI section was determined (e.g., KEYWORD_MATCH, TRADE_LOOKUP)"
+    )
+
 
 class PsiConsolidated(BaseModel):
     """

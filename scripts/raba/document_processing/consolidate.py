@@ -45,6 +45,12 @@ from scripts.integrated_analysis.add_csi_to_raba import (
     infer_csi_section,
     CSI_SECTIONS,
 )
+from scripts.raba.document_processing.fix_raba_outcomes import (
+    detect_cancelled,
+    detect_partial_cancelled,
+    detect_measurement,
+    detect_implied_pass,
+)
 
 
 # Validation rules
@@ -412,12 +418,40 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     # Determine performing company (who actually did the work)
     performing_company_id = get_performing_company_id(dim_company_id, dim_subcontractor_id)
 
-    # Detect and reclassify measurement-only records
-    # These were forced into PARTIAL by LLM because schema didn't allow null
+    # Detect and reclassify misclassified outcomes
+    # LLM was forced into wrong categories because schema only had PASS/FAIL/PARTIAL
     outcome = content.get('outcome')
     summary = content.get('summary')
-    if is_measurement_only(test_type, summary, outcome):
-        outcome = "MEASUREMENT"
+
+    # Build a row-like dict for the detection functions
+    row = {
+        'outcome': outcome,
+        'summary': summary,
+        'failure_reason': failure_reason,
+        'issues': issues_text,
+        'inspection_type': test_type,
+        'issue_count': len(issues_list) if issues_list else 0,
+    }
+
+    # Apply outcome fixes in priority order (same as fix_raba_outcomes.py)
+    should_cancel, _ = detect_cancelled(row)
+    if should_cancel:
+        outcome = "CANCELLED"
+    else:
+        should_partial_cancel, _ = detect_partial_cancelled(row)
+        if should_partial_cancel:
+            outcome = "CANCELLED"
+        else:
+            should_measure, _ = detect_measurement(row)
+            if should_measure:
+                outcome = "MEASUREMENT"
+            else:
+                should_pass, _ = detect_implied_pass(row)
+                if should_pass:
+                    outcome = "PASS"
+                elif is_measurement_only(test_type, summary, content.get('outcome')):
+                    # Fallback to original simple check
+                    outcome = "MEASUREMENT"
 
     # Infer CSI section from inspection type and category
     csi_section_id, csi_section_code, csi_source = infer_csi_section(test_type, test_category)

@@ -373,7 +373,8 @@ def print_summary(fixes: Dict[str, List[Dict]]):
             print(f"\n{fix_type}: {len(records)} records")
             print("-" * 40)
             for r in records[:5]:  # Show first 5
-                print(f"  {r['inspection_id']}: {r['inspection_type'][:50]}...")
+                insp_type = r['inspection_type'] or 'Unknown'
+                print(f"  {r['inspection_id']}: {insp_type[:50]}...")
                 print(f"    Reasons: {', '.join(r['reasons'][:3])}")
             if len(records) > 5:
                 print(f"  ... and {len(records) - 5} more")

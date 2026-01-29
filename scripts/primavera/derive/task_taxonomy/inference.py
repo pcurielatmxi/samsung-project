@@ -51,6 +51,13 @@ from .extractors import (
 # Import centralized P6 location extraction
 from scripts.integrated_analysis.location import extract_p6_location
 
+# Import CSI section inference (reuse from quality data processing)
+from scripts.integrated_analysis.add_csi_to_raba import (
+    infer_csi_section as _infer_csi_section_quality,
+    KEYWORD_TO_CSI,
+    CSI_SECTIONS,
+)
+
 
 def infer_trade(row: pd.Series) -> tuple[int | None, str | None, str | None, str | None]:
     """
@@ -409,6 +416,348 @@ def infer_impact(row: pd.Series) -> dict:
     }
 
 
+def infer_work_phase(row: pd.Series) -> tuple[str | None, str | None]:
+    """
+    Infer work phase from task name keywords.
+
+    Phases are ordered by construction sequence:
+    - DESIGN: Design, engineering, RFI responses, shop drawings
+    - FABRICATION: Manufacturing/fabrication of components
+    - DELIVERY: Transportation and delivery to site
+    - ERECTION: Installation, erection, setting of components
+
+    Args:
+        row: Task context row with task_name column
+
+    Returns:
+        Tuple of (work_phase, work_phase_source)
+        work_phase: DESIGN, FABRICATION, DELIVERY, ERECTION, or None
+        work_phase_source: 'inferred' if matched, None otherwise
+    """
+    import re
+
+    task_name = row.get('task_name', '')
+    if not task_name or pd.isna(task_name):
+        return (None, None)
+
+    name_upper = str(task_name).upper()
+
+    # Design phase patterns
+    design_patterns = [
+        r'\bDESIGN\b',
+        r'\bREDESIGN',
+        r'\bEOR\b',           # Engineer of Record
+        r'\bSHOP\s*DWG',
+        r'\bSHOP\s*DRAWING',
+        r'\bIFC\b',           # Issued for Construction
+        r'\bRFI\b',           # Request for Information
+        r'\bRFA\b',           # Request for Approval
+        r'\bSUBMITTAL',
+        r'\bSUBMIT\b',
+        r'\bAPPROVAL',
+        r'\bAPPROVE\b',
+        r'\bENGINEER',
+        r'\bCOORDINAT',       # Coordination
+        r'\bBID\b',           # Bidding
+        r'\bBIDDING',
+        r'\bLEVELING\b',      # Bid leveling
+        r'\bBUYOUT',          # Buyout
+        r'\bREVIEW\b',        # Review
+        r'\bRESPONSE',        # Responses
+        r'\bIOCC\b',          # Internal Owner Change Condition
+        r'\bCCD\b',           # Contract Change Directive
+    ]
+
+    # Fabrication phase patterns
+    # Note: Avoid \bFAB\b alone - matches "FAB" building name and "fab side"
+    fab_patterns = [
+        r'\bFABRICAT',
+        r'\bREFABRICAT',
+        r'\bRE-FABRICAT',
+        r'\bCASTING\b',
+        r'\bCAST\b(?!.*IN.*PLACE)',  # CAST but not CAST-IN-PLACE
+        r'\bMANUFACTUR',
+        r'\bPROCURE',
+        r'\bPURCHASE',
+    ]
+
+    # Delivery phase patterns
+    delivery_patterns = [
+        r'\bDELIVER',
+        r'\bSHIP\b',
+        r'\bTRANSPORT',
+        r'\bRECEIV',  # Receive materials
+        r'\bOFFLOAD',
+        r'\bARRIV',
+    ]
+
+    # Erection/Installation phase patterns
+    erection_patterns = [
+        # Core installation verbs
+        r'\bERECT',
+        r'\bINSTALL',
+        r'\bSET\b',
+        r'\bSETTING\b',
+        r'\bPLACE\b',
+        r'\bPLACEMENT\b',
+        r'\bPOUR\b',
+        r'\bMOUNT',
+        r'\bHANG\b',
+        r'\bHANGING\b',
+        r'\bASSEMBL',
+        r'\bCONSTRUCT',
+        r'\bBUILD\b',
+        r'\bLAY\b',           # Laying (tile, flooring)
+        r'\bLAYING\b',
+        # Connection/finishing work
+        r'\bGROUT',           # Grouting after setting precast/steel
+        r'\bWELD',            # Welding connections
+        r'\bFRAMING\b',       # Framing installation
+        r'\bBOLT\b',          # Bolting connections
+        r'\bTORQUE',          # Torquing bolts
+        r'\bANCHOR',          # Anchor bolts
+        r'\bCONNECT',         # Connections
+        r'\bTIE\b',           # Tie-ins
+        # Finishing trades
+        r'\bTAPE\b',          # Drywall tape
+        r'\bPAINT',           # Painting
+        r'\bCOAT\b',          # Coating (base coat, top coat)
+        r'\bCOATING',         # Coating application
+        r'\bPATCH',           # Patching
+        r'\bREPAIR',          # Repair work
+        r'\bCAULK',           # Caulking
+        r'\bSEAL\b',          # Sealing
+        r'\bSEALANT',         # Sealant application
+        r'\bDRYWALL',         # Drywall installation
+        r'\bGLAZING',         # Glazing
+        r'\bFLOORING',        # Flooring
+        r'\bCEILING',         # Ceiling work
+        r'\bROOFING',         # Roofing
+        r'\bFLASHING',        # Flashing
+        # Specialty trades
+        r'\bFIREPROOF',       # Fireproofing
+        r'\bFIRESTOP',        # Firestopping
+        r'\bSFRM\b',          # Spray fireproofing
+        r'\bINSULAT',         # Insulation
+        r'\bWATERPROOF',      # Waterproofing
+        r'\bFRP\b',           # Fiberglass reinforced plastic
+        # Concrete/masonry work
+        r'\bCURE\b',          # Curing concrete
+        r'\bTOPPING',         # Topping slab
+        r'\bDECKING\b',       # Decking installation
+        r'\bSLAB\b',          # Slab work
+        r'\bCURB',            # Curbs
+        r'\bREBAR',           # Rebar placement
+        r'\bFORM\b',          # Formwork
+        r'\bFORMS\b',         # Formwork
+        r'\bSTRIP\b',         # Strip forms
+        # Doors/openings
+        r'\bDOOR\b',          # Door installation
+        r'\bDOORS\b',
+        r'\bHARDWARE',        # Hardware installation
+        # Site work
+        r'\bDEMO\b',          # Demolition
+        r'\bEXCAVAT',         # Excavation
+        r'\bBACKFILL',        # Backfilling
+        r'\bUNDERGROUND',     # Underground work
+        r'\bTRENCH',          # Trenching
+        # MEP
+        r'\bROUGH\s*IN',      # Rough-in (MEP)
+        r'\bROUGH-IN',        # Rough-in alternate
+        r'\bMEP\b',           # MEP work
+        # Complete/finish activities
+        r'\bCOMPLETE\b',      # Complete work
+        r'\bFINISH\b',        # Finish work
+        r'\bREMEDY\b',        # Remedy work
+        # Inspection (part of installation)
+        r'\bINSPECT',         # Inspection
+        # Additional construction activities
+        r'\bWALL\b',          # Wall construction
+        r'\bPARAPET',         # Parapet
+        r'\bSCAFFOLD',        # Scaffolding
+        r'\bDRILL',           # Drilling
+        r'\bGRIND',           # Grinding
+        r'\bSCRAP',           # Scraping
+        r'\bPROTECT',         # Protection
+        r'\bSTRIP',           # Striping/stripping
+        r'\bLAYER',           # Layer (roof layer)
+        r'\bBEAM\b',          # Beam work
+        r'\bCOLUMN',          # Column work
+        r'\bFLANGE',          # Flange work
+        r'\bPIPE\b',          # Pipe work
+        r'\bDUCT\b',          # Duct work
+        r'\bCIP\b',           # Cast-in-place
+        r'\bCAST.IN.PLACE',   # Cast-in-place
+        r'\bSOG\b',           # Slab on grade
+        r'\bPAD\b',           # Equipment pads
+        r'\bPADS\b',
+        r'\bSTAIR\b',         # Stair work
+        r'\bSTAIRS\b',
+        r'\bLANDING',         # Landings
+        r'\bRAILING',         # Railings
+        r'\bHANDRAIL',        # Handrails
+        r'\bCLEAN\b',         # Cleaning
+        r'\bCLEANING\b',
+        r'\bPUNCH',           # Punch list
+        # Additional patterns
+        r'\bWATER\s*PROOF',   # Water proof (with space)
+        r'\bFOAM\b',          # Spray foam
+        r'\bCANOPY',          # Canopy
+        r'\bSOFT?FIT',        # Soffit (with typo variation)
+        r'\bTILE',            # Tile work
+        r'\bCERAMIC',         # Ceramic tiles
+        r'\bTERRAZZO',        # Terrazzo
+        r'\bEPOXY',           # Epoxy
+        r'\bINTUMESCENT',     # Intumescent coating
+        r'\bCLADDING',        # Cladding
+        r'\bSHEATH',          # Sheathing
+        r'\bPLASTER',         # Plastering
+        r'\bSTUCCO',          # Stucco
+        r'\bDRAIN',           # Drainage
+        r'\bFRENCH\s*DRAIN',  # French drain
+        r'\bTURNOVER',        # Turnover activities
+        r'\bMEASURE',         # Field measurement
+        r'\bSURVEY',          # Survey
+        r'\bLAYOUT',          # Layout
+        r'\bMARK',            # Marking
+        r'\bSPRAY\b',         # Spray application
+        r'\bAPPLY\b',         # Apply (coatings, etc.)
+        r'\bCOVER',           # Cover/covering
+        r'\bWRAP',            # Wrapping
+        r'\bTEST\b',          # Testing
+        r'\bFLUSH',           # Flushing
+        r'\bCHARGE',          # Charging (MEP)
+        r'\bSTART\s*UP',      # Start-up
+        r'\bCOMMISSION',      # Commissioning
+        # More edge cases
+        r'\bCRC\b',           # Chemical Resistant Coating
+        r'\bSEALER',          # Sealer application
+        r'\bGRATING',         # Grating installation
+        r'\bDISMANTL',        # Dismantling
+        r'\bSOMD\b',          # SOMD (material application)
+        r'\bEDGE\s*METAL',    # Edge metal
+        r'\bCOPING',          # Coping
+        r'\bCRICKET',         # Roof cricket
+        r'\bPRIMER',          # Primer application
+        r'\bPRIME\b',         # Prime
+        r'\bFRP\b',           # Fiberglass (if not already caught)
+        r'\bSOG\b',           # Slab on grade
+        r'\bEQUIPMENT',       # Equipment
+        r'\bEQPT\b',          # Equipment abbrev
+        r'\bPENETRAT',        # Penetrations
+        r'\bOPENING',         # Openings
+        r'\bLEAVE\s*OUT',     # Leave-outs
+        r'\bBLOCK\s*OUT',     # Block-outs
+        r'\bEMBED',           # Embeds
+        r'\bSLEEVE',          # Sleeves
+        r'\bCONDUIT',         # Conduit
+        r'\bCONDENSATE',      # Condensate
+        r'\bCHILLER',         # Chiller
+        r'\bAHU\b',           # Air handling unit
+        r'\bVAV\b',           # Variable air volume
+        r'\bDIFFUSER',        # Diffusers
+        r'\bGRILLE',          # Grilles
+        r'\bLOUVER',          # Louvers
+        r'\bDAMPER',          # Dampers
+        r'\bVALVE',           # Valves
+        r'\bPUMP\b',          # Pumps
+        r'\bFAN\b',           # Fans
+        r'\bMOTOR',           # Motors
+        r'\bPANEL\b',         # Panels
+        r'\bTRANSFORMER',     # Transformers
+        r'\bSWITCH',          # Switches
+        r'\bBREAKER',         # Breakers
+        r'\bCONTROL',         # Controls
+        r'\bSENSOR',          # Sensors
+        r'\bDETECTOR',        # Detectors
+        r'\bALARM',           # Alarms
+        r'\bSPRINKLER',       # Sprinklers
+        r'\bEXTINGUISH',      # Fire extinguishers
+    ]
+
+    # Check patterns in priority order
+    # Priority: ERECTION > DELIVERY > FABRICATION > DESIGN
+    # Rationale: If task mentions "INSTALL", that's the primary activity even if
+    # it also mentions fabrication. "FABRICATE & DELIVER" is FABRICATION since
+    # that's the earlier/driving activity.
+
+    # Check for erection keywords first - these take priority
+    has_erection = any(re.search(p, name_upper) for p in erection_patterns)
+    has_delivery = any(re.search(p, name_upper) for p in delivery_patterns)
+    has_fab = any(re.search(p, name_upper) for p in fab_patterns)
+    has_design = any(re.search(p, name_upper) for p in design_patterns)
+
+    # ERECTION takes priority - if it says INSTALL, it's an installation task
+    if has_erection:
+        return ('ERECTION', 'inferred')
+
+    # DELIVERY next, unless it also has fabrication (then it's fab+deliver = fab)
+    if has_delivery and not has_fab:
+        return ('DELIVERY', 'inferred')
+
+    # FABRICATION (includes fab+deliver tasks)
+    if has_fab:
+        return ('FABRICATION', 'inferred')
+
+    # DESIGN last
+    if has_design:
+        return ('DESIGN', 'inferred')
+
+    return (None, None)
+
+
+def infer_csi_section(row: pd.Series, trade_code: str = None) -> tuple[int | None, str | None, str | None, str | None]:
+    """
+    Infer CSI section from task name and trade classification.
+
+    Uses the same keyword patterns as quality data CSI inference for consistency.
+    Falls back to trade_code → CSI mapping if no keyword match.
+
+    Args:
+        row: Task context row with task_name column
+        trade_code: Inferred trade code (CONCRETE, STEEL, etc.)
+
+    Returns:
+        Tuple of (csi_section_id, csi_section_code, csi_title, csi_source)
+        csi_source is 'keyword' or 'trade' or None
+    """
+    task_name = row.get('task_name', '')
+    if not task_name or pd.isna(task_name):
+        task_name = ''
+
+    # Try keyword matching first (same patterns as quality data)
+    name_lower = str(task_name).lower()
+
+    for keywords, csi_id in KEYWORD_TO_CSI:
+        for keyword in keywords:
+            if keyword in name_lower:
+                csi_code, csi_title = CSI_SECTIONS[csi_id]
+                return (csi_id, csi_code, csi_title, 'keyword')
+
+    # Fall back to trade_code → CSI mapping
+    if trade_code:
+        trade_to_csi = {
+            'CONCRETE': (2, '03 30 00', 'Cast-in-Place Concrete'),
+            'PRECAST': (3, '03 41 00', 'Structural Precast Concrete'),
+            'STEEL': (6, '05 12 00', 'Structural Steel Framing'),
+            'MASONRY': (5, '04 20 00', 'Unit Masonry'),
+            'DRYWALL': (26, '09 21 16', 'Gypsum Board Assemblies'),
+            'FINISHES': (29, '09 91 26', 'Painting - Building'),
+            'FIREPROOF': (18, '07 81 00', 'Applied Fireproofing'),
+            'ROOFING': (16, '07 52 00', 'Modified Bituminous Membrane Roofing'),
+            'INSULATION': (13, '07 21 16', 'Blanket Insulation'),
+            'PANELS': (15, '07 42 43', 'Composite Wall Panels'),
+            'MEP': (44, '26 05 00', 'Common Work Results for Electrical'),
+            'EARTHWORK': (51, '31 23 00', 'Excavation and Fill'),
+            'GENERAL': (1, '01 10 00', 'Summary'),
+        }
+        if trade_code in trade_to_csi:
+            csi_id, csi_code, csi_title = trade_to_csi[trade_code]
+            return (csi_id, csi_code, csi_title, 'trade')
+
+    return (None, None, None, None)
+
+
 def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
     """
     Infer all taxonomy fields for a single task row.
@@ -435,6 +784,9 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
     sub_contractor, sub_source = infer_subcontractor(row)
     sub_trade, sub_trade_desc, sub_trade_source = infer_sub_trade(row)
     phase, phase_desc, phase_source = infer_phase(row)
+    work_phase, work_phase_source = infer_work_phase(row)
+    # CSI section inference (uses task name keywords, falls back to trade)
+    csi_section_id, csi_section_code, csi_title, csi_source = infer_csi_section(row, trade_code=trade_code)
     # Pass inferred location fields to location_type inference
     # Now also returns row_min/row_max for GRIDLINE types with specific row bounds
     location_type, location_code, row_min, row_max = infer_location_type(row, building=building, level=level, area=area, room=room)
@@ -486,6 +838,9 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         'phase': phase,
         'phase_desc': phase_desc,
         'phase_source': phase_source,
+        # Work Phase - construction sequence (DESIGN, FABRICATION, DELIVERY, ERECTION)
+        'work_phase': work_phase,
+        'work_phase_source': work_phase_source,
         # Location (unified type and code system)
         'location_type': location_type,
         'location_code': location_code,
@@ -521,4 +876,9 @@ def infer_all_fields(row: pd.Series, gridline_mapping=None) -> dict:
         'root_cause': impact['root_cause'],
         'root_cause_desc': impact['root_cause_desc'],
         'impact_source': impact['impact_source'],
+        # CSI Section (52-category classification, same as quality data)
+        'dim_csi_section_id': csi_section_id,
+        'csi_section': csi_section_code,
+        'csi_title': csi_title,
+        'csi_inference_source': csi_source,
     }

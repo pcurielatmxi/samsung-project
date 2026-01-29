@@ -63,20 +63,27 @@ Requires `.env` with `PSI_USERNAME`, `PSI_PASSWORD`
 
 ### Outcome Misclassification (2026-01-21)
 
-**Status:** Prompts updated, awaiting re-extraction
+**Status:** ✅ Fixed and integrated into pipeline (2026-01-28)
 
-**Problem:** ~30% of records have incorrect outcome classifications:
-- **FAIL → CANCELLED**: Records where work was "not ready" marked as FAIL
-- **PARTIAL → PASS/FAIL**: Ambiguous PARTIAL classifications
+**Problem:** ~2% of records (147/6309) had incorrect outcome classifications:
+- **FAIL → CANCELLED**: 97 records where work was "not ready" marked as FAIL
+- **PARTIAL → CANCELLED**: 20 inspections that were actually cancelled
+- **PARTIAL → PASS**: 30 records with "accepted" or "no deficiencies"
 
 **Root Cause:** Extract prompt didn't clearly distinguish CANCELLED from FAIL.
 
 **Fix Applied:**
 - `extract_prompt.txt`: Added clear CANCELLED definition
+- `consolidate.py`: **Now auto-corrects outcomes during consolidation** using detection functions from `fix_psi_outcomes.py`
+- Pattern-based fix applied to existing data (2026-01-28)
 
-**Pending:** Full re-extraction required to apply fixes.
+**Outcome Distribution (after fix):**
+- PASS: 5,298 (84%)
+- FAIL: 493 (8%)
+- CANCELLED: 457 (7%)
+- PARTIAL: 61 (1%)
 
-**Interim Fix Script:**
+**Manual Fix Script (for one-time corrections):**
 ```bash
 # Dry run - see what would change
 python -m scripts.psi.document_processing.fix_psi_outcomes --dry-run
@@ -84,8 +91,6 @@ python -m scripts.psi.document_processing.fix_psi_outcomes --dry-run
 # Apply pattern-based fixes (creates backup)
 python -m scripts.psi.document_processing.fix_psi_outcomes --apply
 ```
-
-**Spot-check tool:** `python -m scripts.shared.spotcheck_quality_data psi --samples 5`
 
 ### Party Parsing Issues (2026-01-25)
 

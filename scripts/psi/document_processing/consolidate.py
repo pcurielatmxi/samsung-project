@@ -47,13 +47,18 @@ from scripts.integrated_analysis.add_csi_to_raba import (
     infer_csi_section,
     CSI_SECTIONS,
 )
+from scripts.psi.document_processing.fix_psi_outcomes import (
+    detect_cancelled,
+    detect_partial_cancelled,
+    detect_implied_pass,
+)
 
 
 # Validation rules
 PROJECT_START_DATE = "2022-05-01"
 PROJECT_END_DATE = "2025-12-31"
 
-VALID_OUTCOMES = {"PASS", "FAIL", "PARTIAL", "CANCELLED"}
+VALID_OUTCOMES = {"PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT"}
 
 VALID_ROLES = {
     "inspector", "contractor", "subcontractor", "trade", "client",
@@ -234,6 +239,35 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     csi_section_id, csi_section_code, csi_source = infer_csi_section(inspection_type, inspection_category)
     csi_title = CSI_SECTIONS[csi_section_id][1] if csi_section_id and csi_section_id in CSI_SECTIONS else None
 
+    # Detect and reclassify misclassified outcomes
+    # LLM confused CANCELLED with FAIL, and some PARTIAL should be PASS
+    outcome = content.get('outcome')
+    summary = content.get('summary')
+    failure_reason = content.get('failure_reason')
+
+    # Build a row-like dict for the detection functions
+    row = {
+        'outcome': outcome,
+        'summary': summary,
+        'failure_reason': failure_reason,
+        'issues': issues_text,
+        'inspection_type': inspection_type,
+        'issue_count': len(issues_list) if issues_list else 0,
+    }
+
+    # Apply outcome fixes in priority order (same as fix_psi_outcomes.py)
+    should_cancel, _ = detect_cancelled(row)
+    if should_cancel:
+        outcome = "CANCELLED"
+    else:
+        should_partial_cancel, _ = detect_partial_cancelled(row)
+        if should_partial_cancel:
+            outcome = "CANCELLED"
+        else:
+            should_pass, _ = detect_implied_pass(row)
+            if should_pass:
+                outcome = "PASS"
+
     # Build flat record using UNIFIED column names
     return {
         # Identification
@@ -264,7 +298,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'location_id': content.get('location_id'),
 
         # Results
-        'outcome': content.get('outcome'),
+        'outcome': outcome,  # Uses corrected outcome from detection functions
         'failure_reason': failure_reason,
         'failure_category': failure_category,
         'summary': content.get('summary'),
