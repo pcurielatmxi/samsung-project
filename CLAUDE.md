@@ -1,310 +1,347 @@
 # Samsung Taylor FAB1 Performance Analysis
 
-**Project:** Data-driven analysis of schedule delays and labor consumption
-**Client:** Samsung | **Analyst:** MXI
+## Project Context
+
+**Client:** Samsung (via SECAI - Samsung Engineering and Construction America Inc.)
+**Analyst:** MXI (Construction Claims Consultants)
+**Project:** Taylor FAB1 Semiconductor Fabrication Facility, Taylor, Texas
+
+### Entities & Roles
+
+| Entity | Role |
+|--------|------|
+| **Samsung** | Owner - semiconductor fab facility |
+| **SECAI** | Samsung's US construction arm, MXI's direct client |
+| **Yates Construction** | General Contractor (GC) |
+| **Subcontractors** | ~50+ trade contractors (Berg Electric, Performance Contracting, etc.) |
+| **MXI** | Claims consultant analyzing schedule delays and cost impacts |
+
+### Our Service
+
+MXI is analyzing the project to support SECAI in understanding:
+1. **What caused schedule delays** - Which tasks, contractors, and issues drove critical path slippage
+2. **Where quality issues occurred** - Location-based analysis of inspections, failures, and rework
+3. **How labor was consumed** - Resource allocation patterns and productivity analysis
+4. **Impact quantification** - Connecting delays to specific causes for claims support
 
 ---
 
-## Project Phases
+## Approach
 
-### Phase 1: Data Collection & Initial Assessment ✅
+### Iterative Data Exploration
 
-Established data pipelines for 9 primary sources:
+We follow an iterative cycle for each data source:
 
-| Source | Purpose | Records | Status |
-|--------|---------|---------|--------|
-| Primavera P6 | Schedule snapshots | 66 files, 964K tasks | ✅ |
-| Weekly Reports | Issues, progress, manpower | 37 reports, 1,108 issues | ✅ |
-| TBM Daily Plans | Daily work activities | 5,983 files | 🔄 Needs Reprocessing |
-| ProjectSight | Labor hours | 857K entries | ✅ |
-| ProjectSight NCR | Non-conformance records | 1,985 records | ✅ |
-| Quality Records | WIR + IR inspections | 37K inspections | ✅ |
-| RABA | Quality inspections (RKCI) | 9,391 reports | ✅ |
-| PSI | Quality inspections (Const Hive) | 6,309 reports | ✅ |
-| QC Logs | Inspection tracking (CPMS) | 61K+ records | 📁 Raw |
-| Narratives | P6/weekly narratives | 108 docs, 2.5K statements | ✅ |
+```
+[Discover] → [Extract] → [Explore] → [Process] → [Integrate] → [Analyze]
+     ↑                                                              |
+     └──────────────────────────────────────────────────────────────┘
+```
 
-### Phase 2: Integrated Analysis 🔄
+1. **Discover** - Identify available data sources (PDFs, Excel, APIs, web portals)
+2. **Extract** - Download/scrape raw data, preserve original format
+3. **Explore** - Understand structure, identify patterns, assess quality
+4. **Process** - Parse, normalize, enrich with dimension IDs
+5. **Integrate** - Link across sources via shared dimensions
+6. **Analyze** - Answer business questions, iterate as new questions arise
 
-**Goal:** Link all data sources through unified location model to answer: "What quality issues occurred WHERE, by WHOM, and how much rework did they cause?"
+### Tools & Techniques
 
-#### Solution: `dim_location` with Grid Bounds
+| Tool | Use Case |
+|------|----------|
+| **Regex** | Pattern extraction (room codes, grid coordinates, dates) |
+| **LLM Parsing** | Unstructured PDF extraction (Gemini for RABA/PSI quality reports) |
+| **Embeddings** | Semantic search across narratives and documents (ChromaDB + Gemini) |
+| **Pandas** | Data transformation, aggregation, joining |
+| **Playwright** | Web scraping (RABA, PSI, ProjectSight portals) |
+| **Pydantic** | Schema validation for output files |
 
-Location dimension table with **grid bounds** enables spatial joins:
-- **Room → Grid**: Look up grid bounds for any room code
-- **Grid → Room(s)**: Find which rooms contain a grid coordinate
-- **Company → Location**: Infer from quality inspection patterns
+### Processing Philosophy
 
-#### Unified Grid System
-
-**IMPORTANT:** Single unified grid across all buildings (FAB, SUE, SUW, FIZ):
-- Grid rows: A-N (north-south), columns: 1-33+ (east-west)
-- For spatial joins: **Ignore building, use LEVEL + GRID only**
-- `get_affected_rooms(level, grid_row, grid_col)` matches rooms across ALL buildings
-
-#### Location Master Status
-
-| Type | Total | Grid Coverage | Notes |
-|------|-------|---------------|-------|
-| ROOM | 367 | 86% (315/367) | 52 need manual lookup |
-| STAIR | 66 | 100% | Extracted from task names |
-| GRIDLINE | 35 | 100% | Auto-generated |
-| ELEVATOR | 11 | 91% (10/11) | - |
-| LEVEL/AREA/BUILDING | 26 | N/A | Multi-room aggregates |
-
-**Grid Inference:** Rooms inherit coordinates from siblings on other floors via `FAB1[FLOOR_AREA][ROOM_NUM]` structure.
-
-**Working Files:**
-- `raw/location_mappings/location_master.csv` - Master with grid bounds
-- `raw/location_mappings/Samsung_FAB_Codes_by_Gridline_3.xlsx` - Grid source
-- `raw/drawings/*.pdf` - Floor plans (1st-5th floor, SUE/SUW/FIZ only)
-
-#### Dimension Coverage
-
-| Source | Records | Location | Company | Trade | Grid |
-|--------|---------|----------|---------|-------|------|
-| RABA | 9,391 | 99.9% | 88.8% | 99.4% | 62.1% |
-| PSI | 6,309 | 98.2% | 99.0% | 96.7% | 73.3% |
-| TBM | 13,539 | 91.5% | 98.2% | 37.7% | - |
-| ProjectSight | 857K | - | 99.9% | 35.2% | - |
-
-**Key Scripts:**
-- `scripts/integrated_analysis/dimensions/build_dim_location.py` - Build dim_location
-- `scripts/shared/location_model.py` - High-level location API
-- `scripts/shared/dimension_lookup.py` - Dimension ID lookups
-
-**⚠️ CRITICAL: Centralized Location Processing**
-All location enrichment (grid parsing, room matching, dim_location_id lookup) MUST use `scripts/integrated_analysis/location/`. Do NOT duplicate location logic in source scripts. Import `enrich_location()` from that module. See `scripts/integrated_analysis/location/CLAUDE.md` for details.
-
-#### Monthly Reports (In Development)
-
-Consolidates all sources monthly for MXI analysis. Sections: Schedule Progress, Labor Hours, Quality Metrics, Narratives, Cross-Reference Analysis.
-
-**Usage:** `python -m scripts.integrated_analysis.monthly_reports.consolidate_month 2024-03`
-
-### Phase 3: Analysis & Conclusions (Planned)
-
-1. Scope Evolution - Task growth attribution
-2. Delay Attribution - Critical path impact
-3. Resource Consumption - Labor correlation
-4. Quality Impact - Rework quantification
+- **Idempotent scripts** - Running twice produces same result, safe to re-run
+- **Incremental where possible** - Skip already-processed files
+- **Schema validation** - Validate outputs before overwriting (Power BI stability)
+- **Traceable** - Raw files preserved, processing is reproducible
 
 ---
 
-## Repository Structure
+## Repository Organization
+
+### Folder Structure
 
 ```
 samsung-project/
-├── CLAUDE.md                    # This file
-├── docs/                        # Documentation (EXECUTIVE_SUMMARY, SOURCES, plans/)
+├── CLAUDE.md                    # This file - high-level overview
 ├── scripts/
+│   ├── {source}/                # One folder per data source
+│   │   ├── CLAUDE.md            # Source-specific documentation
+│   │   └── process/             # Processing scripts
 │   ├── shared/                  # Cross-source utilities
-│   ├── primavera/               # P6 XER parsing
-│   ├── {source}/                # Source-specific processing (weekly_reports, tbm, etc.)
+│   │   ├── dimension_lookup.py  # Get dimension IDs
+│   │   ├── daily_refresh.py     # Update all pipelines
+│   │   └── ...
 │   └── integrated_analysis/     # Cross-source integration
+│       ├── location/            # Centralized location processing
+│       ├── dimensions/          # Dimension table builders
+│       └── ...
+├── schemas/                     # Pydantic schemas for output validation
 ├── src/
 │   ├── config/settings.py       # Path configuration
-│   ├── classifiers/             # WBS taxonomy
-│   └── document_processor/      # N-stage document pipeline
-└── data/                        # Git-tracked outputs
+│   └── document_processor/      # LLM-based PDF extraction pipeline
+└── tests/
 ```
 
-**Subfolder Documentation:** Each `scripts/{source}/` has `CLAUDE.md` (≤150 lines) documenting that pipeline.
+### Self-Documenting Sources
 
-## Data Directory Structure
+Each `scripts/{source}/` folder contains:
+- `CLAUDE.md` - Purpose, data flow, usage examples (≤150 lines)
+- `process/` - Processing scripts
+- `process/run.sh` - Pipeline orchestrator
+
+**Current sources:** `primavera/`, `tbm/`, `projectsight/`, `raba/`, `psi/`, `narratives/`
+
+### Data Directory (Separate from Repo)
+
+Data lives in a local directory specified by `WINDOWS_DATA_DIR` in `.env`:
 
 ```
 {WINDOWS_DATA_DIR}/
 ├── raw/{source}/           # Source files as received (100% traceable)
-├── processed/{source}/     # Parsed/transformed (traceable to raw/)
-└── derived/{source}/       # ⛔ DEPRECATED - DO NOT USE
+│   ├── primavera/          # XER schedule files
+│   ├── tbm/                # Daily plan Excel files
+│   ├── projectsight/       # Daily reports JSON, NCR exports
+│   ├── raba/               # Quality inspection PDFs
+│   ├── psi/                # Quality inspection PDFs
+│   └── ...
+└── processed/{source}/     # Output files generated by this repo
+    ├── tbm/work_entries_enriched.csv
+    ├── raba/raba_consolidated.csv
+    ├── projectsight/labor_entries.csv
+    └── integrated_analysis/dimensions/dim_*.csv
 ```
 
-## Configuration
-
-- **Settings:** `src/config/settings.py` - All path constants
-- **Environment:** `.env` with `WINDOWS_DATA_DIR` path
-- **Python:** Use existing `.venv` virtual environment
-- **AI Model:** Use `gemini-3-flash-preview` for all processing
-
-## Analysis Objectives
-
-1. **Scope Evolution** - Rework/coordination-driven scope additions
-2. **Delay Attribution** - Schedule impact from quality/performance issues
-3. **Resource Consumption** - Labor consumption drivers
-4. **Quality Impact** - Quality issues and resulting rework
-
-## Data Artifact Schema Stability
-
-**CRITICAL:** CSV files in `processed/` are production outputs consumed by Power BI.
-
-**Schema Rules:**
-- ❌ **FORBIDDEN:** Remove columns, rename columns, change data types (without approval)
-- ✅ **ALLOWED:** Add columns, update values, add rows
-
-**Schema Validation:** `schemas/` contains Pydantic definitions for all output files.
-
-**Run Tests:** `pytest tests/unit/test_schemas.py tests/integration/test_output_schemas.py -v`
-
-**Registered Files:** dim_location, dim_company, dim_trade, dim_csi_section, map_company_aliases, map_company_location, raba_consolidated, psi_consolidated, tbm_*, ncr_consolidated, weekly_reports_*
-
-## Quality Data Architecture
-
-Three complementary sources provide different views of inspection events:
-
-**QC Logs (CPMS)** - Master tracking list (61K+ requests)
-- What: IR Number, Date, Status, Template, Location, Inspector
-- Use: Volume trends, pass/fail rates, contractor metrics
-
-**RABA (RKCI)** + **PSI (Const Hive)** - Detailed inspection reports (15K+ PDFs)
-- What: Full PDFs with photos, signatures, findings, defects
-- Use: Root cause analysis, photo evidence
-
-**Relationship:** QC Logs = "what happened" summary; RABA/PSI = "why it happened" evidence
+**Rules:**
+- `raw/` is read-only, never modified by scripts
+- `processed/` is generated output, can be regenerated from raw
+- Git tracks code, not data (data is on OneDrive)
 
 ---
 
-## Tools
+## Dimension Tables
 
-### Document Processor (N-Stage Pipeline)
+Dimension tables enable joining across data sources. Located in `processed/integrated_analysis/dimensions/`.
 
-**Location:** `src/document_processor/`
+### dim_location (Most Complex)
 
-Centralized pipeline with flexible N stages, implicit chaining, LLM-based QC.
+The location dimension bridges data sources through a **grid-based spatial model**.
 
-**Stage Types:**
-- `llm`: Gemini processing (PDF native, DOCX/XLSX text extraction)
-- `script`: Python postprocessing
+#### The Problem
 
-**Features:** N stages (not fixed), per-stage QC with auto-halt on >10% failure, idempotent via `.error.json`, source-specific configs in `scripts/{source}/document_processing/`
+Different sources describe locations differently:
+- P6 Schedule: Room codes (`FAB116406`)
+- Quality Reports: Grid coordinates (`G/10-12`)
+- TBM Daily Plans: Building + Level + Area (`FAB, 2F, G~K/8~15`)
+- Labor Data: No location at all
 
-**Usage:**
-```bash
-python -m src.document_processor scripts/raba/document_processing/
-python -m src.document_processor scripts/raba/document_processing/ --stage extract
-python -m src.document_processor scripts/raba/document_processing/ --status
+#### The Solution: Grid Bounds
+
+Every location has grid bounds (row min/max, col min/max):
+
+```
+Grid System (same across all buildings):
+     1    5    10   15   20   25   30
+  A  ┌────┬────┬────┬────┬────┬────┐
+  B  │    │    │    │    │    │    │
+  C  │    │ ┌──┴────┴──┐ │    │    │   ← Room FAB116406
+  D  │    │ │          │ │    │    │     grid: C-E / 8-12
+  E  │    │ └──┬────┬──┘ │    │    │
+  F  │    │    │    │    │    │    │
+     └────┴────┴────┴────┴────┴────┘
 ```
 
-**Options:** `--force`, `--retry-errors`, `--limit N`, `--dry-run`, `--bypass-qc-halt`, `--disable-qc`
+**Key insight:** Grid coordinates are consistent across buildings (FAB, SUE, SUW, FIZ) and levels. A quality inspection at "G/10" on Level 2 can be matched to rooms on that level whose grid bounds contain G/10.
 
-**Current Pipelines:**
-- RABA/PSI: extract → format → clean
-- Narratives: extract only
+#### Location Hierarchy
 
-**Quick Commands:**
-```bash
-cd scripts/raba/document_processing
-./run.sh status              # Check progress
-./run.sh extract --limit 50  # Extract 50 files
-./run.sh retry               # Retry failures
-```
+| Type | Example | Grid Coverage |
+|------|---------|---------------|
+| ROOM | FAB116406 | Specific bounds (C-E/8-12) |
+| STAIR | STR-21 | Point or small area |
+| ELEVATOR | ELV-01 | Point (single grid cell) |
+| GRIDLINE | G/10 | Point or range |
+| LEVEL | FAB-2F | Entire level |
+| BUILDING | FAB | Entire building |
 
-### RABA Individual Reports Scraper (Recommended)
+#### Centralized Location Processing
 
-**Location:** `scripts/raba/process/scrape_raba_individual.py`
+**CRITICAL:** All location enrichment MUST use the centralized module:
 
-Playwright-based scraper downloading individual PDFs (one per inspection). Preferred over batch scraper (works with single-report days, no post-splitting needed).
-
-**Features:** Month-by-month with pagination, individual PDFs named by assignment number, idempotent via manifest, resume capability
-
-**Usage:**
-```bash
-python scripts/raba/process/scrape_raba_individual.py  # All from May 2022
-python scripts/raba/process/scrape_raba_individual.py --start-date 2022-06-01 --end-date 2022-06-30
-python scripts/raba/process/scrape_raba_individual.py --limit 10  # Test
-```
-
-**Environment:** `RABA_USERNAME`, `RABA_PASSWORD` in `.env`
-
-### PSI Quality Reports Scraper
-
-**Location:** `scripts/psi/process/scrape_psi_reports.py`
-
-Similar Playwright scraper for PSI (Construction Hive). Downloads individual PDFs with metadata.
-
-**Usage:**
-```bash
-python scripts/psi/process/scrape_psi_reports.py  # All 6309 docs
-python scripts/psi/process/scrape_psi_reports.py --limit 100 --headless
-```
-
-**Environment:** `PSI_BASE_URL`, `PSI_USERNAME`, `PSI_PASSWORD` in `.env`
-
-### QC Logs (CPMS Inspection Tracking)
-
-**Location:** `{WINDOWS_DATA_DIR}/raw/qc_logs/`
-
-Excel exports tracking all inspections (61K+ records).
-
-**Structure:**
-- `DAILY INSPECTION REQUESTS/` - 141 daily snapshots
-- `MASTER LIST/` - Cumulative by discipline (ARCH, MECH, ELEC)
-
-**Key Fields:** Date, Time, IR Number, Status, Template, Location, Inspector, Failure reasons
-
-**Metrics:** ~88% Accepted, ~3% Failure, date range 2023-02 to 2025-12
-
-### Room Timeline Analysis
-
-**Location:** `scripts/integrated_analysis/room_timeline.py`
-
-Query tool: "What happened at this room during this period?" Consolidates RABA, PSI, TBM with optional P6 schedule cross-reference.
-
-**Usage:**
-```bash
-python -m scripts.integrated_analysis.room_timeline FAB116101 --start 2023-01-01 --end 2023-06-30
-python -m scripts.integrated_analysis.room_timeline FAB116101 --start 2023-01-01 --end 2023-06-30 --no-schedule
-python -m scripts.integrated_analysis.room_timeline FAB116101 --start 2023-01-01 --end 2023-06-30 --output timeline.csv
-```
-
-**Output:** Single room matches (precise) + multi-room matches (shared)
-
-### Document Embeddings Search
-
-**Location:** `scripts/narratives/embeddings/`
-
-Semantic search using Gemini embeddings + ChromaDB. 13,687 chunks from 304 narrative documents.
-
-**Features:** Semantic search, rich metadata filtering (source, type, author, date, subfolder), context navigation, cross-computer sync via OneDrive
-
-**Storage:**
-- Primary: `~/.local/share/samsung-embeddings/documents/` (WSL, fast queries)
-- Backup: `{WINDOWS_DATA_DIR}/backup/embeddings/documents/` (OneDrive, auto-synced)
-
-**Usage:**
-```bash
-# Build (auto-syncs to OneDrive)
-python -m scripts.narratives.embeddings build --source narratives
-
-# Search
-python -m scripts.narratives.embeddings search "HVAC delays"
-python -m scripts.narratives.embeddings search "delay" --source narratives --author Yates --limit 5
-python -m scripts.narratives.embeddings search "delay" --after 2024-01-01 --before 2024-06-30
-python -m scripts.narratives.embeddings search "delay" --context 2  # Show adjacent chunks
-
-# Status & sync
-python -m scripts.narratives.embeddings status
-python -m scripts.narratives.embeddings sync
-```
-
-**Enrichment (for cross-dataset integration):**
-```bash
-python -m scripts.narratives.embeddings enrich --source narratives
-```
-
-Extracts locations, CSI codes, companies to link narrative chunks with P6 tasks and quality inspections.
-
-**Metadata Fields:**
-- Standard: `source_type`, `document_type`, `author`, `file_date`, `subfolder`
-- Enriched: `doc_locations`, `chunk_locations`, `doc_buildings`, `chunk_buildings`, `doc_levels`, `chunk_levels`, `doc_csi_sections`, `chunk_csi_sections`, `doc_company_ids`, `chunk_company_ids`
-
-**Python API:**
 ```python
-from scripts.narratives.embeddings import search_chunks
+from scripts.integrated_analysis.location import enrich_location
 
-results = search_chunks(query="HVAC delay", source_type="narratives", author="Yates", limit=10)
-for r in results:
-    print(f"{r.score}: {r.text[:100]}... | {r.source_file} | {r.file_date}")
+result = enrich_location(
+    building='FAB',
+    level='2F',
+    grid='G/10-12',
+    source='RABA'
+)
+
+# Returns:
+result.dim_location_id      # FK to dim_location
+result.location_type        # ROOM, GRIDLINE, LEVEL, etc.
+result.affected_rooms       # JSON array of rooms in grid bounds
+result.affected_rooms_count # Number of rooms matched
 ```
 
-**Dependencies:** `chromadb`, `google-genai` (in requirements.txt)
+See `scripts/integrated_analysis/location/CLAUDE.md` for full documentation.
+
+### dim_company
+
+Normalizes company names across sources (each source uses different spellings/abbreviations).
+
+| Field | Description |
+|-------|-------------|
+| company_id | Primary key |
+| canonical_name | Standardized name |
+| primary_trade_id | FK to dim_trade |
+
+**Aliases:** `map_company_aliases.csv` maps variants → canonical name
+- "Berg Electric" → "Berg"
+- "BERG ELEC" → "Berg"
+- "Berg Electrical" → "Berg"
+
+### dim_csi_section
+
+CSI (Construction Specifications Institute) codes classify work types:
+
+| Field | Description |
+|-------|-------------|
+| csi_section_id | Primary key |
+| csi_code | Code like "03 30 00" |
+| csi_title | "Cast-in-Place Concrete" |
+
+CSI is inferred from:
+1. Activity descriptions (keywords like "drywall", "concrete")
+2. Company's primary trade
+3. Division codes from source data
+
+### dim_trade
+
+High-level trade categories (CONCRETE, STEEL, DRYWALL, MEP, etc.)
+
+---
+
+## Data Sources
+
+### Power BI Fact Tables
+
+| Source | File | Records | Location | Company | CSI |
+|--------|------|---------|----------|---------|-----|
+| TBM | `tbm/work_entries_enriched.csv` | 76K | 22% | 96% | 81% |
+| RABA | `raba/raba_consolidated.csv` | 9.4K | 100% | 89% | 100% |
+| PSI | `psi/psi_consolidated.csv` | 6.3K | 100% | 99% | 99% |
+| ProjectSight | `projectsight/labor_entries.csv` | 863K | 0%* | 100% | 100% |
+| NCR | `projectsight/ncr_consolidated.csv` | 2K | N/A | 66% | 91% |
+
+*ProjectSight labor data has no location in source
+
+### Source Descriptions
+
+| Source | Purpose | Raw Location |
+|--------|---------|--------------|
+| **Primavera P6** | Schedule snapshots (66 XER files) | `raw/primavera/` |
+| **TBM** | Daily work plans from toolbox meetings | `raw/tbm/` |
+| **ProjectSight** | Labor hours from daily reports | `raw/projectsight/` |
+| **RABA** | Quality inspections (RKCI system) | `raw/raba/` |
+| **PSI** | Quality inspections (Const Hive) | `raw/psi/` |
+| **NCR** | Non-conformance records | `raw/projectsight/` |
+| **Narratives** | Schedule narratives, weekly reports | `raw/narratives/` |
+
+### Embeddings-Only Sources
+
+Some sources are consumed via semantic search rather than structured tables:
+- **Weekly Reports** - Narratives and issues searchable via embeddings
+- **Schedule Narratives** - P6 narrative exports
+
+```bash
+python -m scripts.narratives.embeddings search "HVAC delays"
+```
+
+---
+
+## Daily Operations
+
+### Refresh All Data
+
+Single command to update all Power BI data sources:
+
+```bash
+python -m scripts.shared.daily_refresh
+python -m scripts.shared.daily_refresh --dry-run      # Preview only
+python -m scripts.shared.daily_refresh --skip-scrapers # Fast local refresh
+```
+
+This runs (in order):
+1. **Parsers** - TBM, P6, ProjectSight (incremental)
+2. **Scrapers** - RABA, PSI (manifest-tracked)
+3. **Dimensions** - Build dim_location
+4. **Consolidation** - Enrich all fact tables with dimension IDs
+
+### Environment Setup
+
+Create `.env` in project root:
+
+```bash
+WINDOWS_DATA_DIR=/path/to/data/directory
+
+# Scraper credentials
+RABA_USERNAME=...
+RABA_PASSWORD=...
+PSI_BASE_URL=...
+PSI_USERNAME=...
+PSI_PASSWORD=...
+PROJECTSIGHT_USERNAME=...
+PROJECTSIGHT_PASSWORD=...
+```
+
+### Schema Validation
+
+Output files are validated against Pydantic schemas before writing:
+
+```python
+from schemas.validator import validated_df_to_csv
+
+validated_df_to_csv(df, output_path)  # Raises if schema mismatch
+```
+
+**Critical rule:** Never remove or rename columns in `processed/` files - Power BI depends on them.
+
+Run schema tests:
+```bash
+pytest tests/unit/test_schemas.py -v
+```
+
+---
+
+## Navigation
+
+| Topic | Location |
+|-------|----------|
+| Location processing | `scripts/integrated_analysis/location/CLAUDE.md` |
+| TBM pipeline | `scripts/tbm/CLAUDE.md` |
+| ProjectSight pipeline | `scripts/projectsight/CLAUDE.md` |
+| RABA pipeline | `scripts/raba/CLAUDE.md` |
+| PSI pipeline | `scripts/psi/CLAUDE.md` |
+| Embeddings search | `scripts/narratives/CLAUDE.md` |
+| Document processor | `src/document_processor/CLAUDE.md` |
+| Schedule slippage | `scripts/integrated_analysis/CLAUDE.md` |
+| Shared utilities | `scripts/shared/CLAUDE.md` |
+
+### Key Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/shared/daily_refresh.py` | Update all pipelines |
+| `scripts/shared/dimension_lookup.py` | Get dimension IDs |
+| `scripts/integrated_analysis/location/` | Centralized location enrichment |
+| `scripts/integrated_analysis/dimensions/build_dim_location.py` | Build location dimension |
