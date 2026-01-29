@@ -5,22 +5,32 @@
 ## Quick Start
 
 ```bash
-# Run all checks
-python -m scripts.integrated_analysis.data_quality
+# RECOMMENDED: Run comprehensive dimension coverage report
+python -m scripts.integrated_analysis.data_quality.dimension_coverage
 
-# Run specific check
+# Save markdown report
+python -m scripts.integrated_analysis.data_quality.dimension_coverage -o coverage.md
+
+# Run legacy individual checks
 python -m scripts.integrated_analysis.data_quality.check_csi_coverage
 python -m scripts.integrated_analysis.data_quality.check_location_coverage
 python -m scripts.integrated_analysis.data_quality.check_company_coverage
 
-# Verbose output
-python -m scripts.integrated_analysis.data_quality --verbose
-
-# Save markdown report
-python -m scripts.integrated_analysis.data_quality --output report.md
+# Run all legacy checks together
+python -m scripts.integrated_analysis.data_quality
 ```
 
-## Available Checks
+## Dimension Coverage Report (Recommended)
+
+The `dimension_coverage` module provides a comprehensive unified report with:
+1. **Coverage Matrix** - % of records linked to each dimension (location, company, CSI)
+2. **Location Granularity** - Distribution of location specificity per source
+3. **CSI Section Analysis** - Joinability gaps between schedule and quality data
+4. **Company Coverage** - Unresolved company names
+
+See `dimension_coverage/CLAUDE.md` for detailed documentation.
+
+## Legacy Individual Checks
 
 ### 1. CSI Coverage (`check_csi_coverage.py`)
 
@@ -69,13 +79,25 @@ Validates dim_company_id assignments:
 data_quality/
 ├── __init__.py                      # Package exports
 ├── __main__.py                      # Entry point for python -m
-├── run_all_checks.py                # Run all checks, generate report
-├── check_csi_coverage.py            # CSI section coverage check
-├── check_location_coverage.py       # Location dimension coverage
-├── check_company_coverage.py        # Company dimension coverage
+├── CLAUDE.md                        # This file
+│
+├── dimension_coverage/              # ** RECOMMENDED ** Comprehensive report
+│   ├── __init__.py                  # Public API and main entry point
+│   ├── __main__.py                  # CLI entry point
+│   ├── models.py                    # Data classes (DimensionStats, SourceCoverage)
+│   ├── config.py                    # Source configurations and thresholds
+│   ├── loaders.py                   # Dimension table and source data loaders
+│   ├── analyzers.py                 # Coverage calculation logic
+│   ├── formatters.py                # Report formatting (console and markdown)
+│   └── CLAUDE.md                    # Module documentation
+│
+├── check_csi_coverage.py            # Legacy: CSI section coverage check
+├── check_location_coverage.py       # Legacy: Location dimension coverage
+├── check_company_coverage.py        # Legacy: Company dimension coverage
+├── run_all_checks.py                # Legacy: Run all checks, generate report
+│
 ├── investigate_company_scope.py     # Samsung contractor investigation
 ├── analyze_samsung_scope.py         # Samsung CSI scope analysis
-├── CLAUDE.md                        # This file
 ├── COMPANY_SCOPE_FINDINGS.md        # Company scope investigation
 └── CONTRACTOR_INFERENCE_RESULTS.md  # Contractor inference solution
 ```
