@@ -1,6 +1,6 @@
 # Primavera Scripts
 
-**Last Updated:** 2026-01-11
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -11,29 +11,21 @@ Parse and analyze YATES Primavera P6 schedule exports (XER files).
 ```
 primavera/
 ├── process/    # XER parsing -> processed/primavera/
-├── derive/     # Task taxonomy, WBS enrichment -> derived/primavera/
-│   └── task_taxonomy/  # Modular taxonomy inference system
+├── derive/     # Task taxonomy, WBS enrichment
+│   └── task_taxonomy/  # Modular taxonomy inference
 ├── analyze/    # CPM engine and critical path analysis
 └── docs/       # Analysis documentation
 ```
 
-**Note:** Schedule slippage analysis (comparing P6 snapshots) is in [`scripts/integrated_analysis/`](../integrated_analysis/) since it integrates with other data sources for cross-reference analysis.
-
-## Planning Documents
-
-| Document | Description | Status |
-|----------|-------------|--------|
-| [Schedule Slippage Analysis](docs/schedule_slippage_analysis.md) | Original plan for milestone and task-level tracking | ✅ Implemented |
-
-**Implemented:** Schedule slippage analysis with own_delay/inherited_delay decomposition, what-if impact analysis, and recovery sequence analysis. See [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py).
+**Note:** Schedule slippage analysis is in [`scripts/integrated_analysis/`](../integrated_analysis/) for cross-source integration.
 
 ## Key Scripts
 
 | Script | Output | Description |
 |--------|--------|-------------|
-| `process/batch_process_xer.py` | task.csv, wbs.csv, etc. | Parse all 66 XER files to CSV tables |
-| `derive/generate_task_taxonomy.py` | task_taxonomy.csv | Generate unified task classification taxonomy |
-| `derive/audit_task_taxonomy.py` | (console + optional CSV) | Quality audit by sampling and comparing with P6 source data |
+| `process/batch_process_xer.py` | task.csv, wbs.csv, etc. | Parse all 66 XER files to CSV |
+| `derive/generate_task_taxonomy.py` | task_taxonomy.csv | Generate unified task classification |
+| `derive/audit_task_taxonomy.py` | Console + CSV | Quality audit via sampling |
 
 ## Commands
 
@@ -44,141 +36,57 @@ python scripts/primavera/process/batch_process_xer.py
 # Generate task taxonomy (requires processed data)
 python scripts/primavera/derive/generate_task_taxonomy.py --latest-only
 
-# Audit taxonomy quality (sample N tasks and display with source data)
+# Audit taxonomy quality
 python scripts/primavera/derive/audit_task_taxonomy.py 50 --print 10
 python scripts/primavera/derive/audit_task_taxonomy.py 100 --output audit_sample.csv
 ```
 
 ## Task Taxonomy System
 
-### Overview
+### Inference Hierarchy (Precedence Order)
 
-The task taxonomy system infers business classifications (trade, building, level, location) for each task using a hierarchical precedence system:
-
-1. **Activity Codes** (highest priority) - Direct P6 assignments
+1. **Activity Codes** - Direct P6 assignments (highest priority)
 2. **WBS Context** - Inferred from hierarchy tiers
 3. **Task Code Structure** - Extracted from task_code field
 4. **Task Name Patterns** - Regex-based fallback
 
 ### Output Columns
 
-**Classification Fields:**
-- `dim_csi_section_id`, `csi_section`, `csi_title` - 52 CSI MasterFormat sections (primary work type classification)
-- `sub_trade`, `sub_trade_desc` - Detailed scope codes (CIP, CTG, DRYWALL, etc.)
+**Classification:**
+- `dim_csi_section_id`, `csi_section`, `csi_title` - 52 CSI MasterFormat sections
+- `sub_trade`, `sub_trade_desc` - Detailed scope codes
 - `building` - FAB, SUE, SUW, FIZ
 - `level` - 1-6, ROOF, B1, MULTI
-- `area` - Grid area (SEA-5, SWA-1, FIZ1)
-- `room` - Room code (FAB112155)
-- `sub_contractor` - From Z-SUB activity code
-- `phase` - Project stage (PRE, STR, INT, COM)
-- `location_type`, `location_code` - Unified location classification (ROOM, ELEVATOR, STAIR, GRIDLINE, AREA, LEVEL, BUILDING, MULTI)
-- `dim_location_id` - FK to dim_location for Power BI integration
+- `area`, `room` - Grid area and room codes
+- `location_type`, `location_code`, `dim_location_id` - Unified location
 
-**Source Tracking:**
-- `*_source` columns show derivation: activity_code | wbs | task_code | inferred | None
+**Source Tracking:** `*_source` columns show derivation origin
 
-**Impact Fields** (sparse, for IMPACT tasks only):
-- `impact_code`, `impact_type`, `attributed_to`, `root_cause`
+### Coverage (Latest Schedule - 12,230 tasks)
 
-**Note:** `dim_trade` has been superseded by `dim_csi_section` for work type classification.
-Use `dim_csi_section_id` for analysis instead of trade_id.
-
-### Coverage Statistics
-
-From latest YATES schedule (12,230 tasks):
-
-**Building:** 97.3% coverage
-- 55.3% from activity codes (Z-BLDG)
-- 38.0% from WBS hierarchy
-- 2.7% missing
-
-**Location Type:** 98.2% coverage
-- GRIDLINE: 47.4% (area-scoped work)
-- ROOM: 33.3% (specific room)
-- LEVEL: 12.9% (level-wide work)
-- BUILDING: 2.8% (building-wide)
-- ELEVATOR: 0.8%, STAIR: 0.6%, AREA: 0.4%
-- Unscoped: 1.8%
-
-### Audit Script
-
-The `audit_task_taxonomy.py` script provides quality verification by:
-
-1. Randomly sampling N tasks from the taxonomy
-2. Joining with original P6 data (activity codes, WBS)
-3. Displaying side-by-side comparison for each task
-4. Printing summary statistics (source distribution, coverage)
-5. Optionally exporting to CSV for analysis
-
-**Example Output per Task:**
-```
---- Task 1 ---
-ID: 64_100234487
-Name: PAINT & PROTECT DOORS & FRAMES - FAB1-ST21D
-
-Activity Codes (from P6):
-  Z-TRADE: None
-  Z-BLDG: East Support Building
-  Z-LEVEL: L3 - LEVEL 3
-  Z-AREA: SEA-1
-
-WBS Context:
-  Tier 3: LEVEL 3
-  Tier 4: L3 SUE
-  Tier 5: Stair 21 - 3F-SUE-FAB1-ST21
-
-Inferred Taxonomy:
-  Trade: FINISHES (source: inferred)
-  Building: SUE (source: wbs)
-  Level: 3 (source: wbs)
-  Location: LEVEL - 3
-```
-
-## Key Fields
-
-- `target_end_date` = current scheduled finish
-- `total_float` = late_end - early_end (negative = behind)
-- No baseline in exports - compare across versions
-
-## Documentation
-
-See [docs/SOURCES.md](../../docs/SOURCES.md) for XER field mapping.
-
----
+- **Building:** 97.3% (55% activity codes, 38% WBS)
+- **Location Type:** 98.2% (47% gridline, 33% room, 13% level)
 
 ## CPM Analysis Engine
 
 **Location:** `primavera/analyze/`
-
-A Python implementation of Critical Path Method (CPM) calculations for P6 schedule analysis.
 
 ### Structure
 
 ```
 analyze/
 ├── cpm/                     # Core CPM implementation
-│   ├── models.py            # Task, Dependency, CriticalPathResult dataclasses
-│   ├── network.py           # TaskNetwork graph structure
-│   ├── engine.py            # CPMEngine - forward/backward pass calculations
-│   └── calendar.py          # P6Calendar - work day/hour calculations
-├── analysis/                # Analysis modules
-│   ├── critical_path.py     # Critical path identification and float analysis
-│   ├── single_task_impact.py # What-if for single task duration changes
+│   ├── models.py            # Task, Dependency, CriticalPathResult
+│   ├── network.py           # TaskNetwork graph
+│   ├── engine.py            # Forward/backward pass
+│   └── calendar.py          # Work day/hour calculations
+├── analysis/
+│   ├── critical_path.py     # Critical path identification
+│   ├── single_task_impact.py # What-if analysis
 │   └── delay_attribution.py  # Delay source attribution
-├── data_loader.py           # Load P6 CSV exports into TaskNetwork
-├── test_cpm.py              # Basic validation tests
-└── validate_cpm.py          # Comprehensive P6 comparison validator
+├── data_loader.py           # Load P6 CSV → TaskNetwork
+└── validate_cpm.py          # P6 comparison validator
 ```
-
-### Key Functions
-
-| Module | Function | Purpose |
-|--------|----------|---------|
-| `data_loader` | `load_schedule(file_id)` | Load complete schedule → (TaskNetwork, calendars, project_info) |
-| `data_loader` | `list_schedule_versions()` | List all available P6 snapshots |
-| `critical_path` | `analyze_critical_path(network, calendars)` | Identify critical/near-critical tasks |
-| `single_task_impact` | `analyze_task_impact(network, task_code, delta)` | What-if duration change |
-| `delay_attribution` | `attribute_delays(network)` | Identify delay sources |
 
 ### Usage
 
@@ -186,159 +94,54 @@ analyze/
 from scripts.primavera.analyze.data_loader import load_schedule, get_latest_file_id
 from scripts.primavera.analyze.analysis.critical_path import analyze_critical_path
 
-# Load latest schedule
 file_id = get_latest_file_id()
 network, calendars, project_info = load_schedule(file_id)
 
-# Analyze critical path
 result = analyze_critical_path(network, calendars, data_date=project_info['data_date'])
 print(f"Critical tasks: {len(result.critical_path)}")
-print(f"Project finish: {result.project_finish}")
 ```
 
-### CPM Accuracy vs P6
+### Key Functions
 
-The CPM engine achieves **96-98% accuracy** compared to P6's calculated values (tested on 2,176 non-completed tasks):
+| Module | Function | Purpose |
+|--------|----------|---------|
+| `data_loader` | `load_schedule(file_id)` | Load schedule → (TaskNetwork, calendars, project_info) |
+| `data_loader` | `list_schedule_versions()` | List available P6 snapshots |
+| `critical_path` | `analyze_critical_path()` | Identify critical/near-critical tasks |
+| `single_task_impact` | `analyze_task_impact()` | What-if duration change |
 
-| Metric | Match Rate |
-|--------|------------|
-| Early Start | 96.5% |
-| Early Finish | 96.3% |
-| Late Start | 98.2% |
-| Late Finish | 97.2% |
-| Total Float (±1 day) | 96.8% |
+### CPM Accuracy
 
-**Key Implementation Details:**
+**96-98% match** vs P6 calculated values (tested on 2,176 non-completed tasks):
+- Early/Late dates: 96-98% match
+- Total Float (±1 day): 96.8% match
 
-1. **Data Date Handling**: Completed tasks get early dates set to `data_date`, ensuring successors are driven from data_date forward (not historical actual dates).
+**Validated for schedules Oct 2023+** (schedules 39-88).
 
-2. **Target Finish Date**: The backward pass uses `scd_end_date` (target/contractual finish) from project settings when available, not the calculated project finish. This matters when projects are ahead of schedule.
+### Validation
 
-3. **Completed Task Handling**: Completed tasks get late dates set to project end and don't constrain predecessors in backward pass - their work is done.
-
-4. **Lag Rules by Relationship Type**:
-   - FS/SS from completed predecessor: lag=0 (start constraint satisfied)
-   - FF/SF from completed predecessor: lag applies (finish constraint still relevant)
-   - In-progress predecessor + in-progress successor: lag=0 for FS/SS (both already running)
-
-5. **Milestone Handling**: Zero-duration milestones finish at exact driven time (including end-of-day), without advancing to next work period.
-
-6. **Work Period Boundaries**: Late finish for FS and FF relationships retreats to end of previous work period (P6 convention: tasks finish at 17:00, not 07:00 next day).
-
-**Known Limitations (~3% mismatch):**
-
-- **Boundary representation** (~32 tasks): Same work time, different clock representation (e.g., Friday 17:00 vs Monday 07:00 are equivalent in work hours)
-- **Complex dependency chains** (~49 tasks): Some edge cases in chains with mixed completed/in-progress/not-started predecessors with multiple relationship types
-- **P6-specific optimizations**: P6 may use proprietary scheduling algorithms for edge cases
-
-For analysis purposes, this accuracy is sufficient. The remaining mismatches do not significantly impact critical path identification or float analysis.
-
-### Validation Test
-
-The `validate_cpm.py` script provides comprehensive validation of CPM calculations against P6's stored values.
-
-**Usage:**
 ```bash
-# Validate latest schedule
-python scripts/primavera/analyze/validate_cpm.py
-
-# Validate specific schedule
-python scripts/primavera/analyze/validate_cpm.py --file-id 88
-
-# Save detailed reports to files
-python scripts/primavera/analyze/validate_cpm.py --output cpm_validation_report
-
-# List available schedules
+python scripts/primavera/analyze/validate_cpm.py              # Latest schedule
+python scripts/primavera/analyze/validate_cpm.py --file-id 88 # Specific schedule
 python scripts/primavera/analyze/validate_cpm.py --list-schedules
 ```
 
-**Output:**
-- Summary table with match rates for each field (early_start, early_finish, late_start, late_finish, total_float)
-- Mismatch analysis grouped by field, calendar, and task status
-- Sample mismatches showing calculated vs P6 values and difference in hours
-- Optional CSV exports: `.summary.txt`, `.mismatches.csv`, `.all_comparisons.csv`
+## Key Fields Reference
 
-**Sample Output:**
-```
-ACCURACY SUMMARY
-       Field  Compared  Matches  Mismatches Match Rate
- early_start      2176     2099          77      96.5%
-early_finish      2176     2095          81      96.3%
-  late_start      2176     2136          40      98.2%
- late_finish      2176     2115          61      97.2%
- total_float      2176     2106          70      96.8%
+- `target_end_date` = current scheduled finish
+- `total_float` = late_end - early_end (negative = behind)
+- No baseline in exports - compare across versions
 
-Overall Date Match Rate: 97.0%
-```
+## Schedule Slippage Context
 
-**Test Methodology:**
-1. Loads schedule with P6's stored values (`p6_early_start`, `p6_early_finish`, etc.)
-2. Runs CPM forward pass, backward pass, and float calculation
-3. Compares calculated values to P6 values with tolerance (1 hour for dates, 8 hours for float)
-4. Excludes completed tasks (their dates are actuals, not calculated)
-5. Reports match rates and detailed mismatch analysis
+72 schedule versions (Oct 2022 - Nov 2025):
+- Task growth: 843 → 12,433 (14.7x)
+- 759 persistent tasks (90% of original)
+- Project completion slip: ~32 months
 
-### Cross-Schedule Validation Results
+**Analysis approach:** See [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py)
 
-Validation across all 90 schedule versions (159,852 tasks compared) reveals a strong temporal pattern:
+## Documentation
 
-| Period | Schedules | Overall Accuracy | Notes |
-|--------|-----------|------------------|-------|
-| Oct-Dec 2022 | 7-18 | 7-50% | Early schedules, minimal data |
-| Jan-Sep 2023 | 19-38 | 27-94% | High variance, evolving data |
-| Oct 2023+ | 39-88 | 85-98% | Stable, high accuracy |
-
-**High-Accuracy Schedules (≥95%):** 26 schedules (mostly Oct 2023 onwards)
-
-The accuracy pattern correlates with schedule maturity:
-- Early schedules have sparse activity code assignments and calendar data
-- P6 stored values may reflect different calculation settings in early versions
-- Recent schedules (2024-2025) consistently achieve 93-98% accuracy
-
-**Validation results saved to:** `cpm_validation_all_schedules.csv`
-
-For production analysis, the CPM engine is validated for schedules from Oct 2023 onwards.
-
-### Note on Schedule Slippage
-
-For snapshot-to-snapshot comparison (schedule slippage analysis), use [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py) which:
-- Compares two P6 snapshots to identify what changed
-- Decomposes delay into own_delay (task-caused) vs inherited_delay (predecessor-pushed)
-- Provides what-if recovery estimates with parallel path constraints
-
----
-
-## Schedule Slippage Analysis
-
-**Implementation:** See [`scripts/integrated_analysis/schedule_slippage_analysis.py`](../integrated_analysis/schedule_slippage_analysis.py) for the production script with CLI and programmatic API. Full documentation is in [`scripts/integrated_analysis/CLAUDE.md`](../integrated_analysis/CLAUDE.md).
-
-### Context
-
-The YATES schedule lacks a true baseline. Schedule slippage must be assessed by comparing across 72 schedule versions (Oct 2022 - Nov 2025).
-
-### Key Data Characteristics
-
-| Metric | Value |
-|--------|-------|
-| Schedule versions | 72 |
-| Task growth | 843 → 12,433 (14.7x) |
-| Persistent tasks | 759 (90% of original) |
-| Milestones (original) | 47 |
-| Milestones (latest) | 137 (39 persistent) |
-| Project completion slip | ~32 months |
-
-### Recommended Approach
-
-1. **Milestone-level** (Phase 1): Track 39 persistent milestones - stable, meaningful completion points
-2. **Critical path** (Phase 2): Track tasks with float <= 0 version-by-version
-3. **Task-level** (Phase 3): Track 759 persistent tasks for detailed attribution
-4. **Attribution** (Phase 4): Correlate with weekly reports for root cause analysis
-
-### Key Findings
-
-- Task-level analysis adds value: within-WBS variance (4.7d) is 5x larger than between-WBS variance (1.0d)
-- 88% of added milestones are decomposition/coordination, not new scope
-- Critical path persistence is 73% between consecutive versions
-- Major slippage periods: Nov 2022, Oct-Nov 2023, Jan-Feb 2024, Jun 2024, Sep 2025
-
-See [Schedule Slippage Analysis Plan](docs/schedule_slippage_analysis.md) for full details.
+- [docs/SOURCES.md](../../docs/SOURCES.md) - XER field mapping
+- [docs/schedule_slippage_analysis.md](docs/schedule_slippage_analysis.md) - Slippage analysis plan

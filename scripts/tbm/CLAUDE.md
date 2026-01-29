@@ -38,52 +38,36 @@ tbm/
 ```bash
 cd scripts/tbm/process
 ./run.sh extract-eml --dry-run  # Preview EML extraction (one-time)
-./run.sh extract-eml            # Extract Excel from EML archive (one-time)
+./run.sh extract-eml            # Extract Excel from EML archive
 ./run.sh sync --dry-run         # Preview sync from field folder
 ./run.sh sync                   # Sync new files from field team
 ./run.sh parse                  # Stage 1: Extract Excel data
 ./run.sh consolidate            # Stage 2: Add dimensions + CSI
 ./run.sh dedup                  # Stage 3: Flag duplicates & quality issues
-./run.sh all                    # Run all stages (parse -> consolidate -> dedup)
+./run.sh all                    # Run all stages
 ./run.sh status                 # Show file counts
 ```
 
 ## Data Sources
 
-### 1. EML Archive (Historical - One-Time Extraction)
+### EML Archive (Historical)
 
-**Location:** `raw/tbm/TBM EML Files/` (740 EML files)
-**Date Range:** July 2023 - February 2025 (~20 months)
-**Content:** Email messages containing TBM Excel attachments
-**Extraction:** `./run.sh extract-eml`
+- **Location:** `raw/tbm/TBM EML Files/` (740 EML files)
+- **Date Range:** July 2023 - February 2025
+- **Extracted:** 5,377 Excel files named `eml_YYYYMMDD_NN.xlsx`
+- **Manifest:** `raw/tbm/eml_extraction_manifest.json`
 
-The EML archive contains historical TBM data delivered via email before the OneDrive sync process was established. Each EML file contains 1-15 Excel attachments.
+### Field OneDrive Sync (Current)
 
-**Extracted Files:** 5,377 Excel files named `eml_YYYYMMDD_NN.xlsx`
-**Manifest:** `raw/tbm/eml_extraction_manifest.json` tracks extraction status
-
-### 2. Field OneDrive Sync (Current Operations)
-
-**Location:** FIELD_TBM_FILES env var
-**Folders:**
-- `Axios/` - Daily Work Plans by date
-- `Berg & MK Marlow/` - Daily Work Plans by date
-
-**Sync Process:**
-1. Recursively finds "Daily Work Plan" files
-2. Copies new files to raw/tbm/ (flattens folder structure)
-3. Tracks synced files in manifest to avoid duplicates
-
-**Current Files:** 606 Excel files from ongoing field operations
+- **Location:** `FIELD_TBM_FILES` env var
+- **Folders:** `Axios/`, `Berg & MK Marlow/`
+- **Current Files:** 606 Excel files from ongoing operations
 
 ## Key Data
 
-- **5,983 Excel files total** (5,377 EML archive + 606 OneDrive sync)
+- **5,983 Excel files** (5,377 EML + 606 OneDrive)
 - **Date range:** July 2023 - December 2025 (~30 months)
-- **Previous coverage:** 13,539 work activities (Mar-Dec 2025, 421 files)
-- **Expected after reprocessing:** ~30,000+ work activities (estimated 2-3x increase)
-- Crew info: foreman, headcount, contact
-- Location: building, level, row codes
+- **Content:** Crew info (foreman, headcount), location (building, level, row codes)
 
 ## Dimension Coverage
 
@@ -94,79 +78,43 @@ The EML archive contains historical TBM data delivered via email before the OneD
 | CSI | 95%+ | Inferred from activity descriptions |
 | Grid | 0% | Not available in TBM |
 
-## Output Location
+## Output
 
-- `processed/tbm/work_entries.csv` (with dimensions, CSI, dedup flags)
+`processed/tbm/work_entries.csv` - Work entries with dimensions, CSI, and dedup flags
 
-## Data Quality Issues
+## Data Quality Handling
 
-### Duplicate Files (Pipeline - Active)
+### Duplicate Files
 
-**Script:** `process/deduplicate_tbm.py`
-
-**Problem:** Multiple files for same company+date cause double-counting of manpower.
+**Problem:** Multiple files for same company+date cause double-counting.
 
 **Root Causes:**
-1. **Folder duplicates:** Same file in multiple dated folders (e.g., Axios Jan 15 in both `1-15-26` and `1-16-26` folders)
-2. **Content duplicates:** Files in wrong folders (e.g., Axios data in Berg folder)
-3. **Copy files:** Explicit copies (`Copy of`, `-2-` suffix)
+- Folder duplicates (same file in multiple dated folders)
+- Content duplicates (files in wrong folders)
+- Copy files (`Copy of`, `-2-` suffix)
 
-**Fix Logic:**
-- Groups files by `subcontractor + date`
-- Scores files: `DATE_MATCH (100) + RECORD_COUNT (up to 99) + NOT_COPY (1)`
-- Marks best file as `is_preferred=True`, others as `is_duplicate=True`
-- Content deduplication: Compares `tier2_sc` (actual workbook subcontractor) vs filename
+**Solution:** Groups by `subcontractor + date`, scores files, marks best as `is_preferred=True`
 
 **Columns Added:**
-| Column | Type | Description |
-|--------|------|-------------|
-| `is_duplicate` | bool | True if file shares company+date with another |
-| `duplicate_group_id` | int | Groups duplicate files |
-| `is_preferred` | bool | True for best file in duplicate group |
-| `subcontractor_normalized` | str | Normalized from `tier2_sc` (workbook data) |
+| Column | Description |
+|--------|-------------|
+| `is_duplicate` | True if file shares company+date with another |
+| `duplicate_group_id` | Groups duplicate files |
+| `is_preferred` | True for best file in duplicate group |
+| `subcontractor_normalized` | Normalized from workbook data |
 
-**Power BI Usage:** Filter by `is_preferred = True` to exclude duplicates.
+**Power BI:** Filter by `is_preferred = True` to exclude duplicates.
 
-### Date Mismatch (Pipeline - Active)
+### Date Mismatch
 
-**Script:** `process/deduplicate_tbm.py`
+**Problem:** Internal `report_date` differs from filename date.
 
-**Problem:** Some files have internal `report_date` that differs from filename date. Causes incorrect date assignment if filename is trusted.
+**Solution:** Compares filename date vs internal date, adds `date_mismatch` flag.
 
-**Example:** `Axios 12.04.25 Daily Work Plan.xlsx` contains data for `2025-12-03`
+### Parser Fixes (Embedded)
 
-**Fix Logic:** Compares extracted filename date vs internal `report_date`
-
-**Columns Added:**
-| Column | Type | Description |
-|--------|------|-------------|
-| `date_mismatch` | bool | True if filename date ≠ internal date |
-
-**Impact:** 12 records flagged. Power BI can filter or highlight these for review.
-
-### Dynamic Column Detection (Embedded Fix)
-
-**Script:** `process/parse_tbm_daily_plans.py`
-
-**Problem:** Different TBM files have varying column layouts. Some files lack row number columns, causing data to shift left.
-
-**Fix Applied:** Dynamic header detection that:
-- Scans for known column headers ("ACTIVITY", "NO OF EMPLOYEES", etc.)
-- Adjusts column indices if no row number column present
-- Recovers 534 records from 14 previously unparseable files
-
-### MXI File Exclusion (Embedded Fix)
-
-**Script:** `process/parse_tbm_daily_plans.py`
-
-**Problem:** MXI-annotated files have frozen internal dates from template creation, causing duplicate grouping issues.
-
-**Fix Applied:** Excludes files matching patterns: `MXI`, `Manpower TrendReport`, `TaylorFab`, etc.
-
-### Employee Column Priority (Embedded Fix)
-
-**Script:** `process/parse_tbm_daily_plans.py`
-
-**Problem:** Some files have multiple employee columns (planned, absent, on site). Parser selected last match, which sometimes had NULL values.
-
-**Fix Applied:** Prioritizes columns containing "planned" over other variants.
+| Fix | Description |
+|-----|-------------|
+| Dynamic columns | Scans for known headers, adjusts indices if no row number column |
+| MXI exclusion | Excludes template files with frozen internal dates |
+| Employee priority | Prioritizes "planned" employee columns over other variants |

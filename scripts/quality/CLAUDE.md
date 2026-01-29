@@ -1,6 +1,6 @@
 # Quality Inspection Scripts
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -39,42 +39,14 @@ cd scripts/quality/document_processing
 
 - **Yates:** ~4,000 inspections (WIR - Work Inspection Request)
 - **SECAI:** ~2,000 inspections (IR - Inspection Request)
-- **Coverage:** Location 95%+, Company 99%+, Trade 90%+
+- **Coverage:** Location 95%+, Company 99%+
 
 ## Output Location
 
 - **Raw extracts:** `processed/quality/`
 - **Enriched:** `processed/quality/enriched/combined_qc_inspections.csv`
 
-## Embedding-Based Classification
-
-**Script:** `process_with_embeddings.py`
-
-Alternative extraction pipeline using semantic similarity instead of LLM parsing. Creates comparison dataset to validate against existing LLM-parsed data.
-
-**Features:**
-- Zero-shot classification using cosine similarity
-- 10x cheaper and 20x faster than LLM parsing
-- Extracts: contractor, subcontractor, CSI section, outcome, failure reason
-- Outputs comparison CSV with confidence scores
-
-**Usage:**
-```bash
-# Test on small batch
-python -m scripts.quality.process_with_embeddings raba --limit 10 --verbose
-
-# Full processing
-python -m scripts.quality.process_with_embeddings raba
-python -m scripts.quality.process_with_embeddings psi
-python -m scripts.quality.process_with_embeddings both
-```
-
-**Output:** `processed/{source}/{source}_embedding_comparison.csv`
-
-Contains both LLM and embedding results with match indicators and confidence scores.
-
 ## Notes
 
-- Shared utilities (location_parser, company_matcher) moved to `scripts/shared/`
+- Shared utilities (location_parser, company_matcher) in `scripts/shared/`
 - Quality data complements RABA/PSI third-party inspection reports
-- Embedding classifier provides fast, cheap alternative to LLM parsing

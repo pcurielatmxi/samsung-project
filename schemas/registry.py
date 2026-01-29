@@ -113,7 +113,7 @@ def get_schemas_for_source(source: str) -> Dict[str, Type[BaseModel]]:
     Get all schemas for a source directory.
 
     Args:
-        source: Source directory name (e.g., 'raba', 'tbm', 'weekly_reports')
+        source: Source directory name (e.g., 'raba', 'tbm', 'projectsight')
 
     Returns:
         Dict mapping file names to schemas for that source
