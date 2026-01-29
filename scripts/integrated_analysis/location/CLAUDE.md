@@ -16,7 +16,7 @@ Centralized location processing for all data sources. This module is the **singl
 Previously, location processing logic was duplicated across multiple files (~700 lines total):
 - `raba/document_processing/consolidate.py` (~80 lines)
 - `psi/document_processing/consolidate.py` (~80 lines)
-- `integrated_analysis/enrich_with_dimensions.py` (~500 lines)
+- `tbm/process/consolidate_tbm.py` (~500 lines)
 - `fieldwire/process/enrich_tbm.py` (~40 lines)
 
 This caused:
@@ -52,8 +52,7 @@ TBM has complex grid patterns (103 regex patterns) that are parsed by `parse_tbm
 Pass pre-parsed bounds to `enrich_location()` for affected rooms and hierarchy:
 
 ```python
-from scripts.integrated_analysis.location import enrich_location
-from scripts.integrated_analysis.enrich_with_dimensions import parse_tbm_grid
+from scripts.integrated_analysis.location import enrich_location, parse_tbm_grid
 
 # Parse grid using TBM-specific parser
 grid_parsed = parse_tbm_grid(location_row)
@@ -102,7 +101,8 @@ location/
 │   ├── normalizers.py             # Building/level normalization
 │   ├── extractors.py              # P6 extraction patterns
 │   ├── pattern_extractor.py       # Room/stair/elevator from text
-│   └── grid_parser.py             # Centralized grid parsing
+│   ├── grid_parser.py             # Centralized grid parsing (simple patterns)
+│   └── tbm_grid_parser.py         # TBM-specific grid parsing (103+ patterns)
 ├── dimension/
 │   └── __init__.py                # (Future) Dimension table builders
 ├── enrichment/
@@ -133,7 +133,7 @@ result.grid_col_max  # 10.0
 result.grid_type     # 'POINT', 'RANGE', 'ROW_ONLY', 'COL_ONLY', 'NAMED'
 ```
 
-For TBM's 103+ complex patterns, use `parse_tbm_grid()` from `enrich_with_dimensions.py`.
+For TBM's 103+ complex patterns, use `parse_tbm_grid()` from this module.
 
 ## Key Concepts
 
@@ -198,6 +198,5 @@ It does NOT depend on source-specific code (RABA, PSI, TBM).
 
 ## Future Work
 
-1. **Move TBM grid parsing** to this module (currently 103 patterns in `enrich_with_dimensions.py`)
-2. **Add grid coverage bridge** generator for Power BI heatmaps
-3. **Add validation scripts** for location coverage reporting
+1. **Add grid coverage bridge** generator for Power BI heatmaps
+2. **Add validation scripts** for location coverage reporting

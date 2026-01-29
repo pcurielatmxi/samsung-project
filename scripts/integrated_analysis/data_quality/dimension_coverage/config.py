@@ -60,29 +60,29 @@ SOURCE_CONFIGS: Dict[str, Dict[str, Any]] = {
         },
     },
     'TBM': {
-        'path': 'tbm/work_entries_enriched.csv',
+        'path': 'tbm/work_entries.csv',
         'location_id_col': 'dim_location_id',
         'location_type_col': None,  # Must lookup from dim_location
         'company_id_col': 'dim_company_id',
         'company_name_col': 'company',
         'csi_col': 'csi_section',
         'enrichment_scripts': {
-            'location': 'scripts/integrated_analysis/enrich_with_dimensions.py',
-            'company': 'scripts/integrated_analysis/enrich_with_dimensions.py',
-            'csi': 'scripts/integrated_analysis/add_csi_to_tbm.py',
+            'location': 'scripts/tbm/process/consolidate_tbm.py',
+            'company': 'scripts/tbm/process/consolidate_tbm.py',
+            'csi': 'scripts/tbm/process/consolidate_tbm.py',
         },
     },
     'ProjectSight': {
-        'path': 'projectsight/labor_entries_enriched.csv',
+        'path': 'projectsight/labor_entries.csv',
         'location_id_col': 'dim_location_id',
         'location_type_col': None,  # Must lookup from dim_location
         'company_id_col': 'dim_company_id',
         'company_name_col': 'company_name',
         'csi_col': 'csi_section',
         'enrichment_scripts': {
-            'location': 'scripts/integrated_analysis/enrich_with_dimensions.py',
-            'company': 'scripts/integrated_analysis/enrich_with_dimensions.py',
-            'csi': 'scripts/integrated_analysis/add_csi_to_projectsight.py',
+            'location': 'scripts/projectsight/process/consolidate_labor.py',
+            'company': 'scripts/projectsight/process/consolidate_labor.py',
+            'csi': 'scripts/projectsight/process/consolidate_labor.py',
         },
     },
     'NCR': {

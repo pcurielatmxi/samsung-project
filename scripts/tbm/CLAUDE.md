@@ -1,6 +1,6 @@
 # TBM Scripts
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -14,12 +14,10 @@ EML Archive              raw/tbm/TBM EML Files/*.eml (740 files, Jul 2023 - Feb 
 Field TBM (OneDrive)     raw/tbm/*.xlsx (5,983 total: 5,377 from EML + 606 from OneDrive)
         ↓ [sync]                ↓ [Stage 1: Parse]
         └──────────────► work_entries.csv + tbm_files.csv
-                                ↓ [Stage 2: Enrich]
-                        work_entries_enriched.csv (with dim_location_id, dim_company_id, dim_trade_id)
-                                ↓ [Stage 3: CSI]
-                        work_entries_enriched.csv (with csi_section)
-                                ↓ [Stage 4: Dedup]
-                        work_entries_enriched.csv (with is_duplicate, is_preferred, date_mismatch)
+                                ↓ [Stage 2: Consolidate]
+                        work_entries.csv (with dim_location_id, dim_company_id, csi_section)
+                                ↓ [Stage 3: Dedup]
+                        work_entries.csv (with is_duplicate, is_preferred, date_mismatch)
 ```
 
 ## Structure
@@ -31,6 +29,7 @@ tbm/
     ├── extract_eml_attachments.py    # Extract Excel from EML archive (one-time)
     ├── sync_field_tbm.py             # Sync from field team's OneDrive
     ├── parse_tbm_daily_plans.py      # Excel parser
+    ├── consolidate_tbm.py            # Dimension enrichment + CSI inference
     └── deduplicate_tbm.py            # Duplicate detection & data quality flags
 ```
 
@@ -43,10 +42,9 @@ cd scripts/tbm/process
 ./run.sh sync --dry-run         # Preview sync from field folder
 ./run.sh sync                   # Sync new files from field team
 ./run.sh parse                  # Stage 1: Extract Excel data
-./run.sh enrich                 # Stage 2: Add dimension IDs
-./run.sh csi                    # Stage 3: Add CSI codes
-./run.sh dedup                  # Stage 4: Flag duplicates & quality issues
-./run.sh all                    # Run all stages (parse -> enrich -> csi -> dedup)
+./run.sh consolidate            # Stage 2: Add dimensions + CSI
+./run.sh dedup                  # Stage 3: Flag duplicates & quality issues
+./run.sh all                    # Run all stages (parse -> consolidate -> dedup)
 ./run.sh status                 # Show file counts
 ```
 
@@ -93,13 +91,12 @@ The EML archive contains historical TBM data delivered via email before the OneD
 |-----------|----------|-------|
 | Location | 91.5% | Building + level |
 | Company | 98.2% | After subcontractor name standardization |
-| Trade | 37.7% | Inferred from activity descriptions |
+| CSI | 95%+ | Inferred from activity descriptions |
 | Grid | 0% | Not available in TBM |
 
 ## Output Location
 
-- `processed/tbm/work_entries.csv` (raw)
-- `processed/tbm/work_entries_enriched.csv` (with dimensions + CSI + dedup flags)
+- `processed/tbm/work_entries.csv` (with dimensions, CSI, dedup flags)
 
 ## Data Quality Issues
 

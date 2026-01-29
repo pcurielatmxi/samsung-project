@@ -15,6 +15,9 @@ from scripts.integrated_analysis.location.core.grid_parser import (
     parse_grid_to_dict,
     GridParseResult,
 )
+from scripts.integrated_analysis.location.core.tbm_grid_parser import (
+    parse_tbm_grid,
+)
 from scripts.integrated_analysis.location.core.extractors import (
     # Room extraction
     extract_room,
@@ -48,6 +51,7 @@ __all__ = [
     'parse_grid',
     'parse_grid_to_dict',
     'GridParseResult',
+    'parse_tbm_grid',
     # Pattern extraction (from free text)
     'extract_location_codes',
     'extract_location_codes_for_lookup',

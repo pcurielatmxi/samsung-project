@@ -1,6 +1,6 @@
 # ProjectSight Scripts
 
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-29
 
 ## Purpose
 
@@ -13,12 +13,12 @@ Scrape and process data from Trimble ProjectSight (daily reports, NCR records, l
 ```
 [Scrape] scrape_projectsight_daily_reports.py → raw/projectsight/*.json
     ↓
-[Parse] parse_labor_from_json.py → labor_entries.csv
+[Parse] parse_labor_from_json.py → labor_entries.csv (raw)
     ↓
-[Enrich] enrich_with_dimensions → labor_entries_enriched.csv
+[Consolidate] consolidate_labor.py → labor_entries.csv (with dims + CSI)
 ```
 
-**Output:** 857K+ labor records with dim_company_id, dim_trade_id
+**Output:** 857K+ labor records with dim_company_id, dim_csi_section_id
 
 ### 2. NCR Pipeline (quality records)
 
@@ -47,6 +47,7 @@ projectsight/
 │   ├── scrape_projectsight_daily_reports.py  # Playwright scraper
 │   ├── scrape_projectsight_library.py      # Library scraper
 │   ├── parse_labor_from_json.py            # Labor extraction
+│   ├── consolidate_labor.py                # Labor enrichment (dims + CSI)
 │   ├── process_ncr_export.py               # NCR parsing
 │   ├── consolidate_ncr.py                  # NCR enrichment
 │   └── process_library_files.py            # Library CSV
@@ -58,11 +59,19 @@ projectsight/
 
 ```bash
 cd scripts/projectsight/process
-./run.sh labor          # Run labor pipeline
+./run.sh labor          # Run labor pipeline (parse + consolidate)
 ./run.sh ncr            # Run NCR pipeline
 ./run.sh all            # Run both pipelines
 ./run.sh status         # Show file counts
 ```
+
+## Dimension Coverage
+
+| Dimension | Coverage | Notes |
+|-----------|----------|-------|
+| Company | 99.9% | After name standardization |
+| CSI | 80%+ | Inferred from activity/trade/division |
+| Location | - | Not available in labor data |
 
 ## Environment
 

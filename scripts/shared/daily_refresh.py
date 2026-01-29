@@ -185,14 +185,14 @@ def main():
     )
     results.append(("PSI consolidated", success))
 
-    # 11. Enrich TBM with dimension IDs (idempotent - overwrites enriched file)
+    # 11. Consolidate TBM with dimension IDs + CSI (idempotent - overwrites file)
     success, _ = run_command(
-        [python, "-m", "scripts.integrated_analysis.enrich_with_dimensions", "--source", "tbm"],
-        "Enrich TBM with dimensions",
+        [python, "-m", "scripts.tbm.process.consolidate_tbm"],
+        "Consolidate TBM with dimensions + CSI",
         dry_run=args.dry_run,
         verbose=args.verbose
     )
-    results.append(("TBM enriched", success))
+    results.append(("TBM consolidated", success))
 
     # 12. Generate affected_rooms_bridge (idempotent - overwrites bridge table)
     success, _ = run_command(

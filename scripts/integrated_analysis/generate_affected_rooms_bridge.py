@@ -157,8 +157,8 @@ def generate_bridge_table() -> pd.DataFrame:
 
         # TBM uses tbm_work_entry_id (TBM-{file_id}-{row_num}) generated during enrichment
         if 'tbm_work_entry_id' not in tbm.columns:
-            print("  WARNING: tbm_work_entry_id column missing - regenerate TBM enriched data")
-            print("  Run: python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm")
+            print("  WARNING: tbm_work_entry_id column missing - regenerate TBM consolidated data")
+            print("  Run: python -m scripts.tbm.process.consolidate_tbm")
             return pd.DataFrame()
 
         tbm_bridge = explode_source(

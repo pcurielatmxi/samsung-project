@@ -15,6 +15,8 @@ import pandas as pd
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from schemas.validator import validated_df_to_csv
+from scripts.shared.dimension_lookup import get_company_id
+from src.config.settings import Settings
 
 try:
     import fitz
@@ -245,8 +247,8 @@ def parse_pdf(pdf_path: Path, file_id: int) -> list:
 
 def main():
     """Main processing function."""
-    input_dir = Path('data/raw/weekly_reports')
-    output_dir = Path('data/weekly_reports/tables')
+    input_dir = Settings.RAW_DATA_DIR / 'weekly_reports'
+    output_dir = Settings.PROCESSED_DATA_DIR / 'weekly_reports'
     output_dir.mkdir(parents=True, exist_ok=True)
 
     pdf_files = sorted(input_dir.glob('*.pdf'))
@@ -278,12 +280,19 @@ def main():
         validated_df_to_csv(df, output_dir / 'labor_detail.csv', index=False)
         print(f"labor_detail.csv: {len(df)} entries (validated)")
 
-        # Summary by company
+        # Summary by company with dimension enrichment
         summary = df.groupby('company').agg({
             'hours': 'sum',
             'name': 'nunique'
         }).rename(columns={'name': 'unique_workers'}).sort_values('hours', ascending=False)
-        validated_df_to_csv(summary, output_dir / 'labor_detail_by_company.csv')
+        summary = summary.reset_index()
+
+        # Add company dimension ID
+        summary['dim_company_id'] = summary['company'].apply(get_company_id)
+        matched = summary['dim_company_id'].notna().sum()
+        print(f"Company enrichment: {matched}/{len(summary)} matched ({100*matched/len(summary):.1f}%)")
+
+        validated_df_to_csv(summary, output_dir / 'labor_detail_by_company.csv', index=False)
         print(f"labor_detail_by_company.csv: {len(summary)} companies (validated)")
 
         # Summary by classification

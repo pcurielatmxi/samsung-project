@@ -69,6 +69,9 @@ from scripts.integrated_analysis.location.core.grid_parser import (
     parse_grid_to_dict,
     GridParseResult,
 )
+from scripts.integrated_analysis.location.core.tbm_grid_parser import (
+    parse_tbm_grid,
+)
 
 __all__ = [
     # Fact table enrichment (TBM/RABA/PSI/QC Workbooks)
@@ -83,4 +86,6 @@ __all__ = [
     'parse_grid',
     'parse_grid_to_dict',
     'GridParseResult',
+    # TBM-specific grid parsing (103+ patterns for TBM location_row field)
+    'parse_tbm_grid',
 ]

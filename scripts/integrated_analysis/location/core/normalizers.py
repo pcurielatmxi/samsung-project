@@ -3,7 +3,7 @@ Building and Level Normalization
 
 Consolidates all building/level normalization logic that was previously
 scattered across multiple files:
-- enrich_with_dimensions.py: normalize_level_value()
+- tbm/process/consolidate_tbm.py: normalize_level_value()
 - fieldwire/enrich_tbm.py: normalize_building(), normalize_level()
 - company_standardization.py: standardize_level()
 

@@ -5,9 +5,8 @@
 # Two data pipelines:
 #
 # LABOR PIPELINE (daily reports -> labor hours):
-#   1. parse-labor  - Parse JSON daily reports -> labor_entries.csv
-#   2. enrich-labor - Add dimension IDs (company, trade)
-#   3. csi-labor    - Add CSI section inference
+#   1. parse-labor    - Parse JSON daily reports -> labor_entries.csv
+#   2. consolidate-labor - Add dimension IDs + CSI -> labor_entries.csv
 #
 # NCR PIPELINE (quality records):
 #   1. parse-ncr    - Parse NCR Excel export -> ncr.csv
@@ -29,17 +28,11 @@ case "${1:-help}" in
         echo "=== Labor Stage 1: Parsing Daily Reports JSON ==="
         python -m scripts.projectsight.process.parse_labor_from_json "$@"
         ;;
-    enrich-labor)
-        # Stage 2: Add dimension IDs
+    consolidate-labor)
+        # Stage 2: Add dimension IDs + CSI
         shift
-        echo "=== Labor Stage 2: Enriching with Dimension IDs ==="
-        python -m scripts.integrated_analysis.enrich_with_dimensions --source projectsight "$@"
-        ;;
-    csi-labor)
-        # Stage 3: Add CSI section inference
-        shift
-        echo "=== Labor Stage 3: Adding CSI Section IDs ==="
-        python -m scripts.integrated_analysis.add_csi_to_projectsight "$@"
+        echo "=== Labor Stage 2: Consolidating (Dimensions + CSI) ==="
+        python -m scripts.projectsight.process.consolidate_labor "$@"
         ;;
     labor)
         # Run full labor pipeline
@@ -57,25 +50,17 @@ case "${1:-help}" in
         fi
         echo ""
 
-        echo "=== Labor Stage 2: Enriching with Dimension IDs ==="
-        python -m scripts.integrated_analysis.enrich_with_dimensions --source projectsight "$@"
+        echo "=== Labor Stage 2: Consolidating (Dimensions + CSI) ==="
+        python -m scripts.projectsight.process.consolidate_labor "$@"
         if [ $? -ne 0 ]; then
-            echo "ERROR: Enrich stage failed"
-            exit 1
-        fi
-        echo ""
-
-        echo "=== Labor Stage 3: Adding CSI Section IDs ==="
-        python -m scripts.integrated_analysis.add_csi_to_projectsight "$@"
-        if [ $? -ne 0 ]; then
-            echo "ERROR: CSI stage failed"
+            echo "ERROR: Consolidate stage failed"
             exit 1
         fi
 
         echo ""
         echo "================================================"
         echo "LABOR PIPELINE COMPLETE"
-        echo "Output: processed/projectsight/labor_entries_enriched.csv"
+        echo "Output: processed/projectsight/labor_entries.csv"
         echo "================================================"
         ;;
 
@@ -165,7 +150,7 @@ case "${1:-help}" in
         else
             echo "  Daily reports directory not found"
         fi
-        for f in "labor_entries.csv" "labor_entries_enriched.csv"; do
+        for f in "labor_entries.csv"; do
             path="$DATA_DIR/processed/projectsight/$f"
             if [ -f "$path" ]; then
                 rows=$(wc -l < "$path")
@@ -196,10 +181,9 @@ case "${1:-help}" in
         echo "Usage: ./run.sh <command> [options]"
         echo ""
         echo "LABOR PIPELINE (daily reports -> labor hours):"
-        echo "  parse-labor     Parse JSON daily reports -> labor_entries.csv"
-        echo "  enrich-labor    Add dimension IDs (company, trade)"
-        echo "  csi-labor       Add CSI section inference"
-        echo "  labor           Run full labor pipeline (all 3 stages)"
+        echo "  parse-labor       Parse JSON daily reports -> labor_entries.csv"
+        echo "  consolidate-labor Add dimension IDs + CSI"
+        echo "  labor             Run full labor pipeline (both stages)"
         echo ""
         echo "NCR PIPELINE (quality records):"
         echo "  parse-ncr       Parse NCR Excel export -> ncr.csv"
@@ -211,16 +195,14 @@ case "${1:-help}" in
         echo "  status          Show pipeline status and file counts"
         echo ""
         echo "Output Files:"
-        echo "  processed/projectsight/labor_entries.csv          - Raw parsed labor"
-        echo "  processed/projectsight/labor_entries_enriched.csv - With dims + CSI"
-        echo "  processed/projectsight/ncr.csv                    - Raw parsed NCR"
-        echo "  processed/projectsight/ncr_consolidated.csv       - With dims + CSI"
+        echo "  processed/projectsight/labor_entries.csv    - With dims + CSI"
+        echo "  processed/projectsight/ncr.csv              - Raw parsed NCR"
+        echo "  processed/projectsight/ncr_consolidated.csv - With dims + CSI"
         echo ""
         echo "Examples:"
         echo "  ./run.sh status              # Check current state"
         echo "  ./run.sh labor               # Run labor pipeline"
         echo "  ./run.sh ncr                 # Run NCR pipeline"
         echo "  ./run.sh all                 # Run everything"
-        echo "  ./run.sh enrich-labor --dry-run  # Preview enrichment"
         ;;
 esac

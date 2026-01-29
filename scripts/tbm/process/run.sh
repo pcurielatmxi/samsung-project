@@ -5,11 +5,10 @@
 # Pipeline stages:
 #   0. extract-eml - Extract Excel attachments from EML files (one-time)
 #   1. parse       - Parse Excel files -> work_entries.csv
-#   2. enrich      - Add dimension IDs (location, company, trade)
-#   3. csi         - Add CSI section inference from activity descriptions
-#   4. dedup       - Flag duplicate company+date combinations
+#   2. consolidate - Add dimension IDs (location, company) + CSI inference
+#   3. dedup       - Flag duplicate company+date combinations
 #
-# The 'all' command runs stages 1-4 in sequence.
+# The 'all' command runs stages 1-3 in sequence.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
@@ -36,22 +35,16 @@ case "${1:-help}" in
         echo "=== Stage 1: Parsing TBM Daily Plans ==="
         cd "$PROJECT_ROOT" && python -m scripts.tbm.process.parse_tbm_daily_plans "$@"
         ;;
-    enrich)
-        # Stage 2: Add dimension IDs
+    consolidate)
+        # Stage 2: Add dimension IDs + CSI inference
         shift
-        echo "=== Stage 2: Enriching with Dimension IDs ==="
-        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm "$@"
-        ;;
-    csi)
-        # Stage 3: Add CSI section inference
-        shift
-        echo "=== Stage 3: Adding CSI Section IDs ==="
-        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
+        echo "=== Stage 2: Consolidating (Dimensions + CSI) ==="
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.consolidate_tbm "$@"
         ;;
     dedup)
-        # Stage 4: Flag duplicate company+date combinations
+        # Stage 3: Flag duplicate company+date combinations
         shift
-        echo "=== Stage 4: Flagging Duplicates ==="
+        echo "=== Stage 3: Flagging Duplicates ==="
         cd "$PROJECT_ROOT" && python -m scripts.tbm.process.deduplicate_tbm "$@"
         ;;
     all)
@@ -70,23 +63,15 @@ case "${1:-help}" in
         fi
         echo ""
 
-        echo "=== Stage 2: Enriching with Dimension IDs ==="
-        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.enrich_with_dimensions --source tbm "$@"
+        echo "=== Stage 2: Consolidating (Dimensions + CSI) ==="
+        cd "$PROJECT_ROOT" && python -m scripts.tbm.process.consolidate_tbm "$@"
         if [ $? -ne 0 ]; then
-            echo "ERROR: Enrich stage failed"
+            echo "ERROR: Consolidate stage failed"
             exit 1
         fi
         echo ""
 
-        echo "=== Stage 3: Adding CSI Section IDs ==="
-        cd "$PROJECT_ROOT" && python -m scripts.integrated_analysis.add_csi_to_tbm "$@"
-        if [ $? -ne 0 ]; then
-            echo "ERROR: CSI stage failed"
-            exit 1
-        fi
-        echo ""
-
-        echo "=== Stage 4: Flagging Duplicates ==="
+        echo "=== Stage 3: Flagging Duplicates ==="
         cd "$PROJECT_ROOT" && python -m scripts.tbm.process.deduplicate_tbm "$@"
         if [ $? -ne 0 ]; then
             echo "ERROR: Dedup stage failed"
@@ -96,7 +81,7 @@ case "${1:-help}" in
         echo ""
         echo "================================================"
         echo "TBM PIPELINE COMPLETE"
-        echo "Output: processed/tbm/work_entries_enriched.csv"
+        echo "Output: processed/tbm/work_entries.csv"
         echo "================================================"
         ;;
     status)
@@ -117,7 +102,7 @@ case "${1:-help}" in
         fi
         echo ""
         echo "Output files:"
-        for f in "work_entries.csv" "work_entries_enriched.csv" "tbm_files.csv"; do
+        for f in "work_entries.csv" "tbm_files.csv"; do
             path="$DATA_DIR/processed/tbm/$f"
             if [ -f "$path" ]; then
                 rows=$(wc -l < "$path")
@@ -134,18 +119,16 @@ case "${1:-help}" in
         echo "Usage: ./run.sh <command> [options]"
         echo ""
         echo "Commands:"
-        echo "  extract-eml  Extract Excel from EML files (one-time historical data)"
-        echo "  sync         Sync files from field team's OneDrive folder"
-        echo "  parse        Stage 1: Parse TBM Excel files -> work_entries.csv"
-        echo "  enrich       Stage 2: Add dimension IDs (location, company, trade)"
-        echo "  csi          Stage 3: Add CSI section inference from activities"
-        echo "  dedup        Stage 4: Flag duplicate company+date combinations"
-        echo "  all          Run full pipeline (parse -> enrich -> csi -> dedup)"
-        echo "  status       Show pipeline status and file counts"
+        echo "  extract-eml   Extract Excel from EML files (one-time historical data)"
+        echo "  sync          Sync files from field team's OneDrive folder"
+        echo "  parse         Stage 1: Parse TBM Excel files -> work_entries.csv"
+        echo "  consolidate   Stage 2: Add dimension IDs + CSI inference"
+        echo "  dedup         Stage 3: Flag duplicate company+date combinations"
+        echo "  all           Run full pipeline (parse -> consolidate -> dedup)"
+        echo "  status        Show pipeline status and file counts"
         echo ""
         echo "Output:"
-        echo "  processed/tbm/work_entries.csv          - Raw parsed data"
-        echo "  processed/tbm/work_entries_enriched.csv - With dims + CSI"
+        echo "  processed/tbm/work_entries.csv - Parsed with dims, CSI, dedup flags"
         echo ""
         echo "Examples:"
         echo "  ./run.sh extract-eml --dry-run  # Preview EML extraction"
