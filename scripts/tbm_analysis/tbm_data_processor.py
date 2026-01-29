@@ -26,12 +26,17 @@ import pandas as pd
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+from src.config.settings import settings
+
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
 
-TBM_ANALYSIS_DIR = Path("/mnt/c/Users/pdcur/OneDrive - MXI/MXI - General/Field Tracking/TBM Analysis")
+# TBM Analysis directory (from FIELD_TBM_FILES env var)
+if settings.FIELD_TBM_DIR is None:
+    raise ValueError("FIELD_TBM_FILES environment variable not set. Please configure in .env file.")
+TBM_ANALYSIS_DIR = settings.FIELD_TBM_DIR
 FIELDWIRE_DUMP_DIR = TBM_ANALYSIS_DIR / "Fieldwire Data Dump"
 
 LABOR_RATE_PER_HOUR = 65

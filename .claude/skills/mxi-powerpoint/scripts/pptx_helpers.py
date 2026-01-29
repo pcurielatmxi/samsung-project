@@ -46,14 +46,13 @@ def _windows_to_wsl_path(windows_path: str) -> Path:
 
 
 def _get_ui_dir() -> Path:
-    """Get the UI directory from environment or fallback."""
+    """Get the UI directory from environment."""
     windows_data_dir = os.getenv('WINDOWS_DATA_DIR', '')
-    if windows_data_dir:
-        data_path = _windows_to_wsl_path(windows_data_dir)
-        # UI is sibling to Data directory
-        return data_path.parent / "UI"
-    # Fallback for when WINDOWS_DATA_DIR is not set
-    return Path("/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/UI")
+    if not windows_data_dir:
+        raise ValueError("WINDOWS_DATA_DIR environment variable not set. Please configure in .env file.")
+    data_path = _windows_to_wsl_path(windows_data_dir)
+    # UI is sibling to Data directory
+    return data_path.parent / "UI"
 
 
 # =============================================================================
@@ -735,11 +734,10 @@ class MXIPresentation:
         if output_dir is None:
             # Use WINDOWS_DATA_DIR to derive presentations folder (sibling to Data)
             windows_data_dir = os.getenv('WINDOWS_DATA_DIR', '')
-            if windows_data_dir:
-                data_path = _windows_to_wsl_path(windows_data_dir)
-                output_dir = str(data_path.parent / "Presentations")
-            else:
-                output_dir = "/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Presentations"
+            if not windows_data_dir:
+                raise ValueError("WINDOWS_DATA_DIR environment variable not set. Please configure in .env file.")
+            data_path = _windows_to_wsl_path(windows_data_dir)
+            output_dir = str(data_path.parent / "Presentations")
 
         # Create directory if it doesn't exist
         Path(output_dir).mkdir(parents=True, exist_ok=True)

@@ -22,8 +22,12 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Activate virtual environment
 source "$PROJECT_ROOT/.venv/bin/activate"
 
-# Data paths
-DATA_DIR="${WINDOWS_DATA_DIR:-/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data}"
+# Data paths - require WINDOWS_DATA_DIR to be set
+if [ -z "$WINDOWS_DATA_DIR" ]; then
+    echo "ERROR: WINDOWS_DATA_DIR environment variable not set. Please configure in .env file."
+    exit 1
+fi
+DATA_DIR="$WINDOWS_DATA_DIR"
 PROCESSED_DIR="$DATA_DIR/processed/fieldwire"
 CACHE_DIR="$PROCESSED_DIR/ai_cache"
 OUTPUT_FILE="$PROCESSED_DIR/tbm_content.csv"

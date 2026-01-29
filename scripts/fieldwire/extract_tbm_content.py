@@ -313,8 +313,7 @@ def main():
     # Determine input directory
     input_dir = args.input_dir
     if input_dir is None:
-        # Use default from settings or fallback
-        input_dir = Path("/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/raw/fieldwire")
+        input_dir = settings.FIELDWIRE_RAW_DIR
 
     if not input_dir.exists():
         logger.error(f"Input directory not found: {input_dir}")
@@ -356,7 +355,7 @@ def main():
     # Determine output path
     output_path = args.output
     if output_path is None:
-        output_dir = Path("/mnt/c/Users/pdcur/OneDrive - MXI/Desktop/Samsung Dashboard/Data/processed/fieldwire")
+        output_dir = settings.FIELDWIRE_PROCESSED_DIR
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = output_dir / "tbm_content.csv"
 
