@@ -9,8 +9,8 @@ Adds:
 - dim_location_id: Location FK from building + level
 - building_level: String for display (e.g., "FAB-1F")
 - dim_company_id: Company FK
-- dim_trade_id: Trade FK (inferred from category)
-- dim_trade_code: Trade code for readability
+
+Note: dim_trade_id has been superseded by dim_csi_section_id.
 """
 
 import argparse
@@ -27,8 +27,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from src.config.settings import settings
 from scripts.shared.dimension_lookup import (
     get_company_id,
-    get_trade_id,
-    get_trade_code,
 )
 from scripts.shared.company_standardization import standardize_company
 from scripts.integrated_analysis.location import enrich_location
@@ -100,17 +98,7 @@ def enrich_record(record: dict) -> dict:
     else:
         enriched['dim_company_id'] = None
 
-    # Get trade dimension from category
-    trade_name = get_trade_from_category(category)
-    if trade_name:
-        enriched['dim_trade_id'] = get_trade_id(trade_name)
-        if enriched['dim_trade_id']:
-            enriched['dim_trade_code'] = get_trade_code(enriched['dim_trade_id'])
-        else:
-            enriched['dim_trade_code'] = None
-    else:
-        enriched['dim_trade_id'] = None
-        enriched['dim_trade_code'] = None
+    # Note: dim_trade_id removed - use dim_csi_section_id for work type classification
 
     return enriched
 
@@ -184,8 +172,6 @@ def main():
     comp_mapped = enriched_df['dim_company_id'].notna().sum()
     print(f"  Company:  {comp_mapped}/{total} ({100*comp_mapped/total:.1f}%)")
 
-    trade_mapped = enriched_df['dim_trade_id'].notna().sum()
-    print(f"  Trade:    {trade_mapped}/{total} ({100*trade_mapped/total:.1f}%)")
 
     # Summary by company
     print("\nRecords by company (standardized):")
@@ -225,7 +211,7 @@ def main():
         'created', 'last_updated',
         # Enrichment fields
         'company_standardized', 'building_level',
-        'dim_location_id', 'dim_company_id', 'dim_trade_id', 'dim_trade_code',
+        'dim_location_id', 'dim_company_id',
     ]
 
     # Only include columns that exist

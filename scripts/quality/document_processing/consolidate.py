@@ -5,7 +5,9 @@ Consolidate Yates and SECAI QC inspection data with dimension IDs.
 Reads parsed CSV files from processed/quality/ and enriches them with:
 - dim_location_id (from building + level)
 - dim_company_id (from contractor/author company)
-- dim_trade_id (from template/inspection type)
+- dim_csi_section_id (from template/inspection type keywords)
+
+Note: dim_trade_id has been superseded by dim_csi_section_id.
 
 Column Strategy:
 - Common columns: Unified naming for data that exists in both sources
@@ -46,9 +48,6 @@ from scripts.shared.dimension_lookup import (
     get_location_id,
     get_building_level,
     get_company_id,
-    get_trade_id,
-    get_trade_code,
-    get_company_primary_trade_id,
 )
 from scripts.shared.location_parser import parse_location
 
@@ -90,9 +89,7 @@ COMMON_COLUMNS = [
     'dim_location_id',
     'building_level',
     'dim_company_id',
-    'dim_trade_id',
-    'dim_trade_code',
-    # CSI Section IDs
+    # CSI Section (replaces dim_trade_id)
     'dim_csi_section_id',
     'csi_section',
     'csi_title',
@@ -174,13 +171,8 @@ def enrich_yates(df: pd.DataFrame) -> pd.DataFrame:
         dim_location_id = get_location_id(building, level)
         building_level = get_building_level(building, level)
         dim_company_id = get_company_id(contractor_std)
-        dim_trade_id = get_trade_id(inspection_category)
 
-        # Fallback: use company's primary trade if trade not found
-        if dim_trade_id is None and dim_company_id is not None:
-            dim_trade_id = get_company_primary_trade_id(dim_company_id)
-
-        dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
+        # Note: dim_trade_id removed - use dim_csi_section_id for work type classification
 
         # CSI Section inference from inspection description
         csi_section_id, csi_section_code = infer_csi_from_keywords(inspection_desc, YATES_KEYWORD_TO_CSI)
@@ -215,8 +207,6 @@ def enrich_yates(df: pd.DataFrame) -> pd.DataFrame:
             'dim_location_id': dim_location_id,
             'building_level': building_level,
             'dim_company_id': dim_company_id,
-            'dim_trade_id': dim_trade_id,
-            'dim_trade_code': dim_trade_code,
             'dim_csi_section_id': csi_section_id,
             'csi_section': csi_section_code,
             'csi_title': csi_title,
@@ -280,13 +270,8 @@ def enrich_secai(df: pd.DataFrame) -> pd.DataFrame:
         dim_location_id = get_location_id(building, level)
         building_level = get_building_level(building, level)
         dim_company_id = get_company_id(contractor_std)
-        dim_trade_id = get_trade_id(inspection_category)
 
-        # Fallback: use company's primary trade if trade not found
-        if dim_trade_id is None and dim_company_id is not None:
-            dim_trade_id = get_company_primary_trade_id(dim_company_id)
-
-        dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
+        # Note: dim_trade_id removed - use dim_csi_section_id for work type classification
 
         # CSI Section inference from template
         csi_section_id, csi_section_code = infer_csi_from_keywords(template, SECAI_KEYWORD_TO_CSI)
@@ -321,8 +306,6 @@ def enrich_secai(df: pd.DataFrame) -> pd.DataFrame:
             'dim_location_id': dim_location_id,
             'building_level': building_level,
             'dim_company_id': dim_company_id,
-            'dim_trade_id': dim_trade_id,
-            'dim_trade_code': dim_trade_code,
             'dim_csi_section_id': csi_section_id,
             'csi_section': csi_section_code,
             'csi_title': csi_title,
@@ -363,11 +346,6 @@ def calculate_coverage(df: pd.DataFrame, source: str) -> Dict[str, Dict]:
             'mapped': int(df['dim_company_id'].notna().sum()),
             'total': len(df),
             'pct': round(df['dim_company_id'].notna().mean() * 100, 1)
-        },
-        'trade': {
-            'mapped': int(df['dim_trade_id'].notna().sum()),
-            'total': len(df),
-            'pct': round(df['dim_trade_id'].notna().mean() * 100, 1)
         },
         'csi_section': {
             'mapped': int(df['dim_csi_section_id'].notna().sum()),

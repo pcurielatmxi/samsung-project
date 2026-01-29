@@ -41,8 +41,6 @@ class NcrConsolidated(BaseModel):
 
     # Dimension keys
     dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company")
-    dim_trade_id: Optional[float] = Field(default=None, description="FK to dim_trade")
-    dim_trade_code: Optional[str] = Field(default=None, description="Trade code from dim_trade")
 
     # CSI Section
     dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")

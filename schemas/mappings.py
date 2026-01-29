@@ -46,18 +46,3 @@ class MapCompanyLocation(BaseModel):
     source: str = Field(description="Data source (P6, RABA, PSI, TBM)")
 
 
-class MapProjectSightTrade(BaseModel):
-    """
-    ProjectSight trade mapping schema.
-
-    File: map_projectsight_trade.csv
-    Purpose: Map ProjectSight trade names to standardized dim_trade.
-
-    Used by: ProjectSight labor enrichment for trade normalization.
-    """
-
-    ps_trade_name: str = Field(description="ProjectSight trade name")
-    dim_trade_id: int = Field(description="FK to dim_trade")
-    dim_trade_code: str = Field(description="Trade code from dim_trade")
-    confidence: Optional[float] = Field(default=None, description="Mapping confidence (0-1)")
-    notes: Optional[str] = Field(default=None, description="Notes about mapping")

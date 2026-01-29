@@ -99,9 +99,6 @@ class QCInspectionConsolidated(BaseModel):
     dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company (from contractor)")
     dim_subcontractor_id: Optional[float] = Field(default=None, description="FK to dim_company (from subcontractor)")
     performing_company_id: Optional[float] = Field(default=None, description="FK to dim_company - company that actually performed the work")
-    dim_trade_id: Optional[float] = Field(default=None, description="FK to dim_trade")
-    dim_trade_code: Optional[str] = Field(default=None, description="Trade code from dim_trade")
-
     # CSI Section (52-category classification)
     dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code (e.g., '03 30 00')")
@@ -263,9 +260,6 @@ class PsiConsolidated(BaseModel):
     dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company (from contractor)")
     dim_subcontractor_id: Optional[float] = Field(default=None, description="FK to dim_company (from subcontractor)")
     performing_company_id: Optional[float] = Field(default=None, description="FK to dim_company - company that actually performed the work")
-    dim_trade_id: Optional[float] = Field(default=None, description="FK to dim_trade")
-    dim_trade_code: Optional[str] = Field(default=None, description="Trade code from dim_trade")
-
     # CSI Section (52-category classification)
     dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code (e.g., '03 30 00')")
@@ -332,8 +326,6 @@ class QCInspectionsEnriched(BaseModel):
     # Dimension keys
     dim_location_id: Optional[float] = Field(default=None, description="FK to dim_location")
     dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company")
-    dim_trade_id: Optional[float] = Field(default=None, description="FK to dim_trade")
-    dim_trade_code: Optional[str] = Field(default=None, description="Trade code")
     dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code")
     csi_title: Optional[str] = Field(default=None, description="CSI section title")

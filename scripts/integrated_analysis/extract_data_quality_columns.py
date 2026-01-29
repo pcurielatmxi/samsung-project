@@ -65,11 +65,6 @@ RABA_PSI_QC_COLUMNS = [
     'subcontractor_raw',
     'trade_raw',
 
-    # === Trade columns (replaced by CSI codes) ===
-    'trade',
-    'dim_trade_id',
-    'dim_trade_code',
-
     # === Grid bounds (technical) ===
     'grid_row_min',
     'grid_row_max',
@@ -103,12 +98,6 @@ TBM_QC_COLUMNS = [
 
     # === PII ===
     'contact_number',        # Move to QC for privacy
-
-    # === Trade columns (replaced by CSI codes) ===
-    'trade_inferred',
-    'dim_trade_id',
-    'dim_trade_code',
-    'trade_source',
 
     # === Grid bounds (technical) ===
     'grid_row_min',
@@ -151,10 +140,6 @@ QC_INSPECTIONS_QC_COLUMNS = [
     'month',
     'week',
     'day_of_week',
-
-    # === Trade columns (replaced by CSI codes) ===
-    'dim_trade_id',
-    'dim_trade_code',
 
     # === Grid bounds (technical) ===
     'grid_row',

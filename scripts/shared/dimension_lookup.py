@@ -7,11 +7,10 @@ Used by all data source consolidation scripts for consistent integration.
 Dimension Tables (from processed/integrated_analysis/dimensions/):
 - dim_location: location codes (rooms, elevators, stairs) with grid bounds
 - dim_company: company name → company_id
-- dim_trade: trade/category → trade_id
+- dim_csi_section: CSI MasterFormat section → csi_section_id
 
 Mapping Tables (from processed/integrated_analysis/mappings/):
 - map_company_aliases: company name variants → company_id
-- map_projectsight_trade: ProjectSight trade names → dim_trade_id
 
 Location Lookup:
 - get_location_id(building, level) → integer location_id from dim_location
@@ -23,6 +22,9 @@ IMPORTANT: Grid Coordinate System
 The FAB1 project uses a UNIFIED grid coordinate system across all buildings
 (FAB, SUE, SUW, FIZ). For spatial joins, building is ignored - only level
 and grid coordinates matter. See CLAUDE.md for details.
+
+NOTE: dim_trade has been superseded by dim_csi_section. Use CSI MasterFormat
+sections (52 categories) instead of the legacy 13-category trade taxonomy.
 """
 
 import sys
@@ -46,7 +48,6 @@ _mappings_dir = settings.PROCESSED_DATA_DIR / 'integrated_analysis' / 'mappings'
 # Cached dimension data
 _dim_location: Optional[pd.DataFrame] = None
 _dim_company: Optional[pd.DataFrame] = None
-_dim_trade: Optional[pd.DataFrame] = None
 _map_company_aliases: Optional[pd.DataFrame] = None
 _building_level_to_id: Optional[Dict[str, int]] = None
 _location_code_to_id: Optional[Dict[str, int]] = None  # location_code -> location_id
@@ -67,7 +68,7 @@ def _normalize_level(level: str) -> str:
 
 def _load_dimensions():
     """Load dimension tables if not already loaded."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases
+    global _dim_location, _dim_company, _map_company_aliases
     global _building_level_to_id, _location_code_to_id, _p6_alias_to_id
 
     if _dim_location is None:
@@ -107,9 +108,6 @@ def _load_dimensions():
 
     if _dim_company is None:
         _dim_company = pd.read_csv(_dimensions_dir / 'dim_company.csv')
-
-    if _dim_trade is None:
-        _dim_trade = pd.read_csv(_dimensions_dir / 'dim_trade.csv')
 
     if _map_company_aliases is None:
         _map_company_aliases = pd.read_csv(_mappings_dir / 'map_company_aliases.csv')
@@ -695,210 +693,6 @@ def get_performing_company_id(
     return company_id
 
 
-# Trade name to trade_id mapping
-# Maps various names used in quality data to dim_trade trade_id
-TRADE_NAME_TO_ID: Dict[str, int] = {
-    # Concrete (trade_id=1)
-    'concrete': 1,
-    'baker concrete': 1,
-    'cast-in-place': 1,
-    'cip': 1,
-    'topping': 1,
-    'slab': 1,
-
-    # Structural Steel (trade_id=2)
-    'structural steel': 2,
-    'steel': 2,
-    'welding': 2,
-    'steel erection': 2,
-    'decking': 2,
-    'misc steel': 2,
-
-    # Roofing (trade_id=3)
-    'roofing': 3,
-    'roofing & waterproofing': 3,
-    'waterproofing': 3,
-    'membrane': 3,
-    'eifs': 3,
-
-    # Drywall (trade_id=4)
-    'drywall': 4,
-    'drywall & framing': 4,
-    'framing': 4,
-    'gypsum': 4,
-    'metal stud': 4,
-    'architecture / framing & drywall': 4,
-
-    # Finishes (trade_id=5)
-    'finishes': 5,
-    'architectural finishes': 5,
-    'architectural': 5,
-    'painting': 5,
-    'paint': 5,
-    'coating/painting': 5,
-    'coating': 5,
-    'flooring': 5,
-    'tile': 5,
-    'ceilings': 5,
-    'doors': 5,
-
-    # Fire Protection (trade_id=6)
-    'fire protection': 6,
-    'fireproof': 6,
-    'fireproofing': 6,
-    'firestop': 6,
-    'fire caulk': 6,
-    'sfrm': 6,
-
-    # MEP (trade_id=7)
-    'mep': 7,
-    'mep systems': 7,
-    'mechanical': 7,
-    'electrical': 7,
-    'plumbing': 7,
-    'hvac': 7,
-
-    # Insulation (trade_id=8)
-    'insulation': 8,
-    'thermal insulation': 8,
-    'pipe insulation': 8,
-
-    # Earthwork (trade_id=9)
-    'earthwork': 9,
-    'earthwork & foundations': 9,
-    'soil/earthwork': 9,
-    'excavation': 9,
-    'backfill': 9,
-    'grading': 9,
-    'drilled pier/foundation': 9,
-    'deep foundations': 9,
-    'reinforcing steel': 9,  # Often part of foundation work
-
-    # Precast (trade_id=10)
-    'precast': 10,
-    'precast concrete': 10,
-
-    # Panels (trade_id=11)
-    'panels': 11,
-    'metal panels': 11,
-    'metal panels & cladding': 11,
-    'cladding': 11,
-    'imp': 11,
-    'skin': 11,
-
-    # General (trade_id=12)
-    'general': 12,
-    'general conditions': 12,
-    'visual/general': 12,
-    'general requirements': 12,
-    'existing conditions': 12,
-    'special construction': 12,
-    'transportation': 12,
-
-    # Masonry (trade_id=13)
-    'masonry': 13,
-    'cmu': 13,
-    'block': 13,
-    'brick': 13,
-
-    # ProjectSight-specific mappings (CSI divisions)
-    'metals': 2,  # CSI Div 05 - Metals = Structural Steel
-    'iron': 2,  # Iron work is steel/metal work
-    'thermal and moisture protection': 8,  # CSI Div 07 - Insulation
-    'openings': 5,  # CSI Div 08 - Doors, windows = Finishes
-    'equipment': 7,  # CSI Div 11 - Equipment = MEP
-    'furnishings': 5,  # CSI Div 12 - Furnishings = Finishes
-    'woods, plastics, and composites': 4,  # CSI Div 06 = Drywall/framing
-    'specialties': 5,  # CSI Div 10 = Finishes
-
-    # RABA test type patterns (quality inspections)
-    'moisture-density': 9,  # Soil testing = Earthwork
-    'atterberg': 9,  # Soil testing = Earthwork
-    'sieve analysis': 9,  # Soil testing = Earthwork
-    'drilled epoxied dowels': 1,  # Concrete anchorage
-    'post installed embeds': 1,  # Concrete anchorage
-    'post-installed embeds': 1,  # Concrete anchorage
-    'dowel remediation': 1,  # Concrete repair
-    'dowel installation': 1,  # Concrete anchorage
-    'curb repair': 1,  # Concrete repair
-    'column patching': 1,  # Concrete repair
-    'ifrm': 6,  # Intumescent fire resistive material
-    'sfrm-substrate': 6,  # SFRM substrate inspection
-    'substrate condition': 6,  # Often for fireproofing substrate
-    'load bearing': 1,  # Load testing typically concrete/structure
-    'construction quality control': 12,  # General QC
-    'laboratory testing': 12,  # General testing
-    'observation': 4,  # Often drywall screws observation
-
-    # TBM work activity patterns
-    'delamination': 1,  # Concrete patching
-    'patching': 1,  # Concrete repair
-    'chipping': 1,  # Concrete chipping
-    'elevator front clips': 2,  # Steel work
-    'elevator clips': 2,  # Steel work
-    'laydown yard': 12,  # General conditions
-    'laydown': 12,  # General conditions
-
-    # PSI trade patterns
-    'arch / yates': 5,  # Architectural = Finishes
-    'arch / dwl': 4,  # Architectural drywall = Drywall
-    'arch/yates': 5,
-    'arch/dwl': 4,
-}
-
-
-def get_trade_id(trade_name: str) -> Optional[int]:
-    """
-    Get dim_trade_id from trade name or category.
-
-    Args:
-        trade_name: Trade name (e.g., "Drywall", "Concrete", "Structural Steel")
-                   or category (e.g., "Coating/Painting", "Firestop")
-
-    Returns:
-        trade_id integer or None if not found
-    """
-    if not trade_name or pd.isna(trade_name):
-        return None
-
-    _load_dimensions()
-
-    name = str(trade_name).strip().lower()
-
-    # Direct lookup in mapping
-    if name in TRADE_NAME_TO_ID:
-        return TRADE_NAME_TO_ID[name]
-
-    # Try partial match
-    for key, trade_id in TRADE_NAME_TO_ID.items():
-        if key in name or name in key:
-            return trade_id
-
-    # Try matching against dim_trade directly
-    for _, row in _dim_trade.iterrows():
-        trade_code = str(row['trade_code']).lower()
-        trade_name_dim = str(row['trade_name']).lower()
-        if name == trade_code or name == trade_name_dim:
-            return int(row['trade_id'])
-        if trade_code in name or name in trade_code:
-            return int(row['trade_id'])
-
-    return None
-
-
-def get_trade_code(trade_id: int) -> Optional[str]:
-    """Get trade_code from trade_id."""
-    if trade_id is None or pd.isna(trade_id):
-        return None
-
-    _load_dimensions()
-
-    match = _dim_trade[_dim_trade['trade_id'] == trade_id]
-    if len(match) > 0:
-        return match.iloc[0]['trade_code']
-    return None
-
-
 # ============================================================================
 # Company Classification Functions
 # ============================================================================
@@ -1146,7 +940,6 @@ def enrich_dataframe(
     building_col: str = 'building',
     level_col: str = 'level',
     company_col: str = None,
-    trade_col: str = None,
 ) -> pd.DataFrame:
     """
     Enrich a dataframe with dimension IDs.
@@ -1155,15 +948,15 @@ def enrich_dataframe(
     - dim_location_id: integer FK from building + level
     - building_level: string for display/filtering
     - dim_company_id: from company column (if specified)
-    - dim_trade_id: from trade column (if specified)
-    - dim_trade_code: trade code for readability
+
+    Note: For work type classification, use dim_csi_section_id via
+    scripts/integrated_analysis/add_csi_to_*.py instead of dim_trade_id.
 
     Args:
         df: Input dataframe
         building_col: Column name for building
         level_col: Column name for level
         company_col: Column name for company (optional)
-        trade_col: Column name for trade (optional)
 
     Returns:
         Dataframe with added dimension columns
@@ -1185,11 +978,6 @@ def enrich_dataframe(
     if company_col and company_col in df.columns:
         result['dim_company_id'] = df[company_col].apply(get_company_id)
 
-    # Add trade_id
-    if trade_col and trade_col in df.columns:
-        result['dim_trade_id'] = df[trade_col].apply(get_trade_id)
-        result['dim_trade_code'] = result['dim_trade_id'].apply(get_trade_code)
-
     return result
 
 
@@ -1197,7 +985,7 @@ def get_coverage_stats(
     df: pd.DataFrame,
     location_col: str = 'dim_location_id',
     company_col: str = 'dim_company_id',
-    trade_col: str = 'dim_trade_id',
+    csi_col: str = 'dim_csi_section_id',
 ) -> Dict[str, Dict[str, float]]:
     """
     Calculate coverage statistics for dimension columns.
@@ -1207,7 +995,7 @@ def get_coverage_stats(
     """
     stats = {}
 
-    for col_name, col in [('location', location_col), ('company', company_col), ('trade', trade_col)]:
+    for col_name, col in [('location', location_col), ('company', company_col), ('csi_section', csi_col)]:
         if col in df.columns:
             total = len(df)
             mapped = df[col].notna().sum()
@@ -1223,12 +1011,11 @@ def get_coverage_stats(
 
 def reset_cache():
     """Reset cached dimension data (useful for testing)."""
-    global _dim_location, _dim_company, _dim_trade, _map_company_aliases
+    global _dim_location, _dim_company, _map_company_aliases
     global _building_level_to_id, _location_code_to_id, _p6_alias_to_id, _dim_csi_section
     global _yates_sub_ids, _yates_self_ids
     _dim_location = None
     _dim_company = None
-    _dim_trade = None
     _map_company_aliases = None
     _building_level_to_id = None
     _location_code_to_id = None

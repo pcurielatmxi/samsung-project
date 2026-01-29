@@ -33,9 +33,6 @@ from scripts.shared.company_standardization import (
 )
 from scripts.shared.dimension_lookup import (
     get_company_id,
-    get_trade_id,
-    get_trade_code,
-    get_company_primary_trade_id,
     get_performing_company_id,
 )
 from scripts.integrated_analysis.location import enrich_location
@@ -407,13 +404,8 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
     # Dimension lookups for integration (non-location)
     dim_company_id = get_company_id(contractor_std)
     dim_subcontractor_id = get_company_id(subcontractor_std)
-    dim_trade_id = get_trade_id(test_category)
 
-    # Fallback: if trade not found from inspection type, use company's primary trade
-    if dim_trade_id is None and dim_company_id is not None:
-        dim_trade_id = get_company_primary_trade_id(dim_company_id)
-
-    dim_trade_code = get_trade_code(dim_trade_id) if dim_trade_id else None
+    # Note: dim_trade_id removed - use dim_csi_section_id for work type classification
 
     # Determine performing company (who actually did the work)
     performing_company_id = get_performing_company_id(dim_company_id, dim_subcontractor_id)
@@ -534,10 +526,7 @@ def flatten_record(record: Dict[str, Any]) -> Dict[str, Any]:
         'dim_company_id': dim_company_id,
         'dim_subcontractor_id': dim_subcontractor_id,
         'performing_company_id': performing_company_id,
-        'dim_trade_id': dim_trade_id,
-        'dim_trade_code': dim_trade_code,
-
-        # CSI Section (52-category classification)
+        # CSI Section (52-category classification - replaces dim_trade_id)
         'dim_csi_section_id': csi_section_id,
         'csi_section': csi_section_code,
         'csi_inference_source': csi_source,
@@ -638,11 +627,6 @@ def consolidate(clean_dir: Path, output_dir: Path) -> Dict[str, Any]:
             'mapped': df['dim_company_id'].notna().sum(),
             'total': len(df),
             'pct': df['dim_company_id'].notna().mean() * 100
-        },
-        'trade': {
-            'mapped': df['dim_trade_id'].notna().sum(),
-            'total': len(df),
-            'pct': df['dim_trade_id'].notna().mean() * 100
         },
         'csi_section': {
             'mapped': df['dim_csi_section_id'].notna().sum(),

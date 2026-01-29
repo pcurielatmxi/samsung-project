@@ -89,10 +89,8 @@ UNIFIED_COLUMNS = [
     'dim_company_id',            # Company dimension ID (from contractor field)
     'dim_subcontractor_id',      # Company dimension ID (from subcontractor field)
     'performing_company_id',     # Company that actually performed the work (for joins)
-    'dim_trade_id',              # Trade dimension ID
-    'dim_trade_code',            # Trade code
 
-    # CSI Section (52-category classification)
+    # CSI Section (52-category classification, supersedes dim_trade)
     'dim_csi_section_id',        # CSI section dimension ID
     'csi_section',               # CSI code (e.g., "03 30 00")
     'csi_inference_source',      # How CSI was inferred (keyword, category)

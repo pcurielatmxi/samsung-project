@@ -83,11 +83,6 @@ class TbmWorkEntriesEnriched(BaseModel):
     level_normalized: Optional[str] = Field(default=None, description="Normalized level (1F, 2F, etc.)")
     dim_location_id: Optional[float] = Field(default=None, description="FK to dim_location")
     dim_company_id: int = Field(description="FK to dim_company")
-    trade_inferred: Optional[str] = Field(default=None, description="Inferred trade from work description")
-    dim_trade_id: Optional[float] = Field(default=None, description="FK to dim_trade")
-    dim_trade_code: Optional[str] = Field(default=None, description="Trade code from dim_trade")
-    trade_source: Optional[str] = Field(default=None, description="How trade was determined")
-
     # CSI Section
     dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code (e.g., '03 30 00')")
@@ -175,12 +170,8 @@ class TbmDataQuality(BaseModel):
         description="Normalized subcontractor name"
     )
 
-    # CSI/Trade inference metadata
+    # CSI inference metadata
     csi_inference_source: Optional[str] = Field(
         default=None,
         description="How CSI section was determined"
-    )
-    trade_source: Optional[str] = Field(
-        default=None,
-        description="How trade was determined (e.g., COMPANY_LOOKUP, ACTIVITY_MATCH)"
     )

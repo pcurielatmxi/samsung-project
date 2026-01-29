@@ -10,7 +10,7 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from .dimensions import DimLocation, DimCompany, DimTrade, DimCSISection
-from .mappings import MapCompanyAliases, MapCompanyLocation, MapProjectSightTrade
+from .mappings import MapCompanyAliases, MapCompanyLocation
 from .quality import QCInspectionConsolidated, PsiConsolidated, RabaConsolidated
 from .tbm import TbmFiles, TbmWorkEntries, TbmWorkEntriesEnriched
 from .ncr import NcrConsolidated
@@ -34,7 +34,6 @@ SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
     # Mapping tables
     'map_company_aliases.csv': MapCompanyAliases,
     'map_company_location.csv': MapCompanyLocation,
-    'map_projectsight_trade.csv': MapProjectSightTrade,
 
     # Quality data (RABA has CSI columns, PSI doesn't yet)
     'raba_consolidated.csv': RabaConsolidated,
@@ -78,7 +77,6 @@ SOURCE_FILES: Dict[str, Dict[str, Type[BaseModel]]] = {
     'integrated_analysis/mappings': {
         'map_company_aliases.csv': MapCompanyAliases,
         'map_company_location.csv': MapCompanyLocation,
-        'map_projectsight_trade.csv': MapProjectSightTrade,
     },
     'raba': {
         'raba_consolidated.csv': RabaConsolidated,
