@@ -434,12 +434,61 @@ def run_commit_phase(
     return results
 
 
+def run_powerbi_schema_generation(dry_run: bool = False) -> tuple[bool, list[str]]:
+    """
+    Generate Power BI schema JSON from Pydantic schemas.
+
+    This is the final step after COMMIT - generates schema for Power BI
+    based on registered Pydantic schemas only.
+
+    IMPORTANT: This will FAIL if any CSV with a Pydantic schema doesn't match.
+    Tables without Pydantic schemas are skipped (warning only).
+
+    Returns:
+        Tuple of (success, error_messages)
+    """
+    print("\n" + "=" * 60)
+    print("PHASE: POWERBI SCHEMA")
+    print("=" * 60)
+
+    if dry_run:
+        print("  [DRY RUN] Would generate Power BI schema")
+        return True, []
+
+    from scripts.shared.generate_powerbi_schema import generate_schema_from_pydantic
+
+    try:
+        output_path, errors, warnings = generate_schema_from_pydantic(strict=False)
+
+        if errors:
+            # CSV doesn't match Pydantic schema - this is a HARD FAILURE
+            print(f"\n  ✗ Schema validation failed - CSV doesn't match Pydantic schema:")
+            for err in errors:
+                print(f"      - {err}")
+            print("\n  This means the pipeline output changed but the Pydantic schema wasn't updated.")
+            print("  Either:")
+            print("    1. Update the Pydantic schema in schemas/ to match the new output")
+            print("    2. Fix the pipeline to output the expected columns")
+            return False, errors
+
+        if warnings:
+            print(f"  ⚠ {len(warnings)} files skipped (no Pydantic schema - add one to include)")
+
+        print(f"  ✓ Generated: {output_path}")
+        return True, []
+
+    except Exception as e:
+        print(f"  ✗ Schema generation failed: {e}")
+        return False, [str(e)]
+
+
 def print_summary(
     parse_results: dict[str, bool],
     scrape_results: dict[str, bool],
     consolidate_results: dict[str, bool],
     validation_results: dict[str, bool],
     commit_results: dict[str, str],
+    powerbi_schema_success: bool = True,
 ) -> int:
     """Print final summary and return exit code."""
     print("\n" + "=" * 60)
@@ -508,6 +557,15 @@ def print_summary(
         print("    - *_data_quality.csv (1:1 with fact tables)")
         print("  Dimensions:")
         print("    - integrated_analysis/dim_*.csv")
+        print("  Schema:")
+        schema_status = "✓" if powerbi_schema_success else "✗"
+        print(f"    {schema_status} powerbi_schema.json (Pydantic-driven)")
+
+    # Fail if schema validation failed (CSV doesn't match Pydantic)
+    if not powerbi_schema_success:
+        print("\n⚠ PIPELINE FAILED: Power BI schema validation error")
+        print("  CSV output doesn't match registered Pydantic schema.")
+        return 1
 
     return 1 if failed > 0 else 0
 
@@ -661,6 +719,14 @@ def main():
         if not args.dry_run and staging_dir.exists():
             shutil.rmtree(staging_dir, ignore_errors=True)
 
+    # POWERBI SCHEMA phase (final step)
+    powerbi_schema_success = True
+    powerbi_schema_errors = []
+    if args.phase is None:
+        powerbi_schema_success, powerbi_schema_errors = run_powerbi_schema_generation(
+            dry_run=args.dry_run
+        )
+
     # Print summary
     return print_summary(
         parse_results=parse_results,
@@ -668,6 +734,7 @@ def main():
         consolidate_results=consolidate_results,
         validation_results=validation_results,
         commit_results=commit_results,
+        powerbi_schema_success=powerbi_schema_success,
     )
 
 

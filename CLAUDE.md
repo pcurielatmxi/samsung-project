@@ -318,6 +318,132 @@ pytest tests/unit/test_schemas.py -v
 
 ---
 
+## Power BI Schema Integration
+
+Power BI uses a JSON schema file to dynamically load CSV tables with correct column types. This schema is **derived from Pydantic definitions** (not inferred from CSV data) to ensure only approved schemas are used.
+
+### How It Works
+
+```
+┌─────────────────────┐     ┌──────────────────────┐     ┌─────────────────────┐
+│  Pydantic Schemas   │ ──► │  powerbi_schema.json │ ──► │  Power Query (M)    │
+│  (schemas/*.py)     │     │  (processed/)        │     │  fnLoadTable()      │
+└─────────────────────┘     └──────────────────────┘     └─────────────────────┘
+        │                            │
+        │  Defines columns           │  Provides paths
+        │  and types                 │  and typed columns
+        ▼                            ▼
+┌─────────────────────┐     ┌──────────────────────┐
+│  Pipeline outputs   │ ◄── │  Validation: CSV     │
+│  (processed/*.csv)  │     │  must match Pydantic │
+└─────────────────────┘     └──────────────────────┘
+```
+
+### Daily Refresh Integration
+
+Schema generation is the **final phase** of the daily refresh pipeline:
+
+```
+PREFLIGHT → PARSE → SCRAPE → CONSOLIDATE → VALIDATE → COMMIT → POWERBI SCHEMA
+```
+
+If a CSV doesn't match its Pydantic schema, the pipeline **fails** with an error.
+
+### Schema Coverage
+
+Only tables with registered Pydantic schemas are included in `powerbi_schema.json`:
+
+```bash
+# Check which tables have Pydantic schemas
+python -m scripts.shared.generate_powerbi_schema --list
+```
+
+Current coverage:
+- ✓ Dimension tables (`dim_location`, `dim_company`, `dim_csi_section`)
+- ✓ Core fact tables (`work_entries`, `labor_entries`, `ncr_consolidated`)
+- ○ Other tables (skipped until Pydantic schema is added)
+
+### Adding a New Table to Power BI
+
+1. **Create Pydantic schema** in `schemas/`:
+   ```python
+   # schemas/fieldwire.py
+   from pydantic import BaseModel
+   from typing import Optional
+
+   class FieldwireCombined(BaseModel):
+       id: str
+       title: str
+       status: Optional[str] = None
+       # ... all columns
+   ```
+
+2. **Register in `schemas/registry.py`**:
+   ```python
+   from .fieldwire import FieldwireCombined
+
+   SCHEMA_REGISTRY = {
+       # ... existing entries
+       'fieldwire_combined.csv': FieldwireCombined,
+   }
+   ```
+
+3. **Run daily refresh** (or just schema generation):
+   ```bash
+   python -m scripts.shared.generate_powerbi_schema
+   ```
+
+4. **Refresh Power BI** - The new table will appear with correct types
+
+### Failure Scenarios
+
+| Scenario | Result |
+|----------|--------|
+| CSV matches Pydantic schema | ✓ Included in Power BI schema |
+| CSV has extra columns | ✓ Included (extras not typed) |
+| CSV missing Pydantic columns | ✗ **Pipeline fails** |
+| No Pydantic schema registered | ⚠ Skipped with warning |
+
+### Power Query Usage
+
+In Power BI, use the generated schema:
+
+```powerquery
+// Load schema config
+SchemaConfig = Json.Document(File.Contents(DataPath & "processed\powerbi_schema.json"))[tables]
+
+// Type mapping
+TypeMap = [
+    #"Text.Type" = type text,
+    #"Int64.Type" = Int64.Type,
+    #"Number.Type" = type number,
+    #"Date.Type" = type date,
+    #"DateTime.Type" = type datetime,
+    #"Logical.Type" = type logical
+]
+
+// Dynamic loader function
+fnLoadTable = (tableName as text) as table =>
+    let
+        TableSchema = Record.Field(SchemaConfig, tableName),
+        FilePath = DataPath & Text.Replace(TableSchema[path], "/", "\"),
+        TypeTransforms = List.Transform(
+            TableSchema[columns],
+            each {_[name], Record.Field(TypeMap, _[type])}
+        ),
+        RawCsv = Csv.Document(File.Contents(FilePath), [Delimiter=",", Encoding=65001]),
+        Promoted = Table.PromoteHeaders(RawCsv, [PromoteAllScalars=true]),
+        Typed = Table.TransformColumnTypes(Promoted, TypeTransforms)
+    in
+        Typed
+
+// Usage
+DimLocation = fnLoadTable("integrated_analysis/dim_location")
+WorkEntries = fnLoadTable("tbm/work_entries")
+```
+
+---
+
 ## Navigation
 
 | Topic | Location |
@@ -337,6 +463,7 @@ pytest tests/unit/test_schemas.py -v
 | Script | Purpose |
 |--------|---------|
 | `scripts/shared/daily_refresh.py` | Update all pipelines |
+| `scripts/shared/generate_powerbi_schema.py` | Generate Power BI schema from Pydantic |
 | `scripts/shared/dimension_lookup.py` | Get dimension IDs |
 | `scripts/integrated_analysis/location/` | Centralized location enrichment |
 | `scripts/integrated_analysis/dimensions/build_dim_location.py` | Build location dimension |

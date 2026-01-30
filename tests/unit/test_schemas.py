@@ -4,7 +4,9 @@ Unit tests for schema definitions.
 Tests schema structure and validation logic without requiring actual data files.
 """
 
+import json
 import pytest
+from pathlib import Path
 from pydantic import BaseModel
 
 from schemas.dimensions import DimLocation, DimCompany, DimTrade, DimCSISection
@@ -220,3 +222,101 @@ class TestDataFrameValidation:
         # Should not have unexpected column errors
         extra_errors = [e for e in errors if 'Unexpected columns' in e]
         assert len(extra_errors) == 0
+
+
+class TestPowerBISchemaCompatibility:
+    """Test Power BI schema JSON compatibility with Pydantic schemas."""
+
+    @pytest.fixture
+    def powerbi_schema_path(self):
+        """Path to Power BI schema JSON file."""
+        from src.config.settings import settings
+        return settings.PROCESSED_DATA_DIR / 'powerbi_schema.json'
+
+    def test_powerbi_schema_exists(self, powerbi_schema_path):
+        """Power BI schema file should exist."""
+        if not powerbi_schema_path.exists():
+            pytest.skip("Power BI schema not generated yet")
+        assert powerbi_schema_path.exists()
+
+    def test_powerbi_schema_valid_json(self, powerbi_schema_path):
+        """Power BI schema should be valid JSON."""
+        if not powerbi_schema_path.exists():
+            pytest.skip("Power BI schema not generated yet")
+
+        with open(powerbi_schema_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        assert 'tables' in data
+        assert '_meta' in data
+
+    def test_powerbi_schema_derived_from_pydantic(self, powerbi_schema_path):
+        """Power BI schema should be derived from Pydantic schemas (not inferred)."""
+        if not powerbi_schema_path.exists():
+            pytest.skip("Power BI schema not generated yet")
+
+        with open(powerbi_schema_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Check that mode is pydantic-driven
+        assert data['_meta'].get('mode') == 'pydantic-driven', (
+            "Power BI schema should be generated in pydantic-driven mode"
+        )
+
+        # Check that all tables have schema_source = 'pydantic'
+        for table_name, table_info in data.get('tables', {}).items():
+            assert table_info.get('schema_source') == 'pydantic', (
+                f"Table {table_name} should have schema_source='pydantic'"
+            )
+
+    def test_powerbi_schema_has_required_dimension_tables(self, powerbi_schema_path):
+        """Power BI schema should include dimension tables with Pydantic schemas."""
+        if not powerbi_schema_path.exists():
+            pytest.skip("Power BI schema not generated yet")
+
+        with open(powerbi_schema_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        tables = data.get('tables', {})
+        table_names = set(tables.keys())
+
+        # Required dimension tables (these have Pydantic schemas)
+        required_dims = [
+            'integrated_analysis/dim_location',
+            'integrated_analysis/dim_company',
+            'integrated_analysis/dim_csi_section',
+        ]
+
+        for table in required_dims:
+            assert table in table_names, f"Missing required dimension table: {table}"
+
+    def test_powerbi_schema_tables_have_paths(self, powerbi_schema_path):
+        """Each table in Power BI schema should have a path field."""
+        if not powerbi_schema_path.exists():
+            pytest.skip("Power BI schema not generated yet")
+
+        with open(powerbi_schema_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        for table_name, table_info in data.get('tables', {}).items():
+            assert 'path' in table_info, f"Table {table_name} missing 'path' field"
+            assert table_info['path'].startswith('processed/'), (
+                f"Table {table_name} path should start with 'processed/'"
+            )
+
+    def test_generate_schema_validates_csv_columns(self):
+        """Schema generation should validate CSV columns match Pydantic schema."""
+        from scripts.shared.generate_powerbi_schema import validate_csv_against_pydantic
+        from src.config.settings import settings
+        import pandas as pd
+        from tempfile import NamedTemporaryFile
+
+        # Create a test CSV missing a required column
+        with NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            df = pd.DataFrame({'location_id': [1, 2], 'location_code': ['A', 'B']})
+            df.to_csv(f.name, index=False)
+
+            errors = validate_csv_against_pydantic(Path(f.name), DimLocation)
+            # Should have errors for missing columns
+            assert len(errors) > 0
+            assert any('Missing columns' in e for e in errors)
