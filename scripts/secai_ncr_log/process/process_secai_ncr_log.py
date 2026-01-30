@@ -36,78 +36,92 @@ SHEET_CONFIGS = [
 ]
 
 # Column mappings for each sheet type
-# Maps raw column names (or patterns) to normalized names
+# Maps raw column indices to normalized names
+# Note: External NCR has more columns due to different layout with merged headers
+
 EXTERNAL_NCR_COLUMNS = {
-    1: 'ncr_number',           # NCR No.
-    2: 'seq_number',           # NCR Seq. No.
-    3: 'description',          # Nonconformity Description
-    4: 'building',             # Building Name
-    5: 'location',             # Detailed Location
-    6: 'contractor',           # Construction Contractor
-    7: 'discipline',           # Discipline
-    8: 'work_type',            # Work Description
-    9: 'issue_date',           # Issue Date
-    10: 'receipt_date',        # Date of Receipt
-    11: 'requested_close_date', # Requested Close Date
-    12: 'issued_by',           # Issued by
-    13: 'issuing_org',         # Issuing organization
-    14: 'action_description',  # Action description
-    15: 'actual_close_date',   # Actual Close Date
-    16: 'status',              # Status
+    1: 'ncr_number',              # NCR No.
+    2: 'seq_number',              # NCR Seq. No.
+    3: 'description',             # Nonconformity Description
+    4: 'building',                # Building Name
+    5: 'location',                # Detailed Location
+    6: 'contractor',              # Construction Contractor
+    7: 'discipline',              # Discipline
+    8: 'work_type',               # Work Description
+    9: 'issue_date',              # Issue Date
+    10: 'receipt_date',           # Date of Receipt
+    11: 'requested_close_date',   # Requested Close Date
+    12: 'expected_close_date',    # Expected Close Date
+    14: 'issued_by',              # Issued by
+    20: 'status',                 # Status (Open/Closed)
+    21: 'action_completion_date', # Action Completion Date
+    22: 'five_m_analysis',        # 5M Analysis
+    23: 'work_step',              # Work Step
+    24: 'cause_of_issue',         # Cause of Issue
+    26: 'days_open',              # Days Open
 }
 
 INTERNAL_NCR_COLUMNS = {
-    0: 'row_number',           # No.
-    1: 'ncr_number',           # NCR No.
-    2: 'description',          # Nonconformity Description
-    3: 'building',             # Building Name
-    4: 'location',             # Detailed Location
-    5: 'contractor',           # Construction Partner
-    6: 'discipline',           # Discipline
-    7: 'work_type',            # Work Description
-    8: 'issue_date',           # Issue Date
-    9: 'requested_close_date', # Action Request Date
-    10: 'issued_by',           # Issued by
-    11: 'issuing_org',         # Issuing organization
-    12: 'action_description',  # Action description
-    13: 'actual_close_date',   # Actual Close Date
-    14: 'status',              # Status
+    0: 'row_number',              # No.
+    1: 'ncr_number',              # NCR No.
+    2: 'description',             # Nonconformity Description
+    3: 'building',                # Building Name
+    4: 'location',                # Detailed Location
+    5: 'contractor',              # Construction Partner
+    6: 'discipline',              # Discipline
+    7: 'work_type',               # Work Description
+    8: 'issue_date',              # Issue Date
+    9: 'requested_close_date',    # Action Request Date
+    10: 'issued_by',              # Issued by
+    11: 'issuing_org',            # Issuing organization (발행조직)
+    12: 'action_completion_date', # Action Completion Date (조치 완료일)
+    13: 'action_pic',             # Action PIC (조치 담당자)
+    14: 'five_m_analysis',        # 5M Analysis
+    15: 'work_step',              # Work Step
+    16: 'grade',                  # Grade (최종 등급)
+    17: 'action_days',            # Action Days (조치 소요일)
 }
 
 EXTERNAL_QOR_COLUMNS = {
-    1: 'ncr_number',           # QOR No.
-    2: 'description',          # Nonconformity Description
-    3: 'building',             # Building Name
-    4: 'location',             # Detailed Location
-    5: 'contractor',           # Construction Partner
-    6: 'discipline',           # Work Description (discipline)
-    7: 'work_type',            # Work Description
-    8: 'issue_date',           # Issue Date
-    9: 'receipt_date',         # Date of Receipt
-    10: 'requested_close_date', # Action Request Date
-    11: 'issued_by',           # Issued by
-    12: 'issuing_org',         # Issuing organization
-    13: 'action_description',  # Action description
-    14: 'actual_close_date',   # Actual Close Date
-    15: 'status',              # Status
+    1: 'ncr_number',              # QOR No.
+    2: 'description',             # Nonconformity Description
+    3: 'building',                # Building Name
+    4: 'location',                # Detailed Location
+    5: 'contractor',              # Construction Partner
+    6: 'discipline',              # Work Description (discipline)
+    7: 'work_type',               # Work Description
+    8: 'issue_date',              # Issue Date
+    9: 'receipt_date',            # Date of Receipt
+    10: 'requested_close_date',   # Action Request Date
+    11: 'issued_by',              # Issued by
+    12: 'issuing_org',            # Issuing organization (발행조직)
+    13: 'action_completion_date', # Action Completion Date (조치 완료일)
+    14: 'pic_leader',             # PIC Leader
+    16: 'five_m_analysis',        # 5M Analysis
+    17: 'work_step',              # Work Step
+    18: 'action_days',            # Action Days
+    19: 'delay',                  # Delay
 }
 
 INTERNAL_QOR_COLUMNS = {
-    0: 'row_number',           # No.
-    1: 'ncr_number',           # QOR No.
-    2: 'description',          # Nonconformity Description
-    3: 'building',             # Building Name
-    4: 'location',             # Detailed Location
-    5: 'contractor',           # Construction Partner
-    6: 'discipline',           # Work Description
-    7: 'work_type',            # Work Description
-    8: 'issue_date',           # Issue Date
-    9: 'requested_close_date', # Action Request Date
-    10: 'issued_by',           # Issued by
-    11: 'issuing_org',         # Issuing organization
-    12: 'action_description',  # Action description
-    13: 'actual_close_date',   # Actual Close Date
-    14: 'status',              # Status
+    0: 'row_number',              # No.
+    1: 'ncr_number',              # QOR No.
+    2: 'description',             # Nonconformity Description
+    3: 'building',                # Building Name
+    4: 'location',                # Detailed Location
+    5: 'contractor',              # Construction Partner
+    6: 'discipline',              # Work Description
+    7: 'work_type',               # Work Description
+    8: 'issue_date',              # Issue Date
+    9: 'requested_close_date',    # Action Request Date
+    10: 'issued_by',              # Issued by
+    11: 'issuing_org',            # Issuing organization (발행조직)
+    12: 'action_completion_date', # Action Completion Date (조치 완료일)
+    13: 'action_pic',             # Action PIC (조치 담당자)
+    14: 'five_m_analysis',        # 5M Analysis
+    15: 'work_step',              # Work Step
+    16: 'action_days',            # Action Days
+    17: 'delay',                  # Delay
 }
 
 
