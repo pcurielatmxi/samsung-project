@@ -6,7 +6,7 @@ These schemas define the structure for TBM work entry output files.
 Output Location: {WINDOWS_DATA_DIR}/processed/tbm/
 """
 
-from datetime import date
+from datetime import date, time
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -49,8 +49,8 @@ class TbmWorkEntries(BaseModel):
     location_building: Optional[str] = Field(default=None, description="Building (raw)")
     location_level: Optional[str] = Field(default=None, description="Level (raw)")
     location_row: Optional[str] = Field(default=None, description="Grid row/area (raw)")
-    start_time: Optional[str] = Field(default=None, description="Start time")
-    end_time: Optional[str] = Field(default=None, description="End time")
+    start_time: Optional[time] = Field(default=None, description="Start time (HH:MM:SS)")
+    end_time: Optional[time] = Field(default=None, description="End time (HH:MM:SS)")
 
 
 class TbmWorkEntriesEnriched(BaseModel):
@@ -76,8 +76,8 @@ class TbmWorkEntriesEnriched(BaseModel):
     location_building: Optional[str] = Field(default=None, description="Building (raw)")
     location_level: Optional[str] = Field(default=None, description="Level (raw)")
     location_row: Optional[str] = Field(default=None, description="Grid row/area (raw)")
-    start_time: Optional[str] = Field(default=None, description="Start time")
-    end_time: Optional[str] = Field(default=None, description="End time")
+    start_time: Optional[time] = Field(default=None, description="Start time (HH:MM:SS)")
+    end_time: Optional[time] = Field(default=None, description="End time (HH:MM:SS)")
 
     # Enrichment columns
     building_normalized: Optional[str] = Field(default=None, description="Normalized building code")

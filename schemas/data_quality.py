@@ -36,6 +36,8 @@ class TbmWorkEntriesDataQuality(BaseModel):
     level_normalized: Optional[str] = Field(default=None, description="Normalized level code")
     room_code_extracted: Optional[float] = Field(default=None, description="Extracted room code")
     trade_inferred: Optional[str] = Field(default=None, description="Inferred trade")
+    start_time_raw: Optional[str] = Field(default=None, description="Raw start time from source")
+    end_time_raw: Optional[str] = Field(default=None, description="Raw end time from source")
 
 
 class ProjectSightLaborEntriesDataQuality(BaseModel):

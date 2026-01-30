@@ -108,6 +108,110 @@ def extract_date_from_filename(filename: str) -> str:
     return None
 
 
+def normalize_time(value) -> str:
+    """
+    Normalize time values from various Excel formats to HH:MM:SS.
+
+    Handles:
+    - HH:MM:SS (pass through)
+    - HH:MMAM/PM, H:MMAM/PM (12-hour format)
+    - H:MM AM, HH:MM AM (with space)
+    - Ham, Hpm, HHam, HHpm (short format like '7am')
+    - Excel serial numbers (0.25 = 6:00 AM)
+    - Semicolon typos (6;00am -> 6:00am)
+    - Date+time strings (extract time portion)
+
+    Returns:
+        HH:MM:SS format string or None if unparseable
+    """
+    if pd.isna(value):
+        return None
+
+    val = str(value).strip()
+    if not val or val == ' ':
+        return None
+
+    # Skip garbage values
+    if any(x in val.lower() for x in ['no work', '+h', 'n/a']):
+        return None
+
+    # Fix semicolon typos (6;00am -> 6:00am)
+    val = val.replace(';', ':')
+
+    # Already in HH:MM:SS format
+    match = re.match(r'^(\d{1,2}):(\d{2}):(\d{2})$', val)
+    if match:
+        h, m, s = match.groups()
+        return f'{int(h):02d}:{m}:{s}'
+
+    # HH:MM format (no seconds)
+    match = re.match(r'^(\d{1,2}):(\d{2})$', val)
+    if match:
+        h, m = match.groups()
+        return f'{int(h):02d}:{m}:00'
+
+    # 12-hour format: HH:MM:SS AM/PM or HH:MM AM/PM
+    match = re.match(r'^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|am|pm|a\.?m\.?|p\.?m\.?)$', val, re.IGNORECASE)
+    if match:
+        h, m, s, ampm = match.groups()
+        h = int(h)
+        s = s or '00'
+        if ampm.lower().startswith('p') and h != 12:
+            h += 12
+        elif ampm.lower().startswith('a') and h == 12:
+            h = 0
+        return f'{h:02d}:{m}:{s}'
+
+    # Short format: 7am, 7AM, 7pm, 2PM, 12am
+    match = re.match(r'^(\d{1,2})\s*(AM|PM|am|pm)$', val, re.IGNORECASE)
+    if match:
+        h, ampm = match.groups()
+        h = int(h)
+        if ampm.lower() == 'pm' and h != 12:
+            h += 12
+        elif ampm.lower() == 'am' and h == 12:
+            h = 0
+        return f'{h:02d}:00:00'
+
+    # Format with space: "6:00 am", "7:30 pm"
+    match = re.match(r'^(\d{1,2}):(\d{2})\s+(AM|PM|am|pm|a\.?m\.?|p\.?m\.?)$', val, re.IGNORECASE)
+    if match:
+        h, m, ampm = match.groups()
+        h = int(h)
+        if ampm.lower().startswith('p') and h != 12:
+            h += 12
+        elif ampm.lower().startswith('a') and h == 12:
+            h = 0
+        return f'{h:02d}:{m}:00'
+
+    # Excel serial number (fraction of day: 0.25 = 6:00 AM, 0.75 = 6:00 PM)
+    match = re.match(r'^0\.(\d+)$', val)
+    if match:
+        try:
+            fraction = float(val)
+            total_minutes = int(fraction * 24 * 60)
+            hours = total_minutes // 60
+            minutes = total_minutes % 60
+            return f'{hours:02d}:{minutes:02d}:00'
+        except ValueError:
+            pass
+
+    # Date+time format: extract time portion (MM/DD/YYYY HH:MM)
+    match = re.search(r'\d{1,2}/\d{1,2}/\d{4}\s+(\d{1,2}):(\d{2})', val)
+    if match:
+        h, m = match.groups()
+        return f'{int(h):02d}:{m}:00'
+
+    # Excel datetime that looks like "1900-01-07 00:00:00" (malformed)
+    match = re.match(r'^1900-01-\d{2}\s+(\d{2}):(\d{2}):(\d{2})$', val)
+    if match:
+        # This is likely an Excel date serial interpreted as datetime
+        return None
+
+    # Could not parse
+    return None
+
+
 def extract_subcontractor_from_filename(filename: str) -> str:
     """Extract subcontractor name from filename."""
     name = Path(filename).stem
@@ -473,8 +577,8 @@ def parse_tbm_file(filepath: Path) -> tuple:
             'location_building': get_str(row, 'location_building'),
             'location_level': get_str(row, 'location_level'),
             'location_row': get_str(row, 'location_row'),
-            'start_time': get_str(row, 'start_time'),
-            'end_time': get_str(row, 'end_time'),
+            'start_time': normalize_time(get_str(row, 'start_time')),
+            'end_time': normalize_time(get_str(row, 'end_time')),
         }
 
         # Parse number of employees (can be "7", "0-10", etc.)
