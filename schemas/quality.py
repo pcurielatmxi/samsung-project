@@ -7,6 +7,7 @@ output files from the quality workbook processing pipeline.
 Output Location: {WINDOWS_DATA_DIR}/processed/quality/
 """
 
+from datetime import date
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -20,7 +21,7 @@ class QCInspectionsEnriched(BaseModel):
     """
     source: str = Field(description="Source: 'YATES' or 'SECAI'")
     inspection_id: int = Field(description="Primary key")
-    inspection_date: Optional[str] = Field(default=None, description="Inspection date (YYYY-MM-DD)")
+    inspection_date: Optional[date] = Field(default=None, description="Inspection date (YYYY-MM-DD)")
     year: Optional[int] = Field(default=None, description="Year")
     month: Optional[int] = Field(default=None, description="Month (1-12)")
     week: Optional[int] = Field(default=None, description="ISO week number")
@@ -32,15 +33,15 @@ class QCInspectionsEnriched(BaseModel):
     location_raw: Optional[str] = Field(default=None, description="Original location text")
     building: Optional[str] = Field(default=None, description="Building code")
     level: Optional[str] = Field(default=None, description="Level (1F, 2F, etc.)")
-    area: Optional[float] = Field(default=None, description="Area within building")
+    area: Optional[str] = Field(default=None, description="Area within building")
     grid: Optional[str] = Field(default=None, description="Grid coordinate")
     contractor_raw: Optional[str] = Field(default=None, description="Raw contractor name")
     contractor: Optional[str] = Field(default=None, description="Standardized contractor")
-    failure_reason: Optional[float] = Field(default=None, description="Failure reason if failed")
+    failure_reason: Optional[str] = Field(default=None, description="Failure reason if failed")
     dim_location_id: Optional[int] = Field(default=None, description="FK to dim_location")
     building_level: Optional[str] = Field(default=None, description="Building-level (e.g., FAB-1F)")
-    dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company")
-    dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
+    dim_company_id: Optional[int] = Field(default=None, description="FK to dim_company")
+    dim_csi_section_id: Optional[int] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code")
     csi_title: Optional[str] = Field(default=None, description="CSI section title")
     csi_division: Optional[int] = Field(default=None, description="CSI division")
@@ -61,7 +62,7 @@ class QCInspectionsCombined(BaseModel):
     """
     source: str = Field(description="Source: 'YATES' or 'SECAI'")
     inspection_id: int = Field(description="Primary key")
-    inspection_date: Optional[str] = Field(default=None, description="Inspection date (YYYY-MM-DD)")
+    inspection_date: Optional[date] = Field(default=None, description="Inspection date (YYYY-MM-DD)")
     year: Optional[int] = Field(default=None, description="Year")
     month: Optional[int] = Field(default=None, description="Month (1-12)")
     week: Optional[int] = Field(default=None, description="ISO week number")
@@ -73,15 +74,15 @@ class QCInspectionsCombined(BaseModel):
     location_raw: Optional[str] = Field(default=None, description="Original location text")
     building: Optional[str] = Field(default=None, description="Building code")
     level: Optional[str] = Field(default=None, description="Level (1F, 2F, etc.)")
-    area: Optional[float] = Field(default=None, description="Area within building")
+    area: Optional[str] = Field(default=None, description="Area within building")
     grid: Optional[str] = Field(default=None, description="Grid coordinate")
     contractor_raw: Optional[str] = Field(default=None, description="Raw contractor name")
     contractor: Optional[str] = Field(default=None, description="Standardized contractor")
-    failure_reason: Optional[float] = Field(default=None, description="Failure reason if failed")
+    failure_reason: Optional[str] = Field(default=None, description="Failure reason if failed")
     dim_location_id: Optional[int] = Field(default=None, description="FK to dim_location")
     building_level: Optional[str] = Field(default=None, description="Building-level (e.g., FAB-1F)")
-    dim_company_id: Optional[float] = Field(default=None, description="FK to dim_company")
-    dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
+    dim_company_id: Optional[int] = Field(default=None, description="FK to dim_company")
+    dim_csi_section_id: Optional[int] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code")
     csi_title: Optional[str] = Field(default=None, description="CSI section title")
     # Yates-specific columns (blank for SECAI)
