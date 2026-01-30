@@ -327,7 +327,7 @@ Power BI uses a JSON schema file to dynamically load CSV tables with correct col
 ```
 ┌─────────────────────┐     ┌──────────────────────┐     ┌─────────────────────┐
 │  Pydantic Schemas   │ ──► │  powerbi_schema.json │ ──► │  Power Query (M)    │
-│  (schemas/*.py)     │     │  (processed/)        │     │  fnLoadTable()      │
+│  (schemas/*.py)     │     │  (processed/)        │     │  AllTables query    │
 └─────────────────────┘     └──────────────────────┘     └─────────────────────┘
         │                            │
         │  Defines columns           │  Provides paths
@@ -358,10 +358,12 @@ Only tables with registered Pydantic schemas are included in `powerbi_schema.jso
 python -m scripts.shared.generate_powerbi_schema --list
 ```
 
-Current coverage:
-- ✓ Dimension tables (`dim_location`, `dim_company`, `dim_csi_section`)
-- ✓ Core fact tables (`work_entries`, `labor_entries`, `ncr_consolidated`)
-- ○ Other tables (skipped until Pydantic schema is added)
+Current coverage: **25 tables** with full Pydantic schema coverage including:
+- Dimension tables (`dim_location`, `dim_company`, `dim_csi_section`)
+- Fact tables (`work_entries`, `labor_entries`, `ncr_consolidated`, `raba_psi_consolidated`)
+- Quality tables (`qc_inspections_enriched`, `combined_qc_inspections`)
+- Fieldwire tables (`fieldwire_combined`, `fieldwire_checklists`)
+- Data quality tables (all `*_data_quality.csv` files)
 
 ### Adding a New Table to Power BI
 
@@ -406,41 +408,63 @@ Current coverage:
 
 ### Power Query Usage
 
-In Power BI, use the generated schema:
+In Power BI, create a query called `AllTables` that loads all registered tables with correct types:
 
 ```powerquery
-// Load schema config
-SchemaConfig = Json.Document(File.Contents(DataPath & "processed\powerbi_schema.json"))[tables]
+let
+    JsonPath = DataPath & "\processed\powerbi_schema.json",
+    JsonContent = Json.Document(File.Contents(JsonPath)),
+    Tables = JsonContent[tables],
+    #"Converted to Table" = Record.ToTable(Tables),
 
-// Type mapping
-TypeMap = [
-    #"Text.Type" = type text,
-    #"Int64.Type" = Int64.Type,
-    #"Number.Type" = type number,
-    #"Date.Type" = type date,
-    #"DateTime.Type" = type datetime,
-    #"Logical.Type" = type logical
-]
+    // Load CSV content for each table
+    #"Added Content" = Table.AddColumn(#"Converted to Table", "Content", each
+        let
+            filepath = DataPath & "\" & Record.Field([Value], "path"),
+            content = File.Contents(filepath)
+        in content
+    ),
 
-// Dynamic loader function
-fnLoadTable = (tableName as text) as table =>
-    let
-        TableSchema = Record.Field(SchemaConfig, tableName),
-        FilePath = DataPath & Text.Replace(TableSchema[path], "/", "\"),
-        TypeTransforms = List.Transform(
-            TableSchema[columns],
-            each {_[name], Record.Field(TypeMap, _[type])}
-        ),
-        RawCsv = Csv.Document(File.Contents(FilePath), [Delimiter=",", Encoding=65001]),
-        Promoted = Table.PromoteHeaders(RawCsv, [PromoteAllScalars=true]),
-        Typed = Table.TransformColumnTypes(Promoted, TypeTransforms)
-    in
-        Typed
+    // Parse CSV
+    #"Added Csv" = Table.AddColumn(#"Added Content", "Csv", each
+        Csv.Document([Content], [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv])
+    ),
 
-// Usage
-DimLocation = fnLoadTable("integrated_analysis/dim_location")
-WorkEntries = fnLoadTable("tbm/work_entries")
+    // Promote headers
+    #"Added Headers" = Table.AddColumn(#"Added Csv", "WithHeaders", each
+        Table.PromoteHeaders([Csv], [PromoteAllScalars = true])
+    ),
+
+    // Type mapping
+    TypeMap = [
+        #"Text.Type" = Text.Type,
+        #"Int64.Type" = Int64.Type,
+        #"Number.Type" = Number.Type,
+        #"Logical.Type" = Logical.Type,
+        #"DateTime.Type" = DateTime.Type,
+        #"Date.Type" = Date.Type
+    ],
+
+    // Apply types from schema
+    #"Applied Types" = Table.AddColumn(#"Added Headers", "Data", each
+        let
+            Columns = Record.Field([Value], "columns"),
+            ColumnTypes = List.Transform(Columns,
+                each {Record.Field(_, "name"), Record.Field(TypeMap, Record.Field(_, "type"))}
+            ),
+            TypedTable = Table.TransformColumnTypes([WithHeaders], ColumnTypes)
+        in TypedTable
+    ),
+
+    // Keep only Name and Data columns
+    #"Final" = Table.SelectColumns(#"Applied Types", {"Name", "Data"})
+in
+    #"Final"
 ```
+
+This produces a table with `Name` (e.g., "tbm/work_entries") and `Data` (the typed table).
+
+**Note:** A standalone function approach triggers Power BI's Formula.Firewall error due to mixing query references with data source access. The `Table.AddColumn` pattern avoids this by keeping all data source access within a single query context.
 
 ---
 

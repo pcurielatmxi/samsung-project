@@ -228,7 +228,8 @@ def generate_schema_from_pydantic(
     for rel_file in registered_files:
         filename = Path(rel_file).name
         table_name = str(Path(rel_file).with_suffix('')).replace('\\', '/')
-        path_from_root = f"processed/{rel_file}".replace('\\', '/')
+        # Use backslashes for Windows/Power BI compatibility
+        path_from_root = f"processed\\{rel_file}".replace('/', '\\')
         csv_path = settings.PROCESSED_DATA_DIR / rel_file
 
         # Check for Pydantic schema
