@@ -62,19 +62,21 @@ def enrich_qc_inspections(dry_run: bool = False, staging_dir: Path = None):
 
     Args:
         dry_run: If True, don't write output files
-        staging_dir: If provided, write outputs to staging directory
+        staging_dir: If provided, read from and write to staging directory
     """
     settings = Settings()
 
-    input_path = settings.PROCESSED_DATA_DIR / 'quality' / 'enriched' / 'combined_qc_inspections.csv'
+    # Input path: read from staging if provided (previous step wrote there)
+    input_path = get_output_path('quality/enriched/combined_qc_inspections.csv', staging_dir)
 
     # Output paths (staging or final)
     fact_path = get_output_path('quality/qc_inspections_enriched.csv', staging_dir)
     quality_path = get_output_path('quality/qc_inspections_data_quality.csv', staging_dir)
 
     if not input_path.exists():
-        print(f"Input file not found: {input_path}")
-        return
+        print(f"ERROR: Input file not found: {input_path}")
+        import sys
+        sys.exit(1)
 
     print("Loading QC inspections...")
     df = pd.read_csv(input_path, low_memory=False)
