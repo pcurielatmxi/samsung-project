@@ -21,6 +21,7 @@ _project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
+from scripts.shared.pipeline_utils import get_output_path, write_fact_and_quality
 from scripts.shared.company_standardization import (
     standardize_company,
     standardize_inspector,
@@ -62,6 +63,42 @@ PROJECT_START_DATE = "2022-05-01"
 PROJECT_END_DATE = "2025-12-31"
 
 VALID_OUTCOMES = {"PASS", "FAIL", "PARTIAL", "CANCELLED", "MEASUREMENT"}
+
+
+# =============================================================================
+# Data quality columns - moved to separate table for Power BI cleanliness
+# =============================================================================
+
+RABA_PSI_DATA_QUALITY_COLUMNS = [
+    # Raw/unnormalized values
+    'level_raw',
+    'location_raw',
+    'inspector_raw',
+    'contractor_raw',
+    'testing_company_raw',
+    'subcontractor_raw',
+    'trade_raw',
+    # Grid bounds (technical)
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    'grid_source',
+    # Room matching
+    'affected_rooms',
+    'affected_rooms_count',
+    # Location inference metadata
+    'location_type',
+    'location_code',
+    'match_type',
+    # CSI inference metadata
+    'csi_inference_source',
+    # Validation
+    '_validation_issues',
+    # Multi-party detection
+    'is_multi_party',
+    'narrative_companies',
+]
 
 # Patterns in summary text indicating no pass/fail criteria (measurement-only)
 MEASUREMENT_SUMMARY_PATTERNS = [
@@ -607,18 +644,26 @@ def flatten_psi_record(record: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def consolidate() -> Dict[str, Any]:
+def consolidate(staging_dir: Path = None) -> Dict[str, Any]:
     """
     Consolidate RABA and PSI records into a single CSV.
+
+    Args:
+        staging_dir: If provided, write outputs to staging directory
 
     Returns:
         Summary statistics
     """
     import pandas as pd
+    from pathlib import Path
 
     raba_clean_dir = settings.RABA_PROCESSED_DIR / "3.clean"
     psi_clean_dir = settings.PSI_PROCESSED_DIR / "3.clean"
-    output_dir = settings.RABA_PROCESSED_DIR
+
+    # Output paths (staging or final)
+    fact_path = get_output_path('raba/raba_psi_consolidated.csv', staging_dir)
+    quality_path = get_output_path('raba/raba_psi_data_quality.csv', staging_dir)
+    report_path = get_output_path('raba/raba_psi_validation_report.json', staging_dir)
 
     # Load records from both sources
     print(f"Loading RABA records from: {raba_clean_dir}")
@@ -674,16 +719,21 @@ def consolidate() -> Dict[str, Any]:
     combined_df = pd.concat([raba_df, psi_df], ignore_index=True)
     print(f"Combined: {len(combined_df)} total records ({len(raba_df)} RABA + {len(psi_df)} PSI)")
 
-    # Write combined output
-    output_path = output_dir / "raba_psi_consolidated.csv"
-    validated_df_to_csv(combined_df, output_path, index=False)
-    print(f"Wrote {len(combined_df)} records to: {output_path}")
+    # Write fact and data quality tables
+    print(f"Writing fact table to: {fact_path}")
+    print(f"Writing data quality table to: {quality_path}")
+    fact_rows, quality_cols = write_fact_and_quality(
+        df=combined_df,
+        primary_key='inspection_id',
+        quality_columns=RABA_PSI_DATA_QUALITY_COLUMNS,
+        fact_path=fact_path,
+        quality_path=quality_path,
+    )
+    print(f"Wrote {fact_rows:,} rows, moved {quality_cols} columns to data quality table")
 
     # Write validation report
     all_issues = raba_issues + psi_issues
     valid_count = total_records - len(all_issues)
-
-    report_path = output_dir / "raba_psi_validation_report.json"
     report = {
         'generated_at': datetime.now().isoformat(),
         'total_records': total_records,
@@ -743,7 +793,9 @@ def consolidate() -> Dict[str, Any]:
         for issue_type, count in sorted(report['issues_by_type'].items(), key=lambda x: -x[1])[:10]:
             print(f"  {issue_type}: {count}")
 
-    print(f"\nOutput: {output_path}")
+    print(f"\nOutput:")
+    print(f"  Fact table: {fact_path}")
+    print(f"  Data quality: {quality_path}")
 
     return report
 
@@ -760,7 +812,14 @@ def _count_issues_by_type(validation_issues: List[Dict]) -> Dict[str, int]:
 
 def main():
     """Main entry point."""
-    consolidate()
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Consolidate RABA + PSI quality inspections')
+    parser.add_argument('--staging-dir', type=Path, default=None,
+                        help='Write outputs to staging directory instead of final location')
+    args = parser.parse_args()
+
+    consolidate(staging_dir=args.staging_dir)
 
 
 if __name__ == "__main__":

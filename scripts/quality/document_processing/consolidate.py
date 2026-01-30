@@ -25,6 +25,7 @@ Output:
     - processed/quality/enriched/combined_qc_inspections.csv
 """
 
+import argparse
 import sys
 from pathlib import Path
 from typing import Dict, Any, List, Optional
@@ -50,6 +51,7 @@ from scripts.shared.dimension_lookup import (
     get_company_id,
 )
 from scripts.shared.location_parser import parse_location
+from scripts.shared.pipeline_utils import get_output_path
 
 # Import CSI inference from quality workbook script
 from scripts.integrated_analysis.add_csi_to_quality_workbook import (
@@ -366,14 +368,23 @@ def print_coverage(coverage: Dict):
     print(f"  Building:     {coverage['building']['mapped']}/{coverage['building']['total']} ({coverage['building']['pct']}%)")
     print(f"  Location:     {coverage['location']['mapped']}/{coverage['location']['total']} ({coverage['location']['pct']}%)")
     print(f"  Company:      {coverage['company']['mapped']}/{coverage['company']['total']} ({coverage['company']['pct']}%)")
-    print(f"  Trade:        {coverage['trade']['mapped']}/{coverage['trade']['total']} ({coverage['trade']['pct']}%)")
     print(f"  CSI Section:  {coverage['csi_section']['mapped']}/{coverage['csi_section']['total']} ({coverage['csi_section']['pct']}%)")
 
 
-def consolidate():
-    """Main consolidation function."""
+def consolidate(staging_dir: Optional[Path] = None):
+    """
+    Main consolidation function.
+
+    Args:
+        staging_dir: If provided, write outputs to staging directory
+    """
     input_dir = settings.PROCESSED_DATA_DIR / 'quality'
-    output_dir = input_dir / 'enriched'
+
+    # Determine output directory (staging or final)
+    if staging_dir:
+        output_dir = staging_dir / 'quality' / 'enriched'
+    else:
+        output_dir = input_dir / 'enriched'
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
@@ -470,7 +481,18 @@ def consolidate():
 
 def main():
     """Entry point."""
-    consolidate()
+    parser = argparse.ArgumentParser(
+        description='Consolidate Yates/SECAI QC inspections with dimension IDs'
+    )
+    parser.add_argument(
+        '--staging-dir',
+        type=Path,
+        default=None,
+        help='Write outputs to staging directory instead of final location'
+    )
+    args = parser.parse_args()
+
+    consolidate(staging_dir=args.staging_dir)
 
 
 if __name__ == "__main__":

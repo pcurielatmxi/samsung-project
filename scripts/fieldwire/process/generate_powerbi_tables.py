@@ -23,6 +23,7 @@ from datetime import datetime
 import pandas as pd
 
 from src.config.settings import settings
+from scripts.shared.pipeline_utils import get_output_path
 
 logging.basicConfig(
     level=logging.INFO,
@@ -526,6 +527,12 @@ def main():
         help="Output directory (default: processed/fieldwire/)",
     )
     parser.add_argument(
+        "--staging-dir",
+        type=Path,
+        default=None,
+        help="Write outputs to staging directory instead of final location",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be done without writing files",
@@ -534,7 +541,13 @@ def main():
 
     # Determine directories
     input_dir = args.input_dir or settings.FIELDWIRE_RAW_DIR
-    output_dir = args.output_dir or settings.FIELDWIRE_PROCESSED_DIR
+
+    # Use staging_dir if provided, otherwise output_dir or default
+    if args.staging_dir:
+        output_dir = args.staging_dir / 'fieldwire'
+        output_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        output_dir = args.output_dir or settings.FIELDWIRE_PROCESSED_DIR
 
     if not input_dir.exists():
         logger.error(f"Input directory not found: {input_dir}")

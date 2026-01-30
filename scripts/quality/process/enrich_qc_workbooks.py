@@ -10,6 +10,7 @@ Input:
 
 Output:
     processed/quality/qc_inspections_enriched.csv (replaces combined file)
+    processed/quality/qc_inspections_data_quality.csv (data quality columns)
 """
 
 import pandas as pd
@@ -20,17 +21,56 @@ from src.config.settings import Settings
 from scripts.shared.dimension_lookup import (
     get_csi_division,
 )
+from scripts.shared.pipeline_utils import get_output_path, write_fact_and_quality
 from scripts.integrated_analysis.location import enrich_location
 
 
-def enrich_qc_inspections(dry_run: bool = False):
+# =============================================================================
+# Data quality columns - moved to separate table for Power BI cleanliness
+# =============================================================================
+
+QC_INSPECTIONS_DATA_QUALITY_COLUMNS = [
+    # Grid bounds (technical)
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    'grid_source',
+    # Match metadata
+    'match_type',
+    # Source-specific columns (yates_*)
+    'yates_time',
+    'yates_wir_number',
+    'yates_rep',
+    'yates_3rd_party',
+    'yates_secai_cm',
+    'yates_inspection_comment',
+    'yates_category',
+    # Source-specific columns (secai_*)
+    'secai_discipline',
+    'secai_number',
+    'secai_request_date',
+    'secai_revision',
+    'secai_building_type',
+    'secai_module',
+]
+
+
+def enrich_qc_inspections(dry_run: bool = False, staging_dir: Path = None):
     """
     Enrich QC inspection data with improved location, CSI division, trade, and affected rooms.
+
+    Args:
+        dry_run: If True, don't write output files
+        staging_dir: If provided, write outputs to staging directory
     """
     settings = Settings()
 
     input_path = settings.PROCESSED_DATA_DIR / 'quality' / 'enriched' / 'combined_qc_inspections.csv'
-    output_path = settings.PROCESSED_DATA_DIR / 'quality' / 'qc_inspections_enriched.csv'
+
+    # Output paths (staging or final)
+    fact_path = get_output_path('quality/qc_inspections_enriched.csv', staging_dir)
+    quality_path = get_output_path('quality/qc_inspections_data_quality.csv', staging_dir)
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
@@ -142,9 +182,21 @@ def enrich_qc_inspections(dry_run: bool = False):
     print(f"  Affected rooms:      {has_affected_rooms:,} ({has_affected_rooms/original_count*100:.1f}%)")
 
     if not dry_run:
-        print(f"\nSaving to {output_path}...")
-        df.to_csv(output_path, index=False)
-        print("Done!")
+        print(f"\nWriting fact table to: {fact_path}")
+        print(f"Writing data quality table to: {quality_path}")
+
+        # Ensure inspection_id exists as primary key
+        if 'inspection_id' not in df.columns:
+            df['inspection_id'] = df.index.astype(str)
+
+        fact_rows, quality_cols = write_fact_and_quality(
+            df=df,
+            primary_key='inspection_id',
+            quality_columns=QC_INSPECTIONS_DATA_QUALITY_COLUMNS,
+            fact_path=fact_path,
+            quality_path=quality_path,
+        )
+        print(f"Wrote {fact_rows:,} rows, moved {quality_cols} columns to data quality table")
     else:
         print("\nDRY RUN - no files written")
 
@@ -155,9 +207,11 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='Enrich QC workbooks with improved location and CSI data')
     parser.add_argument('--dry-run', action='store_true', help='Preview without saving')
+    parser.add_argument('--staging-dir', type=Path, default=None,
+                        help='Write outputs to staging directory instead of final location')
     args = parser.parse_args()
 
-    enrich_qc_inspections(dry_run=args.dry_run)
+    enrich_qc_inspections(dry_run=args.dry_run, staging_dir=args.staging_dir)
 
 
 if __name__ == '__main__':

@@ -37,6 +37,19 @@ from scripts.shared.dimension_lookup import (
     get_company_id,
     reset_cache,
 )
+from scripts.shared.pipeline_utils import get_output_path, write_fact_and_quality
+
+
+# =============================================================================
+# Data quality columns - moved to separate table for Power BI cleanliness
+# =============================================================================
+
+LABOR_DATA_QUALITY_COLUMNS = [
+    # CSI inference metadata
+    'csi_inference_source',
+    # Intermediate fields
+    'company_primary_trade_id',
+]
 
 # Import CSI definitions from add_csi_to_raba (shared)
 from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
@@ -267,15 +280,23 @@ def infer_csi_from_projectsight(activity: str, trade_full: str, trade_id: int = 
     return None, None, "none"
 
 
-def consolidate_labor(dry_run: bool = False) -> Dict[str, Any]:
+def consolidate_labor(dry_run: bool = False, staging_dir: Optional[Path] = None) -> Dict[str, Any]:
     """
     Consolidate ProjectSight labor_entries.csv with dimension IDs.
 
     This replaces enrich_with_dimensions.py:enrich_projectsight() +
     add_csi_to_projectsight.py by integrating all enrichment into the pipeline.
+
+    Args:
+        dry_run: If True, don't write files
+        staging_dir: If provided, write outputs to staging directory
+
+    Returns:
+        Dict with status, records, coverage, etc.
     """
     input_path = Settings.PROCESSED_DATA_DIR / 'projectsight' / 'labor_entries.csv'
-    output_path = Settings.PROCESSED_DATA_DIR / 'projectsight' / 'labor_entries.csv'
+    fact_path = get_output_path('projectsight/labor_entries.csv', staging_dir)
+    quality_path = get_output_path('projectsight/labor_entries_data_quality.csv', staging_dir)
 
     if not input_path.exists():
         return {'status': 'skipped', 'reason': 'file not found'}
@@ -284,6 +305,9 @@ def consolidate_labor(dry_run: bool = False) -> Dict[str, Any]:
     df = pd.read_csv(input_path)
     original_count = len(df)
     print(f"Loaded {original_count:,} records")
+
+    # Create primary key (row number based)
+    df['labor_entry_id'] = 'PS-' + df.index.astype(str)
 
     # ProjectSight has no location data - only company and trade
     df['dim_location_id'] = None  # No location available
@@ -329,15 +353,24 @@ def consolidate_labor(dry_run: bool = False) -> Dict[str, Any]:
     csi_source_dist = df['csi_inference_source'].value_counts().to_dict()
 
     if not dry_run:
-        print(f"  Writing output to: {output_path}")
-        validated_df_to_csv(df, output_path, index=False)
+        print(f"  Writing fact table to: {fact_path}")
+        print(f"  Writing data quality table to: {quality_path}")
+        fact_rows, quality_cols = write_fact_and_quality(
+            df=df,
+            primary_key='labor_entry_id',
+            quality_columns=LABOR_DATA_QUALITY_COLUMNS,
+            fact_path=fact_path,
+            quality_path=quality_path,
+        )
+        print(f"  Wrote {fact_rows:,} rows, moved {quality_cols} columns to data quality table")
 
     return {
         'status': 'success',
         'records': original_count,
         'coverage': coverage,
         'csi_sources': csi_source_dist,
-        'output': str(output_path) if not dry_run else 'DRY RUN (validated)',
+        'fact_output': str(fact_path) if not dry_run else 'DRY RUN',
+        'quality_output': str(quality_path) if not dry_run else 'DRY RUN',
     }
 
 
@@ -345,6 +378,8 @@ def main():
     parser = argparse.ArgumentParser(description='Consolidate ProjectSight labor entries with dimension IDs')
     parser.add_argument('--dry-run', action='store_true',
                         help='Show what would be done without writing files')
+    parser.add_argument('--staging-dir', type=Path, default=None,
+                        help='Write outputs to staging directory instead of final location')
     args = parser.parse_args()
 
     # Reset dimension cache to ensure fresh data
@@ -354,7 +389,7 @@ def main():
     print("PROJECTSIGHT LABOR CONSOLIDATION")
     print("=" * 70)
 
-    result = consolidate_labor(dry_run=args.dry_run)
+    result = consolidate_labor(dry_run=args.dry_run, staging_dir=args.staging_dir)
 
     if result['status'] == 'success':
         print(f"\nRecords: {result['records']:,}")
@@ -367,7 +402,9 @@ def main():
             pct = count / result['records'] * 100
             print(f"  {source}: {count:,} ({pct:.1f}%)")
 
-        print(f"\nOutput: {result['output']}")
+        print(f"\nOutput:")
+        print(f"  Fact table: {result['fact_output']}")
+        print(f"  Data quality: {result['quality_output']}")
     else:
         print(f"\nStatus: {result['status']}")
         print(f"Reason: {result.get('reason', 'unknown')}")

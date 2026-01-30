@@ -39,7 +39,38 @@ from scripts.shared.dimension_lookup import (
     get_affected_rooms,
     reset_cache,
 )
+from scripts.shared.pipeline_utils import get_output_path, write_fact_and_quality
 from scripts.integrated_analysis.location import enrich_location, parse_tbm_grid
+
+
+# =============================================================================
+# Data quality columns - moved to separate table for Power BI cleanliness
+# =============================================================================
+
+TBM_DATA_QUALITY_COLUMNS = [
+    # Grid bounds (technical)
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    'grid_raw',
+    'grid_type',
+    # Room matching
+    'affected_rooms',
+    'affected_rooms_count',
+    # Location inference metadata
+    'location_source',
+    'grid_completeness',
+    'match_quality',
+    'location_review_flag',
+    # CSI inference metadata
+    'csi_inference_source',
+    # Intermediate normalization fields
+    'building_normalized',
+    'level_normalized',
+    'room_code_extracted',
+    'trade_inferred',
+]
 
 # Import CSI definitions from add_csi_to_raba (shared with add_csi_to_tbm)
 from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
@@ -342,15 +373,23 @@ def extract_room_code(row) -> Optional[str]:
     return None
 
 
-def consolidate_tbm(dry_run: bool = False) -> Dict[str, Any]:
+def consolidate_tbm(dry_run: bool = False, staging_dir: Optional[Path] = None) -> Dict[str, Any]:
     """
     Consolidate TBM work_entries.csv with dimension IDs.
 
     This replaces the enrich_with_dimensions.py:enrich_tbm() + add_csi_to_tbm.py
     by integrating all enrichment directly into the TBM pipeline.
+
+    Args:
+        dry_run: If True, don't write files
+        staging_dir: If provided, write outputs to staging directory
+
+    Returns:
+        Dict with status, records, coverage, etc.
     """
     input_path = Settings.PROCESSED_DATA_DIR / 'tbm' / 'work_entries.csv'
-    output_path = Settings.PROCESSED_DATA_DIR / 'tbm' / 'work_entries.csv'
+    fact_path = get_output_path('tbm/work_entries.csv', staging_dir)
+    quality_path = get_output_path('tbm/work_entries_data_quality.csv', staging_dir)
 
     if not input_path.exists():
         return {'status': 'skipped', 'reason': 'file not found'}
@@ -551,8 +590,16 @@ def consolidate_tbm(dry_run: bool = False) -> Dict[str, Any]:
     csi_source_dist = df['csi_inference_source'].value_counts().to_dict()
 
     if not dry_run:
-        print(f"  Writing output to: {output_path}")
-        validated_df_to_csv(df, output_path, index=False)
+        print(f"  Writing fact table to: {fact_path}")
+        print(f"  Writing data quality table to: {quality_path}")
+        fact_rows, quality_cols = write_fact_and_quality(
+            df=df,
+            primary_key='tbm_work_entry_id',
+            quality_columns=TBM_DATA_QUALITY_COLUMNS,
+            fact_path=fact_path,
+            quality_path=quality_path,
+        )
+        print(f"  Wrote {fact_rows:,} rows, moved {quality_cols} columns to data quality table")
 
     return {
         'status': 'success',
@@ -561,7 +608,8 @@ def consolidate_tbm(dry_run: bool = False) -> Dict[str, Any]:
         'location_sources': location_source_dist,
         'grid_types': grid_type_dist,
         'csi_sources': csi_source_dist,
-        'output': str(output_path) if not dry_run else 'DRY RUN (validated)',
+        'fact_output': str(fact_path) if not dry_run else 'DRY RUN',
+        'quality_output': str(quality_path) if not dry_run else 'DRY RUN',
     }
 
 
@@ -569,6 +617,8 @@ def main():
     parser = argparse.ArgumentParser(description='Consolidate TBM work entries with dimension IDs')
     parser.add_argument('--dry-run', action='store_true',
                         help='Show what would be done without writing files')
+    parser.add_argument('--staging-dir', type=Path, default=None,
+                        help='Write outputs to staging directory instead of final location')
     args = parser.parse_args()
 
     # Reset dimension cache to ensure fresh data
@@ -578,7 +628,7 @@ def main():
     print("TBM CONSOLIDATION")
     print("=" * 70)
 
-    result = consolidate_tbm(dry_run=args.dry_run)
+    result = consolidate_tbm(dry_run=args.dry_run, staging_dir=args.staging_dir)
 
     if result['status'] == 'success':
         print(f"\nRecords: {result['records']:,}")
@@ -601,7 +651,9 @@ def main():
             pct = count / result['records'] * 100
             print(f"  {source}: {count:,} ({pct:.1f}%)")
 
-        print(f"\nOutput: {result['output']}")
+        print(f"\nOutput:")
+        print(f"  Fact table: {result['fact_output']}")
+        print(f"  Data quality: {result['quality_output']}")
     else:
         print(f"\nStatus: {result['status']}")
         print(f"Reason: {result.get('reason', 'unknown')}")

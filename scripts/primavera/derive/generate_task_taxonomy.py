@@ -36,6 +36,37 @@ sys.path.insert(0, str(derive_dir))
 
 from src.config.settings import Settings
 from task_taxonomy import build_task_context, infer_all_fields
+from scripts.shared.pipeline_utils import get_output_path, write_fact_and_quality
+
+
+# =============================================================================
+# Data quality columns - moved to separate table for Power BI cleanliness
+# =============================================================================
+
+P6_TAXONOMY_DATA_QUALITY_COLUMNS = [
+    # Source tracking columns (how each field was derived)
+    'trade_source',
+    'sub_trade_source',
+    'building_source',
+    'level_source',
+    'area_source',
+    'room_source',
+    'sub_source',
+    'phase_source',
+    'work_phase_source',
+    'impact_source',
+    'csi_inference_source',
+    'grid_source',
+    # Grid bounds (technical)
+    'grid_row_min',
+    'grid_row_max',
+    'grid_col_min',
+    'grid_col_max',
+    # Intermediate/redundant location fields
+    'loc_type',
+    'loc_type_desc',
+    'loc_id',
+]
 
 
 def load_yates_data(latest_only: bool = False) -> tuple:
@@ -295,6 +326,12 @@ def main():
         action='store_true',
         help='Skip adding dim_location_id column'
     )
+    parser.add_argument(
+        '--staging-dir',
+        type=Path,
+        default=None,
+        help='Write outputs to staging directory instead of final location'
+    )
     args = parser.parse_args()
 
     # Load data
@@ -321,19 +358,31 @@ def main():
     # Print summary
     print_summary(taxonomy)
 
-    # Save output
+    # Determine output paths
     if args.output:
-        output_path = Path(args.output)
+        fact_path = Path(args.output)
+        quality_path = fact_path.parent / f"{fact_path.stem}_data_quality{fact_path.suffix}"
     else:
-        output_path = Settings.PRIMAVERA_PROCESSED_DIR / "p6_task_taxonomy.csv"
+        fact_path = get_output_path('primavera/p6_task_taxonomy.csv', args.staging_dir)
+        quality_path = get_output_path('primavera/p6_task_taxonomy_data_quality.csv', args.staging_dir)
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    taxonomy.to_csv(output_path, index=False)
+    # Write fact and data quality tables
+    print(f"\nWriting fact table to: {fact_path}")
+    print(f"Writing data quality table to: {quality_path}")
+    fact_rows, quality_cols = write_fact_and_quality(
+        df=taxonomy,
+        primary_key='task_id',
+        quality_columns=P6_TAXONOMY_DATA_QUALITY_COLUMNS,
+        fact_path=fact_path,
+        quality_path=quality_path,
+    )
 
     print(f"\n{'='*60}")
-    print(f"Saved taxonomy lookup to: {output_path}")
+    print(f"Saved taxonomy:")
+    print(f"  Fact table: {fact_path}")
+    print(f"  Data quality: {quality_path}")
     print(f"Total records: {len(taxonomy):,}")
-    print(f"Columns: {list(taxonomy.columns)}")
+    print(f"Moved {quality_cols} columns to data quality table")
 
 
 if __name__ == "__main__":

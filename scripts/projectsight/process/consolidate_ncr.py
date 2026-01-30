@@ -25,6 +25,20 @@ from schemas.validator import validated_df_to_csv
 from scripts.shared.dimension_lookup import (
     get_company_id,
 )
+from scripts.shared.pipeline_utils import get_output_path, write_fact_and_quality
+
+
+# =============================================================================
+# Data quality columns - moved to separate table for Power BI cleanliness
+# =============================================================================
+
+NCR_DATA_QUALITY_COLUMNS = [
+    # CSI inference metadata
+    'csi_inference_source',
+    # Validation
+    '_validation_issues',
+    'data_quality_flags',
+]
 from scripts.integrated_analysis.add_csi_to_ncr import (
     infer_csi_from_ncr,
     CSI_SECTIONS,
@@ -73,20 +87,28 @@ def get_ncr_company_id(company: str) -> Optional[int]:
     return get_company_id(company_str)
 
 
-def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
+def consolidate_ncr(input_path: Path, output_path: Path = None, staging_dir: Path = None) -> Dict:
     """
     Consolidate NCR data with dimension IDs.
 
     Args:
         input_path: Path to ncr.csv
-        output_path: Path to write ncr_consolidated.csv
+        output_path: Deprecated - use staging_dir instead
+        staging_dir: If provided, write outputs to staging directory
 
     Returns:
         Summary statistics
     """
+    # Output paths (staging or final)
+    fact_path = get_output_path('projectsight/ncr_consolidated.csv', staging_dir)
+    quality_path = get_output_path('projectsight/ncr_data_quality.csv', staging_dir)
+
     print(f"Loading NCR data from: {input_path}")
     df = pd.read_csv(input_path)
     print(f"Loaded {len(df)} records")
+
+    # Create primary key from number field
+    df['ncr_id'] = 'NCR-' + df['number'].astype(str)
 
     # Add dimension IDs
     print("\nAdding dimension IDs...")
@@ -131,10 +153,17 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
         }
     }
 
-    # Write output (with schema validation)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    validated_df_to_csv(df, output_path, index=False)
-    print(f"\nWrote {len(df)} records to: {output_path} (validated)")
+    # Write fact and data quality tables
+    print(f"\nWriting fact table to: {fact_path}")
+    print(f"Writing data quality table to: {quality_path}")
+    fact_rows, quality_cols = write_fact_and_quality(
+        df=df,
+        primary_key='ncr_id',
+        quality_columns=NCR_DATA_QUALITY_COLUMNS,
+        fact_path=fact_path,
+        quality_path=quality_path,
+    )
+    print(f"Wrote {fact_rows:,} rows, moved {quality_cols} columns to data quality table")
 
     # Print summary
     print("\n" + "=" * 60)
@@ -161,15 +190,21 @@ def consolidate_ncr(input_path: Path, output_path: Path) -> Dict:
 
 def main():
     """Main entry point."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Consolidate NCR with dimension IDs')
+    parser.add_argument('--staging-dir', type=Path, default=None,
+                        help='Write outputs to staging directory instead of final location')
+    args = parser.parse_args()
+
     input_path = settings.PROJECTSIGHT_PROCESSED_DIR / 'ncr.csv'
-    output_path = settings.PROJECTSIGHT_PROCESSED_DIR / 'ncr_consolidated.csv'
 
     if not input_path.exists():
         print(f"Input file not found: {input_path}")
         print("Run process_ncr_export.py first")
         sys.exit(1)
 
-    consolidate_ncr(input_path, output_path)
+    consolidate_ncr(input_path, staging_dir=args.staging_dir)
 
 
 if __name__ == "__main__":
