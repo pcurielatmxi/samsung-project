@@ -9,78 +9,126 @@ from typing import Type, Dict, Optional
 from pathlib import Path
 from pydantic import BaseModel
 
+# Dimension tables
 from .dimensions import DimLocation, DimCompany, DimTrade, DimCSISection
+
+# Mapping tables
 from .mappings import MapCompanyAliases, MapCompanyLocation
-from .quality import QCInspectionConsolidated, PsiConsolidated, RabaConsolidated
+
+# TBM
 from .tbm import TbmFiles, TbmWorkEntries, TbmWorkEntriesEnriched
-from .ncr import NcrConsolidated
+
+# ProjectSight
 from .projectsight import ProjectSightLaborEntries
+from .ncr import NcrConsolidated
+
+# Fieldwire
+from .fieldwire import (
+    FieldwireChecklists,
+    FieldwireCombined,
+    FieldwireComments,
+    FieldwireRelatedTasks,
+)
+
+# Primavera
+from .primavera import P6TaskTaxonomy, P6TaskTaxonomyDataQuality
+
+# Quality (Yates/SECAI QC workbooks)
+from .quality import (
+    QCInspectionsEnriched,
+    QCInspectionsCombined,
+    QCInspectionsDataQuality,
+)
+
+# RABA/PSI (third-party quality inspections)
+from .raba_psi import RabaPsiConsolidated, RabaPsiDataQuality
+
+# SECAI NCR
+from .secai_ncr import SecaiNcrConsolidated, SecaiNcrDataQuality
+
+# Data quality tables
+from .data_quality import (
+    TbmWorkEntriesDataQuality,
+    ProjectSightLaborEntriesDataQuality,
+    ProjectSightNcrDataQuality,
+)
+
+# Bridge tables
 from .bridge_tables import AffectedRoomsBridge
 
 
 # Registry mapping file names to schemas
 # Keys are file names (without path), values are Pydantic model classes
 SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
+    # =========================================================================
     # Dimension tables
+    # =========================================================================
     'dim_location.csv': DimLocation,
     'dim_company.csv': DimCompany,
     'dim_trade.csv': DimTrade,
     'dim_csi_section.csv': DimCSISection,
 
+    # =========================================================================
     # Mapping tables
+    # =========================================================================
     'map_company_aliases.csv': MapCompanyAliases,
     'map_company_location.csv': MapCompanyLocation,
 
-    # Quality data (RABA has CSI columns, PSI doesn't yet)
-    'raba_consolidated.csv': RabaConsolidated,
-    'psi_consolidated.csv': PsiConsolidated,
-
-    # TBM data
+    # =========================================================================
+    # TBM (Toolbox Meeting daily plans)
+    # =========================================================================
     'tbm_files.csv': TbmFiles,
     'work_entries.csv': TbmWorkEntries,
     'work_entries_enriched.csv': TbmWorkEntriesEnriched,
+    'work_entries_data_quality.csv': TbmWorkEntriesDataQuality,
 
-    # NCR data
-    'ncr_consolidated.csv': NcrConsolidated,
-
-    # ProjectSight labor
+    # =========================================================================
+    # ProjectSight
+    # =========================================================================
     'labor_entries.csv': ProjectSightLaborEntries,
+    'labor_entries_data_quality.csv': ProjectSightLaborEntriesDataQuality,
+    'ncr_consolidated.csv': NcrConsolidated,
+    'ncr_data_quality.csv': ProjectSightNcrDataQuality,
 
+    # =========================================================================
+    # Fieldwire
+    # =========================================================================
+    'fieldwire_checklists.csv': FieldwireChecklists,
+    'fieldwire_combined.csv': FieldwireCombined,
+    'fieldwire_comments.csv': FieldwireComments,
+    'fieldwire_related_tasks.csv': FieldwireRelatedTasks,
+
+    # =========================================================================
+    # Primavera P6
+    # =========================================================================
+    'p6_task_taxonomy.csv': P6TaskTaxonomy,
+    'p6_task_taxonomy_data_quality.csv': P6TaskTaxonomyDataQuality,
+
+    # =========================================================================
+    # Quality (Yates/SECAI QC workbooks)
+    # =========================================================================
+    'qc_inspections_enriched.csv': QCInspectionsEnriched,
+    'qc_inspections_data_quality.csv': QCInspectionsDataQuality,
+    'combined_qc_inspections.csv': QCInspectionsCombined,
+    'yates_qc_inspections.csv': QCInspectionsCombined,
+    'secai_qc_inspections.csv': QCInspectionsCombined,
+
+    # =========================================================================
+    # RABA/PSI (third-party quality inspections)
+    # =========================================================================
+    'raba_psi_consolidated.csv': RabaPsiConsolidated,
+    'raba_psi_data_quality.csv': RabaPsiDataQuality,
+
+    # =========================================================================
+    # SECAI NCR Log
+    # =========================================================================
+    'secai_ncr_consolidated.csv': SecaiNcrConsolidated,
+    'secai_ncr_data_quality.csv': SecaiNcrDataQuality,
+
+    # =========================================================================
     # Bridge tables
+    # =========================================================================
     'affected_rooms_bridge.csv': AffectedRoomsBridge,
-}
-
-
-# Mapping of source directories to their expected files
-SOURCE_FILES: Dict[str, Dict[str, Type[BaseModel]]] = {
-    'integrated_analysis/dimensions': {
-        'dim_location.csv': DimLocation,
-        'dim_company.csv': DimCompany,
-        'dim_trade.csv': DimTrade,
-        'dim_csi_section.csv': DimCSISection,
-    },
-    'integrated_analysis/mappings': {
-        'map_company_aliases.csv': MapCompanyAliases,
-        'map_company_location.csv': MapCompanyLocation,
-    },
-    'raba': {
-        'raba_consolidated.csv': RabaConsolidated,
-    },
-    'psi': {
-        'psi_consolidated.csv': PsiConsolidated,
-    },
-    'tbm': {
-        'tbm_files.csv': TbmFiles,
-        'work_entries.csv': TbmWorkEntries,
-        'work_entries_enriched.csv': TbmWorkEntriesEnriched,
-    },
-    'projectsight': {
-        'ncr_consolidated.csv': NcrConsolidated,
-        'labor_entries.csv': ProjectSightLaborEntries,
-    },
-    'integrated_analysis/bridge_tables': {
-        'affected_rooms_bridge.csv': AffectedRoomsBridge,
-    },
 }
 
 
@@ -106,16 +154,3 @@ def get_all_schemas() -> Dict[str, Type[BaseModel]]:
 def list_registered_files() -> list:
     """Return list of all registered file names."""
     return sorted(SCHEMA_REGISTRY.keys())
-
-
-def get_schemas_for_source(source: str) -> Dict[str, Type[BaseModel]]:
-    """
-    Get all schemas for a source directory.
-
-    Args:
-        source: Source directory name (e.g., 'raba', 'tbm', 'projectsight')
-
-    Returns:
-        Dict mapping file names to schemas for that source
-    """
-    return SOURCE_FILES.get(source, {})
