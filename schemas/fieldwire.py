@@ -111,3 +111,15 @@ class FieldwireRelatedTasks(BaseModel):
     Seq: int = Field(description="Related task sequence number")
     Related_Task_ID: Optional[str] = Field(default=None, alias="Related Task ID", description="Related task identifier")
     Source: Optional[str] = Field(default=None, description="Data source identifier")
+
+
+class FieldwireIdleTags(BaseModel):
+    """
+    Fieldwire idle time tag definitions for TBM tasks.
+
+    File: idle_tags.csv
+    """
+    id: str = Field(description="Tag ID (links to fieldwire_combined Tag columns)")
+    tag: str = Field(description="Tag display name")
+    tag_type: Optional[str] = Field(default=None, description="Tag type category")
+    tag_order: Optional[int] = Field(default=None, description="Display order")

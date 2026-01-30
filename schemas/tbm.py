@@ -6,6 +6,7 @@ These schemas define the structure for TBM work entry output files.
 Output Location: {WINDOWS_DATA_DIR}/processed/tbm/
 """
 
+from datetime import date
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -21,7 +22,7 @@ class TbmFiles(BaseModel):
 
     file_id: int = Field(description="Primary key (auto-generated)")
     filename: str = Field(description="Source Excel filename")
-    report_date: Optional[str] = Field(default=None, description="Report date (YYYY-MM-DD)")
+    report_date: Optional[date] = Field(default=None, description="Report date (YYYY-MM-DD)")
     subcontractor_file: Optional[str] = Field(default=None, description="Subcontractor name from filename")
 
 
@@ -35,7 +36,7 @@ class TbmWorkEntries(BaseModel):
     """
 
     file_id: int = Field(description="FK to tbm_files")
-    report_date: Optional[str] = Field(default=None, description="Report date (YYYY-MM-DD)")
+    report_date: Optional[date] = Field(default=None, description="Report date (YYYY-MM-DD)")
     subcontractor_file: Optional[str] = Field(default=None, description="Subcontractor name from filename")
     row_num: int = Field(description="Row number within file")
     division: Optional[str] = Field(default=None, description="Division code (string)")
@@ -62,7 +63,7 @@ class TbmWorkEntriesEnriched(BaseModel):
 
     # Base columns from work_entries
     file_id: int = Field(description="FK to tbm_files")
-    report_date: Optional[str] = Field(default=None, description="Report date (YYYY-MM-DD)")
+    report_date: Optional[date] = Field(default=None, description="Report date (YYYY-MM-DD)")
     subcontractor_file: Optional[str] = Field(default=None, description="Subcontractor name from filename")
     row_num: int = Field(description="Row number within file")
     division: Optional[str] = Field(default=None, description="Division code (string)")
@@ -81,10 +82,10 @@ class TbmWorkEntriesEnriched(BaseModel):
     # Enrichment columns
     building_normalized: Optional[str] = Field(default=None, description="Normalized building code")
     level_normalized: Optional[str] = Field(default=None, description="Normalized level (1F, 2F, etc.)")
-    dim_location_id: Optional[float] = Field(default=None, description="FK to dim_location")
-    dim_company_id: int = Field(description="FK to dim_company")
+    dim_location_id: Optional[int] = Field(default=None, description="FK to dim_location")
+    dim_company_id: Optional[int] = Field(default=None, description="FK to dim_company")
     # CSI Section
-    dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
+    dim_csi_section_id: Optional[int] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code (e.g., '03 30 00')")
     csi_inference_source: Optional[str] = Field(default=None, description="How CSI was inferred")
     csi_title: Optional[str] = Field(default=None, description="CSI section title")

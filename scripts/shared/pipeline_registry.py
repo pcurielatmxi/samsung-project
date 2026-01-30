@@ -227,6 +227,7 @@ SOURCES: list[SourceConfig] = [
             'fieldwire/fieldwire_comments.csv',
             'fieldwire/fieldwire_checklists.csv',
             'fieldwire/fieldwire_related_tasks.csv',
+            'fieldwire/idle_tags.csv',
         ],
         schema_name=None,
     ),

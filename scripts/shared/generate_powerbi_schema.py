@@ -60,6 +60,9 @@ def pydantic_type_to_powerquery(annotation) -> str:
             return 'Number.Type'
         elif 'bool' in type_str:
             return 'Logical.Type'
+        # Check datetime.date before datetime (datetime.date contains 'datetime')
+        elif 'datetime.date' in type_str:
+            return 'Date.Type'
         elif 'datetime' in type_str.lower():
             return 'DateTime.Type'
         elif 'date' in type_str.lower():
@@ -76,6 +79,9 @@ def pydantic_type_to_powerquery(annotation) -> str:
         return 'Number.Type'
     elif 'bool' in type_str.lower():
         return 'Logical.Type'
+    # Check datetime.date before datetime
+    elif 'datetime.date' in type_str:
+        return 'Date.Type'
     elif 'datetime' in type_str.lower():
         return 'DateTime.Type'
     elif 'date' in type_str.lower():

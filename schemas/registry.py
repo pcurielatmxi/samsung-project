@@ -27,6 +27,7 @@ from .fieldwire import (
     FieldwireChecklists,
     FieldwireCombined,
     FieldwireComments,
+    FieldwireIdleTags,
     FieldwireRelatedTasks,
 )
 
@@ -97,6 +98,7 @@ SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
     'fieldwire_combined.csv': FieldwireCombined,
     'fieldwire_comments.csv': FieldwireComments,
     'fieldwire_related_tasks.csv': FieldwireRelatedTasks,
+    'idle_tags.csv': FieldwireIdleTags,
 
     # =========================================================================
     # Primavera P6

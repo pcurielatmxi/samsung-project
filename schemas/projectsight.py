@@ -6,6 +6,7 @@ These schemas define the structure for ProjectSight output files.
 Output Location: {WINDOWS_DATA_DIR}/processed/projectsight/
 """
 
+from datetime import date
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -20,7 +21,7 @@ class LaborEntriesBase(BaseModel):
     """
 
     # Date fields
-    report_date: str = Field(description="Report date (MM/DD/YYYY)")
+    report_date: date = Field(description="Report date (MM/DD/YYYY)")
     year: Optional[int] = Field(default=None, description="Year from report_date")
     month: Optional[int] = Field(default=None, description="Month from report_date (1-12)")
     week_number: Optional[int] = Field(default=None, description="ISO week number")
@@ -73,14 +74,14 @@ class LaborEntriesEnriched(LaborEntriesBase):
     labor_entry_id: str = Field(description="Primary key (PS-{row_number})")
 
     # Dimension IDs
-    dim_location_id: Optional[float] = Field(
+    dim_location_id: Optional[int] = Field(
         default=None,
         description="FK to dim_location (always None - no location in source)"
     )
     dim_company_id: Optional[int] = Field(default=None, description="FK to dim_company")
 
     # CSI Section (csi_inference_source is in data quality table)
-    dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
+    dim_csi_section_id: Optional[int] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code (e.g., '03 30 00')")
     csi_title: Optional[str] = Field(default=None, description="CSI section title")
 
