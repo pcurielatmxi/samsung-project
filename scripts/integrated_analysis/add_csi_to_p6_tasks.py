@@ -37,6 +37,7 @@ _project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.config.settings import settings
+from scripts.shared.pipeline_utils import get_output_path
 
 # Import shared CSI definitions
 from scripts.integrated_analysis.add_csi_to_raba import CSI_SECTIONS
@@ -290,10 +291,11 @@ def infer_csi_from_taxonomy(
     return None, None, "none"
 
 
-def add_csi_to_p6_tasks(dry_run: bool = False):
+def add_csi_to_p6_tasks(dry_run: bool = False, staging_dir: Path = None):
     """Add CSI section IDs to P6 task taxonomy (appends to original file)."""
 
-    input_path = settings.PRIMAVERA_PROCESSED_DIR / "p6_task_taxonomy.csv"
+    # When staging_dir is provided, read from and write to staging
+    input_path = get_output_path('primavera/p6_task_taxonomy.csv', staging_dir)
     task_path = settings.PRIMAVERA_PROCESSED_DIR / "task.csv"
     # Write back to the same file (append columns to original)
     output_path = input_path
@@ -382,9 +384,11 @@ def add_csi_to_p6_tasks(dry_run: bool = False):
 def main():
     parser = argparse.ArgumentParser(description='Add CSI section IDs to P6 task taxonomy')
     parser.add_argument('--dry-run', action='store_true', help='Preview without writing output')
+    parser.add_argument('--staging-dir', type=Path, default=None,
+                        help='Read from and write to staging directory')
     args = parser.parse_args()
 
-    add_csi_to_p6_tasks(dry_run=args.dry_run)
+    add_csi_to_p6_tasks(dry_run=args.dry_run, staging_dir=args.staging_dir)
 
 
 if __name__ == "__main__":
