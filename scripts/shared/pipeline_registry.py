@@ -172,7 +172,8 @@ SOURCES: list[SourceConfig] = [
     SourceConfig(
         name='projectsight_ncr',
         description='ProjectSight NCR/QOR/SOR records',
-        parse_module=None,  # Parsed from export
+        parse_module='scripts.projectsight.process.process_ncr_export',
+        parse_args=[],
         scrape_module=None,
         consolidate_module='scripts.projectsight.process.consolidate_ncr',
         fact_table='projectsight/ncr_consolidated.csv',
