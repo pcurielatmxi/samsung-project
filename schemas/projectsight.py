@@ -66,7 +66,11 @@ class LaborEntriesEnriched(LaborEntriesBase):
     Purpose: Labor data enriched with company and CSI dimension lookups.
 
     Note: ProjectSight has NO location data - only company and trade information.
+    Note: company_primary_trade_id and csi_inference_source are in data quality table.
     """
+
+    # Primary key
+    labor_entry_id: str = Field(description="Primary key (PS-{row_number})")
 
     # Dimension IDs
     dim_location_id: Optional[float] = Field(
@@ -74,18 +78,10 @@ class LaborEntriesEnriched(LaborEntriesBase):
         description="FK to dim_location (always None - no location in source)"
     )
     dim_company_id: Optional[int] = Field(default=None, description="FK to dim_company")
-    company_primary_trade_id: Optional[int] = Field(
-        default=None,
-        description="Company's primary trade ID from dim_company"
-    )
 
-    # CSI Section
+    # CSI Section (csi_inference_source is in data quality table)
     dim_csi_section_id: Optional[float] = Field(default=None, description="FK to dim_csi_section")
     csi_section: Optional[str] = Field(default=None, description="CSI code (e.g., '03 30 00')")
-    csi_inference_source: Optional[str] = Field(
-        default=None,
-        description="How CSI was inferred: 'activity', 'trade', 'division', or 'none'"
-    )
     csi_title: Optional[str] = Field(default=None, description="CSI section title")
 
 
