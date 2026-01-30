@@ -182,6 +182,21 @@ SOURCES: list[SourceConfig] = [
     ),
 
     # -------------------------------------------------------------------------
+    # SECAI NCR Log - SECAI internal NCR/QOR log
+    # -------------------------------------------------------------------------
+    SourceConfig(
+        name='secai_ncr_log',
+        description='SECAI internal NCR/QOR quality log',
+        parse_module='scripts.secai_ncr_log.process.process_secai_ncr_log',
+        parse_args=[],
+        scrape_module=None,
+        consolidate_module='scripts.secai_ncr_log.process.consolidate_secai_ncr',
+        fact_table='secai_ncr_log/secai_ncr_consolidated.csv',
+        data_quality_table='secai_ncr_log/secai_ncr_data_quality.csv',
+        schema_name=None,  # No schema yet
+    ),
+
+    # -------------------------------------------------------------------------
     # Primavera P6 - Schedule taxonomy
     # -------------------------------------------------------------------------
     SourceConfig(
