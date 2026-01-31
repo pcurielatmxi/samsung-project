@@ -105,14 +105,48 @@ MEASUREMENT_PATTERNS = [
     r"provides\s+data\s+but\s+does\s+not",
 ]
 
-# Inspection types that are inherently measurement-only
+# Inspection types that are inherently measurement-only (no pass/fail criteria)
 MEASUREMENT_INSPECTION_TYPES = [
     "pick-up",
     "pickup",
+    "pick up",
     "length change",
     "shrinkage",
     "observation of drilled",
     "observations of drilled",
+    "soil testing",
+    "soil material characterization",
+    # Grout mixing observations - documenting temperatures and mix times only
+    "grout mixing and placement",
+    "mixing and placement observation",
+    "lenton interlok grout mixing",
+    "ss mortar grout mixing",
+    # Composite material observations
+    "observation of mixing and placement of composite",
+]
+
+# Patterns in inspection_type that, combined with no issues, indicate MEASUREMENT
+OBSERVATION_TYPE_PATTERNS = [
+    r"observation\s+of\s+.*grout\s+mixing",
+    r"observation\s+of\s+.*mixing\s+and\s+placement",
+    r"mixing\s+and\s+placement\s+observation",
+]
+
+# Keywords in summary that strongly indicate data recording (not pass/fail)
+MEASUREMENT_SUMMARY_KEYWORDS = [
+    r"dry\s+grout\s+temperature",
+    r"water\s+temperature",
+    r"mix(?:ing)?\s+temperature",
+    r"ambient\s+temperature.*grout",
+    r"grout.*temperature",
+    r"mixed?\s+for\s+\d+.*minutes?",
+    r"mixing\s+duration",
+    r"data\s+collected",
+    r"material\s+characterization",
+    r"proctor\s+test",
+    r"moisture.*density\s+relationship",
+    r"atterberg\s+limits",
+    r"sieve\s+analysis",
 ]
 
 # Patterns suggesting PASS (from PARTIAL) - no deficiencies noted
@@ -211,23 +245,52 @@ def detect_measurement(row: pd.Series, extract_content: Optional[str] = None) ->
     """
     Detect if a PARTIAL record should be MEASUREMENT.
 
+    Detection strategies:
+    1. Inspection type matches known measurement-only types
+    2. Summary contains explicit "no pass/fail" patterns
+    3. Observation test with no issues AND measurement keywords in summary
+       (e.g., temperature readings, mixing times, material characterization)
+
     Returns (should_change, matching_patterns)
     """
     if row["outcome"] != "PARTIAL":
         return False, []
 
     reasons = []
-
-    # Check inspection type
     inspection_type = str(row.get("inspection_type", "")).lower()
+    summary = str(row.get("summary", ""))
+    issues = str(row.get("issues", ""))
+    has_issues = bool(issues and issues.strip() and issues.lower() != "nan")
+
+    # Strategy 1: Check inspection type against known measurement-only types
     for mtype in MEASUREMENT_INSPECTION_TYPES:
         if mtype in inspection_type:
             reasons.append(f"inspection_type:{mtype}")
 
-    # Check summary
-    summary = str(row.get("summary", ""))
+    # Strategy 2: Check for explicit "no pass/fail" patterns in summary
     matches = check_patterns(summary, MEASUREMENT_PATTERNS)
     reasons.extend(matches)
+
+    # Strategy 3: Observation tests with no issues AND measurement keywords
+    # These are pure data collection tests (temperatures, times, etc.)
+    if not has_issues:
+        # Check if inspection type matches observation patterns
+        is_observation_type = any(
+            re.search(pattern, inspection_type)
+            for pattern in OBSERVATION_TYPE_PATTERNS
+        )
+
+        # Check for measurement keywords in summary
+        has_measurement_keywords = any(
+            re.search(pattern, summary, re.IGNORECASE)
+            for pattern in MEASUREMENT_SUMMARY_KEYWORDS
+        )
+
+        if is_observation_type or has_measurement_keywords:
+            if is_observation_type:
+                reasons.append("observation_type:no_issues")
+            if has_measurement_keywords:
+                reasons.append("measurement_keywords:no_issues")
 
     # Check extract content if available
     if extract_content:
